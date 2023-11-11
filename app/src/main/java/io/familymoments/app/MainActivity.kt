@@ -15,6 +15,7 @@ import io.familymoments.app.ui.theme.FamilyMomentsTheme
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        println()
         setContent {
             FamilyMomentsTheme {
                 // A surface container using the 'background' color from the theme
