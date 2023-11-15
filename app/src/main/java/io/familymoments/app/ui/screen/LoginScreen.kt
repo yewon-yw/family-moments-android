@@ -51,15 +51,8 @@ fun LoginScreen(viewModel: LoginViewModel) {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun LoginPreview() {
-    FamilyMomentsTheme {
-        LoginScreen(viewModel = LoginViewModel(UserRepository(object : LoginService {
-            override suspend fun loginUser(loginRequest: LoginRequest): LoginResponse {
-                return LoginResponse("token")
-            }
-        })))
-    }
+    // TODO
 }
