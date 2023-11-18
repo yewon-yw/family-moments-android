@@ -76,6 +76,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.room.runtime)
+    implementation("androidx.core:core-splashscreen:1.0.0")
     kapt(libs.room.compiler)
 
     testImplementation(libs.mockk)
