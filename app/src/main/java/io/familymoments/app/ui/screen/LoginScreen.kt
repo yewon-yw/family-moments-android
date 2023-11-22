@@ -61,13 +61,13 @@ fun LoginLogo() {
         )
         Column(modifier = Modifier.padding(start = 5.dp)) {
             Text(
-                text = stringResource(id = R.string.login_title),
+                text = stringResource(id = R.string.login_description_01),
                 fontSize = 24.sp,
                 color = Color(0xFF5B6380),
                 style = MaterialTheme.typography.headlineMedium
             )
             Text(
-                text = stringResource(id = R.string.login_title2),
+                text = stringResource(id = R.string.login_description_02),
                 fontSize = 13.sp,
                 color = Color(0xFFA9A9A9)
             )
@@ -126,7 +126,7 @@ fun LoginForm(viewModel: LoginViewModel) {
                 )
             ) {
                 Text(
-                    text = stringResource(id = R.string.login),
+                    text = stringResource(id = R.string.login_login),
                     fontSize = 18.sp,
                     modifier = Modifier.padding(vertical = 20.dp)
                 )
@@ -140,17 +140,17 @@ fun LoginForm(viewModel: LoginViewModel) {
 fun LoginOption() {
     Row {
         Text(
-            text = stringResource(id = R.string.find_id),
+            text = stringResource(id = R.string.login_forgot_id),
             fontSize = 13.sp,
             color = Color(0xFFA9A9A9)
         )
         Text(
-            text = stringResource(id = R.string.find_password),
+            text = stringResource(id = R.string.login_forgot_pw),
             fontSize = 13.sp,
             color = Color(0xFFA9A9A9)
         )
         Text(
-            text = stringResource(id = R.string.join),
+            text = stringResource(id = R.string.login_signup),
             fontSize = 13.sp,
             color = Color(0xFFA9A9A9)
         )
