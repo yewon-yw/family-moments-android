@@ -5,23 +5,23 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 import io.familymoments.app.ui.screen.LoginScreen
+import io.familymoments.app.ui.theme.FamilyMomentsTheme
 import io.familymoments.app.viewmodel.LoginViewModel
 
 @AndroidEntryPoint
 class LoginActivity : ComponentActivity() {
 
-    val viewModel: LoginViewModel by viewModels()
+    private val viewModel: LoginViewModel by viewModels()
 
     @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
         super.onCreate(savedInstanceState)
         setContent {
-
-            LoginScreen(viewModel)
+            FamilyMomentsTheme {
+                LoginScreen(viewModel)
+            }
         }
     }
 }

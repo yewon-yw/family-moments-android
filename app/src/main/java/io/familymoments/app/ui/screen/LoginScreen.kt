@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -21,10 +22,12 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -44,12 +47,14 @@ import io.familymoments.app.viewmodel.LoginViewModel
 @ExperimentalMaterial3Api
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
-    Column {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.height(86.dp))
         LoginLogo()
         Spacer(modifier = Modifier.height(49.dp))
         LoginForm(viewModel = viewModel)
         LoginOption()
+        Spacer(modifier = Modifier.height(15.dp))
+        SocialLogin()
     }
 }
 
@@ -142,18 +147,41 @@ fun LoginOption() {
         Text(
             text = stringResource(id = R.string.login_forgot_id),
             fontSize = 13.sp,
-            color = Color(0xFFA9A9A9)
+            color = Color(0xFFA9A9A9),
+            fontWeight = FontWeight.Bold
         )
+        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = stringResource(id = R.string.login_forgot_pw),
             fontSize = 13.sp,
-            color = Color(0xFFA9A9A9)
+            color = Color(0xFFA9A9A9),
+            fontWeight = FontWeight.Bold
         )
+        Spacer(modifier = Modifier.width(8.dp))
         Text(
             text = stringResource(id = R.string.login_signup),
             fontSize = 13.sp,
-            color = Color(0xFFA9A9A9)
+            color = Color(0xFFA9A9A9),
+            fontWeight = FontWeight.Bold
         )
+    }
+}
+
+@Composable
+fun SocialLogin() {
+    Text(
+        text = "SNS 계정으로 로그인",
+        color = Color(0xFFA9A9A9),
+        fontSize = 13.sp,
+        fontWeight = FontWeight.Bold
+    )
+    Spacer(modifier = Modifier.height(30.dp))
+    Row(modifier = Modifier.height(36.dp)) {
+        Image(painter = painterResource(id = R.drawable.ic_kakao_login), contentDescription = "")
+        Spacer(modifier = Modifier.width(37.dp))
+        Image(painter = painterResource(id = R.drawable.ic_naver_login), contentDescription = "")
+        Spacer(modifier = Modifier.width(37.dp))
+        Image(painter = painterResource(id = R.drawable.ic_google_login), contentDescription = "")
     }
 }
 
