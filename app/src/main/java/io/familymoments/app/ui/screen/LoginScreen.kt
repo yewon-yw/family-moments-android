@@ -21,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import io.familymoments.app.model.LoginRequest
 import io.familymoments.app.model.LoginResponse
 import io.familymoments.app.network.LoginService
-import io.familymoments.app.repository.UserRepository
+import io.familymoments.app.repository.impl.UserRepositoryImpl
 import io.familymoments.app.ui.theme.FamilyMomentsTheme
 import io.familymoments.app.viewmodel.LoginViewModel
 
@@ -56,7 +56,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
 @Composable
 fun LoginPreview() {
     FamilyMomentsTheme {
-        LoginScreen(viewModel = LoginViewModel(UserRepository(object : LoginService {
+        LoginScreen(viewModel = LoginViewModel(UserRepositoryImpl(object : LoginService {
             override suspend fun loginUser(loginRequest: LoginRequest): LoginResponse {
                 return LoginResponse("token")
             }
