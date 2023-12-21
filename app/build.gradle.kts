@@ -49,6 +49,12 @@ android {
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
+        resources.excludes.addAll(
+            listOf(
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md",
+            )
+        )
     }
 }
 
@@ -65,6 +71,11 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(libs.compose.ui)
     implementation(libs.compose.material)
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.constraintlayout)
+    implementation(platform(libs.compose.bom))
+    androidTestImplementation(platform(libs.compose.bom))
     debugImplementation(libs.compose.ui.tooling.preview)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.hilt.android)
@@ -76,7 +87,6 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.room.runtime)
-    implementation("androidx.core:core-splashscreen:1.0.0")
     kapt(libs.room.compiler)
 
     testImplementation(libs.mockk)
