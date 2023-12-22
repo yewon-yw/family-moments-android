@@ -15,16 +15,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
-private val DarkColorScheme = darkColorScheme(
-    primary = Purple40,
-    secondary = PurpleGrey40,
-    tertiary = Pink40
+private val darkColorScheme = darkColorScheme(
+    primary = AppColors.purple2,
+    secondary = AppColors.pink1
 )
 
-private val LightColorScheme = lightColorScheme(
-    primary = Purple80,
-    secondary = PurpleGrey80,
-    tertiary = Pink80
+private val lightColorScheme = lightColorScheme(
+    primary = AppColors.purple2,
+    secondary = AppColors.pink1
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -50,8 +48,8 @@ fun FamilyMomentsTheme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+        darkTheme -> darkColorScheme
+        else -> lightColorScheme
     }
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -64,7 +62,7 @@ fun FamilyMomentsTheme(
 
     MaterialTheme(
         colorScheme = colorScheme,
-        typography = Typography,
+        typography = AppTypography.typography,
         content = content
     )
 }

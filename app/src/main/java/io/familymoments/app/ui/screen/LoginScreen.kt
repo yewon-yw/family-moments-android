@@ -190,7 +190,7 @@ fun SocialLogin() {
 @Composable
 fun PreviewLoginScreen() {
     FamilyMomentsTheme {
-        LoginScreen(viewModel = LoginViewModel(UserRepository(object : LoginService {
+        LoginScreen(viewModel = LoginViewModel(UserRepositoryImpl(object : LoginService {
             override suspend fun loginUser(loginRequest: LoginRequest): LoginResponse {
                 return LoginResponse("token")
             }

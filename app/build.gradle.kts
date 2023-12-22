@@ -10,6 +10,10 @@ android {
     namespace = "io.familymoments.app"
     compileSdk = 34
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "io.familymoments.app"
         minSdk = 21
@@ -24,12 +28,19 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField("String", "BASE_URL", "\"https://familymoments-be.site/\"")
+        }
         release {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField("String", "BASE_URL", "\"https://familymoments-be.site/\"")
+        }
+        create("stage") {
+            buildConfigField("String", "BASE_URL", "\"https://familymoments-be.site/\"")
         }
     }
     compileOptions {
@@ -46,6 +57,12 @@ android {
         kotlinCompilerExtensionVersion = "1.5.0"
     }
     packaging {
+        resources.excludes.addAll(
+            listOf(
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md",
+            )
+        )
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
