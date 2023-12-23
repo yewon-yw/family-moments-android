@@ -12,7 +12,7 @@ plugins {
 }
 ```
 ## 3. 깃 pre-commit 훅 설정
-Git pre-commit 훅이 설정되고, ktlint를 사용하여 코드 스타일을 검사하는 작업을 수행할
+Git pre-commit 훅이 설정되고, 커밋 전 ktlint를 사용하여 코드 스타일을 검사하는 작업을 수행할
 ```bash
 ./gradlew addKtlintCheckGitPreCommitHook
 ```
@@ -21,7 +21,7 @@ Git pre-commit 훅이 설정되고, ktlint를 사용하여 코드 스타일을 �
 ktlint installGitPreCommitHook
 ```
 ## 5. 루트 디렉토리에 .editorconfig 파일 생성
-해당 파일을 바탕으로 ktlint 를 검사하게 됩니다.
+해당 파일을 바탕으로 ktlint 검사 진행
 ```editorconfig
 root = true
 
@@ -41,4 +41,4 @@ ktlint_function_naming_ignore_when_annotated_with=Composable
 ## 6. 커밋 하기
 ktlint 를 위반하는 코드가 있으면 커밋이 불가
 
-**ktlint -F** 를 통해 ktlint 적용하기
+**```ktlint -F```** 를 통해 ktlint 적용 후 커밋하기
