@@ -16,6 +16,11 @@
         android:theme="@style/Theme.FamilyMoments"
         tools:targetApi="31">
         <activity
+            android:name=".ui.activity.JoinActivity"
+            android:exported="true"
+            android:label="@string/title_activity_join"
+            android:theme="@style/Theme.FamilyMoments" />
+        <activity
             android:name=".ui.activity.LoginActivity"
             android:exported="true"
             android:theme="@style/Theme.FamilyMoments">

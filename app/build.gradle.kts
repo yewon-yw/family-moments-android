@@ -10,10 +10,6 @@ android {
     namespace = "io.familymoments.app"
     compileSdk = 34
 
-    buildFeatures {
-        buildConfig = true
-    }
-
     defaultConfig {
         applicationId = "io.familymoments.app"
         minSdk = 21
@@ -28,19 +24,12 @@ android {
     }
 
     buildTypes {
-        debug {
-            buildConfigField("String", "BASE_URL", "\"https://familymoments-be.site/\"")
-        }
         release {
-            isMinifyEnabled = true
+            isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
-            buildConfigField("String", "BASE_URL", "\"https://familymoments-be.site/\"")
-        }
-        create("stage") {
-            buildConfigField("String", "BASE_URL", "\"https://familymoments-be.site/\"")
         }
     }
     compileOptions {
@@ -57,11 +46,14 @@ android {
         kotlinCompilerExtensionVersion = "1.5.0"
     }
     packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
         resources.excludes.addAll(
             listOf(
                 "META-INF/LICENSE.md",
                 "META-INF/LICENSE-notice.md",
-            )
+            ),
         )
     }
 }
@@ -79,6 +71,11 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(libs.compose.ui)
     implementation(libs.compose.material)
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.constraintlayout)
+    implementation(platform(libs.compose.bom))
+    androidTestImplementation(platform(libs.compose.bom))
     debugImplementation(libs.compose.ui.tooling.preview)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.hilt.android)
@@ -90,6 +87,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.room.runtime)
+    implementation("androidx.core:core-splashscreen:1.0.0")
     kapt(libs.room.compiler)
 
     testImplementation(libs.mockk)
