@@ -37,10 +37,9 @@ import io.familymoments.app.R
 import io.familymoments.app.model.LoginRequest
 import io.familymoments.app.model.LoginResponse
 import io.familymoments.app.network.LoginService
-import io.familymoments.app.repository.UserRepository
-import io.familymoments.app.ui.theme.DarkPurple
+import io.familymoments.app.repository.impl.UserRepositoryImpl
+import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.FamilyMomentsTheme
-import io.familymoments.app.ui.theme.LightPink
 import io.familymoments.app.viewmodel.LoginViewModel
 
 
@@ -93,9 +92,9 @@ fun LoginForm(viewModel: LoginViewModel) {
                 onValueChange = { username = it },
                 label = { Text("Username", color = Color.LightGray) },
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = LightPink,
-                    unfocusedContainerColor = LightPink,
-                    disabledContainerColor = LightPink
+                    focusedContainerColor = AppColors.pink4,
+                    unfocusedContainerColor = AppColors.pink4,
+                    disabledContainerColor = AppColors.pink4
                 )
             )
         }
@@ -108,9 +107,9 @@ fun LoginForm(viewModel: LoginViewModel) {
                 label = { Text("Password", color = Color.LightGray) },
                 visualTransformation = PasswordVisualTransformation(),
                 colors = TextFieldDefaults.colors(
-                    focusedContainerColor = LightPink,
-                    unfocusedContainerColor = LightPink,
-                    disabledContainerColor = LightPink,
+                    focusedContainerColor = AppColors.pink4,
+                    unfocusedContainerColor = AppColors.pink4,
+                    disabledContainerColor = AppColors.pink4,
                 )
             )
         }
@@ -124,7 +123,7 @@ fun LoginForm(viewModel: LoginViewModel) {
                     viewModel.loginUser(username.text, password.text)
                 },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = DarkPurple,
+                    containerColor = AppColors.deepPurple1,
                     contentColor = Color.White,
                     disabledContainerColor = Color.Gray,
                     disabledContentColor = Color.White,

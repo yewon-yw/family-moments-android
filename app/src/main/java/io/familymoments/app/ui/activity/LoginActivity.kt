@@ -17,9 +17,7 @@ class LoginActivity : BaseActivity<LoginViewModel>(LoginViewModel::class) {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            FamilyMomentsTheme {
-                screen
-            }
+            FamilyMomentsTheme { screen }
         }
     }
 }
