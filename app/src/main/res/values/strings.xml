@@ -16,6 +16,7 @@
     <string name="join_id_field_label">아이디를 입력하세요</string>
     <string name="join_check_duplication_btn">중복확인</string>
     <string name="join_id_validation_warning">영문과 숫자만 사용하여, 6~12글자의 아이디를 입력해주세요</string>
+    <string name="join_email_validation_warning">이메일 형식이 맞지 않습니다.</string>
     <string name="join_password_field_title">비밀번호</string>
     <string name="join_password_field_label">비밀번호를 입력하세요</string>
     <string name="join_password_validation_warning">영문과 숫자를 사용하여, 8~12글자의 비밀번호를 입력해주세요</string>
@@ -39,4 +40,5 @@
     <string name="join_select_profile_image_btn">사진 선택</string>
     <string name="join_select_profile_image_drop_down_menu_default_image">기본 이미지로 하기</string>
     <string name="join_select_profile_image_drop_down_menu_gallery">갤러리에서 선택</string>
+    <string name="join_select_profile_image_title">프로필 사진 선택</string>
 </resources>

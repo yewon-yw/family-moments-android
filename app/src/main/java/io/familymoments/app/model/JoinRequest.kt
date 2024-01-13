@@ -9,4 +9,5 @@ data class JoinRequest(
         val name:String,
         val email:String,
         val strBirthDate:String,
-        val nickname:String)
+        val nickname:String
+)

@@ -1,12 +1,13 @@
 package io.familymoments.app.ui.screen
 
 import android.content.ContentResolver
+import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -51,6 +52,7 @@ import io.familymoments.app.model.CheckEmailRequest
 import io.familymoments.app.model.CheckEmailResponse
 import io.familymoments.app.model.CheckIdRequest
 import io.familymoments.app.model.CheckIdResponse
+import io.familymoments.app.model.JoinInfoUiModel
 import io.familymoments.app.model.JoinRequest
 import io.familymoments.app.model.JoinResponse
 import io.familymoments.app.model.JoinTerm
@@ -77,27 +79,45 @@ fun JoinScreen(viewModel: JoinViewModel) {
 @Composable
 fun JoinContentScreen(viewModel: JoinViewModel) {
 
-    var id: String
     var password: String by remember { mutableStateOf("") }
-    var name: String
-    var email: String
-    var birthDay: String
-    var nickname: String
-    var bitmap: Bitmap
-    var allEssentialTermsAgree: Boolean by remember { mutableStateOf(false) }
+    val bitmap: Bitmap = BitmapFactory.decodeResource(LocalContext.current.resources, R.drawable.default_profile)
+    var allEssentialTermsAgree by remember {
+        mutableStateOf(false)
+    }
+    val idDuplicationCheck = viewModel.userIdDuplicationCheck.collectAsState()
+    val emailDuplicationCheck = viewModel.emailDuplicationCheck.collectAsState()
+    var passwordSameCheck by remember {
+        mutableStateOf(false)
+    }
+    var joinInfoUiModel: JoinInfoUiModel by remember {
+        mutableStateOf(
+                JoinInfoUiModel(
+                        id = "id",
+                        name = "name",
+                        password = "password",
+                        email = "email",
+                        birthDay = "birthDay",
+                        nickname = "nickname",
+                        bitmap = bitmap
+                )
+        )
+    }
 
     Column {
-        IdField(viewModel = viewModel) { id = it }
-        PasswordField(viewModel = viewModel) { password = it }
-        PasswordCheckField(password = password)
-        NameField { name = it }
-        EmailField { email = it }
-        BirthDayField { birthDay = it }
-        NicknameField { nickname = it }
-        ProfileImageField { bitmap = it }
+        IdField(viewModel = viewModel) { joinInfoUiModel = joinInfoUiModel.copy(id = it) }
+        PasswordField(viewModel = viewModel) {
+            password = it
+            joinInfoUiModel = joinInfoUiModel.copy(password = it)
+        }
+        PasswordCheckField(password = password) { passwordSameCheck = it }
+        NameField { joinInfoUiModel = joinInfoUiModel.copy(name = it) }
+        EmailField(viewModel) { joinInfoUiModel = joinInfoUiModel.copy(email = it) }
+        BirthDayField { joinInfoUiModel = joinInfoUiModel.copy(birthDay = it) }
+        NicknameField { joinInfoUiModel = joinInfoUiModel.copy(nickname = it) }
+        ProfileImageField { joinInfoUiModel = joinInfoUiModel.copy(bitmap = it) }
         Spacer(modifier = Modifier.height(53.dp))
         TermsField { allEssentialTermsAgree = it }
-        StartButtonField()
+        StartButtonField(viewModel, joinInfoUiModel, idDuplicationCheck.value, passwordSameCheck, emailDuplicationCheck.value, allEssentialTermsAgree)
     }
 }
 
@@ -138,13 +158,16 @@ fun PasswordField(viewModel: JoinViewModel, onTextFieldChange: (String) -> Unit)
 }
 
 @Composable
-fun PasswordCheckField(password: String) {
+fun PasswordCheckField(password: String, passwordSameCheck: (Boolean) -> Unit) {
     var currentPassword: String by remember { mutableStateOf("") }
     JoinInputField(
             title = stringResource(R.string.join_password_check_field_title),
             label = stringResource(R.string.join_password_check_field_label),
             warningText = stringResource(R.string.join_password_check_validation_warning),
-            onTextFieldChange = { currentPassword = it },
+            onTextFieldChange = {
+                currentPassword = it
+                passwordSameCheck(currentPassword == password)
+            },
             validation = currentPassword == password
     )
     JoinTextFieldVerticalSpacer()
@@ -157,12 +180,19 @@ fun NameField(onTextFieldChange: (String) -> Unit) {
 }
 
 @Composable
-fun EmailField(onTextFieldChange: (String) -> Unit) {
+fun EmailField(viewModel: JoinViewModel, onTextFieldChange: (String) -> Unit) {
+    val emailValidation = viewModel.emailValidation.collectAsState()
     JoinInputField(title = stringResource(R.string.join_email_field_title),
             label = stringResource(R.string.join_email_field_label),
             buttonExist = true,
+            onButtonClick = { viewModel.checkEmailDuplicate(it.text) },
             buttonLabel = stringResource(R.string.join_check_duplication_btn),
-            onTextFieldChange = { onTextFieldChange(it) })
+            onTextFieldChange = {
+                onTextFieldChange(it)
+                viewModel.checkEmailValidation(it)
+            },
+            warningText = stringResource(R.string.join_email_validation_warning),
+            validation = emailValidation.value)
     JoinTextFieldVerticalSpacer()
 }
 
@@ -184,33 +214,52 @@ fun NicknameField(onTextFieldChange: (String) -> Unit) {
 }
 
 @Composable
-fun ProfileImageDropDownMenu() {
+fun ProfileImageDropDownMenu(isMenuExpanded: Boolean, isMenuExpandedChanged: (Boolean) -> Unit, getImageUri: (Uri?) -> Unit) {
     val context = LocalContext.current
-    var isMenuExpanded: Boolean by remember { mutableStateOf(false) }
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    var imageUri: Uri?
     val launcher = rememberLauncherForActivityResult(
             contract =
             ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         imageUri = uri
+        getImageUri(imageUri)
     }
     DropdownMenu(expanded = isMenuExpanded,
-            onDismissRequest = { isMenuExpanded = false }) {
+            onDismissRequest = { isMenuExpandedChanged(false) }) {
         DropdownMenuItem(onClick = {
+            // 갤러리에서 선택
             launcher.launch("image/*")
-            isMenuExpanded = false
+            isMenuExpandedChanged(false)
         }) {
             Text(text = stringResource(R.string.join_select_profile_image_drop_down_menu_gallery))
         }
         DropdownMenuItem(onClick = {
+            // 기본 이미지
             imageUri = Uri.Builder()
                     .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
                     .authority(context.resources.getResourcePackageName(R.drawable.default_profile)).appendPath(context.resources.getResourceTypeName(R.drawable.default_profile)).appendPath(context.resources.getResourceEntryName(R.drawable.default_profile))
                     .build()
-            isMenuExpanded = false
+            getImageUri(imageUri)
+            isMenuExpandedChanged(false)
         }) {
             Text(text = stringResource(R.string.join_select_profile_image_drop_down_menu_default_image))
         }
+    }
+}
+
+fun convertToBitmap(context: Context, uri: Uri?, onBitmapChange: (Bitmap) -> Unit) {
+    val bitmap: Bitmap
+    uri?.let {
+        bitmap = if (Build.VERSION.SDK_INT < 28) {
+            MediaStore.Images
+                    .Media.getBitmap(context.contentResolver, it)
+
+        } else {
+            val source = ImageDecoder
+                    .createSource(context.contentResolver, it)
+            ImageDecoder.decodeBitmap(source)
+        }
+        onBitmapChange(bitmap)
     }
 }
 
@@ -218,39 +267,31 @@ fun ProfileImageDropDownMenu() {
 fun ProfileImageField(onBitmapChange: (Bitmap) -> Unit) {
 
     val context = LocalContext.current
-    val imageUri by remember { mutableStateOf<Uri?>(null) }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
     var isMenuExpanded: Boolean by remember { mutableStateOf(false) }
-    val bitmap = remember {
-        mutableStateOf<Bitmap?>(null)
-    }
-    Text(text = "프로필 사진 선택", color = Color(0xFF5B6380), fontWeight = FontWeight.Bold)
+    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+    Text(text = stringResource(R.string.join_select_profile_image_title), color = Color(0xFF5B6380), fontWeight = FontWeight.Bold)
     Spacer(modifier = Modifier.height(7.dp))
     Button(
+            modifier = Modifier.height(150.dp),
             onClick = { isMenuExpanded = !isMenuExpanded },
             colors = ButtonDefaults.buttonColors(
                     backgroundColor = Color(0xFFF3F4F7),
             ),
             elevation = ButtonDefaults.elevation(defaultElevation = 0.dp, pressedElevation = 0.dp),
     ) {
-        // 갤러리에서 선택
-        imageUri?.let {
-            if (Build.VERSION.SDK_INT < 28) {
-                bitmap.value = MediaStore.Images
-                        .Media.getBitmap(context.contentResolver, it)
-
-            } else {
-                val source = ImageDecoder
-                        .createSource(context.contentResolver, it)
-                bitmap.value = ImageDecoder.decodeBitmap(source)
-            }
-
-            bitmap.value?.let { btm ->
-                onBitmapChange(btm)
-                Image(bitmap = btm.asImageBitmap(),
-                        contentDescription = null,
-                        modifier = Modifier.size(400.dp))
-            }
+        ProfileImageDropDownMenu(isMenuExpanded, { isMenuExpanded = it }) { imageUri = it }
+        // imageUri -> Bitmap 변경
+        convertToBitmap(context, imageUri) {
+            bitmap = it
+            onBitmapChange(it)
         }
+        bitmap?.let {
+            Image(bitmap = it.asImageBitmap(),
+                    contentDescription = null,
+                    modifier = Modifier.size(400.dp))
+        }
+
         Column(
                 modifier = Modifier
                         .fillMaxWidth()
@@ -280,11 +321,15 @@ fun ProfileImageField(onBitmapChange: (Bitmap) -> Unit) {
 }
 
 @Composable
-fun StartButtonField() {
+fun StartButtonField(joinViewModel: JoinViewModel, joinInfoUiModel: JoinInfoUiModel, idDuplicationCheck: Boolean, passwordSameCheck: Boolean, emailDuplicationCheck: Boolean, allEssentialTermsAgree: Boolean) {
+    var joinEnable by remember {
+        mutableStateOf(false)
+    }
+    joinEnable = idDuplicationCheck && passwordSameCheck && emailDuplicationCheck && allEssentialTermsAgree
     Box(modifier = Modifier.fillMaxWidth()) {
         Button(
-                enabled = false,
-                onClick = { },
+                enabled = joinEnable,
+                onClick = { joinViewModel.join(joinInfoUiModel) },
                 colors = ButtonDefaults.buttonColors(
                         backgroundColor = AppColors.deepPurple1, contentColor = Color.White
                 ),
@@ -378,7 +423,7 @@ fun PreviewTerms() {
     }
 }
 
-//@Preview(showBackground = true)
+@Preview(showBackground = true)
 @Composable
 fun PreviewJoinScreen() {
     FamilyMomentsTheme {
