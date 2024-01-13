@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.familymoments.app.BuildConfig
+import io.familymoments.app.network.JoinService
 import io.familymoments.app.network.LoginService
 import okhttp3.OkHttpClient
 import retrofit2.Retrofit
@@ -28,6 +29,12 @@ object AppModule {
     @Singleton
     fun provideLoginService(retrofit: Retrofit): LoginService {
         return retrofit.create(LoginService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideJoinService(retrofit: Retrofit): JoinService {
+        return retrofit.create(JoinService::class.java)
     }
 
     @Provides
