@@ -6,6 +6,7 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.util.Log
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -30,6 +31,7 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -82,7 +84,7 @@ fun JoinContentScreen(viewModel: JoinViewModel) {
     var birthDay: String
     var nickname: String
     var bitmap: Bitmap
-    var allAgree: CheckedStatus by remember { mutableStateOf(CheckedStatus.UNCHECKED) }
+    var allEssentialTermsAgree: Boolean by remember { mutableStateOf(false) }
 
     Column {
         IdField(viewModel = viewModel) { id = it }
@@ -94,7 +96,7 @@ fun JoinContentScreen(viewModel: JoinViewModel) {
         NicknameField { nickname = it }
         ProfileImageField { bitmap = it }
         Spacer(modifier = Modifier.height(53.dp))
-        TermsField { allAgree = it }
+        TermsField { allEssentialTermsAgree = it }
         StartButtonField()
     }
 }
@@ -182,10 +184,41 @@ fun NicknameField(onTextFieldChange: (String) -> Unit) {
 }
 
 @Composable
+fun ProfileImageDropDownMenu() {
+    val context = LocalContext.current
+    var isMenuExpanded: Boolean by remember { mutableStateOf(false) }
+    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val launcher = rememberLauncherForActivityResult(
+            contract =
+            ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        imageUri = uri
+    }
+    DropdownMenu(expanded = isMenuExpanded,
+            onDismissRequest = { isMenuExpanded = false }) {
+        DropdownMenuItem(onClick = {
+            launcher.launch("image/*")
+            isMenuExpanded = false
+        }) {
+            Text(text = stringResource(R.string.join_select_profile_image_drop_down_menu_gallery))
+        }
+        DropdownMenuItem(onClick = {
+            imageUri = Uri.Builder()
+                    .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+                    .authority(context.resources.getResourcePackageName(R.drawable.default_profile)).appendPath(context.resources.getResourceTypeName(R.drawable.default_profile)).appendPath(context.resources.getResourceEntryName(R.drawable.default_profile))
+                    .build()
+            isMenuExpanded = false
+        }) {
+            Text(text = stringResource(R.string.join_select_profile_image_drop_down_menu_default_image))
+        }
+    }
+}
+
+@Composable
 fun ProfileImageField(onBitmapChange: (Bitmap) -> Unit) {
 
     val context = LocalContext.current
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val imageUri by remember { mutableStateOf<Uri?>(null) }
     var isMenuExpanded: Boolean by remember { mutableStateOf(false) }
     val bitmap = remember {
         mutableStateOf<Bitmap?>(null)
@@ -218,13 +251,6 @@ fun ProfileImageField(onBitmapChange: (Bitmap) -> Unit) {
                         modifier = Modifier.size(400.dp))
             }
         }
-
-        val launcher = rememberLauncherForActivityResult(
-                contract =
-                ActivityResultContracts.GetContent()
-        ) { uri: Uri? ->
-            imageUri = uri
-        }
         Column(
                 modifier = Modifier
                         .fillMaxWidth()
@@ -232,24 +258,6 @@ fun ProfileImageField(onBitmapChange: (Bitmap) -> Unit) {
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            DropdownMenu(expanded = isMenuExpanded,
-                    onDismissRequest = { isMenuExpanded = false }) {
-                DropdownMenuItem(onClick = {
-                    launcher.launch("image/*")
-                    isMenuExpanded = false
-                }) {
-                    Text(text = stringResource(R.string.join_select_profile_image_drop_down_menu_gallery))
-                }
-                DropdownMenuItem(onClick = {
-                    imageUri = Uri.Builder()
-                            .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-                            .authority(context.resources.getResourcePackageName(R.drawable.default_profile)).appendPath(context.resources.getResourceTypeName(R.drawable.default_profile)).appendPath(context.resources.getResourceEntryName(R.drawable.default_profile))
-                            .build()
-                    isMenuExpanded = false
-                }) {
-                    Text(text = stringResource(R.string.join_select_profile_image_drop_down_menu_default_image))
-                }
-            }
             Image(
                     modifier = Modifier.padding(bottom = 2.dp),
                     painter = painterResource(id = R.drawable.ic_select_pic),
@@ -294,27 +302,54 @@ fun StartButtonField() {
 }
 
 @Composable
-fun TermsField(onAllCheckedChange: (CheckedStatus) -> Unit) {
+fun TermItem(description: Int, checked: CheckedStatus, onCheckedChange: (CheckedStatus) -> Unit) {
+    Row {
+        CheckBox(
+                imageResources = listOf(R.drawable.uncheck, R.drawable.check),
+                defaultStatus = checked,
+                onCheckedChange = onCheckedChange
+        )
+        Text(
+                modifier = Modifier.padding(start = 14.dp),
+                text = stringResource(id = description),
+                fontSize = 13.sp
+        )
+    }
+}
 
-    var allEssentialChecked by remember { mutableStateOf(CheckedStatus.UNCHECKED) }
-    var allAgreeChecked by remember { mutableStateOf(CheckedStatus.UNCHECKED) }
-    val terms = listOf(
-            JoinTerm(true, R.string.join_service_term_agree, CheckedStatus.UNCHECKED),
-            JoinTerm(true, R.string.join_identification_term_agree, CheckedStatus.UNCHECKED),
-            JoinTerm(false, R.string.join_marketing_alarm_term_agree, CheckedStatus.UNCHECKED)
-    )
+@Composable
+fun TermsList(list: List<JoinTerm>, onTermCheckedChange: (Int, CheckedStatus) -> Unit, onTermsCheckedChange: (Boolean) -> Unit) {
+    onTermsCheckedChange(list.filter { it.isEssential }.all { it.checkedStatus == CheckedStatus.CHECKED })
+    for (index in list.indices) {
+        TermItem(
+                description = list[index].description,
+                checked = list[index].checkedStatus,
+                onCheckedChange = { onTermCheckedChange(index, it) })
+    }
+}
+
+@Composable
+fun TermsField(onAllEssentialTermsAgree: (Boolean) -> Unit) {
+
+    val terms = remember {
+        mutableStateListOf(
+                JoinTerm(true, R.string.join_service_term_agree, CheckedStatus.UNCHECKED),
+                JoinTerm(true, R.string.join_identification_term_agree, CheckedStatus.UNCHECKED),
+                JoinTerm(false, R.string.join_marketing_alarm_term_agree, CheckedStatus.UNCHECKED)
+        )
+    }
 
     Column {
         Row {
             CheckBox(
                     imageResources = listOf(R.drawable.circle_uncheck, R.drawable.circle_check),
-                    defaultStatus = allAgreeChecked,
                     onCheckedChange = {
-                        allAgreeChecked = it
-                        onAllCheckedChange(allAgreeChecked)
-                    }
+                        for (index in terms.indices) {
+                            terms[index] = terms[index].copy(checkedStatus = it)
+                        }
+                    },
+                    defaultStatus = if (terms.all { it.checkedStatus == CheckedStatus.CHECKED }) CheckedStatus.CHECKED else CheckedStatus.UNCHECKED
             )
-
             Text(
                     modifier = Modifier.padding(start = 14.dp),
                     text = stringResource(R.string.join_all_term_agree),
@@ -322,28 +357,9 @@ fun TermsField(onAllCheckedChange: (CheckedStatus) -> Unit) {
             )
         }
         Divider(modifier = Modifier.padding(vertical = 11.dp), thickness = 1.dp, color = AppColors.grey2)
-        for (term in terms) {
-            Row {
-                CheckBox(
-                        imageResources = listOf(R.drawable.uncheck, R.drawable.check),
-                        defaultStatus = allAgreeChecked,
-                        onCheckedChange = {
-                            term.checkedStatus = it
-                            allAgreeChecked = if (terms.all { it.checkedStatus == CheckedStatus.CHECKED }) {
-                                CheckedStatus.CHECKED
-                            } else {
-                                CheckedStatus.UNCHECKED
-                            }
-                        }
-                )
-
-                Text(
-                        modifier = Modifier.padding(start = 14.dp),
-                        text = stringResource(id = term.description),
-                        fontSize = 13.sp
-                )
-            }
-        }
+        TermsList(list = terms, { index, checkedStatus ->
+            terms[index] = terms[index].copy(checkedStatus = checkedStatus)
+        }) { onAllEssentialTermsAgree(it) }
     }
     JoinTextFieldVerticalSpacer()
 }
