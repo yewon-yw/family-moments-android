@@ -1,5 +1,6 @@
 package io.familymoments.app.ui.screen
 
+import android.annotation.SuppressLint
 import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
@@ -12,6 +13,7 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,6 +31,8 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,9 +46,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -63,17 +69,39 @@ import io.familymoments.app.repository.impl.JoinRepositoryImpl
 import io.familymoments.app.ui.component.CheckBox
 import io.familymoments.app.ui.component.CheckedStatus
 import io.familymoments.app.ui.component.JoinInputField
+import io.familymoments.app.ui.component.AppBarScreen
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.FamilyMomentsTheme
 import io.familymoments.app.viewmodel.JoinViewModel
 import okhttp3.MultipartBody
 
+@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun JoinScreen(viewModel: JoinViewModel) {
-    LazyColumn(modifier = Modifier.padding(horizontal = 20.dp, vertical = 40.dp)) {
-        item {
-            JoinContentScreen(viewModel)
+    AppBarScreen(
+            title = {
+                Text(
+                        text = stringResource(id = R.string.join_activity_app_bar_title),
+                        color = AppColors.deepPurple1,
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Bold
+                )
+            },
+            navigationIcon = {
+                IconButton(onClick = {}) {
+                    Icon(imageVector = ImageVector.vectorResource(R.drawable.back_btn), contentDescription = null, tint = Color.Unspecified)
+                }
+            }
+    ) {
+        LazyColumn(modifier = Modifier
+                .background(color = Color.White)
+                .padding(horizontal = 20.dp)
+        ) {
+            item {
+                JoinContentScreen(viewModel)
+            }
         }
+
     }
 }
 
@@ -127,6 +155,7 @@ fun JoinContentScreen(viewModel: JoinViewModel) {
     }
 
     Column {
+        Spacer(modifier = Modifier.height(40.dp))
         IdField(viewModel = viewModel) { joinInfoUiModel = joinInfoUiModel.copy(id = it) }
         PasswordField(viewModel = viewModel) {
             password = it
@@ -141,6 +170,7 @@ fun JoinContentScreen(viewModel: JoinViewModel) {
         Spacer(modifier = Modifier.height(53.dp))
         TermsField { allEssentialTermsAgree = it }
         StartButtonField(viewModel, joinInfoUiModel, userIdDuplicationCheck, passwordSameCheck, emailDuplicationCheck, allEssentialTermsAgree)
+        Spacer(modifier = Modifier.height(40.dp))
     }
 }
 
@@ -327,7 +357,7 @@ fun ProfileImageField(onBitmapChange: (Bitmap) -> Unit) {
             Image(
                     modifier = Modifier.padding(bottom = 2.dp),
                     painter = painterResource(id = R.drawable.ic_select_pic),
-                    contentDescription = "",
+                    contentDescription = null,
             )
             Text(text = stringResource(R.string.join_select_profile_image_btn), color = Color(0xFFBFBFBF))
         }
@@ -372,17 +402,17 @@ fun StartButtonField(joinViewModel: JoinViewModel, joinInfoUiModel: JoinInfoUiMo
 }
 
 @Composable
-fun TermItem(description: Int, checked: CheckedStatus, onCheckedChange: (CheckedStatus) -> Unit) {
-    Row {
+fun TermItem(imageResources: List<Int>, description: Int, checked: CheckedStatus, fontSize: Int, onCheckedChange: (CheckedStatus) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
         CheckBox(
-                imageResources = listOf(R.drawable.uncheck, R.drawable.check),
+                imageResources = imageResources,
                 defaultStatus = checked,
                 onCheckedChange = onCheckedChange
         )
         Text(
                 modifier = Modifier.padding(start = 14.dp),
                 text = stringResource(id = description),
-                fontSize = 13.sp
+                fontSize = fontSize.sp
         )
     }
 }
@@ -392,8 +422,10 @@ fun TermsList(list: List<JoinTerm>, onTermCheckedChange: (Int, CheckedStatus) ->
     onTermsCheckedChange(list.filter { it.isEssential }.all { it.checkedStatus == CheckedStatus.CHECKED })
     for (index in list.indices) {
         TermItem(
+                imageResources = listOf(R.drawable.uncheck, R.drawable.check),
                 description = list[index].description,
                 checked = list[index].checkedStatus,
+                fontSize = 13,
                 onCheckedChange = { onTermCheckedChange(index, it) })
     }
 }
@@ -410,22 +442,15 @@ fun TermsField(onAllEssentialTermsAgree: (Boolean) -> Unit) {
     }
 
     Column {
-        Row {
-            CheckBox(
-                    imageResources = listOf(R.drawable.circle_uncheck, R.drawable.circle_check),
-                    onCheckedChange = {
-                        for (index in terms.indices) {
-                            terms[index] = terms[index].copy(checkedStatus = it)
-                        }
-                    },
-                    defaultStatus = if (terms.all { it.checkedStatus == CheckedStatus.CHECKED }) CheckedStatus.CHECKED else CheckedStatus.UNCHECKED
-            )
-            Text(
-                    modifier = Modifier.padding(start = 14.dp),
-                    text = stringResource(R.string.join_all_term_agree),
-                    fontSize = 16.sp
-            )
-        }
+        TermItem(
+                imageResources = listOf(R.drawable.circle_uncheck, R.drawable.circle_check), description = R.string.join_all_term_agree,
+                checked = if (terms.all { it.checkedStatus == CheckedStatus.CHECKED }) CheckedStatus.CHECKED else CheckedStatus.UNCHECKED,
+                fontSize = 16,
+                onCheckedChange = {
+                    for (index in terms.indices) {
+                        terms[index] = terms[index].copy(checkedStatus = it)
+                    }
+                })
         Divider(modifier = Modifier.padding(vertical = 11.dp), thickness = 1.dp, color = AppColors.grey2)
         TermsList(list = terms, { index, checkedStatus ->
             terms[index] = terms[index].copy(checkedStatus = checkedStatus)
@@ -438,14 +463,6 @@ fun TermsField(onAllEssentialTermsAgree: (Boolean) -> Unit) {
 @Composable
 fun JoinTextFieldVerticalSpacer() {
     Spacer(modifier = Modifier.height(20.dp))
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewTerms() {
-    FamilyMomentsTheme {
-        TermsField {}
-    }
 }
 
 @Preview(showBackground = true)
