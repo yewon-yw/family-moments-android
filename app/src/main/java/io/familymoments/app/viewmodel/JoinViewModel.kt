@@ -1,7 +1,6 @@
 package io.familymoments.app.viewmodel
 
 import android.graphics.Bitmap
-import android.util.Log
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.model.EmailValidator
 import io.familymoments.app.model.JoinInfoUiModel
@@ -32,11 +31,11 @@ class JoinViewModel @Inject constructor(private val joinRepository: JoinReposito
     private val _emailValidation: MutableStateFlow<Boolean> = MutableStateFlow(false)
     val emailValidation: StateFlow<Boolean> = _emailValidation.asStateFlow()
 
-    private val _userIdDuplicationCheck: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val userIdDuplicationCheck: StateFlow<Boolean> = _userIdDuplicationCheck.asStateFlow()
+    private val _userIdDuplicationCheck: MutableStateFlow<Boolean?> = MutableStateFlow(null)
+    val userIdDuplicationCheck: StateFlow<Boolean?> = _userIdDuplicationCheck.asStateFlow()
 
-    private val _emailDuplicationCheck: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val emailDuplicationCheck: StateFlow<Boolean> = _emailDuplicationCheck.asStateFlow()
+    private val _emailDuplicationCheck: MutableStateFlow<Boolean?> = MutableStateFlow(null)
+    val emailDuplicationCheck: StateFlow<Boolean?> = _emailDuplicationCheck.asStateFlow()
 
     fun checkIdValidation(id: String) {
         _userIdValidation.value = UserIdValidator().isValid(id)

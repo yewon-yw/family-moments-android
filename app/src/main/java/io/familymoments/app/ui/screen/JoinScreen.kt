@@ -8,6 +8,7 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
@@ -30,6 +31,7 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -78,14 +80,35 @@ fun JoinScreen(viewModel: JoinViewModel) {
 
 @Composable
 fun JoinContentScreen(viewModel: JoinViewModel) {
-
+    val context = LocalContext.current
     var password: String by remember { mutableStateOf("") }
     val bitmap: Bitmap = BitmapFactory.decodeResource(LocalContext.current.resources, R.drawable.default_profile)
     var allEssentialTermsAgree by remember {
         mutableStateOf(false)
     }
-    val idDuplicationCheck = viewModel.userIdDuplicationCheck.collectAsState()
-    val emailDuplicationCheck = viewModel.emailDuplicationCheck.collectAsState()
+    var userIdDuplicationCheck by remember { mutableStateOf(false) }
+    var emailDuplicationCheck by remember { mutableStateOf(false) }
+    LaunchedEffect(true) {
+        viewModel.userIdDuplicationCheck.collect {
+            userIdDuplicationCheck = it ?: false
+            if (it == true) {
+                Toast.makeText(context, context.getText(R.string.join_check_user_id_duplication_success), Toast.LENGTH_SHORT).show()
+            } else if (it == false) {
+                Toast.makeText(context, context.getText(R.string.join_check_user_id_duplication_fail), Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    LaunchedEffect(true) {
+        viewModel.emailDuplicationCheck.collect {
+            emailDuplicationCheck = it ?: false
+            if (it == true) {
+                Toast.makeText(context, context.getText(R.string.join_check_email_duplication_success), Toast.LENGTH_SHORT).show()
+            } else if (it == false) {
+                Toast.makeText(context, context.getText(R.string.join_check_email_duplication_fail), Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     var passwordSameCheck by remember {
         mutableStateOf(false)
     }
@@ -117,7 +140,7 @@ fun JoinContentScreen(viewModel: JoinViewModel) {
         ProfileImageField { joinInfoUiModel = joinInfoUiModel.copy(bitmap = it) }
         Spacer(modifier = Modifier.height(53.dp))
         TermsField { allEssentialTermsAgree = it }
-        StartButtonField(viewModel, joinInfoUiModel, idDuplicationCheck.value, passwordSameCheck, emailDuplicationCheck.value, allEssentialTermsAgree)
+        StartButtonField(viewModel, joinInfoUiModel, userIdDuplicationCheck, passwordSameCheck, emailDuplicationCheck, allEssentialTermsAgree)
     }
 }
 
@@ -129,7 +152,9 @@ fun IdField(viewModel: JoinViewModel, onTextFieldChange: (String) -> Unit) {
             label = stringResource(R.string.join_id_field_label),
             buttonExist = true,
             buttonLabel = stringResource(R.string.join_check_duplication_btn),
-            onButtonClick = { viewModel.checkIdDuplicate(it.text) },
+            onButtonClick = {
+                viewModel.checkIdDuplicate(it.text)
+            },
             onTextFieldChange = {
                 onTextFieldChange(it)
                 viewModel.checkIdValidation(it)

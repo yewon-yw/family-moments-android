@@ -41,4 +41,8 @@
     <string name="join_select_profile_image_drop_down_menu_default_image">기본 이미지로 하기</string>
     <string name="join_select_profile_image_drop_down_menu_gallery">갤러리에서 선택</string>
     <string name="join_select_profile_image_title">프로필 사진 선택</string>
+    <string name="join_check_user_id_duplication_success">사용할 수 있는 아이디 입니다.</string>
+    <string name="join_check_user_id_duplication_fail">사용할 수 없는 아이디 입니다.</string>
+    <string name="join_check_email_duplication_success">사용할 수 있는 이메일 입니다.</string>
+    <string name="join_check_email_duplication_fail">사용할 수 없는 이메일 입니다.</string>
 </resources>
