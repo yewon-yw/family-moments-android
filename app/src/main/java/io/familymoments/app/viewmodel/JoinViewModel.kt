@@ -14,11 +14,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
-import java.io.ByteArrayOutputStream
+import okhttp3.RequestBody.Companion.asRequestBody
 import java.io.File
 import java.io.FileOutputStream
-import java.io.IOException
 import javax.inject.Inject
 
 @HiltViewModel
@@ -66,32 +64,22 @@ class JoinViewModel @Inject constructor(private val joinRepository: JoinReposito
                 onFailure = { _emailDuplicationCheck.value = false })
     }
 
-    fun join(joinInfoUiModel: JoinInfoUiModel){
-        val profileImage:MultipartBody.Part = bitmapToMultipartBodyPart(joinInfoUiModel.bitmap)
+    fun join(joinInfoUiModel: JoinInfoUiModel) {
+        val imageFile = bitmapToFile(joinInfoUiModel.bitmap)
+        val imageRequestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
+        val profileImgPart = MultipartBody.Part.createFormData("profileImg", imageFile.name, imageRequestBody)
         async(
-                operation = { joinRepository.join(profileImage, joinInfoUiModel.toRequest()) },
-                onSuccess = { Log.d("HKHK", "회원가입 성공!") },
-                onFailure = { Log.d("HKHK", "회원가입 실패! ${it.message}")})
+                operation = { joinRepository.join(profileImgPart, joinInfoUiModel.toRequest()) },
+                onSuccess = { },
+                onFailure = { })
     }
 
-    @Throws(IOException::class)
-    fun bitmapToFile(bitmap: Bitmap, file: File): File {
-        file.createNewFile()
-        val byteArrayOutputStream = ByteArrayOutputStream()
-        bitmap.compress(Bitmap.CompressFormat.PNG, 0, byteArrayOutputStream)
-        val byteArray = byteArrayOutputStream.toByteArray()
-
-        val fileOutputStream = FileOutputStream(file)
-        fileOutputStream.write(byteArray)
-        fileOutputStream.flush()
-        fileOutputStream.close()
-
+    private fun bitmapToFile(bitmap: Bitmap): File {
+        val file = File.createTempFile("profile_image", ".jpg") // 임시 파일 생성
+        val outputStream = FileOutputStream(file)
+        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+        outputStream.flush()
+        outputStream.close()
         return file
-    }
-
-    private fun bitmapToMultipartBodyPart(bitmap: Bitmap): MultipartBody.Part {
-        val file = File.createTempFile("temp", null) // 임시 파일 생성
-        val requestBody: RequestBody = RequestBody.create("image/*".toMediaTypeOrNull(), bitmapToFile(bitmap, file))
-        return MultipartBody.Part.createFormData("image", file.name, requestBody)
     }
 }
