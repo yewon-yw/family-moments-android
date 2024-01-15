@@ -13,11 +13,11 @@ import io.familymoments.app.viewmodel.LoginViewModel
 
 class LoginActivity : BaseActivity<LoginViewModel>(LoginViewModel::class) {
     @OptIn(ExperimentalMaterial3Api::class)
-    override val screen: @Composable () -> Unit = { LoginScreen(viewModel) }
+    override val screen:   @Composable () -> Unit = { LoginScreen(viewModel) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            FamilyMomentsTheme { screen }
+            FamilyMomentsTheme { screen() }
         }
     }
 }

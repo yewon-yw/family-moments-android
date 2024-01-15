@@ -11,14 +11,20 @@ import kotlinx.coroutines.flow.flow
 import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
-    private val loginService: LoginService
+        private val loginService: LoginService,
 ) : UserRepository {
     override suspend fun loginUser(
-        username: String,
-        password: String
+            username: String,
+            password: String,
     ): Flow<Resource<LoginResponse>> {
         return flow {
-            emit(Resource.Success(loginService.loginUser(LoginRequest(username, password))))
+            val result = loginService.loginUser(LoginRequest(username, password))
+            if (result.isSuccess) {
+                emit(Resource.Success(result))
+            } else {
+                emit(Resource.Fail(Throwable(result.message)))
+            }
+
         }.catch { e ->
             e.printStackTrace()
         }
