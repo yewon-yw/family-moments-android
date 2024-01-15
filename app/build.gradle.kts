@@ -92,6 +92,8 @@ dependencies {
     implementation(libs.material)
     implementation(libs.constraintlayout)
     implementation(platform(libs.compose.bom))
+    implementation(platform(libs.compose.bom))
+    androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(platform(libs.compose.bom))
     debugImplementation(libs.compose.ui.tooling.preview)
     implementation(libs.lifecycle.runtime.ktx)
@@ -104,6 +106,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.room.runtime)
+    implementation("androidx.core:core-splashscreen:1.1.0-alpha02")
     kapt(libs.room.compiler)
 
     testImplementation(libs.mockk)

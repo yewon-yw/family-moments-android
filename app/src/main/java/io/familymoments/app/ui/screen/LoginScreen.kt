@@ -1,6 +1,7 @@
 package io.familymoments.app.ui.screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -9,12 +10,14 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -30,8 +33,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -54,7 +59,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
 
     val loginUiState: State<LoginUiState> = viewModel.loginUiState.collectAsState()
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(modifier = Modifier.background(Color.White), horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.height(86.dp))
         LoginLogo()
         Spacer(modifier = Modifier.height(49.dp))
@@ -68,20 +73,23 @@ fun LoginScreen(viewModel: LoginViewModel) {
 @Composable
 fun LoginLogo() {
     Row {
-        Image(
-                painter = painterResource(id = R.drawable.ic_splash), contentDescription = "앱 로고"
+        Icon(
+            modifier = Modifier.size(110.dp),
+            imageVector = ImageVector.vectorResource(R.drawable.app_icon),
+            tint = Color.Unspecified,
+            contentDescription = null
         )
-        Column(modifier = Modifier.padding(start = 5.dp)) {
+        Column(modifier = Modifier.padding(start = 10.dp)) {
             Text(
-                    text = stringResource(id = R.string.login_description_01),
-                    fontSize = 24.sp,
-                    color = AppColors.deepPurple1,
-                    style = MaterialTheme.typography.headlineMedium
+                text = stringResource(id = R.string.login_description_01),
+                fontSize = 24.sp,
+                color = AppColors.deepPurple1,
+                style = MaterialTheme.typography.headlineMedium
             )
             Text(
-                    text = stringResource(id = R.string.login_description_02),
-                    fontSize = 13.sp,
-                    color = AppColors.grey2
+                text = stringResource(id = R.string.login_description_02),
+                fontSize = 13.sp,
+                color = AppColors.grey2
             )
         }
     }
@@ -102,22 +110,22 @@ fun LoginForm(viewModel: LoginViewModel, loginUiState: LoginUiState) {
         Spacer(modifier = Modifier.height(37.dp))
         Surface(shape = RoundedCornerShape(8.dp), modifier = Modifier.fillMaxWidth()) {
             Button(
-                    modifier = Modifier
-                            .padding(vertical = 18.dp),
-                    onClick = {
-                        viewModel.loginUser(id.text, password.text)
-                    },
-                    colors = ButtonDefaults.buttonColors(
-                            containerColor = AppColors.deepPurple1,
-                            contentColor = Color.White,
-                            disabledContainerColor = Color.Gray,
-                            disabledContentColor = Color.White,
-                    )
+                modifier = Modifier
+                    .padding(vertical = 18.dp),
+                onClick = {
+                    viewModel.loginUser(id.text, password.text)
+                },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AppColors.deepPurple1,
+                    contentColor = Color.White,
+                    disabledContainerColor = Color.Gray,
+                    disabledContentColor = Color.White,
+                )
             ) {
                 Text(
-                        text = stringResource(id = R.string.login_login),
-                        fontSize = 18.sp,
-                        modifier = Modifier.padding(vertical = 20.dp)
+                    text = stringResource(id = R.string.login_login),
+                    fontSize = 18.sp,
+                    modifier = Modifier.padding(vertical = 20.dp)
                 )
             }
 
@@ -130,20 +138,20 @@ fun LoginFormRoundedCornerTextField(label: String, onValueChanged: (TextFieldVal
     var value by remember { mutableStateOf(TextFieldValue()) }
     Surface(shape = RoundedCornerShape(8.dp), modifier = Modifier.fillMaxWidth()) {
         TextField(
-                value = value,
-                onValueChange = {
-                    value = it
-                    onValueChanged(value)
-                },
-                label = { Text(label, color = Color.LightGray) },
-                colors = TextFieldDefaults.colors(
-                        focusedContainerColor = AppColors.pink4,
-                        unfocusedContainerColor = AppColors.pink4,
-                        disabledContainerColor = AppColors.pink4,
-                        focusedIndicatorColor = Color.Transparent,
-                        unfocusedIndicatorColor = Color.Transparent,
-                        disabledIndicatorColor = Color.Transparent
-                )
+            value = value,
+            onValueChange = {
+                value = it
+                onValueChanged(value)
+            },
+            label = { Text(label, color = Color.LightGray) },
+            colors = TextFieldDefaults.colors(
+                focusedContainerColor = AppColors.pink4,
+                unfocusedContainerColor = AppColors.pink4,
+                disabledContainerColor = AppColors.pink4,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent
+            )
         )
     }
 }
@@ -152,11 +160,11 @@ fun LoginFormRoundedCornerTextField(label: String, onValueChanged: (TextFieldVal
 fun ErrorText(loginUiState: LoginUiState) {
     if (loginUiState.isSuccess == false) {
         Text(
-                modifier = Modifier.padding(top = 10.dp),
-                text = loginUiState.errorMessage ?: "로그인 실패",
-                color = AppColors.red2,
-                fontSize = 13.sp,
-                fontWeight = FontWeight(700)
+            modifier = Modifier.padding(top = 10.dp),
+            text = loginUiState.errorMessage ?: "로그인 실패",
+            color = AppColors.red2,
+            fontSize = 13.sp,
+            fontWeight = FontWeight(700)
         )
     }
 }
@@ -165,38 +173,38 @@ fun ErrorText(loginUiState: LoginUiState) {
 fun LoginOption() {
     Row(modifier = Modifier.height(IntrinsicSize.Min)) {
         Text(
-                text = stringResource(id = R.string.login_forgot_id),
-                fontSize = 13.sp,
-                color = AppColors.grey2,
-                fontWeight = FontWeight.Bold
+            text = stringResource(id = R.string.login_forgot_id),
+            fontSize = 13.sp,
+            color = AppColors.grey2,
+            fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.width(8.dp))
         Divider(
-                color = AppColors.grey2,
-                modifier = Modifier
-                        .fillMaxHeight()
-                        .width(1.dp)
+            color = AppColors.grey2,
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(1.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-                text = stringResource(id = R.string.login_forgot_pw),
-                fontSize = 13.sp,
-                color = AppColors.grey2,
-                fontWeight = FontWeight.Bold
+            text = stringResource(id = R.string.login_forgot_pw),
+            fontSize = 13.sp,
+            color = AppColors.grey2,
+            fontWeight = FontWeight.Bold
         )
         Spacer(modifier = Modifier.width(8.dp))
         Divider(
-                color = AppColors.grey2,
-                modifier = Modifier
-                        .fillMaxHeight()
-                        .width(1.dp)
+            color = AppColors.grey2,
+            modifier = Modifier
+                .fillMaxHeight()
+                .width(1.dp)
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-                text = stringResource(id = R.string.login_signup),
-                fontSize = 13.sp,
-                color = AppColors.grey2,
-                fontWeight = FontWeight.Bold
+            text = stringResource(id = R.string.login_signup),
+            fontSize = 13.sp,
+            color = AppColors.grey2,
+            fontWeight = FontWeight.Bold
         )
     }
 }
@@ -204,10 +212,10 @@ fun LoginOption() {
 @Composable
 fun SocialLogin() {
     Text(
-            text = "SNS 계정으로 로그인",
-            color = AppColors.grey2,
-            fontSize = 13.sp,
-            fontWeight = FontWeight.Bold
+        text = "SNS 계정으로 로그인",
+        color = AppColors.grey2,
+        fontSize = 13.sp,
+        fontWeight = FontWeight.Bold
     )
     Spacer(modifier = Modifier.height(30.dp))
     Row(modifier = Modifier.height(36.dp)) {
