@@ -56,20 +56,20 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.familymoments.app.R
-import io.familymoments.app.model.CheckEmailRequest
-import io.familymoments.app.model.CheckEmailResponse
-import io.familymoments.app.model.CheckIdRequest
-import io.familymoments.app.model.CheckIdResponse
-import io.familymoments.app.model.JoinInfoUiModel
-import io.familymoments.app.model.JoinRequest
-import io.familymoments.app.model.JoinResponse
-import io.familymoments.app.model.JoinTerm
+import io.familymoments.app.model.join.data.request.CheckEmailRequest
+import io.familymoments.app.model.join.data.request.CheckIdRequest
+import io.familymoments.app.model.join.data.request.JoinRequest
+import io.familymoments.app.model.join.data.response.CheckEmailResponse
+import io.familymoments.app.model.join.data.response.CheckIdResponse
+import io.familymoments.app.model.join.data.response.JoinResponse
+import io.familymoments.app.model.join.ui.JoinInfoUiModel
+import io.familymoments.app.model.join.ui.JoinTermUiModel
 import io.familymoments.app.network.JoinService
 import io.familymoments.app.repository.impl.JoinRepositoryImpl
+import io.familymoments.app.ui.component.AppBarScreen
 import io.familymoments.app.ui.component.CheckBox
 import io.familymoments.app.ui.component.CheckedStatus
 import io.familymoments.app.ui.component.JoinInputField
-import io.familymoments.app.ui.component.AppBarScreen
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.FamilyMomentsTheme
 import io.familymoments.app.viewmodel.JoinViewModel
@@ -94,8 +94,8 @@ fun JoinScreen(viewModel: JoinViewModel) {
             }
     ) {
         LazyColumn(modifier = Modifier
-                .background(color = Color.White)
-                .padding(horizontal = 20.dp)
+            .background(color = Color.White)
+            .padding(horizontal = 20.dp)
         ) {
             item {
                 JoinContentScreen(viewModel)
@@ -183,7 +183,7 @@ fun IdField(viewModel: JoinViewModel, onTextFieldChange: (String) -> Unit) {
             buttonExist = true,
             buttonLabel = stringResource(R.string.join_check_duplication_btn),
             onButtonClick = {
-                viewModel.checkIdDuplicate(it.text)
+                viewModel.checkIdDuplication(it.text)
             },
             onTextFieldChange = {
                 onTextFieldChange(it)
@@ -237,17 +237,19 @@ fun NameField(onTextFieldChange: (String) -> Unit) {
 @Composable
 fun EmailField(viewModel: JoinViewModel, onTextFieldChange: (String) -> Unit) {
     val emailValidation = viewModel.emailValidation.collectAsState()
-    JoinInputField(title = stringResource(R.string.join_email_field_title),
-            label = stringResource(R.string.join_email_field_label),
-            buttonExist = true,
-            onButtonClick = { viewModel.checkEmailDuplicate(it.text) },
-            buttonLabel = stringResource(R.string.join_check_duplication_btn),
-            onTextFieldChange = {
-                onTextFieldChange(it)
-                viewModel.checkEmailValidation(it)
-            },
-            warningText = stringResource(R.string.join_email_validation_warning),
-            validation = emailValidation.value)
+    JoinInputField(
+        title = stringResource(R.string.join_email_field_title),
+        label = stringResource(R.string.join_email_field_label),
+        buttonExist = true,
+        onButtonClick = { viewModel.checkEmailDuplication(it.text) },
+        buttonLabel = stringResource(R.string.join_check_duplication_btn),
+        onTextFieldChange = {
+            onTextFieldChange(it)
+            viewModel.checkEmailValidation(it)
+        },
+        warningText = stringResource(R.string.join_email_validation_warning),
+        validation = emailValidation.value
+    )
     JoinTextFieldVerticalSpacer()
 }
 
@@ -349,8 +351,8 @@ fun ProfileImageField(onBitmapChange: (Bitmap) -> Unit) {
 
         Column(
                 modifier = Modifier
-                        .fillMaxWidth()
-                        .height(115.dp),
+                    .fillMaxWidth()
+                    .height(115.dp),
                 verticalArrangement = Arrangement.Center,
                 horizontalAlignment = Alignment.CenterHorizontally,
         ) {
@@ -367,10 +369,10 @@ fun ProfileImageField(onBitmapChange: (Bitmap) -> Unit) {
             text = stringResource(R.string.join_select_profile_image_description),
             color = Color(0xFFA9A9A9),
             modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentSize(
-                            Alignment.Center,
-                    ),
+                .fillMaxWidth()
+                .wrapContentSize(
+                    Alignment.Center,
+                ),
     )
     JoinTextFieldVerticalSpacer()
 }
@@ -418,15 +420,19 @@ fun TermItem(imageResources: List<Int>, description: Int, checked: CheckedStatus
 }
 
 @Composable
-fun TermsList(list: List<JoinTerm>, onTermCheckedChange: (Int, CheckedStatus) -> Unit, onTermsCheckedChange: (Boolean) -> Unit) {
+fun TermsList(
+    list: List<JoinTermUiModel>,
+    onTermCheckedChange: (Int, CheckedStatus) -> Unit,
+    onTermsCheckedChange: (Boolean) -> Unit
+) {
     onTermsCheckedChange(list.filter { it.isEssential }.all { it.checkedStatus == CheckedStatus.CHECKED })
     for (index in list.indices) {
         TermItem(
-                imageResources = listOf(R.drawable.uncheck, R.drawable.check),
-                description = list[index].description,
-                checked = list[index].checkedStatus,
-                fontSize = 13,
-                onCheckedChange = { onTermCheckedChange(index, it) })
+            imageResources = listOf(R.drawable.uncheck, R.drawable.check),
+            description = list[index].description,
+            checked = list[index].checkedStatus,
+            fontSize = 13,
+            onCheckedChange = { onTermCheckedChange(index, it) })
     }
 }
 
@@ -435,9 +441,9 @@ fun TermsField(onAllEssentialTermsAgree: (Boolean) -> Unit) {
 
     val terms = remember {
         mutableStateListOf(
-                JoinTerm(true, R.string.join_service_term_agree, CheckedStatus.UNCHECKED),
-                JoinTerm(true, R.string.join_identification_term_agree, CheckedStatus.UNCHECKED),
-                JoinTerm(false, R.string.join_marketing_alarm_term_agree, CheckedStatus.UNCHECKED)
+            JoinTermUiModel(true, R.string.join_service_term_agree, CheckedStatus.UNCHECKED),
+            JoinTermUiModel(true, R.string.join_identification_term_agree, CheckedStatus.UNCHECKED),
+            JoinTermUiModel(false, R.string.join_marketing_alarm_term_agree, CheckedStatus.UNCHECKED)
         )
     }
 

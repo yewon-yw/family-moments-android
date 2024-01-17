@@ -1,4 +1,4 @@
-package io.familymoments.app.model
+package io.familymoments.app.model.join
 
 class PasswordValidator {
     fun isValid(password: String): Boolean {

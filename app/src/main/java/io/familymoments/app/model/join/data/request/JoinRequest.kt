@@ -1,7 +1,5 @@
-package io.familymoments.app.model
+package io.familymoments.app.model.join.data.request
 
-data class CheckIdRequest(val id: String)
-data class CheckEmailRequest(val email:String)
 data class JoinRequest(
         val id:String,
         val passwordA:String,

@@ -1,8 +1,8 @@
 package io.familymoments.app.repository
-import io.familymoments.app.model.CheckEmailResponse
-import io.familymoments.app.model.CheckIdResponse
-import io.familymoments.app.model.JoinRequest
-import io.familymoments.app.model.JoinResponse
+import io.familymoments.app.model.join.data.request.JoinRequest
+import io.familymoments.app.model.join.data.response.CheckEmailResponse
+import io.familymoments.app.model.join.data.response.CheckIdResponse
+import io.familymoments.app.model.join.data.response.JoinResponse
 import io.familymoments.app.network.Resource
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody

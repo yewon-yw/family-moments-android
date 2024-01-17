@@ -2,11 +2,11 @@ package io.familymoments.app.viewmodel
 
 import android.graphics.Bitmap
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.familymoments.app.model.EmailValidator
-import io.familymoments.app.model.JoinInfoUiModel
-import io.familymoments.app.model.PasswordValidator
-import io.familymoments.app.model.UserIdValidator
-import io.familymoments.app.model.toRequest
+import io.familymoments.app.model.join.EmailValidator
+import io.familymoments.app.model.join.PasswordValidator
+import io.familymoments.app.model.join.UserIdValidator
+import io.familymoments.app.model.join.data.mapper.toRequest
+import io.familymoments.app.model.join.ui.JoinInfoUiModel
 import io.familymoments.app.repository.JoinRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -49,18 +49,18 @@ class JoinViewModel @Inject constructor(private val joinRepository: JoinReposito
         _emailValidation.value = EmailValidator().isValid(email)
     }
 
-    fun checkIdDuplicate(id: String) {
+    fun checkIdDuplication(id: String) {
         async(
-                operation = { joinRepository.checkId(id) },
-                onSuccess = { _userIdDuplicationCheck.value = true },
-                onFailure = { _userIdDuplicationCheck.value = false })
+            operation = { joinRepository.checkId(id) },
+            onSuccess = { _userIdDuplicationCheck.value = true },
+            onFailure = { _userIdDuplicationCheck.value = false })
     }
 
-    fun checkEmailDuplicate(email: String) {
+    fun checkEmailDuplication(email: String) {
         async(
-                operation = { joinRepository.checkEmail(email) },
-                onSuccess = { _emailDuplicationCheck.value = true },
-                onFailure = { _emailDuplicationCheck.value = false })
+            operation = { joinRepository.checkEmail(email) },
+            onSuccess = { _emailDuplicationCheck.value = true },
+            onFailure = { _emailDuplicationCheck.value = false })
     }
 
     fun join(joinInfoUiModel: JoinInfoUiModel) {

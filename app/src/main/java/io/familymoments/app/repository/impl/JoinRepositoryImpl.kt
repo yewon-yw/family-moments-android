@@ -1,11 +1,11 @@
 package io.familymoments.app.repository.impl
 
-import io.familymoments.app.model.CheckEmailRequest
-import io.familymoments.app.model.CheckEmailResponse
-import io.familymoments.app.model.CheckIdRequest
-import io.familymoments.app.model.CheckIdResponse
-import io.familymoments.app.model.JoinRequest
-import io.familymoments.app.model.JoinResponse
+import io.familymoments.app.model.join.data.request.CheckEmailRequest
+import io.familymoments.app.model.join.data.request.CheckIdRequest
+import io.familymoments.app.model.join.data.request.JoinRequest
+import io.familymoments.app.model.join.data.response.CheckEmailResponse
+import io.familymoments.app.model.join.data.response.CheckIdResponse
+import io.familymoments.app.model.join.data.response.JoinResponse
 import io.familymoments.app.network.JoinService
 import io.familymoments.app.network.Resource
 import io.familymoments.app.repository.JoinRepository
