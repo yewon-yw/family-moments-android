@@ -16,10 +16,11 @@ import okhttp3.MultipartBody
 import javax.inject.Inject
 
 class JoinRepositoryImpl @Inject constructor(
-        private val joinService: JoinService,
+    private val joinService: JoinService,
 ) : JoinRepository {
     override suspend fun checkId(id: String): Flow<Resource<CheckIdResponse>> {
         return flow {
+            emit(Resource.Loading)
 
             val result = joinService.checkId(CheckIdRequest(id))
 
@@ -35,6 +36,7 @@ class JoinRepositoryImpl @Inject constructor(
 
     override suspend fun checkEmail(email: String): Flow<Resource<CheckEmailResponse>> {
         return flow {
+            emit(Resource.Loading)
 
             val result = joinService.checkEmail(CheckEmailRequest(email))
 
@@ -50,6 +52,8 @@ class JoinRepositoryImpl @Inject constructor(
 
     override suspend fun join(profileImg: MultipartBody.Part, joinRequest: JoinRequest): Flow<Resource<JoinResponse>> {
         return flow {
+            emit(Resource.Loading)
+
             val result = joinService.join(profileImg, joinRequest)
 
             if (result.isSuccess) {
