@@ -10,7 +10,9 @@ import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
 import android.widget.Toast
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -35,7 +37,6 @@ import androidx.compose.material.Icon
 import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
@@ -70,6 +71,7 @@ import io.familymoments.app.ui.component.AppBarScreen
 import io.familymoments.app.ui.component.CheckBox
 import io.familymoments.app.ui.component.CheckedStatus
 import io.familymoments.app.ui.component.JoinInputField
+import io.familymoments.app.ui.component.LoadingIndicator
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.FamilyMomentsTheme
 import io.familymoments.app.viewmodel.JoinViewModel
@@ -79,23 +81,28 @@ import okhttp3.MultipartBody
 @Composable
 fun JoinScreen(viewModel: JoinViewModel) {
     AppBarScreen(
-            title = {
-                Text(
-                        text = stringResource(id = R.string.join_activity_app_bar_title),
-                        color = AppColors.deepPurple1,
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Bold
+        title = {
+            Text(
+                text = stringResource(id = R.string.join_activity_app_bar_title),
+                color = AppColors.deepPurple1,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Bold
+            )
+        },
+        navigationIcon = {
+            IconButton(onClick = {}) {
+                Icon(
+                    imageVector = ImageVector.vectorResource(R.drawable.back_btn),
+                    contentDescription = null,
+                    tint = Color.Unspecified
                 )
-            },
-            navigationIcon = {
-                IconButton(onClick = {}) {
-                    Icon(imageVector = ImageVector.vectorResource(R.drawable.back_btn), contentDescription = null, tint = Color.Unspecified)
-                }
             }
+        }
     ) {
-        LazyColumn(modifier = Modifier
-            .background(color = Color.White)
-            .padding(horizontal = 20.dp)
+        LazyColumn(
+            modifier = Modifier
+                .background(color = Color.White)
+                .padding(horizontal = 20.dp)
         ) {
             item {
                 JoinContentScreen(viewModel)
@@ -116,24 +123,33 @@ fun JoinContentScreen(viewModel: JoinViewModel) {
     }
     var userIdDuplicationCheck by remember { mutableStateOf(false) }
     var emailDuplicationCheck by remember { mutableStateOf(false) }
-    LaunchedEffect(true) {
-        viewModel.userIdDuplicationCheck.collect {
-            userIdDuplicationCheck = it ?: false
-            if (it == true) {
-                Toast.makeText(context, context.getText(R.string.join_check_user_id_duplication_success), Toast.LENGTH_SHORT).show()
-            } else if (it == false) {
-                Toast.makeText(context, context.getText(R.string.join_check_user_id_duplication_fail), Toast.LENGTH_SHORT).show()
-            }
+
+    viewModel.isLoading.collectAsState().value.let {
+        LoadingIndicator(isLoading = it)
+    }
+
+    viewModel.userIdDuplicationCheck.collectAsState().value.let {
+        userIdDuplicationCheck = it ?: false
+        if (it == true) {
+            Toast.makeText(
+                context,
+                context.getText(R.string.join_check_user_id_duplication_success),
+                Toast.LENGTH_SHORT
+            ).show()
+        } else if (it == false) {
+            Toast.makeText(context, context.getText(R.string.join_check_user_id_duplication_fail), Toast.LENGTH_SHORT)
+                .show()
         }
     }
-    LaunchedEffect(true) {
-        viewModel.emailDuplicationCheck.collect {
-            emailDuplicationCheck = it ?: false
-            if (it == true) {
-                Toast.makeText(context, context.getText(R.string.join_check_email_duplication_success), Toast.LENGTH_SHORT).show()
-            } else if (it == false) {
-                Toast.makeText(context, context.getText(R.string.join_check_email_duplication_fail), Toast.LENGTH_SHORT).show()
-            }
+
+    viewModel.emailDuplicationCheck.collectAsState().value.let {
+        emailDuplicationCheck = it ?: false
+        if (it == true) {
+            Toast.makeText(context, context.getText(R.string.join_check_email_duplication_success), Toast.LENGTH_SHORT)
+                .show()
+        } else if (it == false) {
+            Toast.makeText(context, context.getText(R.string.join_check_email_duplication_fail), Toast.LENGTH_SHORT)
+                .show()
         }
     }
 
@@ -142,15 +158,15 @@ fun JoinContentScreen(viewModel: JoinViewModel) {
     }
     var joinInfoUiModel: JoinInfoUiModel by remember {
         mutableStateOf(
-                JoinInfoUiModel(
-                        id = "id",
-                        name = "name",
-                        password = "password",
-                        email = "email",
-                        birthDay = "birthDay",
-                        nickname = "nickname",
-                        bitmap = bitmap
-                )
+            JoinInfoUiModel(
+                id = "id",
+                name = "name",
+                password = "password",
+                email = "email",
+                birthDay = "birthDay",
+                nickname = "nickname",
+                bitmap = bitmap
+            )
         )
     }
 
@@ -169,29 +185,35 @@ fun JoinContentScreen(viewModel: JoinViewModel) {
         ProfileImageField { joinInfoUiModel = joinInfoUiModel.copy(bitmap = it) }
         Spacer(modifier = Modifier.height(53.dp))
         TermsField { allEssentialTermsAgree = it }
-        StartButtonField(viewModel, joinInfoUiModel, userIdDuplicationCheck, passwordSameCheck, emailDuplicationCheck, allEssentialTermsAgree)
+        StartButtonField(
+            viewModel,
+            joinInfoUiModel,
+            userIdDuplicationCheck,
+            passwordSameCheck,
+            emailDuplicationCheck,
+            allEssentialTermsAgree
+        )
         Spacer(modifier = Modifier.height(40.dp))
     }
 }
-
 
 @Composable
 fun IdField(viewModel: JoinViewModel, onTextFieldChange: (String) -> Unit) {
     val userIdValidation = viewModel.userIdValidation.collectAsState()
     JoinInputField(title = stringResource(R.string.join_id_field_title),
-            label = stringResource(R.string.join_id_field_label),
-            buttonExist = true,
-            buttonLabel = stringResource(R.string.join_check_duplication_btn),
-            onButtonClick = {
-                viewModel.checkIdDuplication(it.text)
-            },
-            onTextFieldChange = {
-                onTextFieldChange(it)
-                viewModel.checkIdValidation(it)
-            },
-            warningText = stringResource(R.string.join_id_validation_warning),
-            validation = userIdValidation.value,
-            checkValidation = { }
+        label = stringResource(R.string.join_id_field_label),
+        buttonExist = true,
+        buttonLabel = stringResource(R.string.join_check_duplication_btn),
+        onButtonClick = {
+            viewModel.checkIdDuplication(it.text)
+        },
+        onTextFieldChange = {
+            onTextFieldChange(it)
+            viewModel.checkIdValidation(it)
+        },
+        warningText = stringResource(R.string.join_id_validation_warning),
+        validation = userIdValidation.value,
+        checkValidation = { }
     )
     JoinTextFieldVerticalSpacer()
 }
@@ -200,14 +222,14 @@ fun IdField(viewModel: JoinViewModel, onTextFieldChange: (String) -> Unit) {
 fun PasswordField(viewModel: JoinViewModel, onTextFieldChange: (String) -> Unit) {
     val passwordValidation = viewModel.passwordValidation.collectAsState()
     JoinInputField(
-            title = stringResource(R.string.join_password_field_title),
-            label = stringResource(R.string.join_password_field_label),
-            warningText = stringResource(R.string.join_password_validation_warning),
-            onTextFieldChange = {
-                onTextFieldChange(it)
-                viewModel.checkPasswordValidation(it)
-            },
-            validation = passwordValidation.value
+        title = stringResource(R.string.join_password_field_title),
+        label = stringResource(R.string.join_password_field_label),
+        warningText = stringResource(R.string.join_password_validation_warning),
+        onTextFieldChange = {
+            onTextFieldChange(it)
+            viewModel.checkPasswordValidation(it)
+        },
+        validation = passwordValidation.value
     )
     JoinTextFieldVerticalSpacer()
 }
@@ -216,21 +238,24 @@ fun PasswordField(viewModel: JoinViewModel, onTextFieldChange: (String) -> Unit)
 fun PasswordCheckField(password: String, passwordSameCheck: (Boolean) -> Unit) {
     var currentPassword: String by remember { mutableStateOf("") }
     JoinInputField(
-            title = stringResource(R.string.join_password_check_field_title),
-            label = stringResource(R.string.join_password_check_field_label),
-            warningText = stringResource(R.string.join_password_check_validation_warning),
-            onTextFieldChange = {
-                currentPassword = it
-                passwordSameCheck(currentPassword == password)
-            },
-            validation = currentPassword == password
+        title = stringResource(R.string.join_password_check_field_title),
+        label = stringResource(R.string.join_password_check_field_label),
+        warningText = stringResource(R.string.join_password_check_validation_warning),
+        onTextFieldChange = {
+            currentPassword = it
+            passwordSameCheck(currentPassword == password)
+        },
+        validation = currentPassword == password
     )
     JoinTextFieldVerticalSpacer()
 }
 
 @Composable
 fun NameField(onTextFieldChange: (String) -> Unit) {
-    JoinInputField(title = stringResource(R.string.join_name_field_title), label = stringResource(R.string.join_name_field_label), onTextFieldChange = { onTextFieldChange(it) })
+    JoinInputField(
+        title = stringResource(R.string.join_name_field_title),
+        label = stringResource(R.string.join_name_field_label),
+        onTextFieldChange = { onTextFieldChange(it) })
     JoinTextFieldVerticalSpacer()
 }
 
@@ -256,51 +281,70 @@ fun EmailField(viewModel: JoinViewModel, onTextFieldChange: (String) -> Unit) {
 @Composable
 fun BirthDayField(onTextFieldChange: (String) -> Unit) {
     JoinInputField(title = stringResource(R.string.join_birthday_field_title),
-            label = stringResource(R.string.join_birthday_field_label),
-            onTextFieldChange = { onTextFieldChange(it) })
+        label = stringResource(R.string.join_birthday_field_label),
+        onTextFieldChange = { onTextFieldChange(it) })
     JoinTextFieldVerticalSpacer()
 }
 
 @Composable
 fun NicknameField(onTextFieldChange: (String) -> Unit) {
     JoinInputField(
-            title = stringResource(R.string.join_nickname_field_title),
-            label = stringResource(R.string.join_nickname_field_label),
-            onTextFieldChange = { onTextFieldChange(it) })
+        title = stringResource(R.string.join_nickname_field_title),
+        label = stringResource(R.string.join_nickname_field_label),
+        onTextFieldChange = { onTextFieldChange(it) })
     JoinTextFieldVerticalSpacer()
 }
 
 @Composable
-fun ProfileImageDropDownMenu(isMenuExpanded: Boolean, isMenuExpandedChanged: (Boolean) -> Unit, getImageUri: (Uri?) -> Unit) {
+fun ProfileImageDropDownMenu(
+    isMenuExpanded: Boolean,
+    isMenuExpandedChanged: (Boolean) -> Unit,
+    getImageUri: (Uri?) -> Unit
+) {
     val context = LocalContext.current
-    var imageUri: Uri?
-    val launcher = rememberLauncherForActivityResult(
-            contract =
-            ActivityResultContracts.GetContent()
-    ) { uri: Uri? ->
-        imageUri = uri
-        getImageUri(imageUri)
+    var uri by remember {
+        mutableStateOf<Uri?>(null)
+    }
+    val launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?> = rememberLauncherForActivityResult(
+        contract =
+        ActivityResultContracts.PickVisualMedia()
+    ) {
+        uri = it
+        getImageUri(it)
     }
     DropdownMenu(expanded = isMenuExpanded,
-            onDismissRequest = { isMenuExpandedChanged(false) }) {
-        DropdownMenuItem(onClick = {
-            // 갤러리에서 선택
-            launcher.launch("image/*")
-            isMenuExpandedChanged(false)
-        }) {
-            Text(text = stringResource(R.string.join_select_profile_image_drop_down_menu_gallery))
-        }
-        DropdownMenuItem(onClick = {
-            // 기본 이미지
-            imageUri = Uri.Builder()
-                    .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-                    .authority(context.resources.getResourcePackageName(R.drawable.default_profile)).appendPath(context.resources.getResourceTypeName(R.drawable.default_profile)).appendPath(context.resources.getResourceEntryName(R.drawable.default_profile))
-                    .build()
-            getImageUri(imageUri)
-            isMenuExpandedChanged(false)
-        }) {
-            Text(text = stringResource(R.string.join_select_profile_image_drop_down_menu_default_image))
-        }
+        onDismissRequest = { isMenuExpandedChanged(false) }) {
+        MenuItemGallerySelect(launcher, isMenuExpandedChanged)
+        MenuItemDefaultImage(getImageUri, context, isMenuExpandedChanged)
+    }
+}
+
+@Composable
+fun MenuItemGallerySelect(
+    launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
+    isMenuExpandedChanged: (Boolean) -> Unit
+) {
+    DropdownMenuItem(onClick = {
+        selectGalleryImage(launcher)
+        isMenuExpandedChanged(false)
+    }) {
+        Text(text = stringResource(R.string.join_select_profile_image_drop_down_menu_gallery))
+    }
+}
+
+@Composable
+fun MenuItemDefaultImage(getImageUri: (Uri?) -> Unit, context: Context, isMenuExpandedChanged: (Boolean) -> Unit) {
+    DropdownMenuItem(onClick = {
+        val uri = Uri.Builder()
+            .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
+            .authority(context.resources.getResourcePackageName(R.drawable.default_profile))
+            .appendPath(context.resources.getResourceTypeName(R.drawable.default_profile))
+            .appendPath(context.resources.getResourceEntryName(R.drawable.default_profile))
+            .build()
+        getImageUri(uri)
+        isMenuExpandedChanged(false)
+    }) {
+        Text(text = stringResource(R.string.join_select_profile_image_drop_down_menu_default_image))
     }
 }
 
@@ -309,15 +353,21 @@ fun convertToBitmap(context: Context, uri: Uri?, onBitmapChange: (Bitmap) -> Uni
     uri?.let {
         bitmap = if (Build.VERSION.SDK_INT < 28) {
             MediaStore.Images
-                    .Media.getBitmap(context.contentResolver, it)
+                .Media.getBitmap(context.contentResolver, it)
 
         } else {
             val source = ImageDecoder
-                    .createSource(context.contentResolver, it)
+                .createSource(context.contentResolver, it)
             ImageDecoder.decodeBitmap(source)
         }
         onBitmapChange(bitmap)
     }
+}
+
+fun selectGalleryImage(launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>) {
+    launcher.launch(
+        PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+    )
 }
 
 @Composable
@@ -327,15 +377,19 @@ fun ProfileImageField(onBitmapChange: (Bitmap) -> Unit) {
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     var isMenuExpanded: Boolean by remember { mutableStateOf(false) }
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
-    Text(text = stringResource(R.string.join_select_profile_image_title), color = Color(0xFF5B6380), fontWeight = FontWeight.Bold)
+    Text(
+        text = stringResource(R.string.join_select_profile_image_title),
+        color = Color(0xFF5B6380),
+        fontWeight = FontWeight.Bold
+    )
     Spacer(modifier = Modifier.height(7.dp))
     Button(
-            modifier = Modifier.height(150.dp),
-            onClick = { isMenuExpanded = !isMenuExpanded },
-            colors = ButtonDefaults.buttonColors(
-                    backgroundColor = Color(0xFFF3F4F7),
-            ),
-            elevation = ButtonDefaults.elevation(defaultElevation = 0.dp, pressedElevation = 0.dp),
+        modifier = Modifier.height(150.dp),
+        onClick = { isMenuExpanded = !isMenuExpanded },
+        colors = ButtonDefaults.buttonColors(
+            backgroundColor = Color(0xFFF3F4F7),
+        ),
+        elevation = ButtonDefaults.elevation(defaultElevation = 0.dp, pressedElevation = 0.dp),
     ) {
         ProfileImageDropDownMenu(isMenuExpanded, { isMenuExpanded = it }) { imageUri = it }
         // imageUri -> Bitmap 변경
@@ -344,77 +398,92 @@ fun ProfileImageField(onBitmapChange: (Bitmap) -> Unit) {
             onBitmapChange(it)
         }
         bitmap?.let {
-            Image(bitmap = it.asImageBitmap(),
-                    contentDescription = null,
-                    modifier = Modifier.size(400.dp))
+            Image(
+                bitmap = it.asImageBitmap(),
+                contentDescription = null,
+                modifier = Modifier.size(400.dp)
+            )
         }
 
         Column(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(115.dp),
-                verticalArrangement = Arrangement.Center,
-                horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(115.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Image(
-                    modifier = Modifier.padding(bottom = 2.dp),
-                    painter = painterResource(id = R.drawable.ic_select_pic),
-                    contentDescription = null,
+                modifier = Modifier.padding(bottom = 2.dp),
+                painter = painterResource(id = R.drawable.ic_select_pic),
+                contentDescription = null,
             )
             Text(text = stringResource(R.string.join_select_profile_image_btn), color = Color(0xFFBFBFBF))
         }
     }
     Spacer(modifier = Modifier.height(8.dp))
     Text(
-            text = stringResource(R.string.join_select_profile_image_description),
-            color = Color(0xFFA9A9A9),
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentSize(
-                    Alignment.Center,
-                ),
+        text = stringResource(R.string.join_select_profile_image_description),
+        color = Color(0xFFA9A9A9),
+        modifier = Modifier
+            .fillMaxWidth()
+            .wrapContentSize(
+                Alignment.Center,
+            ),
     )
     JoinTextFieldVerticalSpacer()
 }
 
 @Composable
-fun StartButtonField(joinViewModel: JoinViewModel, joinInfoUiModel: JoinInfoUiModel, idDuplicationCheck: Boolean, passwordSameCheck: Boolean, emailDuplicationCheck: Boolean, allEssentialTermsAgree: Boolean) {
+fun StartButtonField(
+    joinViewModel: JoinViewModel,
+    joinInfoUiModel: JoinInfoUiModel,
+    idDuplicationCheck: Boolean,
+    passwordSameCheck: Boolean,
+    emailDuplicationCheck: Boolean,
+    allEssentialTermsAgree: Boolean
+) {
     var joinEnable by remember {
         mutableStateOf(false)
     }
     joinEnable = idDuplicationCheck && passwordSameCheck && emailDuplicationCheck && allEssentialTermsAgree
     Box(modifier = Modifier.fillMaxWidth()) {
         Button(
-                enabled = joinEnable,
-                onClick = { joinViewModel.join(joinInfoUiModel) },
-                colors = ButtonDefaults.buttonColors(
-                        backgroundColor = AppColors.deepPurple1, contentColor = Color.White
-                ),
-                modifier = Modifier.align(alignment = Alignment.Center),
-                shape = RoundedCornerShape(60.dp),
+            enabled = joinEnable,
+            onClick = { joinViewModel.join(joinInfoUiModel) },
+            colors = ButtonDefaults.buttonColors(
+                backgroundColor = AppColors.deepPurple1, contentColor = Color.White
+            ),
+            modifier = Modifier.align(alignment = Alignment.Center),
+            shape = RoundedCornerShape(60.dp),
         ) {
 
             Text(
-                    text = stringResource(R.string.join_start_btn),
-                    modifier = Modifier.padding(vertical = 10.dp, horizontal = 40.dp),
-                    fontSize = 18.sp
+                text = stringResource(R.string.join_start_btn),
+                modifier = Modifier.padding(vertical = 10.dp, horizontal = 40.dp),
+                fontSize = 18.sp
             )
         }
     }
 }
 
 @Composable
-fun TermItem(imageResources: List<Int>, description: Int, checked: CheckedStatus, fontSize: Int, onCheckedChange: (CheckedStatus) -> Unit) {
+fun TermItem(
+    imageResources: List<Int>,
+    description: Int,
+    checked: CheckedStatus,
+    fontSize: Int,
+    onCheckedChange: (CheckedStatus) -> Unit
+) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         CheckBox(
-                imageResources = imageResources,
-                defaultStatus = checked,
-                onCheckedChange = onCheckedChange
+            imageResources = imageResources,
+            defaultStatus = checked,
+            onCheckedChange = onCheckedChange
         )
         Text(
-                modifier = Modifier.padding(start = 14.dp),
-                text = stringResource(id = description),
-                fontSize = fontSize.sp
+            modifier = Modifier.padding(start = 14.dp),
+            text = stringResource(id = description),
+            fontSize = fontSize.sp
         )
     }
 }
@@ -449,14 +518,15 @@ fun TermsField(onAllEssentialTermsAgree: (Boolean) -> Unit) {
 
     Column {
         TermItem(
-                imageResources = listOf(R.drawable.circle_uncheck, R.drawable.circle_check), description = R.string.join_all_term_agree,
-                checked = if (terms.all { it.checkedStatus == CheckedStatus.CHECKED }) CheckedStatus.CHECKED else CheckedStatus.UNCHECKED,
-                fontSize = 16,
-                onCheckedChange = {
-                    for (index in terms.indices) {
-                        terms[index] = terms[index].copy(checkedStatus = it)
-                    }
-                })
+            imageResources = listOf(R.drawable.circle_uncheck, R.drawable.circle_check),
+            description = R.string.join_all_term_agree,
+            checked = if (terms.all { it.checkedStatus == CheckedStatus.CHECKED }) CheckedStatus.CHECKED else CheckedStatus.UNCHECKED,
+            fontSize = 16,
+            onCheckedChange = {
+                for (index in terms.indices) {
+                    terms[index] = terms[index].copy(checkedStatus = it)
+                }
+            })
         Divider(modifier = Modifier.padding(vertical = 11.dp), thickness = 1.dp, color = AppColors.grey2)
         TermsList(list = terms, { index, checkedStatus ->
             terms[index] = terms[index].copy(checkedStatus = checkedStatus)
