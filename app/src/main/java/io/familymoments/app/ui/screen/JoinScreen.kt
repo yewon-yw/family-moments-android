@@ -1,7 +1,6 @@
 package io.familymoments.app.ui.screen
 
 import android.annotation.SuppressLint
-import android.content.ContentResolver
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -117,7 +116,7 @@ fun JoinScreen(viewModel: JoinViewModel) {
 fun JoinContentScreen(viewModel: JoinViewModel) {
     val context = LocalContext.current
     var password: String by remember { mutableStateOf("") }
-    val bitmap: Bitmap = BitmapFactory.decodeResource(LocalContext.current.resources, R.drawable.default_profile)
+    val bitmap: Bitmap = getDefaultProfileImageBitmap(context)
     var allEssentialTermsAgree by remember {
         mutableStateOf(false)
     }
@@ -158,15 +157,7 @@ fun JoinContentScreen(viewModel: JoinViewModel) {
     }
     var joinInfoUiModel: JoinInfoUiModel by remember {
         mutableStateOf(
-            JoinInfoUiModel(
-                id = "id",
-                name = "name",
-                password = "password",
-                email = "email",
-                birthDay = "birthDay",
-                nickname = "nickname",
-                bitmap = bitmap
-            )
+            JoinInfoUiModel(bitmap = bitmap)
         )
     }
 
@@ -182,7 +173,9 @@ fun JoinContentScreen(viewModel: JoinViewModel) {
         EmailField(viewModel) { joinInfoUiModel = joinInfoUiModel.copy(email = it) }
         BirthDayField { joinInfoUiModel = joinInfoUiModel.copy(birthDay = it) }
         NicknameField { joinInfoUiModel = joinInfoUiModel.copy(nickname = it) }
-        ProfileImageField { joinInfoUiModel = joinInfoUiModel.copy(bitmap = it) }
+        ProfileImageField {
+            joinInfoUiModel = joinInfoUiModel.copy(bitmap = it)
+        }
         Spacer(modifier = Modifier.height(53.dp))
         TermsField { allEssentialTermsAgree = it }
         StartButtonField(
@@ -296,26 +289,27 @@ fun NicknameField(onTextFieldChange: (String) -> Unit) {
 }
 
 @Composable
-fun ProfileImageDropDownMenu(
+fun ProfileImageSelectDropDownMenu(
     isMenuExpanded: Boolean,
     isMenuExpandedChanged: (Boolean) -> Unit,
-    getImageUri: (Uri?) -> Unit
+    getBitmap: (Bitmap?) -> Unit
 ) {
     val context = LocalContext.current
-    var uri by remember {
-        mutableStateOf<Uri?>(null)
+    var bitmap by remember {
+        mutableStateOf<Bitmap?>(null)
     }
     val launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?> = rememberLauncherForActivityResult(
         contract =
         ActivityResultContracts.PickVisualMedia()
     ) {
-        uri = it
-        getImageUri(it)
+        if (it == null) return@rememberLauncherForActivityResult
+        bitmap = convertToBitmap(context, it)
+        getBitmap(bitmap)
     }
     DropdownMenu(expanded = isMenuExpanded,
         onDismissRequest = { isMenuExpandedChanged(false) }) {
         MenuItemGallerySelect(launcher, isMenuExpandedChanged)
-        MenuItemDefaultImage(getImageUri, context, isMenuExpandedChanged)
+        MenuItemDefaultImage({ getBitmap(it) }, context, isMenuExpandedChanged)
     }
 }
 
@@ -325,7 +319,9 @@ fun MenuItemGallerySelect(
     isMenuExpandedChanged: (Boolean) -> Unit
 ) {
     DropdownMenuItem(onClick = {
-        selectGalleryImage(launcher)
+        launcher.launch(
+            PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+        )
         isMenuExpandedChanged(false)
     }) {
         Text(text = stringResource(R.string.join_select_profile_image_drop_down_menu_gallery))
@@ -333,23 +329,21 @@ fun MenuItemGallerySelect(
 }
 
 @Composable
-fun MenuItemDefaultImage(getImageUri: (Uri?) -> Unit, context: Context, isMenuExpandedChanged: (Boolean) -> Unit) {
+fun MenuItemDefaultImage(getBitmap: (Bitmap) -> Unit, context: Context, isMenuExpandedChanged: (Boolean) -> Unit) {
     DropdownMenuItem(onClick = {
-        val uri = Uri.Builder()
-            .scheme(ContentResolver.SCHEME_ANDROID_RESOURCE)
-            .authority(context.resources.getResourcePackageName(R.drawable.default_profile))
-            .appendPath(context.resources.getResourceTypeName(R.drawable.default_profile))
-            .appendPath(context.resources.getResourceEntryName(R.drawable.default_profile))
-            .build()
-        getImageUri(uri)
+        getBitmap(getDefaultProfileImageBitmap(context))
         isMenuExpandedChanged(false)
     }) {
         Text(text = stringResource(R.string.join_select_profile_image_drop_down_menu_default_image))
     }
 }
 
-fun convertToBitmap(context: Context, uri: Uri?, onBitmapChange: (Bitmap) -> Unit) {
-    val bitmap: Bitmap
+fun getDefaultProfileImageBitmap(context: Context): Bitmap {
+    return BitmapFactory.decodeResource(context.resources, R.drawable.default_profile)
+}
+
+fun convertToBitmap(context: Context, uri: Uri?): Bitmap? {
+    var bitmap: Bitmap? = null
     uri?.let {
         bitmap = if (Build.VERSION.SDK_INT < 28) {
             MediaStore.Images
@@ -360,21 +354,12 @@ fun convertToBitmap(context: Context, uri: Uri?, onBitmapChange: (Bitmap) -> Uni
                 .createSource(context.contentResolver, it)
             ImageDecoder.decodeBitmap(source)
         }
-        onBitmapChange(bitmap)
     }
-}
-
-fun selectGalleryImage(launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>) {
-    launcher.launch(
-        PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
-    )
+    return bitmap
 }
 
 @Composable
 fun ProfileImageField(onBitmapChange: (Bitmap) -> Unit) {
-
-    val context = LocalContext.current
-    var imageUri by remember { mutableStateOf<Uri?>(null) }
     var isMenuExpanded: Boolean by remember { mutableStateOf(false) }
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
     Text(
@@ -391,13 +376,9 @@ fun ProfileImageField(onBitmapChange: (Bitmap) -> Unit) {
         ),
         elevation = ButtonDefaults.elevation(defaultElevation = 0.dp, pressedElevation = 0.dp),
     ) {
-        ProfileImageDropDownMenu(isMenuExpanded, { isMenuExpanded = it }) { imageUri = it }
-        // imageUri -> Bitmap 변경
-        convertToBitmap(context, imageUri) {
-            bitmap = it
-            onBitmapChange(it)
-        }
+        ProfileImageSelectDropDownMenu(isMenuExpanded, { isMenuExpanded = it }) { bitmap = it }
         bitmap?.let {
+            onBitmapChange(it)
             Image(
                 bitmap = it.asImageBitmap(),
                 contentDescription = null,
