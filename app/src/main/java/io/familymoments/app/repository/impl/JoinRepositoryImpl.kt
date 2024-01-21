@@ -21,13 +21,12 @@ class JoinRepositoryImpl @Inject constructor(
     override suspend fun checkId(id: String): Flow<Resource<CheckIdResponse>> {
         return flow {
             emit(Resource.Loading)
-
             val result = joinService.checkId(CheckIdRequest(id))
 
             if (result.isSuccess) {
                 emit(Resource.Success(result))
             } else {
-                emit(Resource.Fail(Throwable(result.message)))
+                throw Throwable(result.message)
             }
         }.catch { e ->
             emit(Resource.Fail(e))
