@@ -90,7 +90,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.room.runtime)
-    implementation("androidx.constraintlayout:constraintlayout-compose:1.0.1")
+    implementation(libs.androidx.constraintlayout.compose)
     kapt(libs.room.compiler)
 
     testImplementation(libs.mockk)
