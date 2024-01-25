@@ -32,8 +32,6 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -46,11 +44,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -66,7 +62,6 @@ import io.familymoments.app.model.join.ui.JoinInfoUiModel
 import io.familymoments.app.model.join.ui.JoinTermUiModel
 import io.familymoments.app.network.JoinService
 import io.familymoments.app.repository.impl.JoinRepositoryImpl
-import io.familymoments.app.ui.component.AppBarScreen
 import io.familymoments.app.ui.component.CheckBox
 import io.familymoments.app.ui.component.CheckedStatus
 import io.familymoments.app.ui.component.JoinInputField
@@ -79,35 +74,14 @@ import okhttp3.MultipartBody
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun JoinScreen(viewModel: JoinViewModel) {
-    AppBarScreen(
-        title = {
-            Text(
-                text = stringResource(id = R.string.join_activity_app_bar_title),
-                color = AppColors.deepPurple1,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold
-            )
-        },
-        navigationIcon = {
-            IconButton(onClick = {}) {
-                Icon(
-                    imageVector = ImageVector.vectorResource(R.drawable.back_btn),
-                    contentDescription = null,
-                    tint = Color.Unspecified
-                )
-            }
-        }
+    LazyColumn(
+        modifier = Modifier
+            .background(color = Color.White)
+            .padding(horizontal = 20.dp)
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .background(color = Color.White)
-                .padding(horizontal = 20.dp)
-        ) {
-            item {
-                JoinContentScreen(viewModel)
-            }
+        item {
+            JoinContentScreen(viewModel)
         }
-
     }
 }
 
