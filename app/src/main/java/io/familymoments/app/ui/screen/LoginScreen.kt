@@ -24,7 +24,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,11 +42,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.familymoments.app.R
-import io.familymoments.app.model.LoginRequest
-import io.familymoments.app.model.LoginResponse
 import io.familymoments.app.model.LoginUiState
-import io.familymoments.app.network.LoginService
-import io.familymoments.app.repository.impl.LoginRepositoryImpl
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.FamilyMomentsTheme
 import io.familymoments.app.viewmodel.LoginViewModel
@@ -55,13 +50,21 @@ import io.familymoments.app.viewmodel.LoginViewModel
 @ExperimentalMaterial3Api
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
-    val loginUiState: State<LoginUiState> = viewModel.loginUiState.collectAsState()
+    val loginUiState = viewModel.loginUiState.collectAsState()
+    LoginScreen(login = viewModel::loginUser, loginUiState = loginUiState.value )
+}
 
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun LoginScreen(
+    login:(String, String) -> Unit,
+    loginUiState:LoginUiState
+){
     Column(modifier = Modifier.background(Color.White), horizontalAlignment = Alignment.CenterHorizontally) {
         Spacer(modifier = Modifier.height(86.dp))
         LoginLogo()
         Spacer(modifier = Modifier.height(49.dp))
-        LoginForm(viewModel = viewModel, loginUiState = loginUiState.value)
+        LoginForm(login = login, loginUiState = loginUiState)
         LoginOption()
         Spacer(modifier = Modifier.height(15.dp))
         SocialLogin()
@@ -96,7 +99,7 @@ fun LoginLogo() {
 @ExperimentalMaterial3Api
 @Composable
 fun LoginForm(
-    viewModel: LoginViewModel,
+    login: (String, String) -> Unit,
     loginUiState: LoginUiState,
 ) {
     var id by remember { mutableStateOf(TextFieldValue()) }
@@ -114,7 +117,7 @@ fun LoginForm(
                     Modifier
                         .padding(vertical = 18.dp),
                 onClick = {
-                    viewModel.loginUser(id.text, password.text)
+                    login(id.text, password.text)
                 },
                 colors =
                     ButtonDefaults.buttonColors(
@@ -187,9 +190,9 @@ fun LoginOption() {
         Divider(
             color = AppColors.grey2,
             modifier =
-                Modifier
-                    .fillMaxHeight()
-                    .width(1.dp),
+            Modifier
+                .fillMaxHeight()
+                .width(1.dp),
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
@@ -202,9 +205,9 @@ fun LoginOption() {
         Divider(
             color = AppColors.grey2,
             modifier =
-                Modifier
-                    .fillMaxHeight()
-                    .width(1.dp),
+            Modifier
+                .fillMaxHeight()
+                .width(1.dp),
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
@@ -234,22 +237,10 @@ fun SocialLogin() {
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Preview(showBackground = true)
 @Composable
 fun PreviewLoginScreen() {
     FamilyMomentsTheme {
-        LoginScreen(
-            viewModel =
-                LoginViewModel(
-                    LoginRepositoryImpl(
-                        object : LoginService {
-                            override suspend fun loginUser(loginRequest: LoginRequest): LoginResponse {
-                                return LoginResponse()
-                            }
-                        },
-                    ),
-                ),
-        )
+        LoginScreen(login = { _, _ -> }, loginUiState = LoginUiState())
     }
 }
