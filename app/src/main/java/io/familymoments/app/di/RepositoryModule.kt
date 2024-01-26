@@ -19,8 +19,8 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideLoginRepository(loginService: LoginService): LoginRepository {
-        return LoginRepositoryImpl(loginService)
+    fun provideLoginRepository(loginService: LoginService, tokenRepository: TokenRepository): LoginRepository {
+        return LoginRepositoryImpl(loginService, tokenRepository)
     }
 
     @Provides
