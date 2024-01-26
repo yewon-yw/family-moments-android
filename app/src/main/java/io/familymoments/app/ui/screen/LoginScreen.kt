@@ -47,7 +47,7 @@ import io.familymoments.app.model.LoginRequest
 import io.familymoments.app.model.LoginResponse
 import io.familymoments.app.model.LoginUiState
 import io.familymoments.app.network.LoginService
-import io.familymoments.app.repository.impl.UserRepositoryImpl
+import io.familymoments.app.repository.impl.LoginRepositoryImpl
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.FamilyMomentsTheme
 import io.familymoments.app.viewmodel.LoginViewModel
@@ -242,7 +242,7 @@ fun PreviewLoginScreen() {
         LoginScreen(
             viewModel =
                 LoginViewModel(
-                    UserRepositoryImpl(
+                    LoginRepositoryImpl(
                         object : LoginService {
                             override suspend fun loginUser(loginRequest: LoginRequest): LoginResponse {
                                 return LoginResponse()

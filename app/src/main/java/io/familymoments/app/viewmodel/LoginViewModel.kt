@@ -2,14 +2,14 @@ package io.familymoments.app.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.model.LoginUiState
-import io.familymoments.app.repository.UserRepository
+import io.familymoments.app.repository.LoginRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-        private val userRepository: UserRepository,
+    private val userRepository: LoginRepository,
 ) : BaseViewModel() {
 
     private val _loginUiState = MutableStateFlow(LoginUiState())

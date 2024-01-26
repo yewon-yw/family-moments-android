@@ -4,7 +4,7 @@ import io.familymoments.app.model.LoginResponse
 import io.familymoments.app.network.Resource
 import kotlinx.coroutines.flow.Flow
 
-interface UserRepository {
+interface LoginRepository {
 
     suspend fun loginUser(username: String, password: String): Flow<Resource<LoginResponse>>
 
