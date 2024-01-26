@@ -57,6 +57,9 @@ android {
         kotlinCompilerExtensionVersion = "1.5.0"
     }
     packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
         resources.excludes.addAll(
             listOf(
                 "META-INF/LICENSE.md",
@@ -79,6 +82,8 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(libs.compose.ui)
     implementation(libs.compose.material)
+    implementation(platform(libs.compose.bom))
+    androidTestImplementation(platform(libs.compose.bom))
     debugImplementation(libs.compose.ui.tooling.preview)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.hilt.android)
