@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
@@ -16,11 +17,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
 
@@ -41,14 +40,16 @@ fun FMTextField(
                 onValueChange = onValueChange,
                 value = value,
                 singleLine = true,
-                textStyle = TextStyle(color = Color.Black, fontSize = 16.sp),
+                textStyle = AppTypography.BTN5_16,
                 decorationBox = { innerTextField ->
                     if (value.text.isEmpty()) {
                         Text(text = hint, style = AppTypography.BTN5_16, color = AppColors.grey2)
                     }
                     innerTextField()
                 },
-                modifier = Modifier.clip(RoundedCornerShape(4.dp))
+                modifier = Modifier
+                    .clip(RoundedCornerShape(4.dp))
+                    .weight(1f)
             )
 
             if (value.text.isNotEmpty()) {
@@ -56,11 +57,21 @@ fun FMTextField(
                     imageVector = Icons.Filled.Clear,
                     contentDescription = null,
                     modifier = Modifier
-                        .padding(end = 16.dp)
+                        .size(16.dp)
                         .clickable { onValueChange(TextFieldValue("")) }
                 )
             }
 
         }
     }
+}
+
+@Preview
+@Composable
+fun FMTextFieldPreview() {
+    FMTextField(
+        onValueChange = {},
+        value = TextFieldValue("asd"),
+        hint = "Hint"
+    )
 }
