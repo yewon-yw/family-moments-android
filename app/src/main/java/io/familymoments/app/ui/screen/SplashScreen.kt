@@ -1,12 +1,14 @@
 package io.familymoments.app.ui.screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -14,12 +16,28 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.familymoments.app.R
+import io.familymoments.app.ui.component.LoadingIndicator
 import io.familymoments.app.ui.theme.FamilyMomentsTheme
+import io.familymoments.app.viewmodel.SplashViewModel
 
 @Composable
-fun SplashScreen() {
+fun SplashScreen(viewModel: SplashViewModel) {
+    val splashUiState = viewModel.splashUiState.collectAsState()
+
+    SplashScreen(isLoading = splashUiState.value.isLoading)
+}
+
+@Composable
+fun SplashScreen(isLoading: Boolean?) {
+    if (isLoading == true) {
+        LoadingIndicator(isLoading = true)
+    } else {
+        LoadingIndicator(isLoading = false)
+    }
     Column(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = Color.White),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -45,6 +63,6 @@ fun SplashScreen() {
 @Composable
 fun SplashPreview() {
     FamilyMomentsTheme {
-        SplashScreen()
+        SplashScreen(true)
     }
 }

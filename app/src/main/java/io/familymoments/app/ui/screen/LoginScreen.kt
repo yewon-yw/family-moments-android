@@ -51,16 +51,21 @@ import io.familymoments.app.viewmodel.LoginViewModel
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
     val loginUiState = viewModel.loginUiState.collectAsState()
-    LoginScreen(login = viewModel::loginUser, loginUiState = loginUiState.value )
+    LoginScreen(login = viewModel::loginUser, loginUiState = loginUiState.value)
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    login:(String, String) -> Unit,
-    loginUiState:LoginUiState
-){
-    Column(modifier = Modifier.background(Color.White), horizontalAlignment = Alignment.CenterHorizontally) {
+    login: (String, String) -> Unit,
+    loginUiState: LoginUiState
+) {
+    Column(
+        modifier = Modifier
+            .background(Color.White)
+            .fillMaxHeight(),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
         Spacer(modifier = Modifier.height(86.dp))
         LoginLogo()
         Spacer(modifier = Modifier.height(49.dp))
@@ -114,18 +119,18 @@ fun LoginForm(
         Surface(shape = RoundedCornerShape(8.dp), modifier = Modifier.fillMaxWidth()) {
             Button(
                 modifier =
-                    Modifier
-                        .padding(vertical = 18.dp),
+                Modifier
+                    .padding(vertical = 18.dp),
                 onClick = {
                     login(id.text, password.text)
                 },
                 colors =
-                    ButtonDefaults.buttonColors(
-                        containerColor = AppColors.deepPurple1,
-                        contentColor = Color.White,
-                        disabledContainerColor = Color.Gray,
-                        disabledContentColor = Color.White,
-                    ),
+                ButtonDefaults.buttonColors(
+                    containerColor = AppColors.deepPurple1,
+                    contentColor = Color.White,
+                    disabledContainerColor = Color.Gray,
+                    disabledContentColor = Color.White,
+                ),
             ) {
                 Text(
                     text = stringResource(id = R.string.login_login),
@@ -152,14 +157,14 @@ fun LoginFormRoundedCornerTextField(
             },
             label = { Text(label, color = Color.LightGray) },
             colors =
-                TextFieldDefaults.colors(
-                    focusedContainerColor = AppColors.pink4,
-                    unfocusedContainerColor = AppColors.pink4,
-                    disabledContainerColor = AppColors.pink4,
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    disabledIndicatorColor = Color.Transparent,
-                ),
+            TextFieldDefaults.colors(
+                focusedContainerColor = AppColors.pink4,
+                unfocusedContainerColor = AppColors.pink4,
+                disabledContainerColor = AppColors.pink4,
+                focusedIndicatorColor = Color.Transparent,
+                unfocusedIndicatorColor = Color.Transparent,
+                disabledIndicatorColor = Color.Transparent,
+            ),
         )
     }
 }

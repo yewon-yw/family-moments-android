@@ -9,7 +9,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val userRepository: LoginRepository,
+    private val loginRepository: LoginRepository,
 ) : BaseViewModel() {
 
     private val _loginUiState = MutableStateFlow(LoginUiState())
@@ -17,7 +17,7 @@ class LoginViewModel @Inject constructor(
 
     fun loginUser(username: String, password: String) {
         async(
-                operation = { userRepository.loginUser(username, password) },
+                operation = { loginRepository.loginUser(username, password) },
                 onSuccess = {
                     _loginUiState.value = _loginUiState.value.copy(
                             isSuccess = true,

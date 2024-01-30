@@ -2,6 +2,7 @@ package io.familymoments.app.repository.impl
 
 import io.familymoments.app.model.LoginRequest
 import io.familymoments.app.model.LoginResponse
+import io.familymoments.app.model.TokenResponse
 import io.familymoments.app.network.LoginService
 import io.familymoments.app.network.Resource
 import io.familymoments.app.repository.LoginRepository
@@ -20,6 +21,7 @@ class LoginRepositoryImpl @Inject constructor(
         password: String,
     ): Flow<Resource<LoginResponse>> {
         return flow {
+            emit(Resource.Loading)
             val response = loginService.loginUser(LoginRequest(username, password))
             val responseBody = response.body() ?: LoginResponse()
 
@@ -30,6 +32,20 @@ class LoginRepositoryImpl @Inject constructor(
                 emit(Resource.Fail(Throwable(responseBody.message)))
             }
 
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun checkValidation(): Flow<Resource<TokenResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = loginService.checkValidation()
+            if (response.isSuccess) {
+                emit(Resource.Success(response))
+            } else {
+                emit(Resource.Fail(Throwable(response.message)))
+            }
         }.catch { e ->
             emit(Resource.Fail(e))
         }

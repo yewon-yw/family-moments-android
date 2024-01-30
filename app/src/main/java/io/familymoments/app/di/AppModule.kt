@@ -9,6 +9,7 @@ import io.familymoments.app.network.AuthInterceptor
 import io.familymoments.app.network.LoginService
 import io.familymoments.app.repository.TokenRepository
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Qualifier
@@ -57,7 +58,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLoginService(@DefaultRetrofit retrofit: Retrofit): LoginService {
+    fun provideLoginService(@AuthRetrofit retrofit: Retrofit): LoginService {
         return retrofit.create(LoginService::class.java)
     }
 
@@ -79,6 +80,9 @@ object AppModule {
     fun provideAuthOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor)
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                level = HttpLoggingInterceptor.Level.HEADERS
+            })
             .build()
     }
 

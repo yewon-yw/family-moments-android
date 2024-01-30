@@ -5,28 +5,39 @@ import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
-import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.runtime.Composable
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import dagger.hilt.android.AndroidEntryPoint
 import io.familymoments.app.ui.screen.SplashScreen
+import io.familymoments.app.ui.theme.FamilyMomentsTheme
+import io.familymoments.app.viewmodel.SplashViewModel
 
 @SuppressLint("CustomSplashScreen")
-class SplashActivity : ComponentActivity() {
+@AndroidEntryPoint
+class SplashActivity : BaseActivity<SplashViewModel>(SplashViewModel::class) {
+    override val screen: @Composable () -> Unit = { SplashScreen(viewModel) }
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         installSplashScreen()
         Handler(Looper.getMainLooper()).postDelayed(
             {
-                // 토큰 확인해서 유효하면 메인 화면으로 이동
-                // TODO 메인 화면 이동
+                viewModel.checkUserValidation()
+                val splashUiState = viewModel.splashUiState.value
 
-                // 유효하지 않으면 로그인 화면 연결
-                startActivity(Intent(this, LoginActivity::class.java))
+                if (splashUiState.isSuccess == true) {
+                    // 메인 화면 이동
+                } else {
+                    startActivity(Intent(this@SplashActivity, LoginActivity::class.java))
+                }
             },
-            500L,
+            1000L,
         )
+
         setContent {
-            SplashScreen()
+            FamilyMomentsTheme {
+                screen()
+            }
         }
     }
 }
