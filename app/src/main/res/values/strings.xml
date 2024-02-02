@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">FamilyMoments</string>
     <string name="title_activity_family_select">FamilySelectActivity</string>
+    <string name="create_family">우리 가족\\n생성하기</string>
+    <string name="join_family">우리 가족\\n참여하기</string>
+    <string name="skip_select_family_option">다음에하기</string>
 </resources>
