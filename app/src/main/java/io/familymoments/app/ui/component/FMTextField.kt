@@ -35,7 +35,11 @@ fun FMTextField(
             .border(width = 2.dp, color = AppColors.grey2, shape = RoundedCornerShape(8.dp))
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             BasicTextField(
                 onValueChange = onValueChange,
                 value = value,

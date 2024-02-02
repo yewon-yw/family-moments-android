@@ -1,6 +1,7 @@
 package io.familymoments.app.ui.screen
 
 import android.app.Activity
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -199,10 +200,15 @@ fun ResetScreen(navController: NavHostController) {
             value = password.value,
             onValueChange = { password.value = it },
             hint = stringResource(id = R.string.forgot_password_tf_pw_hint),
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = AppColors.pink5)
         )
         Spacer(modifier = Modifier.height(16.dp))
         FMTextField(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = AppColors.pink5),
             value = passwordConfirm.value,
             onValueChange = { passwordConfirm.value = it },
             hint = stringResource(id = R.string.forgot_password_tf_pw_confirm_hint),
