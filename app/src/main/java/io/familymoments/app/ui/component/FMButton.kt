@@ -38,8 +38,8 @@ fun FMButton(
         modifier = modifier,
         enabled = enabled,
         colors = ButtonDefaults.buttonColors(
-            containerColor = AppColors.purple2,
-            disabledContainerColor = AppColors.deepPurple1
+            containerColor = AppColors.deepPurple1,
+            disabledContainerColor = AppColors.grey3
         ),
         shape = RoundedCornerShape(radius),
         contentPadding = PaddingValues(vertical = 4.dp, horizontal = 16.dp)
