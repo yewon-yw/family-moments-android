@@ -25,14 +25,21 @@ import io.familymoments.app.ui.theme.AppTypography
 
 @Composable
 fun FMTextField(
+    modifier: Modifier = Modifier,
     onValueChange: (TextFieldValue) -> Unit,
     value: TextFieldValue,
     hint: String,
-    modifier: Modifier = Modifier,
+    showBorder: Boolean = true
 ) {
     Box(
         modifier = modifier
-            .border(width = 2.dp, color = AppColors.grey2, shape = RoundedCornerShape(8.dp))
+            .then(
+                if (showBorder) {
+                    Modifier.border(width = 2.dp, color = AppColors.grey2, shape = RoundedCornerShape(8.dp))
+                } else {
+                    Modifier
+                }
+            )
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         Row(
