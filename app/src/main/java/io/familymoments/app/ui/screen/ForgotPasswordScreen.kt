@@ -368,13 +368,14 @@ fun ResetPreview() {
                 value = TextFieldValue(),
                 onValueChange = {},
                 hint = stringResource(id = R.string.forgot_password_tf_pw_hint),
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier.background(color = AppColors.pink5)
             )
             Spacer(modifier = Modifier.height(16.dp))
             FMTextField(
                 value = TextFieldValue(),
                 onValueChange = {},
                 hint = stringResource(id = R.string.forgot_password_tf_pw_confirm_hint),
+                modifier = Modifier.background(color = AppColors.pink5)
             )
 
             Spacer(modifier = Modifier.weight(1f))
