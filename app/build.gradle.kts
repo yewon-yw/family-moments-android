@@ -96,6 +96,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.room.runtime)
     kapt(libs.room.compiler)
+    implementation(libs.navigation.compose)
 
     testImplementation(libs.mockk)
     testImplementation(libs.junit)
