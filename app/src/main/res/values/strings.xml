@@ -22,4 +22,6 @@
     <string name="select_family_image">가족 이미지 선택</string>
     <string name="drop_down_menu_item_gallery_select">갤러리에서 선택</string>
     <string name="drop_down_menu_item_default_image">기본 이미지로 하기</string>
+    <string name="alarm_cycle_text_field_hint">알람 주기 선택</string>
+    <string name="create_family_btn">가족 생성하기</string>
 </resources>
