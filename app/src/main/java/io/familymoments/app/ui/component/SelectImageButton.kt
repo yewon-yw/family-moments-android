@@ -24,9 +24,7 @@ import io.familymoments.app.R
 
 @Composable
 fun SelectImageButton(
-    modifier: Modifier = Modifier,
-    isDropDownMenuExist: Boolean,
-    menuItems: List<FMDropDownMenuItem> = listOf()
+    modifier: Modifier = Modifier
 ) {
     var isMenuExpanded: Boolean by remember { mutableStateOf(false) }
     Button(
@@ -51,9 +49,7 @@ fun SelectImageButton(
                 contentDescription = null,
             )
             Text(text = stringResource(R.string.join_select_profile_image_btn), color = Color(0xFFBFBFBF))
-            if (isDropDownMenuExist) {
-                FMDropDownMenu(menuItems = menuItems, isMenuExpanded) { isMenuExpanded = false }
-            }
+            ImageSelectDropDownMenu(isMenuExpanded) { isMenuExpanded = false }
         }
     }
 }

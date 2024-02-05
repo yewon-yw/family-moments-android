@@ -21,7 +21,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.familymoments.app.R
-import io.familymoments.app.ui.component.FMDropDownMenuItem
 import io.familymoments.app.ui.component.SelectImageButton
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
@@ -85,10 +84,7 @@ fun SetUpFamilyPicture() {
     )
     Spacer(modifier = Modifier.height(4.dp))
     SelectImageButton(
-        modifier = Modifier.height(192.dp),
-        isDropDownMenuExist = true,
-        menuItems = listOf(FMDropDownMenuItem(stringResource(R.string.drop_down_menu_item_gallery_select), {}), FMDropDownMenuItem(
-            stringResource(R.string.drop_down_menu_item_default_image), {}))
+        modifier = Modifier.height(192.dp)
     )
 }
 
