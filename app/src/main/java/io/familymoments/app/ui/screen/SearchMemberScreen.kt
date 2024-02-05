@@ -4,7 +4,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -17,8 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -43,31 +40,24 @@ import io.familymoments.app.ui.theme.FamilyMomentsTheme
 
 @Composable
 fun SearchMemberScreen() {
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        Header()
-        SearchMemberTextField()
-        Box(
-            modifier = Modifier
-                .weight(1f)
-        ) {
-            MemberList()
+
+    CreateFamilyLayoutSkeleton(
+        headerBottomPadding = 34.dp,
+        header = stringResource(id = R.string.select_create_family_header),
+        button = stringResource(id = R.string.next_btn_one_third)) {
+        Column {
+            SearchMemberTextField()
+            Box(
+                modifier = Modifier
+                    .weight(1f)
+            ) {
+                MemberList()
+            }
+            Spacer(modifier = Modifier.height(29.dp))
         }
-        Spacer(modifier = Modifier.height(29.dp))
-        NextButton(
-            modifier = Modifier.padding(bottom = 100.dp)
-        )
     }
 
-}
 
-@Composable
-fun Header() {
-    Text(
-        modifier = Modifier.padding(top = 55.dp, bottom = 34.dp),
-        text = stringResource(R.string.select_create_family_header),
-        style = AppTypography.SH2_18,
-        color = AppColors.deepPurple1
-    )
 }
 
 @Composable
@@ -157,22 +147,22 @@ fun MemberItem(name: String) {
     }
 }
 
-@Composable
-fun NextButton(modifier: Modifier = Modifier) {
-    Button(
-        modifier = Modifier
-            .fillMaxWidth()
-            .then(modifier),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = AppColors.deepPurple1,
-            disabledContainerColor = AppColors.grey3
-        ),
-        shape = RoundedCornerShape(60.dp),
-        contentPadding = PaddingValues(vertical = 18.dp),
-        onClick = { /*TODO*/ }) {
-        Text(text = stringResource(R.string.next_btn_one_third), style = AppTypography.BTN4_18, color = AppColors.grey6)
-    }
-}
+//@Composable
+//fun NextButton(modifier: Modifier = Modifier) {
+//    Button(
+//        modifier = Modifier
+//            .fillMaxWidth()
+//            .then(modifier),
+//        colors = ButtonDefaults.buttonColors(
+//            containerColor = AppColors.deepPurple1,
+//            disabledContainerColor = AppColors.grey3
+//        ),
+//        shape = RoundedCornerShape(60.dp),
+//        contentPadding = PaddingValues(vertical = 18.dp),
+//        onClick = { /*TODO*/ }) {
+//        Text(text = stringResource(R.string.next_btn_one_third), style = AppTypography.BTN4_18, color = AppColors.grey6)
+//    }
+//}
 
 @Preview(showBackground = true)
 @Composable
