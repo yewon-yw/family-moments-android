@@ -1,6 +1,7 @@
 package io.familymoments.app.ui.screen
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,22 +16,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.drawText
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.familymoments.app.R
 import io.familymoments.app.ui.theme.AppColors
+import io.familymoments.app.ui.theme.AppTypography
 import io.familymoments.app.ui.theme.FamilyMomentsTheme
 
 
 @Composable
-fun FamilySelectScreen(modifier: Modifier = Modifier) {
+fun FamilySelectScreen() {
+
     CreateFamily()
     JoinFamily()
     Row(
@@ -43,40 +41,28 @@ fun FamilySelectScreen(modifier: Modifier = Modifier) {
     }
 }
 
+
 @Composable
 fun CreateFamily() {
-    val context = LocalContext.current
-    val textMeasurer = rememberTextMeasurer()
-    val style = TextStyle(
-        fontSize = 36.sp,
-        color = AppColors.deepPurple1,
-        fontWeight = FontWeight(700)
-    )
     val radius = 275
+
     Canvas(modifier = Modifier.fillMaxSize()) {
         drawCircle(
             color = AppColors.pink3,
             radius = radius.dp.toPx(),
             center = Offset(36.dp.toPx(), (27.dp + radius.dp).toPx())
         )
-        drawText(
-            textMeasurer = textMeasurer,
-            text = context.getString(R.string.create_family),
-            style = style,
-            topLeft = Offset(43.dp.toPx(), 146.dp.toPx())
-        )
     }
+    Text(
+        modifier = Modifier.padding(top = 146.dp, start = 43.dp),
+        text = stringResource(id = R.string.create_family),
+        style = AppTypography.BTN1_36,
+        color = AppColors.deepPurple1
+    )
 }
 
 @Composable
 fun JoinFamily() {
-    val context = LocalContext.current
-    val textMeasurer = rememberTextMeasurer()
-    val style = TextStyle(
-        fontSize = 36.sp,
-        color = AppColors.deepPurple1,
-        fontWeight = FontWeight(700)
-    )
     val radius = 275
     Canvas(modifier = Modifier.fillMaxSize()) {
         drawCircle(
@@ -84,13 +70,16 @@ fun JoinFamily() {
             radius = radius.dp.toPx(),
             center = Offset(size.width - 50.dp.toPx(), (234.dp + radius.dp).toPx())
         )
-        drawText(
-            textMeasurer = textMeasurer,
-            text = context.getString(R.string.join_family),
-            style = style,
-            topLeft = Offset(169.dp.toPx(), 357.dp.toPx())
+    }
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
+        Text(
+            modifier = Modifier.padding(bottom = 227.dp, end = 50.dp),
+            text = stringResource(id = R.string.join_family),
+            style = AppTypography.BTN1_36,
+            color = AppColors.deepPurple1
         )
     }
+
 }
 
 @Composable
