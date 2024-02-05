@@ -147,23 +147,6 @@ fun MemberItem(name: String) {
     }
 }
 
-//@Composable
-//fun NextButton(modifier: Modifier = Modifier) {
-//    Button(
-//        modifier = Modifier
-//            .fillMaxWidth()
-//            .then(modifier),
-//        colors = ButtonDefaults.buttonColors(
-//            containerColor = AppColors.deepPurple1,
-//            disabledContainerColor = AppColors.grey3
-//        ),
-//        shape = RoundedCornerShape(60.dp),
-//        contentPadding = PaddingValues(vertical = 18.dp),
-//        onClick = { /*TODO*/ }) {
-//        Text(text = stringResource(R.string.next_btn_one_third), style = AppTypography.BTN4_18, color = AppColors.grey6)
-//    }
-//}
-
 @Preview(showBackground = true)
 @Composable
 fun PreviewCreateFamilyScreen() {
