@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.screen
+package io.familymoments.app.ui.familyselect.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,13 +27,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import io.familymoments.app.R
+import io.familymoments.app.ui.familyselect.model.AlarmCycle
+import io.familymoments.app.ui.familyselect.ui.CreateFamilyLayoutSkeleton
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
 
+@Composable
+fun FamilyAlarmSetUpScreen(navController: NavController) {
+    FamilyAlarmSetUpScreen { navController.navigate(FamilySetRoute.FAMILY_INVITATION_LINK.route) }
+}
+
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun FamilyAlarmSetUpScreen() {
+fun FamilyAlarmSetUpScreen(navigate: () -> Unit = {}) {
+
     var isExpanded by remember {
         mutableStateOf(false)
     }
@@ -43,7 +52,8 @@ fun FamilyAlarmSetUpScreen() {
     CreateFamilyLayoutSkeleton(
         headerBottomPadding = 34.dp,
         header = stringResource(id = R.string.select_create_family_header),
-        button = stringResource(R.string.create_family_btn)
+        button = stringResource(R.string.create_family_btn),
+        onClick = navigate
     ) {
         ExposedDropdownMenuBox(
             expanded = isExpanded,
@@ -68,37 +78,7 @@ fun FamilyAlarmSetUpScreen() {
                     onValueChange = { alarmCycle = it },
                     readOnly = true
                 ) {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Text(
-                            text = stringResource(R.string.alarm_cycle_text_field_hint),
-                            style = AppTypography.LB1_13,
-                            color = AppColors.grey2
-                        )
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(end = 5.dp),
-                            contentAlignment = Alignment.CenterEnd
-                        ) {
-                            if (isExpanded) {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_drop_down_expanded_trailing),
-                                    contentDescription = null,
-                                    tint = Color.Unspecified
-                                )
-                            } else {
-                                Icon(
-                                    painter = painterResource(id = R.drawable.ic_drop_down_expanded_trailing),
-                                    contentDescription = null,
-                                    tint = AppColors.grey2,
-                                    modifier = Modifier.rotate(180f)
-                                )
-                            }
-
-                        }
-
-                    }
-
+                    TextFieldContents(isExpanded)
                 }
             }
             ExposedDropdownMenu(
@@ -114,6 +94,45 @@ fun FamilyAlarmSetUpScreen() {
             }
 
         }
+    }
+}
+
+@Composable
+fun TextFieldContents(isExpanded: Boolean) {
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Text(
+            text = stringResource(R.string.alarm_cycle_text_field_hint),
+            style = AppTypography.LB1_13,
+            color = AppColors.grey2
+        )
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 5.dp),
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            TextFieldExpandedIcon(isExpanded)
+
+        }
+
+    }
+}
+
+@Composable
+fun TextFieldExpandedIcon(isExpanded: Boolean) {
+    if (isExpanded) {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_drop_down_expanded_trailing),
+            contentDescription = null,
+            tint = Color.Unspecified
+        )
+    } else {
+        Icon(
+            painter = painterResource(id = R.drawable.ic_drop_down_expanded_trailing),
+            contentDescription = null,
+            tint = AppColors.grey2,
+            modifier = Modifier.rotate(180f)
+        )
     }
 }
 

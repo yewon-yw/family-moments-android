@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.screen
+package io.familymoments.app.ui.familyselect.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -21,18 +21,26 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import io.familymoments.app.R
 import io.familymoments.app.ui.component.SelectImageButton
+import io.familymoments.app.ui.familyselect.ui.CreateFamilyLayoutSkeleton
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
 
 @Composable
-fun FamilyProfileSetUpScreen() {
+fun FamilyProfileSetUpScreen(navController: NavController) {
+    FamilyProfileSetUpScreen { navController.navigate(FamilySetRoute.FAMILY_ALARM_SET_UP.route) }
+}
+
+@Composable
+fun FamilyProfileSetUpScreen(navigate: () -> Unit = {}) {
     Column {
         CreateFamilyLayoutSkeleton(
             headerBottomPadding = 29.dp,
             header = stringResource(id = R.string.select_create_family_header),
-            button = stringResource(id = R.string.next_btn_two_third)
+            button = stringResource(id = R.string.next_btn_two_third),
+            onClick = navigate
         ) {
             Column(
                 modifier = Modifier.fillMaxWidth(),
@@ -45,7 +53,6 @@ fun FamilyProfileSetUpScreen() {
         }
 
     }
-
 }
 
 @Composable

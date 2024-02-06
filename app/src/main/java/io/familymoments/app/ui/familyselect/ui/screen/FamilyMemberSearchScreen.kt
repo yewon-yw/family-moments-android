@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.screen
+package io.familymoments.app.ui.familyselect.ui.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
@@ -33,18 +33,27 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import io.familymoments.app.R
+import io.familymoments.app.ui.familyselect.ui.CreateFamilyLayoutSkeleton
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
 import io.familymoments.app.ui.theme.FamilyMomentsTheme
 
 @Composable
-fun SearchMemberScreen() {
+fun FamilyMemberSearchScreen(navController: NavController) {
+    FamilyMemberSearchScreen { navController.navigate(FamilySetRoute.FAMILY_PROFILE_SET_UP.route) }
+}
+
+@Composable
+fun FamilyMemberSearchScreen(navigate: () -> Unit = {}) {
 
     CreateFamilyLayoutSkeleton(
         headerBottomPadding = 34.dp,
         header = stringResource(id = R.string.select_create_family_header),
-        button = stringResource(id = R.string.next_btn_one_third)) {
+        button = stringResource(id = R.string.next_btn_one_third),
+        onClick = navigate
+    ) {
         Column {
             SearchMemberTextField()
             Box(
@@ -56,8 +65,6 @@ fun SearchMemberScreen() {
             Spacer(modifier = Modifier.height(29.dp))
         }
     }
-
-
 }
 
 @Composable
@@ -151,7 +158,7 @@ fun MemberItem(name: String) {
 @Composable
 fun PreviewCreateFamilyScreen() {
     FamilyMomentsTheme {
-        SearchMemberScreen()
+        FamilyMemberSearchScreen()
     }
 }
 

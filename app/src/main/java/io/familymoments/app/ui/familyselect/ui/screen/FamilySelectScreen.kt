@@ -1,6 +1,7 @@
-package io.familymoments.app.ui.screen
+package io.familymoments.app.ui.familyselect.ui.screen
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -20,6 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
 import io.familymoments.app.R
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
@@ -27,9 +29,16 @@ import io.familymoments.app.ui.theme.FamilyMomentsTheme
 
 
 @Composable
-fun FamilySelectScreen() {
+fun FamilySelectScreen(navController: NavController) {
+    FamilySelectScreen {
+        navController.navigate(FamilySetRoute.FAMILY_MEMBER_SEARCH.route)
+    }
+}
 
-    CreateFamily()
+@Composable
+fun FamilySelectScreen(createFamilyNavigate: () -> Unit = {}) {
+
+    CreateFamily(createFamilyNavigate)
     JoinFamily()
     Row(
         modifier = Modifier
@@ -43,9 +52,8 @@ fun FamilySelectScreen() {
 
 
 @Composable
-fun CreateFamily() {
+fun CreateFamily(createFamilyToGo: () -> Unit = {}) {
     val radius = 275
-
     Canvas(modifier = Modifier.fillMaxSize()) {
         drawCircle(
             color = AppColors.pink3,
@@ -54,7 +62,11 @@ fun CreateFamily() {
         )
     }
     Text(
-        modifier = Modifier.padding(top = 146.dp, start = 43.dp),
+        modifier = Modifier
+            .padding(top = 146.dp, start = 43.dp)
+            .clickable {
+                createFamilyToGo()
+            },
         text = stringResource(id = R.string.create_family),
         style = AppTypography.BTN1_36,
         color = AppColors.deepPurple1
@@ -83,9 +95,9 @@ fun JoinFamily() {
 }
 
 @Composable
-fun SkipButton() {
+fun SkipButton(onClick: () -> Unit = {}) {
     Button(
-        onClick = { /*TODO*/ },
+        onClick = onClick,
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),

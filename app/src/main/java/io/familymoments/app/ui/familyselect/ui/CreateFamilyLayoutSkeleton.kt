@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.screen
+package io.familymoments.app.ui.familyselect.ui
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
