@@ -23,6 +23,7 @@ fun FamilySetScreen() {
         composable(FamilySetRoute.FAMILY_PROFILE_SET_UP.route) { FamilyProfileSetUpScreen(navController) }
         composable(FamilySetRoute.FAMILY_ALARM_SET_UP.route) { FamilyAlarmSetUpScreen(navController) }
         composable(FamilySetRoute.FAMILY_INVITATION_LINK.route) { FamilyInvitationLinkScreen(navController) }
-        composable(FamilySetRoute.FAMILY_JOIN.route) {}
+        composable(FamilySetRoute.FAMILY_JOIN.route) { FamilyJoinScreen(navController)}
+        // 메인 화면 추가
     }
 }

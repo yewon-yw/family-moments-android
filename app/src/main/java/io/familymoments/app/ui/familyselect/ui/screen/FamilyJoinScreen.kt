@@ -1,6 +1,7 @@
 package io.familymoments.app.ui.familyselect.ui.screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,9 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,62 +32,39 @@ import io.familymoments.app.R
 import io.familymoments.app.ui.familyselect.ui.CreateFamilyLayoutSkeleton
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
-import io.familymoments.app.ui.theme.FamilyMomentsTheme
 
 @Composable
-fun FamilyMemberSearchScreen(navController: NavController) {
-    FamilyMemberSearchScreen { navController.navigate(FamilySetRoute.FAMILY_PROFILE_SET_UP.route) }
-}
-
-@Composable
-fun FamilyMemberSearchScreen(navigate: () -> Unit = {}) {
-
-    CreateFamilyLayoutSkeleton(
-        headerBottomPadding = 34.dp,
-        header = stringResource(id = R.string.select_create_family_header),
-        button = stringResource(id = R.string.next_btn_one_third),
-        onClick = navigate
-    ) {
-        Column {
-            SearchMemberTextField()
-            Box(
-                modifier = Modifier
-                    .weight(1f)
-            ) {
-                MemberList()
-            }
-            Spacer(modifier = Modifier.height(29.dp))
-        }
+fun FamilyJoinScreen(navController: NavController) {
+    FamilyJoinScreen{
+        // 메인 화면 이동
     }
 }
 
 @Composable
-fun SearchMemberTextField() {
+fun FamilyJoinScreen(navigate: () -> Unit = {}) {
     var idTextFieldValue by remember {
         mutableStateOf(TextFieldValue())
     }
-    SearchTextField(
-        hint = stringResource(id = R.string.member_search_text_field_hint)
-    ) { idTextFieldValue = it }
-}
-
-@Composable
-fun MemberList() {
-    LazyColumn {
-        items(10) {
-            MemberItem(resourceId = R.drawable.sample_member_image, name = "Member$it")
-            Divider(
-                color = AppColors.grey3,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(1.dp)
-            )
+    CreateFamilyLayoutSkeleton(
+        headerBottomPadding = 18.dp,
+        header = "우리 가족 참여하기",
+        button = "바로 참여하기"
+    ) {
+        Column {
+            SearchTextField(
+                hint = stringResource(R.string.family_invitation_link_text_field_hint)
+            ) { idTextFieldValue = it }
+            Spacer(modifier = Modifier.height(36.dp))
+            Box(modifier = Modifier.background(color = AppColors.pink6)) {
+                FamilyProfile(resourceId = R.drawable.sample_member_image, name = "가족 이름")
+            }
         }
+
     }
 }
 
 @Composable
-fun MemberItem(resourceId: Int, name: String) {
+fun FamilyProfile(resourceId: Int, name: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -120,20 +96,6 @@ fun MemberItem(resourceId: Int, name: String) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewCreateFamilyScreen() {
-    FamilyMomentsTheme {
-        FamilyMemberSearchScreen()
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewMemberItem() {
-    MemberItem(resourceId = R.drawable.sample_member_image,"Member")
-}
-
-@Preview(showBackground = true)
-@Composable
-fun PreviewMemberList() {
-    MemberList()
+fun PreviewFamilyJoinScreen() {
+    FamilyJoinScreen()
 }

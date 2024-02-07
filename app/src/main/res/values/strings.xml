@@ -28,4 +28,5 @@
     <string name="copy_invitation_link_btn">초대 링크 복사</string>
     <string name="next_btn">다음</string>
     <string name="title_activity_family_set">FamilySetActivity</string>
+    <string name="family_invitation_link_text_field_hint">초대 링크 입력하기</string>
 </resources>
