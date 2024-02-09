@@ -108,6 +108,7 @@ dependencies {
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.room.runtime)
     implementation(libs.androidx.core.splashscreen)
+    implementation(libs.okhttp.urlconnection)
     kapt(libs.room.compiler)
     implementation(libs.navigation.compose)
 

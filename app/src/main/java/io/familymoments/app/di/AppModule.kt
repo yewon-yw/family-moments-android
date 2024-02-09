@@ -8,10 +8,12 @@ import io.familymoments.app.BuildConfig
 import io.familymoments.app.network.AuthInterceptor
 import io.familymoments.app.network.LoginService
 import io.familymoments.app.repository.TokenRepository
+import okhttp3.JavaNetCookieJar
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.net.CookieManager
 import javax.inject.Qualifier
 import javax.inject.Singleton
 
@@ -77,18 +79,19 @@ object AppModule {
     @Provides
     @Singleton
     @AuthOkHttpClient
-    fun provideAuthOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient {
+    fun provideAuthOkHttpClient(tokenRepository: TokenRepository): OkHttpClient {
         return OkHttpClient.Builder()
-            .addInterceptor(authInterceptor)
+            .cookieJar(JavaNetCookieJar(CookieManager()))
+            .addInterceptor(AuthInterceptor(tokenRepository))
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.HEADERS
             })
             .build()
     }
 
-    @Provides
-    @Singleton
-    fun provideAuthInterceptor(tokenRepository: TokenRepository): AuthInterceptor {
-        return AuthInterceptor(tokenRepository)
-    }
+//    @Provides
+//    @Singleton
+//    fun provideAuthInterceptor(tokenRepository: TokenRepository): AuthInterceptor {
+//        return AuthInterceptor(tokenRepository)
+//    }
 }

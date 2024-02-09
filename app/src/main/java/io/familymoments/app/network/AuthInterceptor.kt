@@ -1,5 +1,7 @@
 package io.familymoments.app.network
 
+import android.util.Log
+import io.familymoments.app.TAG
 import io.familymoments.app.repository.TokenRepository
 import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
@@ -13,7 +15,10 @@ class AuthInterceptor @Inject constructor(
         val token = runBlocking {
             tokenRepository.loadAccessToken()
         }
-        val request = chain.request().newBuilder().addHeader(AUTHORIZATION, token).build()
+        Log.d(TAG, "intercept: $token")
+        val request = chain.request().newBuilder()
+            .addHeader(AUTHORIZATION, token)
+            .build()
         return chain.proceed(request)
     }
 

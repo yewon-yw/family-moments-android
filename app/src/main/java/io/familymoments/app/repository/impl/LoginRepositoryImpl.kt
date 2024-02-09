@@ -2,7 +2,6 @@ package io.familymoments.app.repository.impl
 
 import io.familymoments.app.model.LoginRequest
 import io.familymoments.app.model.LoginResponse
-import io.familymoments.app.model.TokenResponse
 import io.familymoments.app.network.LoginService
 import io.familymoments.app.network.Resource
 import io.familymoments.app.repository.LoginRepository
@@ -10,6 +9,7 @@ import io.familymoments.app.repository.TokenRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import okhttp3.Headers
 import javax.inject.Inject
 
 class LoginRepositoryImpl @Inject constructor(
@@ -26,7 +26,8 @@ class LoginRepositoryImpl @Inject constructor(
             val responseBody = response.body() ?: LoginResponse()
 
             if (responseBody.isSuccess) {
-                saveToken(response.headers())
+                saveAccessToken(response.headers())
+//                saveToken(response.headers())
                 emit(Resource.Success(responseBody))
             } else {
                 emit(Resource.Fail(Throwable(responseBody.message)))
@@ -37,18 +38,25 @@ class LoginRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun checkValidation(): Flow<Resource<TokenResponse>> {
+    override suspend fun checkValidation(): Flow<Resource<Unit>> {
+
         return flow {
             emit(Resource.Loading)
             val response = loginService.checkValidation()
-            if (response.isSuccess) {
-                emit(Resource.Success(response))
+            if (response.code() == 200) {
+                emit(Resource.Success(Unit))
             } else {
-                emit(Resource.Fail(Throwable(response.message)))
+                emit(Resource.Fail(Throwable(response.message())))
             }
         }.catch { e ->
             emit(Resource.Fail(e))
         }
+    }
+
+    private suspend fun saveAccessToken(headers: Headers) {
+        val accessToken = headers[KEY_ACCESS_TOKEN]
+            ?: throw IllegalStateException(GET_ACCESS_TOKEN_ERROR)
+        tokenRepository.saveAccessToken(accessToken)
     }
 
     private suspend fun saveToken(headers: okhttp3.Headers) {
