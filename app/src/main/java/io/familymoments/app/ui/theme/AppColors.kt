@@ -19,6 +19,7 @@ object AppColors {
     val grey3 = Color(0xFFBFBFBF)
     val grey4 = Color(0xFFF4F4F4)
     val grey5 = Color(0xFFF3F4F7)
+    val grey6 = Color(0xFFFFFFFF)
 
     val black1 = Color(0xFF000000)
     val black2 = Color(0xFF535353)
@@ -30,5 +31,7 @@ object AppColors {
     val deepPurple1 = Color(0xFF5B6380)
     val deepPurple2 = Color(0xFF7C8299)
     val deepPurple3 = Color(0xFFA5A8BA)
+
+    val shadowColor = Color(0x1A000000)
 }
 

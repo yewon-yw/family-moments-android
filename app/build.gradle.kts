@@ -109,6 +109,7 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.androidx.core.splashscreen)
     kapt(libs.room.compiler)
+    implementation(libs.navigation.compose)
 
     testImplementation(libs.mockk)
     testImplementation(libs.junit)
