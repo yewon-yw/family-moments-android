@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.familyselect.ui.screen
+package io.familymoments.app.ui.choosingfamily.ui.screen
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.clickable
@@ -29,17 +29,18 @@ import io.familymoments.app.ui.theme.FamilyMomentsTheme
 
 
 @Composable
-fun FamilySelectScreen(navController: NavController) {
-    FamilySelectScreen {
-        navController.navigate(FamilySetRoute.FAMILY_MEMBER_SEARCH.route)
-    }
+fun StartScreen(navController: NavController) {
+    StartScreen(
+        { navController.navigate(ChoosingFamilyRoute.SEARCHING_MEMBER.name) },
+        { navController.navigate(ChoosingFamilyRoute.FAMILY_JOIN.name) }
+    )
 }
 
 @Composable
-fun FamilySelectScreen(createFamilyNavigate: () -> Unit = {}) {
+fun StartScreen(goToCreating: () -> Unit = {}, goToJoining: () -> Unit = {}) {
 
-    CreateFamily(createFamilyNavigate)
-    JoinFamily()
+    CreateButton(goToCreating)
+    JoinButton(goToJoining)
     Row(
         modifier = Modifier
             .fillMaxHeight()
@@ -52,7 +53,7 @@ fun FamilySelectScreen(createFamilyNavigate: () -> Unit = {}) {
 
 
 @Composable
-fun CreateFamily(createFamilyToGo: () -> Unit = {}) {
+fun CreateButton(goToCreating: () -> Unit = {}) {
     val radius = 275
     Canvas(modifier = Modifier.fillMaxSize()) {
         drawCircle(
@@ -65,7 +66,7 @@ fun CreateFamily(createFamilyToGo: () -> Unit = {}) {
         modifier = Modifier
             .padding(top = 146.dp, start = 43.dp)
             .clickable {
-                createFamilyToGo()
+                goToCreating()
             },
         text = stringResource(id = R.string.create_family),
         style = AppTypography.BTN1_36,
@@ -74,7 +75,7 @@ fun CreateFamily(createFamilyToGo: () -> Unit = {}) {
 }
 
 @Composable
-fun JoinFamily() {
+fun JoinButton(goToJoining: () -> Unit = {}) {
     val radius = 275
     Canvas(modifier = Modifier.fillMaxSize()) {
         drawCircle(
@@ -85,7 +86,11 @@ fun JoinFamily() {
     }
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
         Text(
-            modifier = Modifier.padding(bottom = 227.dp, end = 50.dp),
+            modifier = Modifier
+                .padding(bottom = 227.dp, end = 50.dp)
+                .clickable {
+                    goToJoining()
+                },
             text = stringResource(id = R.string.join_family),
             style = AppTypography.BTN1_36,
             color = AppColors.deepPurple1
@@ -117,8 +122,8 @@ fun SkipButton(onClick: () -> Unit = {}) {
 
 @Preview(showBackground = true)
 @Composable
-fun FamilySelectScreenPreview() {
+fun PreviewStartScreen() {
     FamilyMomentsTheme {
-        FamilySelectScreen()
+        StartScreen()
     }
 }

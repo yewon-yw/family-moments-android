@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.familyselect.ui.screen
+package io.familymoments.app.ui.choosingfamily.ui.screen
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box

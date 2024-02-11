@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.familyselect.ui.screen
+package io.familymoments.app.ui.choosingfamily.joining.ui.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,23 +29,24 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.familymoments.app.R
-import io.familymoments.app.ui.familyselect.ui.CreateFamilyLayoutSkeleton
+import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyHeaderButtonLayout
+import io.familymoments.app.ui.choosingfamily.ui.screen.SearchTextField
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
 
 @Composable
-fun FamilyJoinScreen(navController: NavController) {
-    FamilyJoinScreen{
+fun JoinScreen(navController: NavController) {
+    JoinScreen{
         // 메인 화면 이동
     }
 }
 
 @Composable
-fun FamilyJoinScreen(navigate: () -> Unit = {}) {
+fun JoinScreen(navigate: () -> Unit = {}) {
     var idTextFieldValue by remember {
         mutableStateOf(TextFieldValue())
     }
-    CreateFamilyLayoutSkeleton(
+    ChoosingFamilyHeaderButtonLayout(
         headerBottomPadding = 18.dp,
         header = "우리 가족 참여하기",
         button = "바로 참여하기"
@@ -96,6 +97,6 @@ fun FamilyProfile(resourceId: Int, name: String) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewFamilyJoinScreen() {
-    FamilyJoinScreen()
+fun PreviewJoinScreen() {
+    JoinScreen()
 }

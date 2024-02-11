@@ -16,7 +16,7 @@
         android:theme="@style/Theme.FamilyMoments"
         tools:targetApi="31">
         <activity
-            android:name=".ui.activity.FamilySetActivity"
+            android:name=".ui.choosingfamily.ui.activity.FamilySetActivity"
             android:exported="true"
             android:label="@string/title_activity_family_set"
             android:theme="@style/Theme.FamilyMoments">

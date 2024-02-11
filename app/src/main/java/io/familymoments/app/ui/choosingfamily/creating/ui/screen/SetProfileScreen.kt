@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.familyselect.ui.screen
+package io.familymoments.app.ui.choosingfamily.creating.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -24,19 +24,20 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.familymoments.app.R
 import io.familymoments.app.ui.component.SelectImageButton
-import io.familymoments.app.ui.familyselect.ui.CreateFamilyLayoutSkeleton
+import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyHeaderButtonLayout
+import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyRoute
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
 
 @Composable
-fun FamilyProfileSetUpScreen(navController: NavController) {
-    FamilyProfileSetUpScreen { navController.navigate(FamilySetRoute.FAMILY_ALARM_SET_UP.route) }
+fun SetProfileScreen(navController: NavController) {
+    SetProfileScreen { navController.navigate(ChoosingFamilyRoute.FAMILY_ALARM_SET_UP.name) }
 }
 
 @Composable
-fun FamilyProfileSetUpScreen(navigate: () -> Unit = {}) {
+fun SetProfileScreen(navigate: () -> Unit = {}) {
     Column {
-        CreateFamilyLayoutSkeleton(
+        ChoosingFamilyHeaderButtonLayout(
             headerBottomPadding = 29.dp,
             header = stringResource(id = R.string.select_create_family_header),
             button = stringResource(id = R.string.next_btn_two_third),
@@ -98,6 +99,6 @@ fun SetUpFamilyPicture() {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewFamilyProfileSetUpScreen() {
-    FamilyProfileSetUpScreen()
+fun PreviewSetProfileScreen() {
+    SetProfileScreen()
 }

@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.familyselect.ui.screen
+package io.familymoments.app.ui.choosingfamily.creating.ui.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -30,20 +30,21 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.familymoments.app.R
-import io.familymoments.app.ui.familyselect.ui.CreateFamilyLayoutSkeleton
+import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyHeaderButtonLayout
+import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyRoute
+import io.familymoments.app.ui.choosingfamily.ui.screen.SearchTextField
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
 import io.familymoments.app.ui.theme.FamilyMomentsTheme
 
 @Composable
-fun FamilyMemberSearchScreen(navController: NavController) {
-    FamilyMemberSearchScreen { navController.navigate(FamilySetRoute.FAMILY_PROFILE_SET_UP.route) }
+fun SearchMemberScreen(navController: NavController) {
+    SearchMemberScreen { navController.navigate(ChoosingFamilyRoute.FAMILY_PROFILE_SET_UP.name) }
 }
 
 @Composable
-fun FamilyMemberSearchScreen(navigate: () -> Unit = {}) {
-
-    CreateFamilyLayoutSkeleton(
+fun SearchMemberScreen(navigate: () -> Unit = {}) {
+    ChoosingFamilyHeaderButtonLayout(
         headerBottomPadding = 34.dp,
         header = stringResource(id = R.string.select_create_family_header),
         button = stringResource(id = R.string.next_btn_one_third),
@@ -120,9 +121,9 @@ fun MemberItem(resourceId: Int, name: String) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewCreateFamilyScreen() {
+fun PreviewSearchMemberScreen() {
     FamilyMomentsTheme {
-        FamilyMemberSearchScreen()
+        SearchMemberScreen()
     }
 }
 

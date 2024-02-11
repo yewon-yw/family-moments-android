@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.familyselect.ui.screen
+package io.familymoments.app.ui.choosingfamily.creating.ui.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -24,18 +24,18 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.familymoments.app.R
-import io.familymoments.app.ui.familyselect.ui.CreateFamilyLayoutSkeleton
+import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyHeaderButtonLayout
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
 
 @Composable
-fun FamilyInvitationLinkScreen(navController: NavController) {
-    FamilyInvitationLinkScreen()
+fun CopyInvitationLinkScreen(navController: NavController) {
+    CopyInvitationLinkScreen()
 }
 
 @Composable
-fun FamilyInvitationLinkScreen(navigate: () -> Unit = {}) {
-    CreateFamilyLayoutSkeleton(
+fun CopyInvitationLinkScreen(navigate: () -> Unit = {}) {
+    ChoosingFamilyHeaderButtonLayout(
         headerBottomPadding = 16.dp,
         header = stringResource(R.string.family_invitation_link_header),
         button = stringResource(R.string.next_btn)
@@ -83,6 +83,6 @@ fun LinkTextField() {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewFamilyInvitationLinkScreen() {
-    FamilyInvitationLinkScreen()
+fun PreviewCopyInvitationLinkScreen() {
+    CopyInvitationLinkScreen()
 }

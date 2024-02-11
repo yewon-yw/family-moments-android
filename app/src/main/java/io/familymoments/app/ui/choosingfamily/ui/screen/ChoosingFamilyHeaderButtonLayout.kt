@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.familyselect.ui
+package io.familymoments.app.ui.choosingfamily.ui.screen
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +17,7 @@ import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
 
 @Composable
-fun CreateFamilyLayoutSkeleton(
+fun ChoosingFamilyHeaderButtonLayout(
     headerBottomPadding: Dp,
     header: String = "",
     button: String = "",
