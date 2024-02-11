@@ -31,7 +31,7 @@ import io.familymoments.app.ui.theme.AppTypography
 
 @Composable
 fun SetProfileScreen(navController: NavController) {
-    SetProfileScreen { navController.navigate(ChoosingFamilyRoute.FAMILY_ALARM_SET_UP.name) }
+    SetProfileScreen { navController.navigate(ChoosingFamilyRoute.SET_ALARM.name) }
 }
 
 @Composable

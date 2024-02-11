@@ -1,5 +1,8 @@
 package io.familymoments.app.ui.choosingfamily.creating.ui.screen
 
+import android.content.Intent
+import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
+import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -18,19 +21,26 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import io.familymoments.app.R
+import io.familymoments.app.ui.bottomnav.ui.activity.MainActivity
 import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyHeaderButtonLayout
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
 
 @Composable
-fun CopyInvitationLinkScreen(navController: NavController) {
-    CopyInvitationLinkScreen()
+fun CopyInvitationLinkScreen() {
+    val context = LocalContext.current
+    CopyInvitationLinkScreen {
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
+        }
+        context.startActivity(intent)
+    }
 }
 
 @Composable
@@ -38,7 +48,8 @@ fun CopyInvitationLinkScreen(navigate: () -> Unit = {}) {
     ChoosingFamilyHeaderButtonLayout(
         headerBottomPadding = 16.dp,
         header = stringResource(R.string.family_invitation_link_header),
-        button = stringResource(R.string.next_btn)
+        button = stringResource(R.string.next_btn),
+        onClick = navigate
     ) {
         Column {
             LinkTextField()

@@ -31,8 +31,8 @@ import io.familymoments.app.ui.theme.FamilyMomentsTheme
 @Composable
 fun StartScreen(navController: NavController) {
     StartScreen(
-        { navController.navigate(ChoosingFamilyRoute.SEARCHING_MEMBER.name) },
-        { navController.navigate(ChoosingFamilyRoute.FAMILY_JOIN.name) }
+        { navController.navigate(ChoosingFamilyRoute.SEARCH_MEMBER.name) },
+        { navController.navigate(ChoosingFamilyRoute.JOIN.name) }
     )
 }
 

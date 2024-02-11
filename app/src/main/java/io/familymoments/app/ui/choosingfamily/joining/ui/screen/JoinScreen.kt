@@ -1,5 +1,6 @@
 package io.familymoments.app.ui.choosingfamily.joining.ui.screen
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -22,22 +23,27 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import io.familymoments.app.R
+import io.familymoments.app.ui.bottomnav.ui.activity.MainActivity
 import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyHeaderButtonLayout
 import io.familymoments.app.ui.choosingfamily.ui.screen.SearchTextField
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
 
 @Composable
-fun JoinScreen(navController: NavController) {
+fun JoinScreen() {
+    val context = LocalContext.current
     JoinScreen{
-        // 메인 화면 이동
+        val intent = Intent(context, MainActivity::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        }
+        context.startActivity(intent)
     }
 }
 
@@ -48,8 +54,9 @@ fun JoinScreen(navigate: () -> Unit = {}) {
     }
     ChoosingFamilyHeaderButtonLayout(
         headerBottomPadding = 18.dp,
-        header = "우리 가족 참여하기",
-        button = "바로 참여하기"
+        header = stringResource(R.string.header_join_family),
+        button = stringResource(R.string.button_family_join_now),
+        onClick = navigate
     ) {
         Column {
             SearchTextField(

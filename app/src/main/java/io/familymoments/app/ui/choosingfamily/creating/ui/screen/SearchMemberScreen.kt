@@ -39,7 +39,7 @@ import io.familymoments.app.ui.theme.FamilyMomentsTheme
 
 @Composable
 fun SearchMemberScreen(navController: NavController) {
-    SearchMemberScreen { navController.navigate(ChoosingFamilyRoute.FAMILY_PROFILE_SET_UP.name) }
+    SearchMemberScreen { navController.navigate(ChoosingFamilyRoute.SET_PROFILE.name) }
 }
 
 @Composable

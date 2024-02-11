@@ -37,7 +37,7 @@ import io.familymoments.app.ui.theme.AppTypography
 
 @Composable
 fun SetAlarmScreen(navController: NavController) {
-    SetAlarmScreen { navController.navigate(ChoosingFamilyRoute.FAMILY_INVITATION_LINK.name) }
+    SetAlarmScreen { navController.navigate(ChoosingFamilyRoute.COPY_INVITATION_LINK.name) }
 }
 
 @OptIn(ExperimentalMaterialApi::class)
