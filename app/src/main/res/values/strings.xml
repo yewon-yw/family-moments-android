@@ -20,4 +20,5 @@
     <string name="login_login">로그인</string>
     <string name="title_activity_join">JoinActivity</string>
     <string name="title_activity_splash">SplashActivity</string>
+    <string name="splash_title">가족들과 소중한 순간을 공유해보세요!</string>
 </resources>

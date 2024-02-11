@@ -27,7 +27,6 @@ class LoginRepositoryImpl @Inject constructor(
 
             if (responseBody.isSuccess) {
                 saveAccessToken(response.headers())
-//                saveToken(response.headers())
                 emit(Resource.Success(responseBody))
             } else {
                 emit(Resource.Fail(Throwable(responseBody.message)))
@@ -59,20 +58,8 @@ class LoginRepositoryImpl @Inject constructor(
         tokenRepository.saveAccessToken(accessToken)
     }
 
-    private suspend fun saveToken(headers: okhttp3.Headers) {
-        val accessToken = headers[KEY_ACCESS_TOKEN]
-            ?: throw IllegalStateException(GET_ACCESS_TOKEN_ERROR)
-        tokenRepository.saveAccessToken(accessToken)
-
-        val refreshToken = headers[KEY_REFRESH_TOKEN]?.split(";")?.get(0)?.split("=")?.get(1)
-            ?: throw IllegalStateException(GET_REFRESH_TOKEN_ERROR)
-        tokenRepository.saveRefreshToken(refreshToken)
-    }
-
     companion object {
         private const val KEY_ACCESS_TOKEN = "X-AUTH-TOKEN"
-        private const val KEY_REFRESH_TOKEN = "Set-Cookie"
         private const val GET_ACCESS_TOKEN_ERROR = "Fail to get Access Token"
-        private const val GET_REFRESH_TOKEN_ERROR = "Fail to get Refresh Token"
     }
 }
