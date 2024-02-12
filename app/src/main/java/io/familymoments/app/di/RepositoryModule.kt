@@ -6,10 +6,10 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.familymoments.app.network.LoginService
-import io.familymoments.app.repository.LoginRepository
+import io.familymoments.app.network.UserService
+import io.familymoments.app.repository.UserRepository
 import io.familymoments.app.repository.TokenRepository
-import io.familymoments.app.repository.impl.LoginRepositoryImpl
+import io.familymoments.app.repository.impl.UserRepositoryImpl
 import io.familymoments.app.repository.impl.TokenRepositoryImpl
 import javax.inject.Singleton
 
@@ -19,8 +19,8 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideLoginRepository(loginService: LoginService, tokenRepository: TokenRepository): LoginRepository {
-        return LoginRepositoryImpl(loginService, tokenRepository)
+    fun provideUserRepository(userService: UserService, tokenRepository: TokenRepository): UserRepository {
+        return UserRepositoryImpl(userService, tokenRepository)
     }
 
     @Provides

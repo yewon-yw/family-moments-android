@@ -1,10 +1,11 @@
-package io.familymoments.app.ui.activity
+package io.familymoments.app.ui.login.ui.activity
 
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import dagger.hilt.android.AndroidEntryPoint
-import io.familymoments.app.ui.screen.LoginScreen
-import io.familymoments.app.viewmodel.LoginViewModel
+import io.familymoments.app.ui.activity.BaseActivity
+import io.familymoments.app.ui.login.ui.screen.LoginScreen
+import io.familymoments.app.ui.login.viewmodel.LoginViewModel
 
 @AndroidEntryPoint
 

@@ -1,4 +1,4 @@
-package io.familymoments.app.model
+package io.familymoments.app.model.uistate
 
 data class SplashUiState(
     val isLoading: Boolean? = null,

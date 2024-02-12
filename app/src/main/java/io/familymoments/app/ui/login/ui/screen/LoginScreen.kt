@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.screen
+package io.familymoments.app.ui.login.ui.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -42,12 +42,12 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.familymoments.app.R
-import io.familymoments.app.model.LoginUiState
+import io.familymoments.app.model.uistate.LoginUiState
 import io.familymoments.app.ui.component.AppBarScreen
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
 import io.familymoments.app.ui.theme.FamilyMomentsTheme
-import io.familymoments.app.viewmodel.LoginViewModel
+import io.familymoments.app.ui.login.viewmodel.LoginViewModel
 
 @ExperimentalMaterial3Api
 @Composable

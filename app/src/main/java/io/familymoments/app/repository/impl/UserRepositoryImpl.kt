@@ -1,10 +1,10 @@
 package io.familymoments.app.repository.impl
 
-import io.familymoments.app.model.LoginRequest
-import io.familymoments.app.model.LoginResponse
-import io.familymoments.app.network.LoginService
+import io.familymoments.app.model.request.LoginRequest
+import io.familymoments.app.model.response.LoginResponse
+import io.familymoments.app.network.UserService
 import io.familymoments.app.network.Resource
-import io.familymoments.app.repository.LoginRepository
+import io.familymoments.app.repository.UserRepository
 import io.familymoments.app.repository.TokenRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -12,17 +12,17 @@ import kotlinx.coroutines.flow.flow
 import okhttp3.Headers
 import javax.inject.Inject
 
-class LoginRepositoryImpl @Inject constructor(
-    private val loginService: LoginService,
+class UserRepositoryImpl @Inject constructor(
+    private val userService: UserService,
     private val tokenRepository: TokenRepository
-) : LoginRepository {
+) : UserRepository {
     override suspend fun loginUser(
         username: String,
         password: String,
     ): Flow<Resource<LoginResponse>> {
         return flow {
             emit(Resource.Loading)
-            val response = loginService.loginUser(LoginRequest(username, password))
+            val response = userService.loginUser(LoginRequest(username, password))
             val responseBody = response.body() ?: LoginResponse()
 
             if (responseBody.isSuccess) {
@@ -41,7 +41,7 @@ class LoginRepositoryImpl @Inject constructor(
 
         return flow {
             emit(Resource.Loading)
-            val response = loginService.checkValidation()
+            val response = userService.checkValidation()
             if (response.code() == 200) {
                 emit(Resource.Success(Unit))
             } else {

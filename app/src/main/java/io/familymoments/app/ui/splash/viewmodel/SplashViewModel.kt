@@ -1,21 +1,22 @@
-package io.familymoments.app.viewmodel
+package io.familymoments.app.ui.splash.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.familymoments.app.model.SplashUiState
-import io.familymoments.app.repository.LoginRepository
+import io.familymoments.app.model.uistate.SplashUiState
+import io.familymoments.app.repository.UserRepository
+import io.familymoments.app.viewmodel.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 @HiltViewModel
 class SplashViewModel @Inject constructor(
-    private val loginRepository: LoginRepository
+    private val userRepository: UserRepository
 ) : BaseViewModel() {
     private val _splashUiState = MutableStateFlow(SplashUiState())
     val splashUiState = _splashUiState.asStateFlow()
     fun checkUserValidation() {
         async(
-            operation = { loginRepository.checkValidation() },
+            operation = { userRepository.checkValidation() },
             onSuccess = {
                 _splashUiState.value = _splashUiState.value.copy(
                     isLoading = isLoading.value,

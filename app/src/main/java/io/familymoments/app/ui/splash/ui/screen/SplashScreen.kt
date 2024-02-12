@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.screen
+package io.familymoments.app.ui.splash.ui.screen
 
 import android.content.Context
 import android.content.Intent
@@ -24,11 +24,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.familymoments.app.R
-import io.familymoments.app.model.SplashUiState
-import io.familymoments.app.ui.activity.LoginActivity
+import io.familymoments.app.model.uistate.SplashUiState
+import io.familymoments.app.ui.login.ui.activity.LoginActivity
 import io.familymoments.app.ui.bottomnav.ui.activity.MainActivity
 import io.familymoments.app.ui.theme.FamilyMomentsTheme
-import io.familymoments.app.viewmodel.SplashViewModel
+import io.familymoments.app.ui.splash.viewmodel.SplashViewModel
 import kotlinx.coroutines.delay
 
 @Composable
