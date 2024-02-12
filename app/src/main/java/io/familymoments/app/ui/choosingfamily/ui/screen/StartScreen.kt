@@ -23,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,6 +34,8 @@ import io.familymoments.app.R
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
 import io.familymoments.app.ui.theme.FamilyMomentsTheme
+import kotlin.math.pow
+import kotlin.math.sqrt
 
 
 @Composable
@@ -46,8 +49,9 @@ fun StartScreen(navController: NavController) {
 @Composable
 fun StartScreen(goToCreating: () -> Unit = {}, goToJoining: () -> Unit = {}) {
 
-    CreateButton(goToCreating)
-    JoinButton(goToJoining)
+    DrawCircle(goToJoining = goToCreating, goToCreating = goToJoining, radius = 275)
+    CreatingText()
+    JoiningText()
     Row(
         modifier = Modifier
             .fillMaxHeight()
@@ -60,9 +64,7 @@ fun StartScreen(goToCreating: () -> Unit = {}, goToJoining: () -> Unit = {}) {
 
 
 @Composable
-fun CreateButton(goToCreating: () -> Unit = {}) {
-    val radius = 275
-    DrawCreateCircle(radius, goToCreating)
+fun CreatingText() {
     Text(
         modifier = Modifier
             .padding(top = 146.dp, start = 43.dp),
@@ -72,55 +74,8 @@ fun CreateButton(goToCreating: () -> Unit = {}) {
     )
 }
 
-fun calculateCreateCircleCenter(radius: Int): Pair<Int, Int> {
-    return (radius - 226 to 27 + radius)
-}
-
 @Composable
-fun DrawCreateCircle(radius: Int, goToCreating: () -> Unit) {
-    val center = calculateCreateCircleCenter(radius)
-    val minX = (center.first - radius).dp
-    val maxX = (center.first + radius).dp
-    val minY = (center.second - radius).dp
-    val maxY = (center.second + radius).dp
-
-    var color by remember {
-        mutableStateOf(AppColors.pink3)
-    }
-    Canvas(modifier = Modifier
-        .fillMaxSize()
-        .pointerInput(goToCreating) {
-            awaitEachGesture {
-                awaitFirstDown().also {
-                    val positionX = it.position.x
-                    val positionY = it.position.y
-                    if ((positionX in minX.toPx()..maxX.toPx()) && (positionY in minY.toPx()..maxY.toPx())) {
-                        color = AppColors.pink2
-                        it.consume()
-                    }
-                }
-                val up = waitForUpOrCancellation()
-                if (up != null) {
-                    color = AppColors.pink3
-                    up.consume()
-//                    goToCreating()
-
-                }
-            }
-        }) {
-        drawCircle(
-            color = color,
-            radius = radius.dp.toPx(),
-            center = Offset(center.first.dp.toPx(), center.second.dp.toPx())
-        )
-    }
-}
-
-@Composable
-fun JoinButton(goToJoining: () -> Unit = {}) {
-    val radius = 275
-    DrawJoinCircle(radius = radius, goToJoining)
-
+fun JoiningText() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
         Text(
             modifier = Modifier
@@ -132,48 +87,105 @@ fun JoinButton(goToJoining: () -> Unit = {}) {
     }
 }
 
+
+fun calculateCreateCircleCenter(radius: Int): Pair<Int, Int> {
+    return (radius - 226 to 27 + radius)
+}
+
 fun calculateJoinCircleCenter(radius: Int): Pair<Int, Int> {
     return (50 + radius to 234 + radius)
 }
 
 @Composable
-fun DrawJoinCircle(radius: Int, goToJoining: () -> Unit) {
-    val center = calculateJoinCircleCenter(radius)
-    val minX = (center.first - radius).dp
-    val maxX = (center.first + radius).dp
-    val minY = (center.second - radius).dp
-    val maxY = (center.second + radius).dp
-
-    var color by remember {
+fun DrawCircle(goToCreating: () -> Unit, goToJoining: () -> Unit, radius: Int) {
+    var creatingCircleColor by remember {
+        mutableStateOf(AppColors.pink3)
+    }
+    var joiningCircleColor by remember {
         mutableStateOf(AppColors.purple4)
     }
+
+    val creatingCircleCenter = calculateCreateCircleCenter(radius)
+    val creatingCircleCenterX = creatingCircleCenter.first.dp
+    val creatingCircleCenterY = creatingCircleCenter.second.dp
+
+    val joiningCircleCenter = calculateJoinCircleCenter(radius)
+    val joiningCircleCenterX = joiningCircleCenter.first.dp
+    val joiningCircleCenterY = joiningCircleCenter.second.dp
+
     Canvas(modifier = Modifier
         .fillMaxSize()
-        .pointerInput(goToJoining) {
+        .pointerInput(goToCreating, goToJoining) {
             awaitEachGesture {
                 awaitFirstDown().also {
-                    val positionX = it.position.x
-                    val positionY = it.position.y
-                    if ((positionX in minX.toPx()..maxX.toPx()) && (positionY in minY.toPx()..maxY.toPx())) {
-                        color = AppColors.purple3
+                    val position = (it.position.x to it.position.y)
+                    if (position.isInCircle(
+                            joiningCircleCenterX.toPx(),
+                            joiningCircleCenterY.toPx(),
+                            radius.dp.toPx()
+                        )
+                    ) {
+                        joiningCircleColor = AppColors.purple3
+                        it.consume()
+                    } else if (position.isInCircle(
+                            creatingCircleCenterX.toPx(),
+                            creatingCircleCenterY.toPx(),
+                            radius.dp.toPx()
+                        )
+                    ) {
+                        creatingCircleColor = AppColors.pink2
                         it.consume()
                     }
                 }
                 val up = waitForUpOrCancellation()
                 if (up != null) {
-                    color = AppColors.purple4
+                    val position = (up.position.x to up.position.y)
+                    if (position.isInCircle(
+                            joiningCircleCenterX.toPx(),
+                            joiningCircleCenterY.toPx(),
+                            radius.dp.toPx()
+                        )
+                    ) {
+                        joiningCircleColor = AppColors.purple4
+                        goToJoining()
+                    } else if (position.isInCircle(
+                            creatingCircleCenterX.toPx(),
+                            creatingCircleCenterY.toPx(),
+                            radius.dp.toPx()
+                        )
+                    ) {
+                        creatingCircleColor = AppColors.pink3
+                        goToCreating()
+                    } else {
+                        joiningCircleColor = AppColors.purple4
+                        creatingCircleColor = AppColors.pink3
+                    }
                     up.consume()
-//                    goToCreating()
-
                 }
             }
         }) {
+        drawEachCircle(radius, creatingCircleColor, creatingCircleCenter)()
+        drawEachCircle(radius, joiningCircleColor, joiningCircleCenter)()
+    }
+}
+
+private fun Pair<Float, Float>.isInCircle(circleCenterX: Float, circleCenterY: Float, radius: Float): Boolean {
+    return (sqrt(
+        (first - circleCenterX).pow(2)
+            + (second - circleCenterY).pow(2)
+    ) <= radius
+        )
+}
+
+fun drawEachCircle(radius: Int, color: Color, circleCenter: Pair<Int, Int>): DrawScope.() -> Unit {
+    return {
         drawCircle(
             color = color,
             radius = radius.dp.toPx(),
-            center = Offset(center.first.dp.toPx(), center.second.dp.toPx())
+            center = Offset(circleCenter.first.dp.toPx(), circleCenter.second.dp.toPx())
         )
     }
+
 }
 
 @Composable
