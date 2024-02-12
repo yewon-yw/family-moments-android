@@ -1,5 +1,6 @@
 package io.familymoments.app.ui.login.ui.screen
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -43,19 +45,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.familymoments.app.R
 import io.familymoments.app.model.uistate.LoginUiState
+import io.familymoments.app.ui.bottomnav.ui.activity.MainActivity
 import io.familymoments.app.ui.component.AppBarScreen
+import io.familymoments.app.ui.login.viewmodel.LoginViewModel
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
 import io.familymoments.app.ui.theme.FamilyMomentsTheme
-import io.familymoments.app.ui.login.viewmodel.LoginViewModel
 
-@ExperimentalMaterial3Api
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
     val loginUiState = viewModel.loginUiState.collectAsState()
     AppBarScreen(title = {
         Text(
-            text = "Family Moments",
+            text = stringResource(R.string.login_app_bar_screen_header),
             style = AppTypography.SH3_16,
             color = AppColors.deepPurple1
         )
@@ -70,6 +72,13 @@ fun LoginScreen(
     login: (String, String) -> Unit,
     loginUiState: LoginUiState
 ) {
+    val context = LocalContext.current
+
+    if (loginUiState.isSuccess == true) {
+        val intent = Intent(context, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        context.startActivity(intent)
+    }
     Column(
         modifier = Modifier
             .background(Color.White)
@@ -79,7 +88,7 @@ fun LoginScreen(
         Spacer(modifier = Modifier.height(86.dp))
         LoginLogo()
         Spacer(modifier = Modifier.height(49.dp))
-        LoginForm(login = login, loginUiState = loginUiState)
+        LoginForm(login = login, loginUiState)
         LoginOption()
         Spacer(modifier = Modifier.height(15.dp))
         SocialLogin()
@@ -121,10 +130,12 @@ fun LoginForm(
     var password by remember { mutableStateOf(TextFieldValue()) }
 
     Column(modifier = Modifier.padding(16.dp)) {
-        LoginFormRoundedCornerTextField(label = "Id", onValueChanged = { id = it })
+        LoginFormRoundedCornerTextField(label = stringResource(R.string.login_id_text_field_hint), onValueChanged = { id = it })
         Spacer(modifier = Modifier.height(8.dp))
-        LoginFormRoundedCornerTextField(label = "Password", onValueChanged = { password = it })
-        ErrorText(loginUiState)
+        LoginFormRoundedCornerTextField(label = stringResource(R.string.login_password_text_field_hint), onValueChanged = { password = it })
+        if (loginUiState.isSuccess == false) {
+            ErrorText(loginUiState.errorMessage ?: stringResource(R.string.login_default_error_message))
+        }
         Spacer(modifier = Modifier.height(37.dp))
         Surface(shape = RoundedCornerShape(8.dp), modifier = Modifier.fillMaxWidth()) {
             Button(
@@ -180,16 +191,14 @@ fun LoginFormRoundedCornerTextField(
 }
 
 @Composable
-fun ErrorText(loginUiState: LoginUiState) {
-    if (loginUiState.isSuccess == false) {
-        Text(
-            modifier = Modifier.padding(top = 10.dp),
-            text = loginUiState.errorMessage ?: "로그인 실패",
-            color = AppColors.red2,
-            fontSize = 13.sp,
-            fontWeight = FontWeight(700),
-        )
-    }
+fun ErrorText(message: String) {
+    Text(
+        modifier = Modifier.padding(top = 10.dp),
+        text = message,
+        color = AppColors.red2,
+        fontSize = 13.sp,
+        fontWeight = FontWeight(700),
+    )
 }
 
 @Composable
@@ -237,18 +246,18 @@ fun LoginOption() {
 @Composable
 fun SocialLogin() {
     Text(
-        text = "SNS 계정으로 로그인",
+        text = stringResource(R.string.sns_login),
         color = AppColors.grey2,
         fontSize = 13.sp,
         fontWeight = FontWeight.Bold,
     )
     Spacer(modifier = Modifier.height(30.dp))
     Row(modifier = Modifier.height(36.dp)) {
-        Image(painter = painterResource(id = R.drawable.ic_kakao_login), contentDescription = "")
+        Image(painter = painterResource(id = R.drawable.ic_kakao_login), contentDescription = null)
         Spacer(modifier = Modifier.width(37.dp))
-        Image(painter = painterResource(id = R.drawable.ic_naver_login), contentDescription = "")
+        Image(painter = painterResource(id = R.drawable.ic_naver_login), contentDescription = null)
         Spacer(modifier = Modifier.width(37.dp))
-        Image(painter = painterResource(id = R.drawable.ic_google_login), contentDescription = "")
+        Image(painter = painterResource(id = R.drawable.ic_google_login), contentDescription = null)
     }
 }
 
