@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -32,6 +31,7 @@ import androidx.compose.ui.unit.dp
 import io.familymoments.app.R
 import io.familymoments.app.ui.bottomnav.ui.activity.MainActivity
 import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyHeaderButtonLayout
+import io.familymoments.app.ui.choosingfamily.ui.screen.MemberCheckBox
 import io.familymoments.app.ui.choosingfamily.ui.screen.SearchTextField
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
@@ -39,7 +39,7 @@ import io.familymoments.app.ui.theme.AppTypography
 @Composable
 fun JoinScreen() {
     val context = LocalContext.current
-    JoinScreen{
+    JoinScreen {
         val intent = Intent(context, MainActivity::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
@@ -88,17 +88,9 @@ fun FamilyProfile(resourceId: Int, name: String) {
             contentDescription = null
         )
         Text(text = name, style = AppTypography.B2_14, color = Color(0xFF1B1A57))
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .size(28.dp), contentAlignment = Alignment.CenterEnd
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_round_checked),
-                contentDescription = null,
-                tint = Color.Unspecified
-            )
-        }
+        MemberCheckBox(modifier = Modifier
+            .weight(1f)
+            .size(28.dp))
     }
 }
 

@@ -1,6 +1,7 @@
 package io.familymoments.app.ui.choosingfamily.creating.ui.screen
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -12,7 +13,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,6 +30,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import io.familymoments.app.R
+import io.familymoments.app.ui.choosingfamily.ui.screen.MemberCheckBox
 import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyHeaderButtonLayout
 import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyRoute
 import io.familymoments.app.ui.choosingfamily.ui.screen.SearchTextField
@@ -90,6 +91,10 @@ fun MemberList() {
 
 @Composable
 fun MemberItem(resourceId: Int, name: String) {
+    var checked by remember {
+        mutableStateOf(true)
+    }
+    val interactionSource = remember { MutableInteractionSource() }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -105,17 +110,11 @@ fun MemberItem(resourceId: Int, name: String) {
             contentDescription = null
         )
         Text(text = name, style = AppTypography.B2_14, color = Color(0xFF1B1A57))
-        Box(
+        MemberCheckBox(
             modifier = Modifier
                 .weight(1f)
-                .size(28.dp), contentAlignment = Alignment.CenterEnd
-        ) {
-            Icon(
-                painter = painterResource(id = R.drawable.ic_round_checked),
-                contentDescription = null,
-                tint = Color.Unspecified
-            )
-        }
+                .size(28.dp)
+        )
     }
 }
 
@@ -130,7 +129,7 @@ fun PreviewSearchMemberScreen() {
 @Preview(showBackground = true)
 @Composable
 fun PreviewMemberItem() {
-    MemberItem(resourceId = R.drawable.sample_member_image,"Member")
+    MemberItem(resourceId = R.drawable.sample_member_image, "Member")
 }
 
 @Preview(showBackground = true)
