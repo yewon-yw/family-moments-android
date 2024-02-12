@@ -1,5 +1,6 @@
 package io.familymoments.app.ui.choosingfamily.ui.screen
 
+import android.content.Intent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -25,12 +26,14 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import io.familymoments.app.R
+import io.familymoments.app.ui.bottomnav.ui.activity.MainActivity
 import io.familymoments.app.ui.theme.AppColors
 import io.familymoments.app.ui.theme.AppTypography
 import io.familymoments.app.ui.theme.FamilyMomentsTheme
@@ -40,14 +43,20 @@ import kotlin.math.sqrt
 
 @Composable
 fun StartScreen(navController: NavController) {
+    val context = LocalContext.current
     StartScreen(
         { navController.navigate(ChoosingFamilyRoute.SEARCH_MEMBER.name) },
-        { navController.navigate(ChoosingFamilyRoute.JOIN.name) }
+        { navController.navigate(ChoosingFamilyRoute.JOIN.name) },
+        {
+            val intent = Intent(context, MainActivity::class.java)
+                .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK }
+            context.startActivity(intent)
+        }
     )
 }
 
 @Composable
-fun StartScreen(goToCreating: () -> Unit = {}, goToJoining: () -> Unit = {}) {
+fun StartScreen(goToCreating: () -> Unit = {}, goToJoining: () -> Unit = {}, goToMain: () -> Unit = {}) {
 
     DrawCircle(goToJoining = goToCreating, goToCreating = goToJoining, radius = 275)
     CreatingText()
@@ -57,7 +66,7 @@ fun StartScreen(goToCreating: () -> Unit = {}, goToJoining: () -> Unit = {}) {
             .fillMaxHeight()
             .padding(bottom = 95.dp), verticalAlignment = Alignment.Bottom
     ) {
-        SkipButton()
+        SkipButton(goToMain)
 
     }
 }
