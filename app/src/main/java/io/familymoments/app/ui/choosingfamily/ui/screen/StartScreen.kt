@@ -58,7 +58,7 @@ fun StartScreen(navController: NavController) {
 @Composable
 fun StartScreen(goToCreating: () -> Unit = {}, goToJoining: () -> Unit = {}, goToMain: () -> Unit = {}) {
 
-    DrawCircle(goToJoining = goToCreating, goToCreating = goToJoining, radius = 275)
+    DrawCircle(goToCreating = goToCreating, goToJoining = goToJoining, radius = 275)
     CreatingText()
     JoiningText()
     Row(
