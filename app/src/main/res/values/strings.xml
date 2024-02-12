@@ -31,4 +31,5 @@
     <string name="family_invitation_link_text_field_hint">초대 링크 입력하기</string>
     <string name="header_join_family">우리 가족 참여하기</string>
     <string name="button_family_join_now">바로 참여하기</string>
+    <string name="choosing_family_app_bar_screen_header">Family Moments</string>
 </resources>
