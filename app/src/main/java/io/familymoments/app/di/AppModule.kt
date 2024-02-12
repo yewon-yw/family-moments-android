@@ -60,12 +60,6 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideLoginService(@AuthRetrofit retrofit: Retrofit): LoginService {
-        return retrofit.create(LoginService::class.java)
-    }
-
-    @Provides
-    @Singleton
     @DefaultOkHttpClient
     fun provideOkHttpClient(): OkHttpClient {
         return OkHttpClient.Builder()
@@ -89,9 +83,9 @@ object AppModule {
             .build()
     }
 
-//    @Provides
-//    @Singleton
-//    fun provideAuthInterceptor(tokenRepository: TokenRepository): AuthInterceptor {
-//        return AuthInterceptor(tokenRepository)
-//    }
+    @Provides
+    @Singleton
+    fun provideLoginService(@AuthRetrofit retrofit: Retrofit): LoginService {
+        return retrofit.create(LoginService::class.java)
+    }
 }

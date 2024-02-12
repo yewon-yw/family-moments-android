@@ -43,7 +43,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import io.familymoments.app.R
 import io.familymoments.app.model.LoginUiState
+import io.familymoments.app.ui.component.AppBarScreen
 import io.familymoments.app.ui.theme.AppColors
+import io.familymoments.app.ui.theme.AppTypography
 import io.familymoments.app.ui.theme.FamilyMomentsTheme
 import io.familymoments.app.viewmodel.LoginViewModel
 
@@ -51,7 +53,15 @@ import io.familymoments.app.viewmodel.LoginViewModel
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
     val loginUiState = viewModel.loginUiState.collectAsState()
-    LoginScreen(login = viewModel::loginUser, loginUiState = loginUiState.value)
+    AppBarScreen(title = {
+        Text(
+            text = "Family Moments",
+            style = AppTypography.SH3_16,
+            color = AppColors.deepPurple1
+        )
+    }) {
+        LoginScreen(login = viewModel::loginUser, loginUiState = loginUiState.value)
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
