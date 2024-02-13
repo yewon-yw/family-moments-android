@@ -342,3 +342,9 @@ fun ViewScreenPreview() {
 fun EditScreenPreview() {
     EditScreen(navController = rememberNavController())
 }
+
+@Preview(showBackground = true)
+@Composable
+fun ProfileScreenPreview() {
+    ProfileScreen()
+}
