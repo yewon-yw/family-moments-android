@@ -2,6 +2,7 @@ package io.familymoments.app.repository.impl
 
 import io.familymoments.app.model.request.LoginRequest
 import io.familymoments.app.model.response.LoginResponse
+import io.familymoments.app.model.response.UserErrorResponse
 import io.familymoments.app.network.UserService
 import io.familymoments.app.network.Resource
 import io.familymoments.app.repository.UserRepository
@@ -37,18 +38,37 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun checkValidation(): Flow<Resource<Unit>> {
+    override suspend fun checkAccessTokenValidation(): Flow<Resource<Unit>> {
 
         return flow {
             emit(Resource.Loading)
-            val response = userService.checkValidation()
+            val response = userService.checkAccessTokenValidation()
             if (response.code() == 200) {
                 emit(Resource.Success(Unit))
-            } else {
-                emit(Resource.Fail(Throwable(response.message())))
+            } else if (response.code() == 401) {
+                reissueAccessToken()
+            }else{
+                emit(Resource.Fail(UserErrorResponse.CommonError(response.message())))
             }
         }.catch { e ->
-            emit(Resource.Fail(e))
+            emit(Resource.Fail(UserErrorResponse.CommonError(e.message?:"")))
+        }
+    }
+
+    override suspend fun reissueAccessToken(): Flow<Resource<Unit>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = userService.reissueAccessToken()
+            if (response.code() == 200) {
+                emit(Resource.Success(Unit))
+            } else if (response.code() == 471) {
+                // 로그인 화면 전환
+                emit(Resource.Fail(UserErrorResponse.RefreshTokenExpiration))
+            }else{
+                emit(Resource.Fail(UserErrorResponse.CommonError(response.message())))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(UserErrorResponse.CommonError(e.message?:"")))
         }
     }
 

@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.familymoments.app.R
+import io.familymoments.app.model.response.UserErrorResponse
 import io.familymoments.app.model.uistate.SplashUiState
 import io.familymoments.app.ui.login.ui.activity.LoginActivity
 import io.familymoments.app.ui.bottomnav.ui.activity.MainActivity
@@ -50,9 +51,15 @@ suspend fun checkValidate(check: () -> Unit, uiState: State<SplashUiState>, cont
         intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
         context.startActivity(intent)
     } else if (uiState.value.isSuccess == false) {
-        val intent = Intent(context, LoginActivity::class.java)
-        intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
-        context.startActivity(intent)
+        when(uiState.value.error){
+            is UserErrorResponse.RefreshTokenExpiration -> {
+                val intent = Intent(context, LoginActivity::class.java)
+                intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
+                context.startActivity(intent)
+            }
+            is UserErrorResponse.CommonError -> {
+            }
+        }
     }
 }
 

@@ -10,5 +10,7 @@ interface UserService {
     @POST("/users/log-in")
     suspend fun loginUser(@Body loginRequest: LoginRequest): Response<LoginResponse>
     @POST("/users/validate")
-    suspend fun checkValidation(): Response<Void>
+    suspend fun checkAccessTokenValidation(): Response<Void>
+    @POST("/users/reissue")
+    suspend fun reissueAccessToken(): Response<Void>
 }

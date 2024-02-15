@@ -16,7 +16,7 @@ class SplashViewModel @Inject constructor(
     val splashUiState = _splashUiState.asStateFlow()
     fun checkUserValidation() {
         async(
-            operation = { userRepository.checkValidation() },
+            operation = { userRepository.checkAccessTokenValidation() },
             onSuccess = {
                 _splashUiState.value = _splashUiState.value.copy(
                     isLoading = isLoading.value,
@@ -27,7 +27,7 @@ class SplashViewModel @Inject constructor(
                 _splashUiState.value = _splashUiState.value.copy(
                     isLoading = isLoading.value,
                     isSuccess = false,
-                    errorMessage = it.message
+                    error = it
                 )
             }
         )
