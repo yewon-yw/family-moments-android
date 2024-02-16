@@ -26,7 +26,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +43,7 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.model.uistate.LoginUiState
 import io.familymoments.app.ui.bottomnav.ui.activity.MainActivity
@@ -55,7 +55,7 @@ import io.familymoments.app.ui.theme.FamilyMomentsTheme
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
-    val loginUiState = viewModel.loginUiState.collectAsState()
+    val loginUiState = viewModel.loginUiState.collectAsStateWithLifecycle()
     AppBarScreen(title = {
         Text(
             text = stringResource(R.string.login_app_bar_screen_header),

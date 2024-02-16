@@ -111,6 +111,7 @@ dependencies {
     implementation(libs.okhttp.urlconnection)
     kapt(libs.room.compiler)
     implementation(libs.navigation.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
     testImplementation(libs.mockk)
     testImplementation(libs.junit)
