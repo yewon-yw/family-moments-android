@@ -26,7 +26,8 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideTokenRepository(@ApplicationContext context: Context): TokenRepository {
-        return TokenRepositoryImpl(context)
+        val preferences = context.getSharedPreferences("token", Context.MODE_PRIVATE)
+        return TokenRepositoryImpl(preferences)
     }
 
 }
