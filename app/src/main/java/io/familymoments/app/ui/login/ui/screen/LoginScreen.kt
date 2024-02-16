@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -85,19 +86,16 @@ fun LoginScreen(
             .fillMaxHeight(),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(modifier = Modifier.height(86.dp))
         LoginLogo()
-        Spacer(modifier = Modifier.height(49.dp))
         LoginForm(login = login, loginUiState)
         LoginOption()
-        Spacer(modifier = Modifier.height(15.dp))
         SocialLogin()
     }
 }
 
 @Composable
 fun LoginLogo() {
-    Row {
+    Row(modifier = Modifier.padding(top = 86.dp, bottom = 49.dp)) {
         Icon(
             modifier = Modifier.size(110.dp),
             imageVector = ImageVector.vectorResource(R.drawable.ic_splash_icon),
@@ -130,9 +128,13 @@ fun LoginForm(
     var password by remember { mutableStateOf(TextFieldValue()) }
 
     Column(modifier = Modifier.padding(16.dp)) {
-        LoginFormRoundedCornerTextField(label = stringResource(R.string.login_id_text_field_hint), onValueChanged = { id = it })
+        LoginFormRoundedCornerTextField(
+            label = stringResource(R.string.login_id_text_field_hint),
+            onValueChanged = { id = it })
         Spacer(modifier = Modifier.height(8.dp))
-        LoginFormRoundedCornerTextField(label = stringResource(R.string.login_password_text_field_hint), onValueChanged = { password = it })
+        LoginFormRoundedCornerTextField(
+            label = stringResource(R.string.login_password_text_field_hint),
+            onValueChanged = { password = it })
         if (loginUiState.isSuccess == false) {
             ErrorText(loginUiState.errorMessage ?: stringResource(R.string.login_default_error_message))
         }
@@ -203,7 +205,11 @@ fun ErrorText(message: String) {
 
 @Composable
 fun LoginOption() {
-    Row(modifier = Modifier.height(IntrinsicSize.Min)) {
+    Row(
+        modifier = Modifier
+            .height(IntrinsicSize.Min)
+            .padding(bottom = 15.dp)
+    ) {
         Text(
             text = stringResource(id = R.string.login_forgot_id),
             fontSize = 13.sp,
@@ -245,19 +251,31 @@ fun LoginOption() {
 
 @Composable
 fun SocialLogin() {
-    Text(
-        text = stringResource(R.string.sns_login),
-        color = AppColors.grey2,
-        fontSize = 13.sp,
-        fontWeight = FontWeight.Bold,
-    )
+    Row(modifier = Modifier.padding(horizontal = 17.dp), verticalAlignment = Alignment.CenterVertically) {
+        Divider(
+            modifier = Modifier
+                .weight(1f)
+                .height(1.dp)
+        )
+        Text(
+            modifier = Modifier.wrapContentWidth().padding(horizontal = 4.dp),
+            text = stringResource(R.string.sns_login),
+            color = AppColors.grey2,
+            fontSize = 13.sp,
+            fontWeight = FontWeight.Bold,
+        )
+        Divider(
+            modifier = Modifier
+                .weight(1f)
+                .height(1.dp)
+        )
+    }
+
     Spacer(modifier = Modifier.height(30.dp))
-    Row(modifier = Modifier.height(36.dp)) {
+    Row(modifier = Modifier.height(50.dp)) {
         Image(painter = painterResource(id = R.drawable.ic_kakao_login), contentDescription = null)
         Spacer(modifier = Modifier.width(37.dp))
         Image(painter = painterResource(id = R.drawable.ic_naver_login), contentDescription = null)
-        Spacer(modifier = Modifier.width(37.dp))
-        Image(painter = painterResource(id = R.drawable.ic_google_login), contentDescription = null)
     }
 }
 

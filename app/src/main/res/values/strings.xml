@@ -22,7 +22,7 @@
     <string name="title_activity_splash">SplashActivity</string>
     <string name="splash_title">가족들과 소중한 순간을 공유해보세요!</string>
     <string name="login_app_bar_screen_header">Family Moments</string>
-    <string name="login_id_text_field_hint">Id</string>
+    <string name="login_id_text_field_hint">ID</string>
     <string name="login_password_text_field_hint">Password</string>
     <string name="login_default_error_message">로그인 실패</string>
     <string name="sns_login">SNS 계정으로 로그인</string>
