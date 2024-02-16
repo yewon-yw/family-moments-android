@@ -12,7 +12,7 @@ object AppColors {
     val pink2 = Color(0xFFF2A0B4)
     val pink3 = Color(0xFFF9CFD9)
     val pink4 = Color(0xFFFBEEFF)
-    val pink6 = Color(0xFFFDF7FF)
+    val pink5 = Color(0xFFFDF7FF)
 
     val grey1 = Color(0xFF96979C)
     val grey2 = Color(0xFFA9A9A9)
