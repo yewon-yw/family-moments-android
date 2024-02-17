@@ -2,7 +2,7 @@ package io.familymoments.app.core.network.repository.impl
 
 import io.familymoments.app.core.network.api.AuthService
 import io.familymoments.app.core.network.Resource
-import io.familymoments.app.core.network.datasource.TokenPreferencesDataSource
+import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.AuthRepository
 import io.familymoments.app.feature.login.model.request.LoginRequest
 import io.familymoments.app.feature.login.model.response.LoginResponse
@@ -15,8 +15,8 @@ import javax.inject.Inject
 
 class AuthRepositoryImpl @Inject constructor(
     private val authService: AuthService,
-    private val tokenPreferencesDataSource: TokenPreferencesDataSource
-):AuthRepository {
+    private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
+) : AuthRepository {
     override suspend fun loginUser(
         username: String,
         password: String
@@ -28,6 +28,10 @@ class AuthRepositoryImpl @Inject constructor(
 
             if (responseBody.isSuccess) {
                 saveAccessToken(response.headers())
+                val familyId: Long? = responseBody.loginResult.familyId
+                if (familyId != null) {
+                    userInfoPreferencesDataSource.saveFamilyId(familyId)
+                }
                 emit(Resource.Success(responseBody))
             } else {
                 emit(Resource.Fail(Throwable(responseBody.message)))
@@ -46,7 +50,7 @@ class AuthRepositoryImpl @Inject constructor(
                 emit(Resource.Success(Unit))
             } else if (response.code() == 401) {
                 reissueAccessToken()
-            }else{
+            } else {
                 emit(Resource.Fail(Throwable(response.message())))
             }
         }.catch { e ->
@@ -63,7 +67,7 @@ class AuthRepositoryImpl @Inject constructor(
             } else if (response.code() == 471) {
                 // 로그인 화면 전환
                 emit(Resource.Fail(AuthErrorResponse.RefreshTokenExpiration))
-            }else{
+            } else {
                 emit(Resource.Fail(Throwable(response.message())))
             }
         }.catch { e ->
@@ -74,8 +78,9 @@ class AuthRepositoryImpl @Inject constructor(
     private suspend fun saveAccessToken(headers: Headers) {
         val accessToken = headers[KEY_ACCESS_TOKEN]
             ?: throw IllegalStateException(GET_ACCESS_TOKEN_ERROR)
-        tokenPreferencesDataSource.saveAccessToken(accessToken)
+        userInfoPreferencesDataSource.saveAccessToken(accessToken)
     }
+
     companion object {
         private const val KEY_ACCESS_TOKEN = "X-AUTH-TOKEN"
         private const val GET_ACCESS_TOKEN_ERROR = "Fail to get Access Token"

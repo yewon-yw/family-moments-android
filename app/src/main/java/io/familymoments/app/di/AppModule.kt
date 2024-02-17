@@ -7,7 +7,7 @@ import dagger.hilt.components.SingletonComponent
 import io.familymoments.app.BuildConfig
 import io.familymoments.app.core.network.AuthInterceptor
 import io.familymoments.app.core.network.api.AuthService
-import io.familymoments.app.core.network.datasource.TokenPreferencesDataSource
+import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import okhttp3.JavaNetCookieJar
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -73,10 +73,10 @@ object AppModule {
     @Provides
     @Singleton
     @AuthOkHttpClient
-    fun provideAuthOkHttpClient(tokenPreferencesDataSource: TokenPreferencesDataSource): OkHttpClient {
+    fun provideAuthOkHttpClient(userInfoPreferencesDataSource: UserInfoPreferencesDataSource): OkHttpClient {
         return OkHttpClient.Builder()
             .cookieJar(JavaNetCookieJar(CookieManager()))
-            .addInterceptor(AuthInterceptor(tokenPreferencesDataSource))
+            .addInterceptor(AuthInterceptor(userInfoPreferencesDataSource))
             .addInterceptor(HttpLoggingInterceptor().apply {
                 level = HttpLoggingInterceptor.Level.HEADERS
             })
