@@ -37,14 +37,17 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import io.familymoments.app.R
-import io.familymoments.app.feature.home.component.postItemContentShadow
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.feature.home.component.postItemContentShadow
+import io.familymoments.app.feature.home.viewmodel.HomeViewModel
 
 @Composable
 fun HomeScreen(
     modifier: Modifier,
+    viewModel: HomeViewModel,
     navigateToPostDetail: () -> Unit
 ) {
     LazyColumn(
@@ -220,5 +223,9 @@ fun PostItemContent(
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    HomeScreen(modifier = Modifier, navigateToPostDetail = {})
+    HomeScreen(
+        modifier = Modifier,
+        viewModel = hiltViewModel(),
+        navigateToPostDetail = {}
+    )
 }
