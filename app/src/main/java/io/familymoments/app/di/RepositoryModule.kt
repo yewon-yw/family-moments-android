@@ -7,12 +7,15 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.familymoments.app.core.network.api.AuthService
+import io.familymoments.app.core.network.api.PostService
+import io.familymoments.app.core.network.api.PublicService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourceImpl
 import io.familymoments.app.core.network.repository.AuthRepository
-import io.familymoments.app.core.network.repository.impl.AuthRepositoryImpl
-import io.familymoments.app.core.network.api.PublicService
+import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.core.network.repository.PublicRepository
+import io.familymoments.app.core.network.repository.impl.AuthRepositoryImpl
+import io.familymoments.app.core.network.repository.impl.PostRepositoryImpl
 import io.familymoments.app.core.network.repository.impl.PublicRepositoryImpl
 import javax.inject.Singleton
 
@@ -39,6 +42,12 @@ object RepositoryModule {
     @Singleton
     fun providePublicRepository(publicService: PublicService): PublicRepository {
         return PublicRepositoryImpl(publicService)
+    }
+
+    @Provides
+    @Singleton
+    fun providePostRepository(postService: PostService): PostRepository {
+        return PostRepositoryImpl(postService)
     }
 
 }

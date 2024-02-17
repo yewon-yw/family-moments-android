@@ -21,7 +21,8 @@ interface PublicService {
 
     @Multipart
     @POST("/users/sign-up")
-    suspend fun join(@Part profileImg:MultipartBody.Part,
-                     @Part("newUser") joinRequest: JoinRequest
+    suspend fun join(
+        @Part profileImg: MultipartBody.Part,
+        @Part("newUser") joinRequest: JoinRequest
     ): JoinResponse
 }
