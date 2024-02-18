@@ -7,7 +7,6 @@ import androidx.navigation.compose.composable
 import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.bottomnav.model.BottomNavItem
 import io.familymoments.app.feature.home.screen.HomeScreen
-import io.familymoments.app.feature.profile.screen.ProfileScreen
 
 fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
     composable(route = BottomNavItem.Home.route) {
