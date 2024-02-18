@@ -15,4 +15,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "FamilyMoments"
 include(":app")
- 
