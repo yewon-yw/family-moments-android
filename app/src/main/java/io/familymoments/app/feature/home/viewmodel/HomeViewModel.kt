@@ -3,7 +3,6 @@ package io.familymoments.app.feature.home.viewmodel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.repository.PostRepository
-import io.familymoments.app.core.network.repository.PublicRepository
 import io.familymoments.app.feature.home.model.HomeUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
