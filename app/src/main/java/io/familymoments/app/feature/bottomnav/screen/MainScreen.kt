@@ -15,7 +15,6 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -26,30 +25,36 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
-import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import io.familymoments.app.core.util.LocalScaffoldState
 import io.familymoments.app.R
-import io.familymoments.app.feature.bottomnav.BottomNavDestination
-import io.familymoments.app.feature.bottomnav.model.BottomNavItem
-import io.familymoments.app.feature.bottomnav.component.bottomNavShadow
 import io.familymoments.app.core.component.AppBarScreen
-import io.familymoments.app.feature.home.screen.HomeScreen
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.AppTypography.LB2_11
+import io.familymoments.app.feature.bottomnav.component.bottomNavShadow
+import io.familymoments.app.feature.bottomnav.model.BottomNavItem
+import io.familymoments.app.core.graph.getMainGraph
 
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-    AppBarScreen(
-        title = { Text(text = "sweety home", style = AppTypography.SH3_16, color = AppColors.deepPurple1) },
-        navigationIcon = {
+    val scaffoldState = LocalScaffoldState.current
+
+    val navigationIcon = @Composable {
+        if (scaffoldState.hasBackButton) {
+            Icon(
+                modifier = Modifier.padding(start = 12.dp),
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_app_bar_back),
+                contentDescription = null,
+                tint = AppColors.grey3
+            )
+        } else {
             Box(
                 modifier = Modifier
                     .padding(start = 12.dp)
@@ -62,35 +67,31 @@ fun MainScreen() {
                     contentDescription = "profile"
                 )
             }
-        },
-        bottomBar = { BottomNavigationBar(navController = navController) }
-    ) {
-        NavHost(navController, startDestination = BottomNavItem.Home.route) {
-            composable(route = BottomNavDestination.Home.route) {
-                HomeScreen()
-            }
-
-            composable(route = BottomNavDestination.Album.route) {
-                // AlbumScreen()
-            }
-
-            composable(route = BottomNavDestination.AddPost.route) {
-                // AddPostScreen()
-            }
-
-            composable(route = BottomNavDestination.Calendar.route) {
-                // CalendarScreen()
-            }
-
-            composable(route = BottomNavDestination.MyPage.route) {
-                // MyPageScreen()
-            }
         }
+    }
+
+    AppBarScreen(
+        title = { Text(text = "sweety home", style = AppTypography.SH3_16, color = AppColors.deepPurple1) },
+        navigationIcon = navigationIcon,
+        bottomBar = {
+            BottomNavigationBar(
+                navController = navController,
+            )
+        },
+        hasShadow = scaffoldState.hasShadow
+    ) {
+        NavHost(
+            navController = navController,
+            startDestination = BottomNavItem.Home.route,
+            builder = getMainGraph(navController = navController),
+        )
     }
 }
 
 @Composable
-fun BottomNavigationBar(navController: NavHostController) {
+private fun BottomNavigationBar(
+    navController: NavHostController,
+) {
     val bottomNavItems = listOf(
         BottomNavItem.Home,
         BottomNavItem.Album,
@@ -99,6 +100,8 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavItem.MyPage
     )
 
+    val scaffoldState = LocalScaffoldState.current
+
     BottomNavigation(
         modifier = Modifier
             .bottomNavShadow()
@@ -106,10 +109,8 @@ fun BottomNavigationBar(navController: NavHostController) {
             .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)),
         backgroundColor = Color.White
     ) {
-        val navBackStackEntry by navController.currentBackStackEntryAsState()
-        val currentDestination = navBackStackEntry?.destination
         bottomNavItems.forEach { item ->
-            val selected = currentDestination?.hierarchy?.any { it.route == item.route } == true
+            val selected = scaffoldState.selectedBottomNav == item.route
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -117,7 +118,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                     .clickable {
                         navController.navigate(item.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = true
+                                saveState = false
                             }
                             launchSingleTop = true
                             restoreState = true
@@ -130,7 +131,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(6.72.dp)
                 ) {
-                    if (item.route == BottomNavDestination.AddPost.route) {
+                    if (item.route == BottomNavItem.AddPost.route) {
                         Image(
                             imageVector = ImageVector.vectorResource(id = item.iconResId),
                             contentDescription = null
@@ -152,4 +153,10 @@ fun BottomNavigationBar(navController: NavHostController) {
             }
         }
     }
+}
+
+@Preview
+@Composable
+fun MainScreenPreview() {
+    MainScreen()
 }
