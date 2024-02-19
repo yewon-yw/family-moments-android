@@ -30,6 +30,7 @@ import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Divider
 import androidx.compose.material.DropdownMenu
 import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -53,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
+import io.familymoments.app.core.component.AppBarScreen
 import io.familymoments.app.core.component.FMButton
 import io.familymoments.app.feature.join.model.request.CheckEmailRequest
 import io.familymoments.app.feature.join.model.request.CheckIdRequest
@@ -70,19 +72,33 @@ import io.familymoments.app.feature.join.viewmodel.JoinViewModel
 import io.familymoments.app.core.component.ShowWarningText
 import io.familymoments.app.core.network.repository.impl.PublicRepositoryImpl
 import io.familymoments.app.core.theme.AppColors
+import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
 import okhttp3.MultipartBody
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun JoinScreen(viewModel: JoinViewModel) {
-    LazyColumn(
-        modifier = Modifier
-            .background(color = Color.White)
-            .padding(horizontal = 20.dp)
-    ) {
-        item {
-            JoinContentScreen(viewModel)
+    AppBarScreen(
+        title = {Text(
+            text = stringResource(id = R.string.join_activity_app_bar_title),
+            style = AppTypography.SH3_16,
+            color = AppColors.deepPurple1
+        )},
+        navigationIcon = {
+            Icon(
+                painter = painterResource(id = R.drawable.ic_app_bar_back),
+                contentDescription = null,
+                tint = Color.Unspecified)
+        }) {
+        LazyColumn(
+            modifier = Modifier
+                .background(color = Color.White)
+                .padding(horizontal = 20.dp)
+        ) {
+            item {
+                JoinContentScreen(viewModel)
+            }
         }
     }
 }
