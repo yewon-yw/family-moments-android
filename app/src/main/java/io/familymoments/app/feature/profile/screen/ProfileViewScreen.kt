@@ -28,15 +28,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.feature.profile.graph.ProfileScreenRoute
 
 @Composable
-fun ProfileViewScreen(navController: NavController) {
+fun ProfileViewScreen(navigateToProfileEdit: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -74,7 +71,7 @@ fun ProfileViewScreen(navController: NavController) {
                 contentDescription = "profile_modify_button",
                 modifier = Modifier
                     .size(24.dp)
-                    .clickable { navController.navigate(ProfileScreenRoute.Edit.name) }
+                    .clickable { navigateToProfileEdit() }
             )
         }
         Spacer(modifier = Modifier.height(20.dp))
@@ -212,5 +209,5 @@ private object GradientColors {
 @Preview(showBackground = true)
 @Composable
 fun ProfileViewScreenPreview() {
-    ProfileViewScreen(navController = rememberNavController())
+    ProfileViewScreen(navigateToProfileEdit = {})
 }

@@ -31,17 +31,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
-import androidx.navigation.compose.rememberNavController
 import io.familymoments.app.R
 import io.familymoments.app.core.component.FMDropdownMenu
 import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.feature.profile.graph.ProfileScreenRoute
 
 @Composable
-fun ProfileEditScreen(navController: NavController) {
+fun ProfileEditScreen(navigateBack: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -98,7 +95,7 @@ fun ProfileEditScreen(navController: NavController) {
                     .padding(start = 11.dp, end = 11.dp),
             ) {
                 Button(
-                    onClick = { navController.navigate(ProfileScreenRoute.View.name) },
+                    onClick = { navigateBack() },
                     modifier = Modifier
                         .weight(1f)
                         .size(54.dp),
@@ -113,7 +110,7 @@ fun ProfileEditScreen(navController: NavController) {
                 }
                 Spacer(modifier = Modifier.padding(horizontal = 34.dp))
                 Button(
-                    onClick = { navController.navigate(ProfileScreenRoute.View.name) },
+                    onClick = { navigateBack() },
                     modifier = Modifier
                         .weight(1f)
                         .size(54.dp),
@@ -150,5 +147,5 @@ private fun ProfileTextField(title: String, value: String, hint: String) {
 @Preview(showBackground = true)
 @Composable
 fun ProfileEditScreenPreview() {
-    ProfileEditScreen(navController = rememberNavController())
+    ProfileEditScreen(navigateBack = {})
 }
