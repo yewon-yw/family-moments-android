@@ -4,6 +4,7 @@ plugins {
     alias(libs.plugins.org.jetbrains.kotlin.android)
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
 }
 
 android {
@@ -35,7 +36,7 @@ android {
             isMinifyEnabled = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                "proguard-rules.pro",
             )
             buildConfigField("String", "BASE_URL", "\"https://familymoments-be.site/\"")
         }
@@ -57,6 +58,12 @@ android {
         kotlinCompilerExtensionVersion = "1.5.0"
     }
     packaging {
+        resources.excludes.addAll(
+            listOf(
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md",
+            ),
+        )
         resources {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
@@ -64,7 +71,7 @@ android {
             listOf(
                 "META-INF/LICENSE.md",
                 "META-INF/LICENSE-notice.md",
-            )
+            ),
         )
     }
 }
@@ -82,7 +89,12 @@ dependencies {
     implementation(libs.kotlin.stdlib)
     implementation(libs.compose.ui)
     implementation(libs.compose.material)
+    implementation(libs.appcompat)
+    implementation(libs.material)
+    implementation(libs.constraintlayout)
     implementation(platform(libs.compose.bom))
+    implementation(platform(libs.compose.bom))
+    androidTestImplementation(platform(libs.compose.bom))
     androidTestImplementation(platform(libs.compose.bom))
     debugImplementation(libs.compose.ui.tooling.preview)
     implementation(libs.lifecycle.runtime.ktx)
@@ -95,8 +107,11 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.android)
     implementation(libs.room.runtime)
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.okhttp.urlconnection)
     kapt(libs.room.compiler)
     implementation(libs.navigation.compose)
+    implementation(libs.androidx.lifecycle.runtime.compose)
 
     testImplementation(libs.mockk)
     testImplementation(libs.junit)
