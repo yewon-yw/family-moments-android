@@ -1,6 +1,5 @@
-package io.familymoments.app.ui.choosingfamily.joining.ui.screen
+package io.familymoments.app.feature.joiningfamily.screen
 
-import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -22,30 +21,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.familymoments.app.R
-import io.familymoments.app.ui.bottomnav.ui.activity.MainActivity
-import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyHeaderButtonLayout
-import io.familymoments.app.ui.choosingfamily.ui.screen.MemberCheckBox
-import io.familymoments.app.ui.choosingfamily.ui.screen.SearchTextField
-import io.familymoments.app.ui.theme.AppColors
-import io.familymoments.app.ui.theme.AppTypography
+import io.familymoments.app.core.theme.AppColors
+import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
+import io.familymoments.app.feature.choosingfamily.MemberCheckBox
+import io.familymoments.app.feature.choosingfamily.SearchTextField
 
-@Composable
-fun JoinScreen() {
-    val context = LocalContext.current
-    JoinScreen {
-        val intent = Intent(context, MainActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        context.startActivity(intent)
-    }
-}
 
 @Composable
 fun JoinScreen(navigate: () -> Unit = {}) {
@@ -63,7 +50,7 @@ fun JoinScreen(navigate: () -> Unit = {}) {
                 hint = stringResource(R.string.family_invitation_link_text_field_hint)
             ) { idTextFieldValue = it }
             Spacer(modifier = Modifier.height(36.dp))
-            Box(modifier = Modifier.background(color = AppColors.pink6)) {
+            Box(modifier = Modifier.background(color = AppColors.grey6)) {
                 FamilyProfile(resourceId = R.drawable.sample_member_image, name = "가족 이름")
             }
         }
@@ -72,7 +59,7 @@ fun JoinScreen(navigate: () -> Unit = {}) {
 }
 
 @Composable
-fun FamilyProfile(resourceId: Int, name: String) {
+private fun FamilyProfile(resourceId: Int, name: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier

@@ -1,8 +1,5 @@
-package io.familymoments.app.ui.choosingfamily.creating.ui.screen
+package io.familymoments.app.feature.creatingfamily.screen
 
-import android.content.Intent
-import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
-import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -16,32 +13,14 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.familymoments.app.R
-import io.familymoments.app.ui.bottomnav.ui.activity.MainActivity
-import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyHeaderButtonLayout
-import io.familymoments.app.ui.theme.AppColors
-import io.familymoments.app.ui.theme.AppTypography
-
-@Composable
-fun CopyInvitationLinkScreen() {
-    val context = LocalContext.current
-    CopyInvitationLinkScreen {
-        val intent = Intent(context, MainActivity::class.java).apply {
-            flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
-        }
-        context.startActivity(intent)
-    }
-}
+import io.familymoments.app.core.theme.AppColors
+import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
 
 @Composable
 fun CopyInvitationLinkScreen(navigate: () -> Unit = {}) {
@@ -71,23 +50,21 @@ fun CopyInvitationLinkScreen(navigate: () -> Unit = {}) {
 }
 
 @Composable
-fun LinkTextField() {
-    var invitationLink by remember {
-        mutableStateOf(TextFieldValue())
-    }
+private fun LinkTextField() {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .border(width = 1.5.dp, color = AppColors.grey2, shape = RoundedCornerShape(8.dp))
-            .background(AppColors.pink6, shape = RoundedCornerShape(7.dp))
+            .background(AppColors.pink5, shape = RoundedCornerShape(7.dp))
             .padding(vertical = 12.dp, horizontal = 11.dp),
     ) {
-        BasicTextField(value = invitationLink, onValueChange = { invitationLink = it }) {
-            Text(
-                text = stringResource(R.string.family_name_text_field_hint),
-                style = AppTypography.SH2_18,
-                color = AppColors.grey2
-            )
+        BasicTextField(
+            value = "",
+            onValueChange = { },
+            readOnly = true
+        ) { innerTextField ->
+            Text(text = "", style = AppTypography.SH2_18, color = AppColors.grey2)
+            innerTextField()
         }
     }
 }

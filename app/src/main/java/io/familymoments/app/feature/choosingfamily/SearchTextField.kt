@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.choosingfamily.ui.screen
+package io.familymoments.app.feature.choosingfamily
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -16,11 +16,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import io.familymoments.app.ui.theme.AppColors
-import io.familymoments.app.ui.theme.AppTypography
+import io.familymoments.app.core.theme.AppColors
+import io.familymoments.app.core.theme.AppTypography
 
 @Composable
 fun SearchTextField(hint:String, onValueChange: (TextFieldValue) -> Unit) {
@@ -34,7 +36,7 @@ fun SearchTextField(hint:String, onValueChange: (TextFieldValue) -> Unit) {
             .fillMaxWidth()
             .padding(vertical = 12.dp, horizontal = 10.dp)
     ) {
-        Row {
+        Row(verticalAlignment = Alignment.CenterVertically) {
             Icon(
                 modifier = Modifier.padding(end = 7.5.dp),
                 imageVector = Icons.Filled.Search,
@@ -57,10 +59,16 @@ fun SearchTextField(hint:String, onValueChange: (TextFieldValue) -> Unit) {
                     } else {
                         Text(text = textFieldValue.text, style = AppTypography.LB1_13)
                     }
-
+                    innerTextField()
                 },
             )
         }
 
     }
+}
+
+@Preview
+@Composable
+fun SearchTextFieldPreview(){
+    SearchTextField(hint = "", onValueChange = {})
 }

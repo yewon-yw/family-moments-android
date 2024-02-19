@@ -1,7 +1,6 @@
-package io.familymoments.app.ui.choosingfamily.creating.ui.screen
+package io.familymoments.app.feature.creatingfamily.screen
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -28,20 +27,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import io.familymoments.app.R
-import io.familymoments.app.ui.choosingfamily.ui.screen.MemberCheckBox
-import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyHeaderButtonLayout
-import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyRoute
-import io.familymoments.app.ui.choosingfamily.ui.screen.SearchTextField
-import io.familymoments.app.ui.theme.AppColors
-import io.familymoments.app.ui.theme.AppTypography
-import io.familymoments.app.ui.theme.FamilyMomentsTheme
+import io.familymoments.app.core.theme.AppColors
+import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.theme.FamilyMomentsTheme
+import io.familymoments.app.feature.choosingfamily.MemberCheckBox
+import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
+import io.familymoments.app.feature.choosingfamily.SearchTextField
 
-@Composable
-fun SearchMemberScreen(navController: NavController) {
-    SearchMemberScreen { navController.navigate(ChoosingFamilyRoute.SET_PROFILE.name) }
-}
 
 @Composable
 fun SearchMemberScreen(navigate: () -> Unit = {}) {
@@ -65,7 +58,7 @@ fun SearchMemberScreen(navigate: () -> Unit = {}) {
 }
 
 @Composable
-fun SearchMemberTextField() {
+private fun SearchMemberTextField() {
     var idTextFieldValue by remember {
         mutableStateOf(TextFieldValue())
     }
@@ -75,7 +68,7 @@ fun SearchMemberTextField() {
 }
 
 @Composable
-fun MemberList() {
+private fun MemberList() {
     LazyColumn {
         items(10) {
             MemberItem(resourceId = R.drawable.sample_member_image, name = "Member$it")
@@ -90,11 +83,7 @@ fun MemberList() {
 }
 
 @Composable
-fun MemberItem(resourceId: Int, name: String) {
-    var checked by remember {
-        mutableStateOf(true)
-    }
-    val interactionSource = remember { MutableInteractionSource() }
+private fun MemberItem(resourceId: Int, name: String) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier

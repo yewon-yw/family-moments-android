@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.choosingfamily.ui.screen
+package io.familymoments.app.feature.choosingfamily
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,8 +13,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import io.familymoments.app.ui.theme.AppColors
-import io.familymoments.app.ui.theme.AppTypography
+import io.familymoments.app.core.theme.AppColors
+import io.familymoments.app.core.theme.AppTypography
 
 @Composable
 fun ChoosingFamilyHeaderButtonLayout(

@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.choosingfamily.ui.screen
+package io.familymoments.app.feature.choosingfamily
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource

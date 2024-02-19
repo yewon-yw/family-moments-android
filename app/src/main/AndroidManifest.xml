@@ -19,10 +19,6 @@
             android:name="io.familymoments.app.feature.splash.activity.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
         </activity>
         <activity
             android:name="io.familymoments.app.feature.login.activity.LoginActivity"
@@ -40,9 +36,8 @@
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".ui.choosingfamily.ui.activity.FamilySetActivity"
+            android:name=".feature.choosingfamily.activity.ChoosingFamilyActivity"
             android:exported="true"
-            android:label="@string/title_activity_family_set"
             android:theme="@style/Theme.FamilyMoments">
 
             <intent-filter>

@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.choosingfamily.creating.ui.screen
+package io.familymoments.app.feature.creatingfamily.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -21,18 +21,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import io.familymoments.app.R
+import io.familymoments.app.core.theme.AppColors
+import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.ui.component.SelectImageButton
-import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyHeaderButtonLayout
-import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyRoute
-import io.familymoments.app.ui.theme.AppColors
-import io.familymoments.app.ui.theme.AppTypography
-
-@Composable
-fun SetProfileScreen(navController: NavController) {
-    SetProfileScreen { navController.navigate(ChoosingFamilyRoute.SET_ALARM.name) }
-}
+import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
 
 @Composable
 fun SetProfileScreen(navigate: () -> Unit = {}) {
@@ -73,12 +66,18 @@ fun SetUpFamilyName() {
             .background(AppColors.grey5, shape = RoundedCornerShape(7.dp))
             .padding(vertical = 12.dp, horizontal = 11.dp),
     ) {
-        BasicTextField(value = familyName, onValueChange = { familyName = it }) {
-            Text(
-                text = stringResource(R.string.family_name_text_field_hint),
-                style = AppTypography.LB1_13,
-                color = AppColors.grey2
-            )
+        BasicTextField(value = familyName, onValueChange = { familyName = it }) { innerTextField ->
+            if (familyName.text.isEmpty()) {
+                Text(
+                    text = stringResource(R.string.family_name_text_field_hint),
+                    style = AppTypography.LB1_13,
+                    color = AppColors.grey2
+                )
+            } else {
+                Text(text = familyName.text, style = AppTypography.LB1_13)
+            }
+            innerTextField()
+            innerTextField()
         }
     }
 

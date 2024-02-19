@@ -1,7 +1,7 @@
-package io.familymoments.app.ui.choosingfamily.viewmodel
+package io.familymoments.app.feature.choosingfamily.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.familymoments.app.viewmodel.BaseViewModel
+import io.familymoments.app.core.base.BaseViewModel
 import javax.inject.Inject
 
 @HiltViewModel

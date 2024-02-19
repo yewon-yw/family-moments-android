@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.choosingfamily.model
+package io.familymoments.app.feature.creatingfamily.model
 
 enum class AlarmCycle(val value:String) {
     ONE_DAY("1일"),

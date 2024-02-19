@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.choosingfamily.creating.ui.screen
+package io.familymoments.app.feature.creatingfamily.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -27,18 +27,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.navigation.NavController
 import io.familymoments.app.R
-import io.familymoments.app.ui.choosingfamily.model.AlarmCycle
-import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyHeaderButtonLayout
-import io.familymoments.app.ui.choosingfamily.ui.screen.ChoosingFamilyRoute
-import io.familymoments.app.ui.theme.AppColors
-import io.familymoments.app.ui.theme.AppTypography
-
-@Composable
-fun SetAlarmScreen(navController: NavController) {
-    SetAlarmScreen { navController.navigate(ChoosingFamilyRoute.COPY_INVITATION_LINK.name) }
-}
+import io.familymoments.app.core.theme.AppColors
+import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.feature.creatingfamily.model.AlarmCycle
+import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
@@ -86,11 +79,10 @@ fun SetAlarmScreen(navigate: () -> Unit = {}) {
                 modifier = Modifier.fillMaxWidth(),
                 expanded = isExpanded,
                 onDismissRequest = { isExpanded = false }) {
-                AlarmCycle.values().forEach {
+                AlarmCycle.entries.forEach {
                     DropdownMenuItem(onClick = { isExpanded = !isExpanded }) {
                         Text(text = it.value)
                     }
-
                 }
             }
 
@@ -99,7 +91,7 @@ fun SetAlarmScreen(navigate: () -> Unit = {}) {
 }
 
 @Composable
-fun TextFieldContents(isExpanded: Boolean) {
+private fun TextFieldContents(isExpanded: Boolean) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         Text(
             text = stringResource(R.string.alarm_cycle_text_field_hint),
@@ -120,7 +112,7 @@ fun TextFieldContents(isExpanded: Boolean) {
 }
 
 @Composable
-fun TextFieldExpandedIcon(isExpanded: Boolean) {
+private fun TextFieldExpandedIcon(isExpanded: Boolean) {
     if (isExpanded) {
         Icon(
             painter = painterResource(id = R.drawable.ic_drop_down_expanded_trailing),

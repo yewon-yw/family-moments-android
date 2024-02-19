@@ -1,6 +1,5 @@
-package io.familymoments.app.ui.choosingfamily.ui.screen
+package io.familymoments.app.feature.choosingfamily.screen
 
-import android.content.Intent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
@@ -26,38 +25,19 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.navigation.NavController
 import io.familymoments.app.R
-import io.familymoments.app.ui.bottomnav.ui.activity.MainActivity
-import io.familymoments.app.ui.theme.AppColors
-import io.familymoments.app.ui.theme.AppTypography
-import io.familymoments.app.ui.theme.FamilyMomentsTheme
+import io.familymoments.app.core.theme.AppColors
+import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.theme.FamilyMomentsTheme
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-
-@Composable
-fun StartScreen(navController: NavController) {
-    val context = LocalContext.current
-    StartScreen(
-        { navController.navigate(ChoosingFamilyRoute.SEARCH_MEMBER.name) },
-        { navController.navigate(ChoosingFamilyRoute.JOIN.name) },
-        {
-            val intent = Intent(context, MainActivity::class.java)
-                .apply { flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK }
-            context.startActivity(intent)
-        }
-    )
-}
-
 @Composable
 fun StartScreen(goToCreating: () -> Unit = {}, goToJoining: () -> Unit = {}, goToMain: () -> Unit = {}) {
-
     DrawCircle(goToCreating = goToCreating, goToJoining = goToJoining, radius = 275)
     CreatingText()
     JoiningText()
@@ -73,7 +53,7 @@ fun StartScreen(goToCreating: () -> Unit = {}, goToJoining: () -> Unit = {}, goT
 
 
 @Composable
-fun CreatingText() {
+private fun CreatingText() {
     Text(
         modifier = Modifier
             .padding(top = 146.dp, start = 43.dp),
@@ -84,7 +64,7 @@ fun CreatingText() {
 }
 
 @Composable
-fun JoiningText() {
+private fun JoiningText() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomEnd) {
         Text(
             modifier = Modifier
@@ -97,16 +77,16 @@ fun JoiningText() {
 }
 
 
-fun calculateCreateCircleCenter(radius: Int): Pair<Int, Int> {
+private fun calculateCreateCircleCenter(radius: Int): Pair<Int, Int> {
     return (radius - 226 to 27 + radius)
 }
 
-fun calculateJoinCircleCenter(radius: Int): Pair<Int, Int> {
+private fun calculateJoinCircleCenter(radius: Int): Pair<Int, Int> {
     return (50 + radius to 234 + radius)
 }
 
 @Composable
-fun DrawCircle(goToCreating: () -> Unit, goToJoining: () -> Unit, radius: Int) {
+private fun DrawCircle(goToCreating: () -> Unit, goToJoining: () -> Unit, radius: Int) {
     var creatingCircleColor by remember {
         mutableStateOf(AppColors.pink3)
     }
@@ -186,7 +166,7 @@ private fun Pair<Float, Float>.isInCircle(circleCenterX: Float, circleCenterY: F
         )
 }
 
-fun drawEachCircle(radius: Int, color: Color, circleCenter: Pair<Int, Int>): DrawScope.() -> Unit {
+private fun drawEachCircle(radius: Int, color: Color, circleCenter: Pair<Int, Int>): DrawScope.() -> Unit {
     return {
         drawCircle(
             color = color,
@@ -198,7 +178,7 @@ fun drawEachCircle(radius: Int, color: Color, circleCenter: Pair<Int, Int>): Dra
 }
 
 @Composable
-fun SkipButton(onClick: () -> Unit = {}) {
+private fun SkipButton(onClick: () -> Unit = {}) {
     Button(
         onClick = onClick,
         modifier = Modifier

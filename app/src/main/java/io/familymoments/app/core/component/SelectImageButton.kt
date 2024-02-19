@@ -16,11 +16,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.familymoments.app.R
+import io.familymoments.app.core.theme.AppColors
 
 @Composable
 fun SelectImageButton(
@@ -31,7 +31,7 @@ fun SelectImageButton(
         modifier = modifier,
         onClick = { isMenuExpanded = !isMenuExpanded },
         colors = ButtonDefaults.buttonColors(
-            backgroundColor = Color(0xFFF3F4F7),
+            backgroundColor = AppColors.grey5,
         ),
         elevation = ButtonDefaults.elevation(defaultElevation = 0.dp, pressedElevation = 0.dp),
     ) {
@@ -48,7 +48,7 @@ fun SelectImageButton(
                 painter = painterResource(id = R.drawable.ic_select_pic),
                 contentDescription = null,
             )
-            Text(text = stringResource(R.string.join_select_profile_image_btn), color = Color(0xFFBFBFBF))
+            Text(text = stringResource(R.string.join_select_profile_image_btn), color = AppColors.grey3)
             ImageSelectDropDownMenu(isMenuExpanded) { isMenuExpanded = false }
         }
     }
