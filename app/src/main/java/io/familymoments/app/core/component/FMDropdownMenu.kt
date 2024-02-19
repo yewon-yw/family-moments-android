@@ -120,7 +120,7 @@ fun FMDropdownMenu(
 
 @Preview(showBackground = true)
 @Composable
-fun CustomDropdownMenuExample() {
+fun CustomDropdownMenuPreview() {
     var selectedItem by remember { mutableStateOf<String?>(null) }
 
     Column(
