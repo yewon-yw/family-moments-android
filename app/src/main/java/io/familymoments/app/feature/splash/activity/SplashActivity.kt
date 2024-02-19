@@ -14,7 +14,7 @@ import io.familymoments.app.feature.splash.viewmodel.SplashViewModel
 @SuppressLint("CustomSplashScreen")
 @AndroidEntryPoint
 class SplashActivity : BaseActivity<SplashViewModel>(SplashViewModel::class) {
-    override val screen: @Composable () -> Unit = { SplashScreen(viewModel) }
+    override val screen: @Composable () -> Unit = { SplashScreen() }
     override fun onCreate(savedInstanceState: Bundle?) {
         installSplashScreen()
 
