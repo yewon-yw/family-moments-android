@@ -1,11 +1,12 @@
-package io.familymoments.app.viewmodel
+package io.familymoments.app.feature.join.viewmodel
 
 import android.graphics.Bitmap
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.familymoments.app.model.join.Validator
-import io.familymoments.app.model.join.data.mapper.toRequest
-import io.familymoments.app.model.join.ui.JoinInfoUiModel
-import io.familymoments.app.repository.JoinRepository
+import io.familymoments.app.core.base.BaseViewModel
+import io.familymoments.app.core.network.repository.PublicRepository
+import io.familymoments.app.feature.join.model.UserInfoFormatChecker
+import io.familymoments.app.feature.join.model.mapper.toRequest
+import io.familymoments.app.feature.join.model.JoinInfoUiModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -17,17 +18,20 @@ import java.io.FileOutputStream
 import javax.inject.Inject
 
 @HiltViewModel
-class JoinViewModel @Inject constructor(private val joinRepository: JoinRepository) :
+class JoinViewModel @Inject constructor(private val publicRepository: PublicRepository) :
         BaseViewModel() {
 
-    private val _userIdValidation: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val userIdValidation: StateFlow<Boolean> = _userIdValidation.asStateFlow()
+    private val _userIdFormatValidated: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val userIdFormatValidated: StateFlow<Boolean> = _userIdFormatValidated.asStateFlow()
 
-    private val _passwordValidation: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val passwordValidation: StateFlow<Boolean> = _passwordValidation.asStateFlow()
+    private val _passwordFormatValidated: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val passwordFormatValidated: StateFlow<Boolean> = _passwordFormatValidated.asStateFlow()
 
-    private val _emailValidation: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val emailValidation: StateFlow<Boolean> = _emailValidation.asStateFlow()
+    private val _emailFormatValidated: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val emailFormatValidated: StateFlow<Boolean> = _emailFormatValidated.asStateFlow()
+
+    private val _nicknameFormatValidated: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val nicknameFormatValidated: StateFlow<Boolean> = _nicknameFormatValidated.asStateFlow()
 
     private val _userIdDuplicationCheck: MutableStateFlow<Boolean?> = MutableStateFlow(null)
     val userIdDuplicationCheck: StateFlow<Boolean?> = _userIdDuplicationCheck.asStateFlow()
@@ -35,28 +39,32 @@ class JoinViewModel @Inject constructor(private val joinRepository: JoinReposito
     private val _emailDuplicationCheck: MutableStateFlow<Boolean?> = MutableStateFlow(null)
     val emailDuplicationCheck: StateFlow<Boolean?> = _emailDuplicationCheck.asStateFlow()
 
-    fun checkIdValidation(id: String) {
-        _userIdValidation.value = Validator.checkId(id)
+    fun checkIdFormat(id: String) {
+        _userIdFormatValidated.value = UserInfoFormatChecker.checkId(id)
     }
 
-    fun checkPasswordValidation(password: String) {
-        _passwordValidation.value = Validator.checkPassword(password)
+    fun checkPasswordFormat(password: String) {
+        _passwordFormatValidated.value = UserInfoFormatChecker.checkPassword(password)
     }
 
-    fun checkEmailValidation(email: String) {
-        _emailValidation.value = Validator.checkEmail(email)
+    fun checkEmailFormat(email: String) {
+        _emailFormatValidated.value = UserInfoFormatChecker.checkEmail(email)
+    }
+
+    fun checkNicknameFormat(nickname: String) {
+        _nicknameFormatValidated.value = UserInfoFormatChecker.checkNickname(nickname)
     }
 
     fun checkIdDuplication(id: String) {
         async(
-            operation = { joinRepository.checkId(id) },
+            operation = { publicRepository.checkId(id) },
             onSuccess = { _userIdDuplicationCheck.value = true },
             onFailure = { _userIdDuplicationCheck.value = false })
     }
 
     fun checkEmailDuplication(email: String) {
         async(
-            operation = { joinRepository.checkEmail(email) },
+            operation = { publicRepository.checkEmail(email) },
             onSuccess = { _emailDuplicationCheck.value = true },
             onFailure = { _emailDuplicationCheck.value = false })
     }
@@ -66,7 +74,7 @@ class JoinViewModel @Inject constructor(private val joinRepository: JoinReposito
         val imageRequestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
         val profileImgPart = MultipartBody.Part.createFormData("profileImg", imageFile.name, imageRequestBody)
         async(
-                operation = { joinRepository.join(profileImgPart, joinInfoUiModel.toRequest()) },
+                operation = { publicRepository.join(profileImgPart, joinInfoUiModel.toRequest()) },
                 onSuccess = { },
                 onFailure = { })
     }

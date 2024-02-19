@@ -1,4 +1,4 @@
-package io.familymoments.app.model.join.data.request
+package io.familymoments.app.feature.join.model.request
 
 data class JoinRequest(
         val id:String,

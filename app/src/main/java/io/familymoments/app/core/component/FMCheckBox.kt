@@ -1,10 +1,8 @@
-package io.familymoments.app.ui.component
+package io.familymoments.app.core.component
 
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -26,7 +24,7 @@ enum class CheckedStatus(val number: Int) {
 }
 
 @Composable
-fun CheckBox(imageResources: List<Int>, defaultStatus: CheckedStatus = CheckedStatus.UNCHECKED, onCheckedChange: (CheckedStatus) -> Unit = {}) {
+fun FMCheckBox(imageResources: List<Int>, defaultStatus: CheckedStatus = CheckedStatus.UNCHECKED, onCheckedChange: (CheckedStatus) -> Unit = {}) {
     var status by remember(key1 = defaultStatus) { mutableStateOf(defaultStatus) }
     Image(
             painter = painterResource(id = imageResources[status.number]),

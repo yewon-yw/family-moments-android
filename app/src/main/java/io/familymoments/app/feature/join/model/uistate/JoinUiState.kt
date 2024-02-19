@@ -1,4 +1,4 @@
-package io.familymoments.app.ui.screen
+package io.familymoments.app.feature.join.model.uistate
 
 sealed class JoinUiState {
     data object Success : JoinUiState()

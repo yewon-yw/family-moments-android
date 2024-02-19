@@ -1,4 +1,4 @@
-package io.familymoments.app.model.join.data.response
+package io.familymoments.app.feature.join.model.response
 
 data class CheckIdResponse(
     val isSuccess: Boolean,

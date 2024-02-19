@@ -1,6 +1,6 @@
-package io.familymoments.app.model.join
+package io.familymoments.app.feature.join.model
 
-object Validator{
+object UserInfoFormatChecker{
     fun checkEmail(email: String): Boolean {
         return email.isNotEmpty() && "@" in email
     }
@@ -12,5 +12,9 @@ object Validator{
     fun checkId(userId: String): Boolean {
         val regex = "^[a-zA-Z0-9]{6,12}$"
         return userId.matches(Regex(regex))
+    }
+    fun checkNickname(nickname: String): Boolean {
+        val regex = Regex("[a-zA-Z0-9]+")
+        return nickname.matches(regex)
     }
 }

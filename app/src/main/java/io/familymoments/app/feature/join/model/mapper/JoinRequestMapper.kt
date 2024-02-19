@@ -1,7 +1,7 @@
-package io.familymoments.app.model.join.data.mapper
+package io.familymoments.app.feature.join.model.mapper
 
-import io.familymoments.app.model.join.data.request.JoinRequest
-import io.familymoments.app.model.join.ui.JoinInfoUiModel
+import io.familymoments.app.feature.join.model.request.JoinRequest
+import io.familymoments.app.feature.join.model.JoinInfoUiModel
 
 fun JoinInfoUiModel.toRequest() =
     JoinRequest(

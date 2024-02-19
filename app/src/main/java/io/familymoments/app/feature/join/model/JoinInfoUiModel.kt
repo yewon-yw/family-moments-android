@@ -1,4 +1,4 @@
-package io.familymoments.app.model.join.ui
+package io.familymoments.app.feature.join.model
 
 import android.graphics.Bitmap
 
