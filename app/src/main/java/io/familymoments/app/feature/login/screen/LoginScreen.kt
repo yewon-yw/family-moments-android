@@ -3,6 +3,7 @@ package io.familymoments.app.feature.login.screen
 import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
@@ -45,17 +46,47 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
-import io.familymoments.app.feature.login.model.uistate.LoginUiState
 import io.familymoments.app.feature.bottomnav.activity.MainActivity
 import io.familymoments.app.core.component.AppBarScreen
 import io.familymoments.app.feature.login.viewmodel.LoginViewModel
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
+import io.familymoments.app.feature.join.activity.JoinActivity
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
     val loginUiState = viewModel.loginUiState.collectAsStateWithLifecycle()
+    val context = LocalContext.current
+    var loginErrorUi: @Composable () -> Unit = {}
+    val goToJoin = {
+        context.startActivity(Intent(context, JoinActivity::class.java))
+    }
+
+    when (loginUiState.value.isSuccess) {
+        true -> {
+            val intent = Intent(context, MainActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            context.startActivity(intent)
+        }
+
+        false -> {
+            loginErrorUi = {
+                if (loginUiState.value.isSuccess == false) {
+                    Text(
+                        text = loginUiState.value.errorMessage ?: stringResource(R.string.login_default_error_message),
+                        style = AppTypography.BTN6_13,
+                        color = AppColors.red2,
+                    )
+                }
+            }
+        }
+
+        else -> {
+
+        }
+    }
+
     AppBarScreen(title = {
         Text(
             text = stringResource(R.string.login_app_bar_screen_header),
@@ -63,7 +94,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
             color = AppColors.deepPurple1
         )
     }) {
-        LoginScreen(login = viewModel::loginUser, loginUiState = loginUiState.value)
+        LoginScreen(login = viewModel::loginUser, loginErrorUi, goToJoin)
     }
 }
 
@@ -71,15 +102,9 @@ fun LoginScreen(viewModel: LoginViewModel) {
 @Composable
 fun LoginScreen(
     login: (String, String) -> Unit,
-    loginUiState: LoginUiState
+    loginErrorUi: @Composable () -> Unit,
+    goToJoin: () -> Unit,
 ) {
-    val context = LocalContext.current
-
-    if (loginUiState.isSuccess == true) {
-        val intent = Intent(context, MainActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        context.startActivity(intent)
-    }
     Column(
         modifier = Modifier
             .background(Color.White)
@@ -87,8 +112,8 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LoginLogo()
-        LoginForm(login = login, loginUiState)
-        LoginOption()
+        LoginForm(login = login, loginErrorUi)
+        LoginOption(goToJoin)
         SocialLogin()
     }
 }
@@ -122,7 +147,7 @@ fun LoginLogo() {
 @Composable
 fun LoginForm(
     login: (String, String) -> Unit,
-    loginUiState: LoginUiState,
+    errorUi: @Composable () -> Unit
 ) {
     var id by remember { mutableStateOf(TextFieldValue()) }
     var password by remember { mutableStateOf(TextFieldValue()) }
@@ -133,11 +158,10 @@ fun LoginForm(
             onValueChanged = { id = it })
         Spacer(modifier = Modifier.height(8.dp))
         LoginFormRoundedCornerTextField(
+            modifier =  Modifier.padding(bottom = 10.dp),
             label = stringResource(R.string.login_password_text_field_hint),
             onValueChanged = { password = it })
-        if (loginUiState.isSuccess == false) {
-            ErrorText(loginUiState.errorMessage ?: stringResource(R.string.login_default_error_message))
-        }
+        errorUi()
         Spacer(modifier = Modifier.height(37.dp))
         Surface(shape = RoundedCornerShape(8.dp), modifier = Modifier.fillMaxWidth()) {
             Button(
@@ -167,11 +191,12 @@ fun LoginForm(
 
 @Composable
 fun LoginFormRoundedCornerTextField(
+    modifier: Modifier = Modifier,
     label: String,
     onValueChanged: (TextFieldValue) -> Unit,
 ) {
     var value by remember { mutableStateOf(TextFieldValue()) }
-    Surface(shape = RoundedCornerShape(8.dp), modifier = Modifier.fillMaxWidth()) {
+    Surface(shape = RoundedCornerShape(8.dp), modifier = modifier.then(Modifier.fillMaxWidth())) {
         TextField(
             value = value,
             onValueChange = {
@@ -193,18 +218,7 @@ fun LoginFormRoundedCornerTextField(
 }
 
 @Composable
-fun ErrorText(message: String) {
-    Text(
-        modifier = Modifier.padding(top = 10.dp),
-        text = message,
-        color = AppColors.red2,
-        fontSize = 13.sp,
-        fontWeight = FontWeight(700),
-    )
-}
-
-@Composable
-fun LoginOption() {
+fun LoginOption(goToJoin: () -> Unit) {
     Row(
         modifier = Modifier
             .height(IntrinsicSize.Min)
@@ -241,6 +255,9 @@ fun LoginOption() {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
+            modifier = Modifier.clickable {
+                goToJoin()
+            },
             text = stringResource(id = R.string.login_signup),
             fontSize = 13.sp,
             color = AppColors.grey2,
@@ -258,7 +275,9 @@ fun SocialLogin() {
                 .height(1.dp)
         )
         Text(
-            modifier = Modifier.wrapContentWidth().padding(horizontal = 4.dp),
+            modifier = Modifier
+                .wrapContentWidth()
+                .padding(horizontal = 4.dp),
             text = stringResource(R.string.sns_login),
             color = AppColors.grey2,
             fontSize = 13.sp,
@@ -283,6 +302,6 @@ fun SocialLogin() {
 @Composable
 fun PreviewLoginScreen() {
     FamilyMomentsTheme {
-        LoginScreen(login = { _, _ -> }, loginUiState = LoginUiState())
+        LoginScreen(login = { _, _ -> }, loginErrorUi = {}, goToJoin = {})
     }
 }
