@@ -1,6 +1,0 @@
-<?xml version="1.0" ?>
-<resources>
-  <string name="app_name">FamilyMoments</string>
-  <string name="login_hint_id">Email or username</string>
-  <string name="login_hint_pw">Password</string>
-</resources>
