@@ -109,6 +109,7 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.androidx.core.splashscreen)
     implementation(libs.okhttp.urlconnection)
+    implementation(libs.androidx.constraintlayout.compose)
     kapt(libs.room.compiler)
     implementation(libs.navigation.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)

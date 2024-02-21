@@ -32,7 +32,7 @@ fun FMButton(
             disabledContainerColor = AppColors.grey3
         ),
         shape = RoundedCornerShape(radius),
-        contentPadding = PaddingValues(vertical = 4.dp, horizontal = 16.dp)
+        contentPadding = PaddingValues(vertical = 4.dp, horizontal = 18.dp)
     ) {
         Text(
             text = text,
