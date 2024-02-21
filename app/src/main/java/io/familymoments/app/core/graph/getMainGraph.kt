@@ -8,12 +8,14 @@ import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.bottomnav.graph.bottomNavGraph
 import io.familymoments.app.feature.bottomnav.model.BottomNavItem
 import io.familymoments.app.feature.postdetail.screen.PostDetailScreen
+import io.familymoments.app.feature.profile.graph.profileGraph
 
 fun getMainGraph(
     navController: NavController
 ): NavGraphBuilder.() -> Unit = {
 
     bottomNavGraph(navController)
+    profileGraph(navController)
 
     composable(route = "PostDetail") {
         PostDetailScreen(
