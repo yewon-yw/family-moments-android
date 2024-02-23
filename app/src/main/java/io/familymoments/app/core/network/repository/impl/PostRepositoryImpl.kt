@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.flow
 
 class PostRepositoryImpl(
     private val postService: PostService
-): PostRepository {
+) : PostRepository {
     override suspend fun getPosts(familyId: Long): Flow<Resource<GetPostsResponse>> {
         return flow {
             emit(Resource.Loading)

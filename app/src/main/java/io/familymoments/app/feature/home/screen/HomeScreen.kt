@@ -29,9 +29,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -55,7 +53,6 @@ import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.home.component.postItemContentShadow
 import io.familymoments.app.feature.home.model.Post
 import io.familymoments.app.feature.home.viewmodel.HomeViewModel
-import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

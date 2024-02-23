@@ -1,7 +1,6 @@
 package io.familymoments.app.core.network.repository
 
 import io.familymoments.app.core.network.Resource
-import io.familymoments.app.feature.home.model.GetPostsResponse
 import io.familymoments.app.feature.join.model.request.JoinRequest
 import io.familymoments.app.feature.join.model.response.CheckEmailResponse
 import io.familymoments.app.feature.join.model.response.CheckIdResponse
