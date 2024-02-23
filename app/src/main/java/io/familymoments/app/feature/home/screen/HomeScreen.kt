@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -28,6 +29,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -49,6 +55,7 @@ import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.home.component.postItemContentShadow
 import io.familymoments.app.feature.home.model.Post
 import io.familymoments.app.feature.home.viewmodel.HomeViewModel
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -61,13 +68,26 @@ fun HomeScreen(
 ) {
     val homeUiState = viewModel.homeUiState.collectAsStateWithLifecycle()
     val posts = homeUiState.value.posts
+    val lazyListState = rememberLazyListState()
+    val isScrolledToLast by remember(lazyListState.canScrollForward) {
+        if (posts.isEmpty()) {
+            mutableStateOf(false)
+        } else {
+            mutableStateOf(!lazyListState.canScrollForward)
+        }
+    }
 
     LaunchedEffect(Unit) {
-        // TODO: 추후 familyId 수정 예정
-        viewModel.getPosts(2)
+        viewModel.getPosts()
+    }
+    LaunchedEffect(isScrolledToLast) {
+        if (isScrolledToLast) {
+            viewModel.loadMorePosts()
+        }
     }
     LazyColumn(
         modifier = modifier,
+        state = lazyListState,
         contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 100.dp)
     ) {
         item {

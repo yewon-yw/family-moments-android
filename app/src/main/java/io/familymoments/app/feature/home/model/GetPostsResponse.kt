@@ -8,7 +8,7 @@ data class GetPostsResponse(
 )
 
 data class Post(
-    val postId: Int,
+    val postId: Long,
     val writer: String,
     val profileImg: String,
     val content: String,
