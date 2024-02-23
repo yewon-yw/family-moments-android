@@ -30,7 +30,17 @@
             android:theme="@style/Theme.FamilyMoments">
 
         </activity>
+        <activity
+            android:name=".feature.join.activity.JoinActivity"
+            android:exported="true"
+            android:label="@string/title_activity_join"
+            android:theme="@style/Theme.FamilyMoments">
 
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity
             android:name="io.familymoments.app.feature.forgotpassword.activity.ForgotPasswordActivity"
             android:screenOrientation="portrait"
