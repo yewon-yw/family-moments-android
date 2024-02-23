@@ -67,13 +67,6 @@
     <string name="login_description_sns">SNS 계정으로 로그인</string>
     <string name="login_login">로그인</string>
     <string name="title_activity_join">JoinActivity</string>
-    <string name="title_activity_splash">SplashActivity</string>
-    <string name="splash_title">가족들과 소중한 순간을 공유해보세요!</string>
-    <string name="login_app_bar_screen_header">Family Moments</string>
-    <string name="login_id_text_field_hint">ID</string>
-    <string name="login_password_text_field_hint">Password</string>
-    <string name="login_default_error_message">로그인 실패</string>
-    <string name="sns_login">SNS 계정으로 로그인</string>
 
     <string name="join_id_field_title">아이디</string>
     <string name="join_id_field_hint">아이디를 입력하세요</string>
@@ -101,7 +94,6 @@
     <string name="join_marketing_alarm_term_agree">(선택) 마케팅 정보 알림 및 수신 동의</string>
     <string name="join_btn">Family Moments 시작하기</string>
     <string name="join_select_profile_image_description">사용하실 프로필 이미지를 선택헤주세요.</string>
-    <string name="join_select_profile_image_btn">사진 선택</string>
     <string name="join_select_profile_image_drop_down_menu_default_image">기본 이미지로 하기</string>
     <string name="join_select_profile_image_drop_down_menu_gallery">갤러리에서 선택</string>
     <string name="join_select_profile_image_title">프로필 사진 선택</string>
