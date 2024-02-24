@@ -78,6 +78,7 @@ fun MainScreen() {
         hasShadow = scaffoldState.hasShadow
     ) {
         NavHost(
+            modifier = Modifier.padding(bottom = 75.dp),
             navController = navController,
             startDestination = BottomNavItem.Home.route,
             builder = getMainGraph(navController = navController),

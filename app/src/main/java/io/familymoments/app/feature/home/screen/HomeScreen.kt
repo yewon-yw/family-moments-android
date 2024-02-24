@@ -102,7 +102,7 @@ fun HomeScreen(
     } else {
         if (hasNoPost) {
             Column(
-                modifier = modifier.padding(start = 16.dp, end = 16.dp, bottom = 100.dp),
+                modifier = modifier.padding(horizontal = 16.dp),
             ) {
                 HomeScreenTitle(hasNoPost = true)
                 Column(
@@ -128,7 +128,7 @@ fun HomeScreen(
             LazyColumn(
                 modifier = modifier,
                 state = lazyListState,
-                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 100.dp)
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp)
             ) {
                 item {
                     HomeScreenTitle(hasNoPost = false)
