@@ -25,7 +25,9 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -42,6 +44,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -73,6 +76,8 @@ fun HomeScreen(
             mutableStateOf(!lazyListState.canScrollForward)
         }
     }
+    val isLoading = homeUiState.value.isLoading
+    val hasNoPost = homeUiState.value.hasNoPost
 
     LaunchedEffect(Unit) {
         viewModel.getPosts()
@@ -82,51 +87,99 @@ fun HomeScreen(
             viewModel.loadMorePosts()
         }
     }
-    LazyColumn(
-        modifier = modifier,
-        state = lazyListState,
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 100.dp)
-    ) {
-        item {
-            HomeScreenTitle()
+
+    if (isLoading != false) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(64.dp),
+                color = MaterialTheme.colorScheme.secondary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+            )
         }
-        items(posts) { post ->
-            Column {
-                Spacer(modifier = Modifier.height(10.dp))
-                PostItemHeader(post = post)
-                Spacer(modifier = Modifier.height(10.dp))
-                Box(modifier = Modifier.postItemContentShadow()) {
-                    PostItemContent(post = post, navigateToPostDetail = navigateToPostDetail)
+    } else {
+        if (hasNoPost) {
+            Column(
+                modifier = modifier.padding(start = 16.dp, end = 16.dp, bottom = 100.dp),
+            ) {
+                HomeScreenTitle(hasNoPost = true)
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Image(
+                        modifier = Modifier.size(56.dp),
+                        imageVector = ImageVector.vectorResource(R.drawable.ic_no_post),
+                        contentDescription = null
+                    )
+                    Text(
+                        modifier = Modifier.padding(top = 17.dp),
+                        text = stringResource(id = R.string.home_content_no_post),
+                        style = AppTypography.BTN5_16,
+                        color = AppColors.grey2,
+                        textAlign = TextAlign.Center
+                    )
                 }
-                Spacer(modifier = Modifier.height(24.dp))
+            }
+        } else {
+            LazyColumn(
+                modifier = modifier,
+                state = lazyListState,
+                contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 100.dp)
+            ) {
+                item {
+                    HomeScreenTitle(hasNoPost = false)
+                }
+                items(posts) { post ->
+                    Column {
+                        Spacer(modifier = Modifier.height(10.dp))
+                        PostItemHeader(post = post)
+                        Spacer(modifier = Modifier.height(10.dp))
+                        Box(modifier = Modifier.postItemContentShadow()) {
+                            PostItemContent(post = post, navigateToPostDetail = navigateToPostDetail)
+                        }
+                        Spacer(modifier = Modifier.height(24.dp))
+                    }
+                }
             }
         }
     }
 }
 
 @Composable
-fun HomeScreenTitle() {
+fun HomeScreenTitle(hasNoPost: Boolean) {
     Spacer(modifier = Modifier.height(69.dp))
     Text(
         text = stringResource(id = R.string.home_greeting_1, "딸내미"),
         style = AppTypography.B2_14,
         color = AppColors.black2
     )
-    Text(
-        text = buildAnnotatedString {
-            withStyle(style = AppTypography.B1_16.toSpanStyle().copy(color = AppColors.black2)) {
-                append(stringResource(id = R.string.home_greeting_2))
+    if (hasNoPost) {
+        Text(
+            text = stringResource(id = R.string.home_header_no_post),
+            style = AppTypography.B1_16,
+            color = AppColors.black2
+        )
+    } else {
+        Text(
+            text = buildAnnotatedString {
+                withStyle(style = AppTypography.B1_16.toSpanStyle().copy(color = AppColors.black2)) {
+                    append(stringResource(id = R.string.home_greeting_2))
+                }
+                append(" ")
+                withStyle(style = AppTypography.H2_24.toSpanStyle().copy(color = AppColors.black2)) {
+                    append(stringResource(id = R.string.home_greeting_3, 2))
+                }
+                append(" ")
+                withStyle(style = AppTypography.B1_16.toSpanStyle().copy(color = AppColors.black2)) {
+                    append(stringResource(id = R.string.home_greeting_4))
+                }
             }
-            append(" ")
-            withStyle(style = AppTypography.H2_24.toSpanStyle().copy(color = AppColors.black2)) {
-                append(stringResource(id = R.string.home_greeting_3, 2))
-            }
-            append(" ")
-            withStyle(style = AppTypography.B1_16.toSpanStyle().copy(color = AppColors.black2)) {
-                append(stringResource(id = R.string.home_greeting_4))
-            }
-        }
-    )
+        )
+    }
     Spacer(modifier = Modifier.height(9.dp))
     Spacer(
         modifier = Modifier
@@ -275,7 +328,7 @@ fun HomeScreenPreview() {
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
         item {
-            HomeScreenTitle()
+            HomeScreenTitle(hasNoPost = false)
         }
         items(10) {
             Column {
