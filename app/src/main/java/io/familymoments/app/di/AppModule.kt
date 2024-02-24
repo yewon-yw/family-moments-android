@@ -8,6 +8,8 @@ import io.familymoments.app.BuildConfig
 import io.familymoments.app.core.network.AuthInterceptor
 import io.familymoments.app.core.network.api.AuthService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
+import io.familymoments.app.core.network.api.PublicService
+import io.familymoments.app.core.network.datasource.TokenPreferencesDataSource
 import okhttp3.JavaNetCookieJar
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -87,5 +89,11 @@ object AppModule {
     @Singleton
     fun provideAuthService(@AuthRetrofit retrofit: Retrofit): AuthService {
         return retrofit.create(AuthService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideDefaultService(@DefaultRetrofit retrofit:Retrofit):PublicService{
+        return retrofit.create(PublicService::class.java)
     }
 }

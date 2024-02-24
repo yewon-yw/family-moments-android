@@ -11,6 +11,9 @@ import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourc
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourceImpl
 import io.familymoments.app.core.network.repository.AuthRepository
 import io.familymoments.app.core.network.repository.impl.AuthRepositoryImpl
+import io.familymoments.app.core.network.api.PublicService
+import io.familymoments.app.core.network.repository.PublicRepository
+import io.familymoments.app.core.network.repository.impl.PublicRepositoryImpl
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -31,4 +34,11 @@ object RepositoryModule {
         val preferences = context.getSharedPreferences(USER_INFO_PREFERENCES_KEY, Context.MODE_PRIVATE)
         return UserInfoPreferencesDataSourceImpl(preferences)
     }
+
+    @Provides
+    @Singleton
+    fun providePublicRepository(publicService: PublicService): PublicRepository {
+        return PublicRepositoryImpl(publicService)
+    }
+
 }

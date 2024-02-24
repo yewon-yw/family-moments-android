@@ -9,17 +9,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 
@@ -29,13 +30,16 @@ fun FMTextField(
     onValueChange: (TextFieldValue) -> Unit,
     value: TextFieldValue,
     hint: String,
-    showBorder: Boolean = true
+    showBorder: Boolean = true,
+    borderColor: Color = AppColors.grey2,
+    showDeleteButton:Boolean = true,
+    textColor:Color = AppColors.grey2,
 ) {
     Box(
         modifier = modifier
             .then(
                 if (showBorder) {
-                    Modifier.border(width = 2.dp, color = AppColors.grey2, shape = RoundedCornerShape(8.dp))
+                    Modifier.border(width = 1.5.dp, color = borderColor, shape = RoundedCornerShape(8.dp))
                 } else {
                     Modifier
                 }
@@ -54,7 +58,7 @@ fun FMTextField(
                 textStyle = AppTypography.BTN5_16,
                 decorationBox = { innerTextField ->
                     if (value.text.isEmpty()) {
-                        Text(text = hint, style = AppTypography.BTN5_16, color = AppColors.grey2)
+                        Text(text = hint, style = AppTypography.BTN5_16, color = textColor)
                     }
                     innerTextField()
                 },
@@ -63,12 +67,13 @@ fun FMTextField(
                     .weight(1f)
             )
 
-            if (value.text.isNotEmpty()) {
+            if (showDeleteButton && value.text.isNotEmpty()) {
                 Icon(
-                    imageVector = Icons.Filled.Clear,
+                    painter = painterResource(id = R.drawable.ic_text_field_delete),
                     contentDescription = null,
+                    tint = Color.Unspecified,
                     modifier = Modifier
-                        .size(16.dp)
+                        .size(28.dp)
                         .clickable { onValueChange(TextFieldValue("")) }
                 )
             }
