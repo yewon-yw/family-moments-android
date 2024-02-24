@@ -4,6 +4,7 @@ import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.UserService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.model.AuthErrorResponse
+import io.familymoments.app.core.network.model.UserProfileResponse
 import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.feature.login.model.request.LoginRequest
 import io.familymoments.app.feature.login.model.response.LoginResponse
@@ -32,6 +33,7 @@ class UserRepositoryImpl @Inject constructor(
                 if (familyId != null) {
                     userInfoPreferencesDataSource.saveFamilyId(familyId)
                 }
+                loadUserProfile()
                 emit(Resource.Success(responseBody))
             } else {
                 emit(Resource.Fail(Throwable(responseBody.message)))
@@ -64,6 +66,25 @@ class UserRepositoryImpl @Inject constructor(
             emit(Resource.Fail(Throwable(e.message)))
         }
     }
+
+    override suspend fun loadUserProfile(): Flow<Resource<UserProfileResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = userService.loadUserProfile()
+            val responseBody = response.body() ?: UserProfileResponse()
+
+            if (responseBody.isSuccess) {
+                userInfoPreferencesDataSource.saveUserProfile(responseBody.result)
+                emit(Resource.Success(responseBody))
+            } else {
+                emit(Resource.Fail(Throwable(responseBody.message)))
+            }
+
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
     companion object {
         private const val KEY_ACCESS_TOKEN = "X-AUTH-TOKEN"
         private const val GET_ACCESS_TOKEN_ERROR = "Fail to get Access Token"
