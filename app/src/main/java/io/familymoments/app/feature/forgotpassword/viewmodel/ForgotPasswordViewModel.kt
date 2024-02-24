@@ -2,12 +2,12 @@ package io.familymoments.app.feature.forgotpassword.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
-import io.familymoments.app.core.network.repository.AuthRepository
+import io.familymoments.app.core.network.repository.UserRepository
 import javax.inject.Inject
 
 @HiltViewModel
 class ForgotPasswordViewModel @Inject constructor(
-    private val authRepository: AuthRepository
+    private val userRepository: UserRepository
 ) : BaseViewModel() {
 
 
