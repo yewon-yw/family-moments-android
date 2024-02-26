@@ -7,6 +7,7 @@ import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Query
 
 interface UserService {
     @POST("/users/log-in")
@@ -14,5 +15,7 @@ interface UserService {
     @POST("/users/reissue")
     suspend fun reissueAccessToken(): Response<Void>
     @GET("/users/profile")
-    suspend fun loadUserProfile(): Response<UserProfileResponse>
+    suspend fun loadUserProfile(
+        @Query("familyId") familyId:Long? = null
+    ): Response<UserProfileResponse>
 }

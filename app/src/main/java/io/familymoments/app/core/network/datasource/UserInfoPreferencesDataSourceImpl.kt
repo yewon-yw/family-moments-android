@@ -19,7 +19,7 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
             ACCESS_TOKEN_KEY,
             DEFAULT_TOKEN_VALUE
         ) ?: throw IllegalStateException(
-            KEY_NOT_EXIST_ERROR
+            ACCESS_TOKEN_KEY_NOT_EXIST_ERROR
         )
     }
 
@@ -51,13 +51,26 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
     }
 
     override suspend fun loadUserProfile(): UserProfile {
-        val userName = sharedPreferences.getString(USER_NAME_KEY, "") ?: ""
-        val userBirthDate = sharedPreferences.getString(USER_BIRTH_DATE_KEY, "") ?: ""
-        val userProfileImg = sharedPreferences.getString(USER_PROFILE_IMG_KEY, "") ?: ""
-        val userNickname = sharedPreferences.getString(USER_NICKNAME_KEY, "") ?: ""
-        val userEmail = sharedPreferences.getString(USER_EMAIL_KEY, "") ?: ""
-        val userTotalUpload = sharedPreferences.getInt(USER_TOTAL_UPLOAD_KEY, 0)
-        val userDuration = sharedPreferences.getInt(USER_DURATION_KEY, 0)
+        val userName = sharedPreferences.getString(USER_NAME_KEY, DEFAULT_STRING_USER_INFO_VALUE) ?:throw IllegalStateException(
+            USER_INFO_KEY_NOT_EXIST_ERROR
+        )
+        val userBirthDate = sharedPreferences.getString(USER_BIRTH_DATE_KEY, DEFAULT_STRING_USER_INFO_VALUE) ?:throw IllegalStateException(
+            USER_INFO_KEY_NOT_EXIST_ERROR
+        )
+        val userProfileImg = sharedPreferences.getString(USER_PROFILE_IMG_KEY, DEFAULT_STRING_USER_INFO_VALUE) ?:throw IllegalStateException(
+            USER_INFO_KEY_NOT_EXIST_ERROR
+        )
+        val userNickname = sharedPreferences.getString(USER_NICKNAME_KEY, DEFAULT_STRING_USER_INFO_VALUE) ?:throw IllegalStateException(
+            USER_INFO_KEY_NOT_EXIST_ERROR
+        )
+        val userEmail = sharedPreferences.getString(USER_EMAIL_KEY, DEFAULT_STRING_USER_INFO_VALUE) ?:throw IllegalStateException(
+            USER_INFO_KEY_NOT_EXIST_ERROR
+        )
+        val userTotalUpload = sharedPreferences.getInt(USER_TOTAL_UPLOAD_KEY, DEFAULT_INT_USER_INFO_VALUE)
+        val userDuration = sharedPreferences.getInt(USER_DURATION_KEY, DEFAULT_INT_USER_INFO_VALUE)
+        if ((userTotalUpload == DEFAULT_INT_USER_INFO_VALUE) or (userDuration == DEFAULT_INT_USER_INFO_VALUE)) throw IllegalStateException(
+            USER_INFO_KEY_NOT_EXIST_ERROR
+        )
         return UserProfile(
             userName,
             userBirthDate,
@@ -71,7 +84,7 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
 
     companion object {
         private const val ACCESS_TOKEN_KEY = "access_token"
-        private const val KEY_NOT_EXIST_ERROR = "액세스 토큰이 존재하지 않습니다."
+        private const val ACCESS_TOKEN_KEY_NOT_EXIST_ERROR = "액세스 토큰이 존재하지 않습니다."
         private const val DEFAULT_TOKEN_VALUE = ""
         private const val FAMILY_ID_KEY = "family_id"
         private const val DEFAULT_FAMILY_ID = -1L
@@ -83,5 +96,10 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
         private const val USER_EMAIL_KEY = "email"
         private const val USER_TOTAL_UPLOAD_KEY = "totalUpload"
         private const val USER_DURATION_KEY = "duration"
+
+        private const val DEFAULT_STRING_USER_INFO_VALUE = ""
+        private const val DEFAULT_INT_USER_INFO_VALUE = -1
+
+        private const val USER_INFO_KEY_NOT_EXIST_ERROR = "해당하는 가족 정보가 존재하지 않습니다."
     }
 }

@@ -33,7 +33,15 @@ class UserRepositoryImpl @Inject constructor(
                 if (familyId != null) {
                     userInfoPreferencesDataSource.saveFamilyId(familyId)
                 }
-                loadUserProfile()
+                loadUserProfile(familyId).collect{ result ->
+                    if (result is Resource.Success){
+                        userInfoPreferencesDataSource.saveUserProfile(result.data.result)
+                    }
+                    if (result is Resource.Fail){
+                        emit(Resource.Fail(Throwable(result.exception.message)))
+                    }
+
+                }
                 emit(Resource.Success(responseBody))
             } else {
                 emit(Resource.Fail(Throwable(responseBody.message)))
@@ -67,14 +75,13 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun loadUserProfile(): Flow<Resource<UserProfileResponse>> {
+    override suspend fun loadUserProfile(familyId: Long?): Flow<Resource<UserProfileResponse>> {
         return flow {
             emit(Resource.Loading)
-            val response = userService.loadUserProfile()
+            val response = userService.loadUserProfile(familyId)
             val responseBody = response.body() ?: UserProfileResponse()
 
             if (responseBody.isSuccess) {
-                userInfoPreferencesDataSource.saveUserProfile(responseBody.result)
                 emit(Resource.Success(responseBody))
             } else {
                 emit(Resource.Fail(Throwable(responseBody.message)))
