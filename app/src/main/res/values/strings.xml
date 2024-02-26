@@ -43,13 +43,6 @@
     <string name="login_description_sns">SNS 계정으로 로그인</string>
     <string name="login_login">로그인</string>
     <string name="title_activity_join">JoinActivity</string>
-    <string name="title_activity_splash">SplashActivity</string>
-    <string name="splash_title">가족들과 소중한 순간을 공유해보세요!</string>
-    <string name="login_app_bar_screen_header">Family Moments</string>
-    <string name="login_id_text_field_hint">ID</string>
-    <string name="login_password_text_field_hint">Password</string>
-    <string name="login_default_error_message">로그인 실패</string>
-    <string name="sns_login">SNS 계정으로 로그인</string>
 
     <string name="join_id_field_title">아이디</string>
     <string name="join_id_field_hint">아이디를 입력하세요</string>
@@ -86,7 +79,7 @@
     <string name="join_check_email_duplication_success">사용할 수 있는 이메일 입니다.</string>
     <string name="join_check_email_duplication_fail">사용할 수 없는 이메일 입니다.</string>
     <string name="join_activity_app_bar_title">회원가입</string>
-  
+
     <string name="profile_title">프로필</string>
     <string name="edit_profile_title">프로필 편집</string>
     <string name="profile_total_upload">Total\nUpload</string>
@@ -100,4 +93,12 @@
     <string name="profile_select_photo">사진 선택</string>
     <string name="profile_gallery_select_photo">갤러리에서 선택</string>
     <string name="profile_default_image_select">기본이미지로 하기</string>
+
+    <string name="modify_password_title">비밀번호 변경</string>
+    <string name="modify_password_notification_1">계정을 보호하기 위해 이 세션을 제외한 모든\n세션에서 로그아웃됩니다.</string>
+    <string name="modify_password_notification_2">비밀번호는 8글자 이상 12글자 이하여야\n하고 숫자와 영문의 조합을 포함해야 합니다.</string>
+    <string name="modify_password_current_password">현재 비밀번호</string>
+    <string name="modify_password_new_password">새 비밀번호</string>
+    <string name="modify_password_new_password_check">새 비밀번호 확인</string>
+    <string name="modify_password_btn">비밀번호 변경</string>
 </resources>
