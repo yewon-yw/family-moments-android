@@ -43,7 +43,10 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
                     hasShadow = false,
                     hasBackButton = true,
                     selectedBottomNav = BottomNavItem.MyPage
-                )
+                ),
+            onItemClick = { clickedItem ->
+                navController.navigate(clickedItem.route)
+            }
         )
     }
 }
