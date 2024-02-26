@@ -7,6 +7,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.bottomnav.model.BottomNavItem
+import io.familymoments.app.feature.calendar.screen.CalendarScreen
 import io.familymoments.app.feature.home.screen.HomeScreen
 import io.familymoments.app.feature.mypage.screen.MyPageScreen
 
@@ -34,7 +35,15 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
     }
 
     composable(route = BottomNavItem.Calendar.route) {
-        // CalendarScreen()
+        CalendarScreen(
+            modifier = Modifier
+                .scaffoldState(
+                    hasShadow = false,
+                    hasBackButton = true,
+                    selectedBottomNav = BottomNavItem.Calendar
+                ),
+            viewModel = hiltViewModel()
+        )
     }
 
     composable(route = BottomNavItem.MyPage.route) {
