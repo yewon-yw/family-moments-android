@@ -25,6 +25,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -39,6 +40,7 @@ import io.familymoments.app.core.theme.AppTypography.LB2_11
 import io.familymoments.app.core.util.LocalScaffoldState
 import io.familymoments.app.feature.bottomnav.component.bottomNavShadow
 import io.familymoments.app.feature.bottomnav.model.BottomNavItem
+import io.familymoments.app.feature.home.screen.HomeScreenPreview
 
 @Composable
 fun MainScreen() {
@@ -148,5 +150,26 @@ fun BottomNavigationBar(navController: NavHostController) {
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun MainScreenPreview() {
+    AppBarScreen(
+        title = { Text(text = "sweety home", style = AppTypography.SH3_16, color = AppColors.deepPurple1) },
+        navigationIcon = {
+            Icon(
+                modifier = Modifier.padding(start = 12.dp),
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_app_bar_back),
+                contentDescription = null,
+                tint = AppColors.grey3
+            )
+        },
+        bottomBar = {
+            BottomNavigationBar(navController = rememberNavController())
+        },
+    ) {
+        HomeScreenPreview()
     }
 }
