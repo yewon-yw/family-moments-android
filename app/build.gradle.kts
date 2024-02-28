@@ -113,6 +113,9 @@ dependencies {
     kapt(libs.room.compiler)
     implementation(libs.navigation.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.hilt.navigation.compose)
+    implementation(libs.coil.compose)
+    implementation(libs.timber)
 
     testImplementation(libs.mockk)
     testImplementation(libs.junit)
