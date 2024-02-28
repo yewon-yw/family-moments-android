@@ -31,15 +31,16 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
-import io.familymoments.app.core.util.LocalScaffoldState
 import io.familymoments.app.R
 import io.familymoments.app.core.component.AppBarScreen
+import io.familymoments.app.core.graph.getMainGraph
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.AppTypography.LB2_11
+import io.familymoments.app.core.util.LocalScaffoldState
 import io.familymoments.app.feature.bottomnav.component.bottomNavShadow
 import io.familymoments.app.feature.bottomnav.model.BottomNavItem
-import io.familymoments.app.core.graph.getMainGraph
+import io.familymoments.app.feature.home.screen.HomeScreenPreview
 
 @Composable
 fun MainScreen() {
@@ -74,13 +75,12 @@ fun MainScreen() {
         title = { Text(text = "sweety home", style = AppTypography.SH3_16, color = AppColors.deepPurple1) },
         navigationIcon = navigationIcon,
         bottomBar = {
-            BottomNavigationBar(
-                navController = navController,
-            )
+            BottomNavigationBar(navController = navController)
         },
         hasShadow = scaffoldState.hasShadow
     ) {
         NavHost(
+            modifier = Modifier.padding(bottom = 75.dp),
             navController = navController,
             startDestination = BottomNavItem.Home.route,
             builder = getMainGraph(navController = navController),
@@ -89,9 +89,7 @@ fun MainScreen() {
 }
 
 @Composable
-private fun BottomNavigationBar(
-    navController: NavHostController,
-) {
+fun BottomNavigationBar(navController: NavHostController) {
     val bottomNavItems = listOf(
         BottomNavItem.Home,
         BottomNavItem.Album,
@@ -158,5 +156,20 @@ private fun BottomNavigationBar(
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen()
+    AppBarScreen(
+        title = { Text(text = "sweety home", style = AppTypography.SH3_16, color = AppColors.deepPurple1) },
+        navigationIcon = {
+            Icon(
+                modifier = Modifier.padding(start = 12.dp),
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_app_bar_back),
+                contentDescription = null,
+                tint = AppColors.grey3
+            )
+        },
+        bottomBar = {
+            BottomNavigationBar(navController = rememberNavController())
+        },
+    ) {
+        HomeScreenPreview()
+    }
 }
