@@ -1,5 +1,6 @@
 package io.familymoments.app.feature.modifypassword.screen
 
+import androidx.annotation.StringRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,20 +19,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.FMButton
 import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.feature.modifypassword.viewmodel.ModifyPasswordViewModel
 
 @Composable
 fun ModifyPasswordScreen(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    viewModel: ModifyPasswordViewModel
 ) {
-    var currentPwd by remember { mutableStateOf(TextFieldValue()) }
-    var newPwd by remember { mutableStateOf(TextFieldValue()) }
-    var newPwdCheck by remember { mutableStateOf(TextFieldValue()) }
     Column(
         modifier = modifier.padding(horizontal = 16.dp)
     ) {
@@ -39,32 +41,10 @@ fun ModifyPasswordScreen(
         Spacer(modifier = Modifier.padding(top = 40.dp))
         ModifyPasswordInfo()
         Spacer(modifier = Modifier.padding(top = 26.dp))
-        FMTextField(
-            modifier = Modifier.background(AppColors.pink5).height(46.dp),
-            onValueChange = { currentPwd = it },
-            value = currentPwd,
-            hint = stringResource(id = R.string.modify_password_current_password)
-        )
-        Spacer(modifier = Modifier.padding(top = 70.dp))
-        FMTextField(
-            modifier = Modifier.background(AppColors.pink5).height(46.dp),
-            onValueChange = { newPwd = it },
-            value = newPwd,
-            hint = stringResource(id = R.string.modify_password_new_password)
-        )
-        Spacer(modifier = Modifier.padding(top = 18.dp))
-        FMTextField(
-            modifier = Modifier.background(AppColors.pink5).height(46.dp),
-            onValueChange = { newPwdCheck = it },
-            value = newPwdCheck,
-            hint = stringResource(id = R.string.modify_password_new_password_check)
-        )
-        Spacer(modifier = Modifier.padding(top = 67.dp))
-        FMButton(
-            modifier = Modifier.fillMaxWidth().height(59.dp),
-            onClick = { /** 비밀번호 변경 요청 **/ },
-            text = stringResource(id = R.string.modify_password_btn)
-        )
+        CurrentPasswordField(viewModel = viewModel)
+        NewPasswordField(viewModel = viewModel)
+        ModifyPasswordButton(viewModel = viewModel)
+        Spacer(modifier = Modifier.padding(top = 20.dp))
     }
 }
 
@@ -97,8 +77,109 @@ fun ModifyPasswordInfo() {
     )
 }
 
+@Composable
+private fun CurrentPasswordField(viewModel: ModifyPasswordViewModel) {
+    var currentPassword by remember { mutableStateOf(TextFieldValue()) }
+    val currentPasswordValid = viewModel.currentPasswordValid.collectAsStateWithLifecycle().value
+    val currentPasswordWarning = viewModel.currentPasswordWarning.collectAsStateWithLifecycle().value
+
+    Column {
+        FMTextField(
+            modifier = Modifier.background(AppColors.pink5).height(46.dp),
+            onValueChange = {
+                currentPassword = it
+                viewModel.checkCurrentPassword(it.text)
+            },
+            value = currentPassword,
+            hint = stringResource(id = R.string.modify_password_current_password),
+            borderColor = if (currentPasswordValid || currentPassword.text.isEmpty()) AppColors.grey2 else AppColors.red2,
+            showDeleteButton = false,
+            showText = false
+        )
+        ModifyPasswordWarning(
+            warningResId = currentPasswordWarning?.stringResId,
+            bottomPadding = 70.dp
+        )
+    }
+}
+
+@Composable
+private fun NewPasswordField(viewModel: ModifyPasswordViewModel) {
+    var newPassword by remember { mutableStateOf(TextFieldValue()) }
+    var newPasswordCheck by remember { mutableStateOf(TextFieldValue()) }
+    val newPasswordWarning = viewModel.newPasswordWarning.collectAsStateWithLifecycle().value
+
+    FMTextField(
+        modifier = Modifier.background(AppColors.pink5).height(46.dp),
+        onValueChange = {
+            newPassword = it
+            viewModel.checkNewPassword(it.text, newPasswordCheck.text)
+        },
+        value = newPassword,
+        hint = stringResource(id = R.string.modify_password_new_password),
+        borderColor = if (newPasswordWarning == null) AppColors.grey2 else AppColors.red2,
+        showDeleteButton = false,
+        showText = false
+    )
+    Spacer(modifier = Modifier.padding(top = 18.dp))
+    FMTextField(
+        modifier = Modifier.background(AppColors.pink5).height(46.dp),
+        onValueChange = {
+            newPasswordCheck = it
+            viewModel.checkNewPassword(newPassword.text, it.text)
+        },
+        value = newPasswordCheck,
+        hint = stringResource(id = R.string.modify_password_new_password_check),
+        borderColor = if (newPasswordWarning == null) AppColors.grey2 else AppColors.red2,
+        showDeleteButton = false,
+        showText = false
+    )
+    ModifyPasswordWarning(
+        warningResId = newPasswordWarning?.stringResId,
+        bottomPadding = 67.dp
+    )
+}
+
+@Composable
+fun ModifyPasswordWarning(
+    @StringRes warningResId: Int?,
+    bottomPadding: Dp = 0.dp
+) {
+    if (warningResId == null) {
+        Spacer(modifier = Modifier.padding(top = bottomPadding))
+    } else {
+        Box(
+            modifier = Modifier
+                .padding(top = 9.dp, bottom = bottomPadding - 25.dp)
+        ) {
+            Text(
+                text = stringResource(id = warningResId),
+                style = AppTypography.LB1_13,
+                color = AppColors.red2,
+                modifier = Modifier.height(16.dp)
+            )
+        }
+    }
+}
+
+@Composable
+fun ModifyPasswordButton(
+    viewModel: ModifyPasswordViewModel
+) {
+    val currentPasswordValid = viewModel.currentPasswordValid.collectAsStateWithLifecycle().value
+    val newPasswordValid = viewModel.newPasswordValid.collectAsStateWithLifecycle().value
+    FMButton(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(59.dp),
+        onClick = { /* TODO 비밀번호 변경 요청 */ },
+        text = stringResource(id = R.string.modify_password_btn),
+        enabled = currentPasswordValid && newPasswordValid
+    )
+}
+
 @Preview(showBackground = true)
 @Composable
 fun ModifyPasswordScreenPreview() {
-    ModifyPasswordScreen()
+    ModifyPasswordScreen(viewModel = ModifyPasswordViewModel())
 }
