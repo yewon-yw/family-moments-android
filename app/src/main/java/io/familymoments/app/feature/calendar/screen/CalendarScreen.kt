@@ -58,14 +58,21 @@ fun CalendarScreen(
             onClickPrevMonth = viewModel::getPreviousMonth,
             onClickNextMonth = viewModel::getNextMonth
         )
-        CalendarContent(daysOfweek, calendarUiState.value.dates)
+        CalendarContent(
+            daysOfweek = daysOfweek,
+            dates = calendarUiState.value.dates,
+            today = calendarUiState.value.today,
+            isTodayInMonth = calendarUiState.value.isTodayInMonth
+        )
     }
 }
 
 @Composable
 private fun CalendarContent(
     daysOfweek: List<String>,
-    dates: List<LocalDate>
+    dates: List<LocalDate>,
+    today: String,
+    isTodayInMonth: Boolean
 ) {
     val firstDay = dates[0]
     val dateStrings = dates.map { it.dayOfMonth.toString() }.toMutableList()
@@ -113,7 +120,7 @@ private fun CalendarContent(
     Column(
         modifier = Modifier
             .clip(RoundedCornerShape((16.5).dp))
-            .background(color = AppColors.grey3)
+            .background(color = Color(0xFFF0F0F0))
             .padding(horizontal = 14.dp, vertical = 8.dp)
     ) {
         Row(
@@ -124,8 +131,7 @@ private fun CalendarContent(
         ) {
             daysOfweek.forEach { day ->
                 Text(
-                    modifier = Modifier
-                        .weight(1f),
+                    modifier = Modifier.weight(1f),
                     text = day,
                     style = AppTypography.SH3_16,
                     color = AppColors.black1,
@@ -133,22 +139,28 @@ private fun CalendarContent(
                 )
             }
         }
+
         LazyVerticalGrid(
             columns = GridCells.Fixed(7),
         ) {
             items(dateStrings.size) { index ->
                 val text = transformDate(dateStrings[index])
+                val isToday = dateStrings[index] == today && isTodayInMonth
                 Column(
                     modifier = Modifier
+                        .padding(all = (3.2).dp)
                         .heightIn(min = 43.dp)
-                        .padding(all = (3.2).dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(
+                            if (isToday) Color(0xB29378FF)
+                            else Color.Unspecified
+                        ),
+                    horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
-                        modifier = Modifier.weight(1f),
                         text = text,
                         style = AppTypography.BTN5_16,
-                        color = AppColors.black1,
+                        color = if (isToday) AppColors.grey6 else AppColors.black1,
                     )
                     if (text.isNotEmpty()) {
                         Icon(

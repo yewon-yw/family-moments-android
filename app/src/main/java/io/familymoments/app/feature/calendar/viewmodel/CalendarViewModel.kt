@@ -18,8 +18,6 @@ class CalendarViewModel @Inject constructor() : BaseViewModel() {
     private val _calendarUiState = MutableStateFlow(CalendarUiState())
     val calendarUiState = _calendarUiState.asStateFlow()
 
-    val today = LocalDate.now()
-
     init {
         getTodayCalendar()
     }
