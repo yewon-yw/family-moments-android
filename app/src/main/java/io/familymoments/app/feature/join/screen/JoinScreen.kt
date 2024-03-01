@@ -119,12 +119,9 @@ fun JoinContentScreen(
     viewModel: JoinViewModel,
     context: Context
 ) {
+    val joinFormatValidatedUiState = viewModel.joinFormatValidatedUiState.collectAsStateWithLifecycle()
     val userIdDuplicationCheck = viewModel.userIdDuplicationCheck.collectAsStateWithLifecycle()
-    val userIdFormatValidated = viewModel.userIdFormatValidated.collectAsStateWithLifecycle()
     val emailDuplicationCheck = viewModel.emailDuplicationCheck.collectAsStateWithLifecycle()
-    val passwordFormatValidated = viewModel.passwordFormatValidated.collectAsStateWithLifecycle()
-    val emailFormatValidated = viewModel.emailFormatValidated.collectAsStateWithLifecycle()
-    val nicknameFormatValidated = viewModel.nicknameFormatValidated.collectAsStateWithLifecycle()
 
     val defaultProfileImageBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.default_profile)
     showUserIdDuplicationCheckResult(userIdDuplicationCheck.value, context)
@@ -148,12 +145,12 @@ fun JoinContentScreen(
     Column {
         Spacer(modifier = Modifier.height(40.dp))
         IdField(
-            userIdFormatValidated = userIdFormatValidated.value,
+            userIdFormatValidated = joinFormatValidatedUiState.value.userIdFormatValidated,
             checkIdFormat = viewModel::checkIdFormat,
             checkIdDuplication = viewModel::checkIdDuplication
         ) { joinInfoUiModel = joinInfoUiModel.copy(id = it) }
         FirstPasswordField(
-            passwordFormatValidated = passwordFormatValidated.value,
+            passwordFormatValidated = joinFormatValidatedUiState.value.passwordFormatValidated,
             checkPasswordFormat = viewModel::checkPasswordFormat
         ) {
             password = it
@@ -167,11 +164,11 @@ fun JoinContentScreen(
         EmailField(
             checkEmailFormat = viewModel::checkEmailFormat,
             checkEmailDuplication = viewModel::checkEmailDuplication,
-            emailFormatValidated = emailFormatValidated.value,
+            emailFormatValidated = joinFormatValidatedUiState.value.emailFormatValidated,
         ) { joinInfoUiModel = joinInfoUiModel.copy(email = it) }
         BirthDayField { joinInfoUiModel = joinInfoUiModel.copy(birthDay = it) }
         NicknameField(
-            nicknameFormatValidated = nicknameFormatValidated.value,
+            nicknameFormatValidated = joinFormatValidatedUiState.value.nicknameFormatValidated,
             checkNicknameFormat = viewModel::checkNicknameFormat,
         ) { joinInfoUiModel = joinInfoUiModel.copy(nickname = it) }
         ProfileImageField(defaultProfileImageBitmap) {
