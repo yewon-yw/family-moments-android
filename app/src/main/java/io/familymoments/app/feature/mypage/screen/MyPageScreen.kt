@@ -141,7 +141,7 @@ fun MyPageGroupItem(
         Text(
             text = stringResource(id = item.labelResId),
             style = AppTypography.B1_16,
-            color = Color(0xFF090A0A),
+            color = AppColors.black1,
             modifier = Modifier.weight(1f)
         )
         Box(
