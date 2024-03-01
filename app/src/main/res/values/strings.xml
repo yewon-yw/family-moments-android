@@ -25,6 +25,8 @@
     <string name="home_greeting_2">가족과 순간들을 공유한지</string>
     <string name="home_greeting_3">%s일째</string>
     <string name="home_greeting_4">입니다.</string>
+    <string name="home_header_no_post">다른 가족들이 참여하기를 기다리는 중입니다.</string>
+    <string name="home_content_no_post">아직 공유한 순간이 없습니다.\n지금 바로 순간을 공유해보세요!</string>
     <string name="title_activity_splash">SplashActivity</string>
     <string name="splash_title">가족들과 소중한 순간을 공유해보세요!</string>
     <string name="login_app_bar_screen_header">Family Moments</string>
@@ -42,6 +44,7 @@
     <string name="login_signup">회원가입</string>
     <string name="login_description_sns">SNS 계정으로 로그인</string>
     <string name="login_login">로그인</string>
+
     <string name="title_activity_join">JoinActivity</string>
 
     <string name="join_id_field_title">아이디</string>

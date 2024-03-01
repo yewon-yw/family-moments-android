@@ -1,6 +1,7 @@
 package io.familymoments.app.feature.bottomnav.graph
 
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -15,8 +16,8 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
                 .scaffoldState(
                     hasShadow = true,
                     hasBackButton = false,
-                    selectedBottomNav = BottomNavItem.Home
                 ),
+            viewModel = hiltViewModel(),
             navigateToPostDetail = {
                 navController.navigate("PostDetail")
             }

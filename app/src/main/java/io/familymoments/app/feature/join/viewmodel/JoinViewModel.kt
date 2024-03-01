@@ -3,7 +3,7 @@ package io.familymoments.app.feature.join.viewmodel
 import android.graphics.Bitmap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
-import io.familymoments.app.core.network.repository.PublicRepository
+import io.familymoments.app.core.network.repository.SignInRepository
 import io.familymoments.app.feature.join.model.UserInfoFormatChecker
 import io.familymoments.app.feature.join.model.mapper.toRequest
 import io.familymoments.app.feature.join.model.JoinInfoUiModel
@@ -19,7 +19,7 @@ import java.io.FileOutputStream
 import javax.inject.Inject
 
 @HiltViewModel
-class JoinViewModel @Inject constructor(private val publicRepository: PublicRepository) :
+class JoinViewModel @Inject constructor(private val signInRepository: SignInRepository) :
     BaseViewModel() {
 
     private val _joinFormatValidatedUiState: MutableStateFlow<JoinFormatValidatedUiState> =
@@ -50,14 +50,14 @@ class JoinViewModel @Inject constructor(private val publicRepository: PublicRepo
 
     fun checkIdDuplication(id: String) {
         async(
-            operation = { publicRepository.checkId(id) },
+            operation = { signInRepository.checkId(id) },
             onSuccess = { _userIdDuplicationCheck.value = true },
             onFailure = { _userIdDuplicationCheck.value = false })
     }
 
     fun checkEmailDuplication(email: String) {
         async(
-            operation = { publicRepository.checkEmail(email) },
+            operation = { signInRepository.checkEmail(email) },
             onSuccess = { _emailDuplicationCheck.value = true },
             onFailure = { _emailDuplicationCheck.value = false })
     }
@@ -67,7 +67,7 @@ class JoinViewModel @Inject constructor(private val publicRepository: PublicRepo
         val imageRequestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
         val profileImgPart = MultipartBody.Part.createFormData("profileImg", imageFile.name, imageRequestBody)
         async(
-            operation = { publicRepository.join(profileImgPart, joinInfoUiModel.toRequest()) },
+            operation = { signInRepository.join(profileImgPart, joinInfoUiModel.toRequest()) },
             onSuccess = { },
             onFailure = { })
     }

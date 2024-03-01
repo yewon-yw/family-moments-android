@@ -642,7 +642,7 @@ fun JoinTextFieldVerticalSpacer() {
 @Composable
 fun PreviewJoinScreen() {
     FamilyMomentsTheme {
-        JoinScreen(JoinViewModel(PublicRepositoryImpl(object : PublicService {
+        JoinScreen(JoinViewModel(SignInRepositoryImpl(object : SignInService {
             override suspend fun checkId(checkIdRequest: CheckIdRequest): CheckIdResponse {
                 return CheckIdResponse(true, 200, "", "")
             }
