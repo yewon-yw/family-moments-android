@@ -28,6 +28,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
@@ -74,25 +75,6 @@ fun MainScreen() {
         }
     }
 
-    AppBarScreen(
-        title = { Text(text = "sweety home", style = AppTypography.SH3_16, color = AppColors.deepPurple1) },
-        navigationIcon = navigationIcon,
-        bottomBar = {
-            BottomNavigationBar(navController = navController)
-        },
-        hasShadow = scaffoldState.hasShadow
-    ) {
-        NavHost(
-            modifier = Modifier.padding(bottom = 75.dp),
-            navController = navController,
-            startDestination = BottomNavItem.Home.route,
-            builder = getMainGraph(navController = navController),
-        )
-    }
-}
-
-@Composable
-fun BottomNavigationBar(navController: NavHostController) {
     val bottomNavItems = listOf(
         BottomNavItem.Home,
         BottomNavItem.Album,
@@ -103,12 +85,39 @@ fun BottomNavigationBar(navController: NavHostController) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
-    // Don't display bottom nav when current destination is not in bottom nav graph
-    if (currentDestination?.hierarchy?.any { currentScreen ->
-            bottomNavItems.map { it.route }.contains(currentScreen.route)
-        } == false) {
-        return
+    val isBottomNavItem = currentDestination?.hierarchy?.any { currentScreen ->
+        bottomNavItems.map { it.route }.contains(currentScreen.route)
+    } == true
+
+    AppBarScreen(
+        title = { Text(text = "sweety home", style = AppTypography.SH3_16, color = AppColors.deepPurple1) },
+        navigationIcon = navigationIcon,
+        bottomBar = {
+            if (isBottomNavItem) {
+                BottomNavigationBar(
+                    navController = navController,
+                    bottomNavItems = bottomNavItems,
+                    currentDestination = currentDestination
+                )
+            }
+        },
+        hasShadow = scaffoldState.hasShadow
+    ) {
+        NavHost(
+            modifier = Modifier.padding(bottom = if (isBottomNavItem) 75.dp else 0.dp),
+            navController = navController,
+            startDestination = BottomNavItem.Home.route,
+            builder = getMainGraph(navController = navController),
+        )
     }
+}
+
+@Composable
+fun BottomNavigationBar(
+    navController: NavHostController,
+    bottomNavItems: List<BottomNavItem>,
+    currentDestination: NavDestination?
+) {
     BottomNavigation(
         modifier = Modifier
             .bottomNavShadow()
@@ -176,7 +185,17 @@ fun MainScreenPreview() {
             )
         },
         bottomBar = {
-            BottomNavigationBar(navController = rememberNavController())
+            BottomNavigationBar(
+                navController = rememberNavController(),
+                bottomNavItems = listOf(
+                    BottomNavItem.Home,
+                    BottomNavItem.Album,
+                    BottomNavItem.AddPost,
+                    BottomNavItem.Calendar,
+                    BottomNavItem.MyPage
+                ),
+                currentDestination = null
+            )
         },
     ) {
         HomeScreenPreview()
