@@ -24,6 +24,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
@@ -228,8 +229,29 @@ private fun CalendarHeader(
 @Preview(showBackground = true)
 @Composable
 fun CalendarScreenPreview() {
-    CalendarScreen(
-        modifier = Modifier.fillMaxSize(),
-        viewModel = CalendarViewModel()
-    )
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxSize(),
+    ) {
+        Text(
+            modifier = Modifier
+                .padding(vertical = 18.dp)
+                .align(Alignment.CenterHorizontally),
+            text = "캘린더",
+            style = AppTypography.B1_16,
+            color = AppColors.black1
+        )
+        CalendarHeader(
+            formattedYearMonth = "2024.03",
+            onClickPrevMonth = {},
+            onClickNextMonth = {}
+        )
+        CalendarContent(
+            daysOfweek = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"),
+            dates = (1..31).map { LocalDate.of(2024, 3, it) },
+            today = "15",
+            isTodayInMonth = true
+        )
+    }
 }
