@@ -1,5 +1,6 @@
 package io.familymoments.app.core.network.api
 
+import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
 import io.familymoments.app.feature.home.model.GetPostsResponse
 import retrofit2.Response
 import retrofit2.http.GET
@@ -14,4 +15,11 @@ interface PostService {
         @Query("familyId") familyId: Long,
         @Query("postId") postId: Long
     ): Response<GetPostsResponse>
+
+    @GET("/posts/calendar")
+    suspend fun getPostsByMonth(
+        @Query("familyId") familyId: Long,
+        @Query("year") year: Int,
+        @Query("month") month: Int
+    ): Response<GetPostsByMonthResponse>
 }

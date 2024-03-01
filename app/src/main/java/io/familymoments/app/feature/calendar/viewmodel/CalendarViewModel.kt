@@ -2,6 +2,7 @@ package io.familymoments.app.feature.calendar.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
+import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.feature.calendar.model.CalendarUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,7 +14,9 @@ import java.util.stream.Stream
 import javax.inject.Inject
 
 @HiltViewModel
-class CalendarViewModel @Inject constructor() : BaseViewModel() {
+class CalendarViewModel @Inject constructor(
+    private val postRepository: PostRepository
+) : BaseViewModel() {
 
     private val _calendarUiState = MutableStateFlow(CalendarUiState())
     val calendarUiState = _calendarUiState.asStateFlow()

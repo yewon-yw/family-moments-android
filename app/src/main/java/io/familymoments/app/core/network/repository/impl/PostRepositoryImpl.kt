@@ -3,6 +3,7 @@ package io.familymoments.app.core.network.repository.impl
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.PostService
 import io.familymoments.app.core.network.repository.PostRepository
+import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
 import io.familymoments.app.feature.home.model.GetPostsResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -41,6 +42,26 @@ class PostRepositoryImpl(
                 if (responseBody.code != 404) {
                     emit(Resource.Fail(Throwable(responseBody.message)))
                 }
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun getPostsByMonth(
+        familyId: Long,
+        year: Int,
+        month: Int
+    ): Flow<Resource<GetPostsByMonthResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = postService.getPostsByMonth(familyId, year, month)
+            val responseBody = response.body() ?: GetPostsByMonthResponse()
+
+            if (responseBody.isSuccess) {
+                emit(Resource.Success(responseBody))
+            } else {
+                emit(Resource.Fail(Throwable(responseBody.message)))
             }
         }.catch { e ->
             emit(Resource.Fail(e))
