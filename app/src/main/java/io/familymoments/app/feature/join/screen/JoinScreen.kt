@@ -1,6 +1,7 @@
 package io.familymoments.app.feature.join.screen
 
 import android.annotation.SuppressLint
+import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -15,6 +16,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -33,7 +35,6 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -67,10 +68,9 @@ import io.familymoments.app.feature.join.model.JoinTermUiModel
 import io.familymoments.app.core.component.FMCheckBox
 import io.familymoments.app.core.component.CheckedStatus
 import io.familymoments.app.core.component.JoinTextFieldArea
-import io.familymoments.app.feature.join.viewmodel.JoinViewModel
-import io.familymoments.app.core.component.ShowWarningText
 import io.familymoments.app.core.network.api.SignInService
 import io.familymoments.app.core.network.repository.impl.SignInRepositoryImpl
+import io.familymoments.app.feature.join.viewmodel.JoinViewModel
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
@@ -79,17 +79,24 @@ import okhttp3.MultipartBody
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
 fun JoinScreen(viewModel: JoinViewModel) {
+    val context = LocalContext.current
     AppBarScreen(
-        title = {Text(
-            text = stringResource(id = R.string.join_activity_app_bar_title),
-            style = AppTypography.SH3_16,
-            color = AppColors.deepPurple1
-        )},
+        title = {
+            Text(
+                text = stringResource(id = R.string.join_activity_app_bar_title),
+                style = AppTypography.SH3_16,
+                color = AppColors.deepPurple1
+            )
+        },
         navigationIcon = {
             Icon(
+                modifier = Modifier.clickable {
+                    (context as Activity).finish()
+                },
                 painter = painterResource(id = R.drawable.ic_app_bar_back),
                 contentDescription = null,
-                tint = Color.Unspecified)
+                tint = Color.Unspecified
+            )
         }) {
         LazyColumn(
             modifier = Modifier
@@ -97,7 +104,10 @@ fun JoinScreen(viewModel: JoinViewModel) {
                 .padding(horizontal = 20.dp)
         ) {
             item {
-                JoinContentScreen(viewModel)
+                JoinContentScreen(
+                    viewModel,
+                    context
+                )
             }
         }
     }
@@ -105,42 +115,22 @@ fun JoinScreen(viewModel: JoinViewModel) {
 
 
 @Composable
-fun JoinContentScreen(viewModel: JoinViewModel) {
-    val context = LocalContext.current
-    var password: String by remember { mutableStateOf("") }
-    val bitmap: Bitmap = getDefaultProfileImageBitmap(context)
-    var allEssentialTermsAgree by remember {
-        mutableStateOf(false)
-    }
+fun JoinContentScreen(
+    viewModel: JoinViewModel,
+    context: Context
+) {
+    val joinFormatValidatedUiState = viewModel.joinFormatValidatedUiState.collectAsStateWithLifecycle()
     val userIdDuplicationCheck = viewModel.userIdDuplicationCheck.collectAsStateWithLifecycle()
     val emailDuplicationCheck = viewModel.emailDuplicationCheck.collectAsStateWithLifecycle()
 
-    LaunchedEffect(key1 = userIdDuplicationCheck.value) {
-        if (userIdDuplicationCheck.value == true) {
-            Toast.makeText(
-                context,
-                context.getString(R.string.join_check_user_id_duplication_success),
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-        if (userIdDuplicationCheck.value == false) {
-            Toast.makeText(context, context.getString(R.string.join_check_user_id_duplication_fail), Toast.LENGTH_SHORT)
-                .show()
-        }
-    }
+    val defaultProfileImageBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.default_profile)
+    showUserIdDuplicationCheckResult(userIdDuplicationCheck.value, context)
+    showEmailDuplicationCheckResult(emailDuplicationCheck.value, context)
 
-    LaunchedEffect(key1 = emailDuplicationCheck.value) {
-        if (emailDuplicationCheck.value == true) {
-            Toast.makeText(
-                context,
-                context.getString(R.string.join_check_email_duplication_success),
-                Toast.LENGTH_SHORT
-            ).show()
-        }
-        if (emailDuplicationCheck.value == false) {
-            Toast.makeText(context, context.getString(R.string.join_check_email_duplication_fail), Toast.LENGTH_SHORT)
-                .show()
-        }
+    var password: String by remember { mutableStateOf("") }
+    val bitmap: Bitmap = defaultProfileImageBitmap
+    var allEssentialTermsAgree by remember {
+        mutableStateOf(false)
     }
 
     var passwordSameCheck by remember {
@@ -154,16 +144,34 @@ fun JoinContentScreen(viewModel: JoinViewModel) {
 
     Column {
         Spacer(modifier = Modifier.height(40.dp))
-        IdField(viewModel = viewModel) { joinInfoUiModel = joinInfoUiModel.copy(id = it) }
-        PasswordField(viewModel = viewModel, { passwordSameCheck = it }) {
+        IdField(
+            userIdFormatValidated = joinFormatValidatedUiState.value.userIdFormatValidated,
+            checkIdFormat = viewModel::checkIdFormat,
+            checkIdDuplication = viewModel::checkIdDuplication
+        ) { joinInfoUiModel = joinInfoUiModel.copy(id = it) }
+        FirstPasswordField(
+            passwordFormatValidated = joinFormatValidatedUiState.value.passwordFormatValidated,
+            checkPasswordFormat = viewModel::checkPasswordFormat
+        ) {
             password = it
             joinInfoUiModel = joinInfoUiModel.copy(password = it)
         }
+        SecondPasswordField(
+            firstPassword = joinInfoUiModel.password,
+            checkPasswordIsSame = { passwordSameCheck = it },
+        )
         NameField { joinInfoUiModel = joinInfoUiModel.copy(name = it) }
-        EmailField(viewModel) { joinInfoUiModel = joinInfoUiModel.copy(email = it) }
+        EmailField(
+            checkEmailFormat = viewModel::checkEmailFormat,
+            checkEmailDuplication = viewModel::checkEmailDuplication,
+            emailFormatValidated = joinFormatValidatedUiState.value.emailFormatValidated,
+        ) { joinInfoUiModel = joinInfoUiModel.copy(email = it) }
         BirthDayField { joinInfoUiModel = joinInfoUiModel.copy(birthDay = it) }
-        NicknameField(viewModel) { joinInfoUiModel = joinInfoUiModel.copy(nickname = it) }
-        ProfileImageField {
+        NicknameField(
+            nicknameFormatValidated = joinFormatValidatedUiState.value.nicknameFormatValidated,
+            checkNicknameFormat = viewModel::checkNicknameFormat,
+        ) { joinInfoUiModel = joinInfoUiModel.copy(nickname = it) }
+        ProfileImageField(defaultProfileImageBitmap) {
             joinInfoUiModel = joinInfoUiModel.copy(bitmap = it)
         }
         Spacer(modifier = Modifier.height(53.dp))
@@ -171,215 +179,240 @@ fun JoinContentScreen(viewModel: JoinViewModel) {
         StartButtonField(
             viewModel::join,
             joinInfoUiModel,
-            userIdDuplicationCheck.value ?: false,
+            viewModel.userIdDuplicationCheck.value ?: false,
             passwordSameCheck,
-            emailDuplicationCheck.value ?: false,
+            viewModel.emailDuplicationCheck.value ?: false,
             allEssentialTermsAgree
         )
         Spacer(modifier = Modifier.height(40.dp))
     }
 }
 
+private fun showUserIdDuplicationCheckResult(userIdDuplicationCheck: Boolean?, context: Context) {
+    if (userIdDuplicationCheck == true) {
+        Toast.makeText(
+            context,
+            context.getString(R.string.join_check_user_id_duplication_success),
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+    if (userIdDuplicationCheck == false) {
+        Toast.makeText(context, context.getString(R.string.join_check_user_id_duplication_fail), Toast.LENGTH_SHORT)
+            .show()
+    }
+}
+
+private fun showEmailDuplicationCheckResult(emailDuplicationCheck: Boolean?, context: Context) {
+
+    if (emailDuplicationCheck == true) {
+        Toast.makeText(
+            context,
+            context.getString(R.string.join_check_email_duplication_success),
+            Toast.LENGTH_SHORT
+        ).show()
+    }
+    if (emailDuplicationCheck == false) {
+        Toast.makeText(context, context.getString(R.string.join_check_email_duplication_fail), Toast.LENGTH_SHORT)
+            .show()
+    }
+}
+
 @Composable
-fun IdField(viewModel: JoinViewModel, onValueChange: (String) -> Unit) {
-    var textFieldValue by remember {
-        mutableStateOf(TextFieldValue())
+fun IdField(
+    userIdFormatValidated: Boolean,
+    checkIdFormat: (String) -> Unit,
+    checkIdDuplication: (String) -> Unit,
+    onValueChange: (String) -> Unit
+) {
+    var isFocused by remember {
+        mutableStateOf(false)
     }
-    var textFieldBorderColor by remember {
-        mutableStateOf(AppColors.grey2)
-    }
-    var textColor by remember {
-        mutableStateOf(AppColors.grey2)
-    }
-    val userIdValidation = viewModel.userIdFormatValidated.collectAsStateWithLifecycle()
     Column {
         JoinTextFieldArea(
             modifier = Modifier.onFocusChanged {
-                textFieldBorderColor = if (it.hasFocus) AppColors.purple2 else AppColors.grey2
+                isFocused = it.isFocused
             },
             title = stringResource(R.string.join_id_field_title),
             hint = stringResource(R.string.join_id_field_hint),
             onValueChange = {
-                textFieldValue = it
                 onValueChange(it.text)
-                viewModel.checkIdFormat(it.text)
+                checkIdFormat(it.text)
             },
             showCheckButton = true,
-            checkButtonAvailable = userIdValidation.value,
+            checkButtonAvailable = userIdFormatValidated,
             onCheckButtonClick = {
-                viewModel.checkIdDuplication(it.text)
+                checkIdDuplication(it.text)
             },
-            borderColor = textFieldBorderColor,
-            textColor = textColor
+            validated = userIdFormatValidated,
+            showWarningText = true,
+            warningText = stringResource(id = R.string.join_id_validation_warning),
+            isFocused = isFocused
         )
-        ShowWarningText(
-            text = stringResource(id = R.string.join_id_validation_warning),
-            textFieldValue = textFieldValue,
-            validation = userIdValidation.value,
-            colorChange = {
-                textColor = it
-                textFieldBorderColor = it
-            })
     }
     JoinTextFieldVerticalSpacer()
 }
 
 @Composable
-fun PasswordField(viewModel: JoinViewModel, onPasswordSameCheck: (Boolean) -> Unit, onValueChange: (String) -> Unit) {
-    val passwordValidation = viewModel.passwordFormatValidated.collectAsStateWithLifecycle()
-    var firstPwd by remember {
-        mutableStateOf(TextFieldValue())
+fun FirstPasswordField(
+    passwordFormatValidated: Boolean,
+    checkPasswordFormat: (String) -> Unit,
+    onValueChange: (String) -> Unit
+) {
+    var isFocused by remember {
+        mutableStateOf(false)
     }
-    var secondPwd by remember {
-        mutableStateOf(TextFieldValue())
+    JoinTextFieldArea(
+        modifier = Modifier.onFocusChanged {
+            isFocused = it.isFocused
+        },
+        title = stringResource(id = R.string.join_password_field_title),
+        hint = stringResource(R.string.join_password_field_hint),
+        onValueChange = {
+            onValueChange(it.text)
+            checkPasswordFormat(it.text)
+        },
+        showDeleteButton = true,
+        showWarningText = true,
+        warningText = stringResource(id = R.string.join_password_validation_warning),
+        validated = passwordFormatValidated,
+        isFocused = isFocused
+    )
+    Spacer(modifier = Modifier.height(20.dp))
+    JoinTextFieldVerticalSpacer()
+}
+
+@Composable
+fun SecondPasswordField(
+    firstPassword: String,
+    checkPasswordIsSame: (Boolean) -> Unit
+) {
+    var isFocused by remember {
+        mutableStateOf(false)
     }
-    var firstPwdTextFieldBorderColor by remember {
-        mutableStateOf(AppColors.grey2)
-    }
-    var firstPwdTextColor by remember {
-        mutableStateOf(AppColors.grey2)
-    }
-    var secondPwdTextFieldBorderColor by remember {
-        mutableStateOf(AppColors.grey2)
-    }
-    var secondPwdTextColor by remember {
-        mutableStateOf(AppColors.grey2)
+    var isPasswordSame by remember {
+        mutableStateOf(false)
     }
     Column {
         JoinTextFieldArea(
-            title = stringResource(id = R.string.join_password_field_title),
-            hint = stringResource(R.string.join_password_field_hint),
-            onValueChange = {
-                firstPwd = it
-                onValueChange(it.text)
-                viewModel.checkPasswordFormat(it.text)
+            modifier = Modifier.onFocusChanged {
+                isFocused = it.isFocused
             },
-            showDeleteButton = true,
-            borderColor = firstPwdTextFieldBorderColor,
-            textColor = firstPwdTextColor
-        )
-        ShowWarningText(
-            text = stringResource(id = R.string.join_password_validation_warning),
-            textFieldValue = firstPwd,
-            validation = passwordValidation.value,
-            colorChange = {
-                firstPwdTextColor = it
-                firstPwdTextFieldBorderColor = it
-            })
-        Spacer(modifier = Modifier.height(20.dp))
-        JoinTextFieldArea(
             title = stringResource(id = R.string.join_password_check_field_title),
             hint = stringResource(R.string.join_password_check_field_hint),
             onValueChange = {
-                secondPwd = it
-                onPasswordSameCheck(firstPwd.text == it.text)
+                isPasswordSame = firstPassword == it.text
+                checkPasswordIsSame(isPasswordSame)
             },
             showDeleteButton = true,
-            borderColor = secondPwdTextFieldBorderColor,
-            textColor = secondPwdTextColor
+            showWarningText = true,
+            warningText = stringResource(id = R.string.join_password_check_validation_warning),
+            validated = isPasswordSame,
+            isFocused = isFocused
         )
-        ShowWarningText(
-            text = stringResource(id = R.string.join_password_check_validation_warning),
-            textFieldValue = secondPwd,
-            validation = firstPwd.text == secondPwd.text,
-            colorChange = {
-                secondPwdTextColor = it
-                secondPwdTextFieldBorderColor = it
-            })
     }
     JoinTextFieldVerticalSpacer()
 }
 
 @Composable
 fun NameField(onValueChange: (String) -> Unit) {
+    var isFocused by remember {
+        mutableStateOf(false)
+    }
     JoinTextFieldArea(
+        modifier = Modifier.onFocusChanged {
+            isFocused = it.isFocused
+        },
         title = stringResource(id = R.string.join_name_field_title),
         hint = stringResource(R.string.join_name_field_hint),
-        onValueChange = { onValueChange(it.text) })
+        onValueChange = { onValueChange(it.text) },
+        isFocused = isFocused
+    )
 
     JoinTextFieldVerticalSpacer()
 }
 
 @Composable
-fun EmailField(viewModel: JoinViewModel, onValueChange: (String) -> Unit) {
-    val emailValidation = viewModel.emailFormatValidated.collectAsStateWithLifecycle()
-    var email by remember {
-        mutableStateOf(TextFieldValue())
-    }
-    var textFieldBorderColor by remember {
-        mutableStateOf(AppColors.grey2)
-    }
-    var textColor by remember {
-        mutableStateOf(AppColors.grey2)
+fun EmailField(
+    checkEmailFormat: (String) -> Unit,
+    checkEmailDuplication: (String) -> Unit,
+    emailFormatValidated: Boolean,
+    onValueChange: (String) -> Unit
+) {
+    var isFocused by remember {
+        mutableStateOf(false)
     }
     Column {
         JoinTextFieldArea(
+            modifier = Modifier.onFocusChanged {
+                isFocused = it.isFocused
+            },
             title = stringResource(R.string.join_email_field_title),
             hint = stringResource(id = R.string.join_email_field_hint),
             onValueChange = {
-                email = it
                 onValueChange(it.text)
-                viewModel.checkEmailFormat(it.text)
+                checkEmailFormat(it.text)
             },
             showCheckButton = true,
-            checkButtonAvailable = emailValidation.value,
+            checkButtonAvailable = emailFormatValidated,
             onCheckButtonClick = {
-                viewModel.checkEmailDuplication(it.text)
+                checkEmailDuplication(it.text)
             },
-            borderColor = textFieldBorderColor,
-            textColor = textColor
+            isFocused = isFocused,
+            showWarningText = true,
+            warningText = stringResource(id = R.string.join_password_check_validation_warning),
+            validated = emailFormatValidated
         )
-        ShowWarningText(
-            text = stringResource(id = R.string.join_password_check_validation_warning),
-            textFieldValue = email,
-            validation = emailValidation.value,
-            colorChange = {
-                textColor = it
-                textFieldBorderColor = it
-            })
     }
     JoinTextFieldVerticalSpacer()
 }
 
 @Composable
 fun BirthDayField(onTextFieldChange: (String) -> Unit) {
+    var isFocused by remember {
+        mutableStateOf(false)
+    }
     JoinTextFieldArea(
+        modifier = Modifier.onFocusChanged {
+            isFocused = it.isFocused
+        },
         title = stringResource(id = R.string.join_birthday_field_title),
         hint = stringResource(R.string.join_birthday_field_hint),
-        onValueChange = { onTextFieldChange(it.text) })
+        onValueChange = { onTextFieldChange(it.text) },
+        isFocused = isFocused
+    )
 
     JoinTextFieldVerticalSpacer()
 }
 
 @Composable
-fun NicknameField(viewModel: JoinViewModel, onTextFieldChange: (String) -> Unit) {
-    val nicknameValidation = viewModel.nicknameFormatValidated.collectAsStateWithLifecycle()
+fun NicknameField(
+    nicknameFormatValidated: Boolean,
+    checkNicknameFormat: (String) -> Unit,
+    onTextFieldChange: (String) -> Unit
+) {
+    var isFocused by remember {
+        mutableStateOf(false)
+    }
     var nickname by remember {
         mutableStateOf(TextFieldValue())
     }
-    var textFieldBorderColor by remember {
-        mutableStateOf(AppColors.grey2)
-    }
-    var textColor by remember {
-        mutableStateOf(AppColors.grey2)
-    }
     Column {
         JoinTextFieldArea(
+            modifier = Modifier.onFocusChanged {
+                isFocused = it.isFocused
+            },
             title = stringResource(id = R.string.join_nickname_field_title),
             hint = stringResource(R.string.join_nickname_field_hint),
             onValueChange = {
                 nickname = it
                 onTextFieldChange(it.text)
-                viewModel.checkNicknameFormat(it.text)
-            })
-        ShowWarningText(
-            text = stringResource(id = R.string.join_nickname_validation_warning),
-            textFieldValue = nickname,
-            validation = nicknameValidation.value,
-            colorChange = {
-                textColor = it
-                textFieldBorderColor = it
-            })
+                checkNicknameFormat(it.text)
+            },
+            isFocused = isFocused,
+            showWarningText = true,
+            warningText = stringResource(id = R.string.join_nickname_validation_warning),
+            validated = nicknameFormatValidated
+        )
     }
     JoinTextFieldVerticalSpacer()
 }
@@ -388,7 +421,8 @@ fun NicknameField(viewModel: JoinViewModel, onTextFieldChange: (String) -> Unit)
 fun ProfileImageSelectDropDownMenu(
     isMenuExpanded: Boolean,
     isMenuExpandedChanged: (Boolean) -> Unit,
-    getBitmap: (Bitmap?) -> Unit
+    defaultProfileImageBitmap: Bitmap,
+    getBitmap: (Bitmap?) -> Unit,
 ) {
     val context = LocalContext.current
     var bitmap by remember {
@@ -405,7 +439,7 @@ fun ProfileImageSelectDropDownMenu(
     DropdownMenu(expanded = isMenuExpanded,
         onDismissRequest = { isMenuExpandedChanged(false) }) {
         MenuItemGallerySelect(launcher, isMenuExpandedChanged)
-        MenuItemDefaultImage({ getBitmap(it) }, context, isMenuExpandedChanged)
+        MenuItemDefaultImage({ getBitmap(defaultProfileImageBitmap) }, isMenuExpandedChanged)
     }
 }
 
@@ -425,26 +459,22 @@ fun MenuItemGallerySelect(
 }
 
 @Composable
-fun MenuItemDefaultImage(getBitmap: (Bitmap) -> Unit, context: Context, isMenuExpandedChanged: (Boolean) -> Unit) {
+fun MenuItemDefaultImage(getDefaultProfileImageBitmap: () -> Unit, isMenuExpandedChanged: (Boolean) -> Unit) {
     DropdownMenuItem(onClick = {
-        getBitmap(getDefaultProfileImageBitmap(context))
+        getDefaultProfileImageBitmap()
         isMenuExpandedChanged(false)
     }) {
         Text(text = stringResource(R.string.join_select_profile_image_drop_down_menu_default_image))
     }
 }
 
-fun getDefaultProfileImageBitmap(context: Context): Bitmap {
-    return BitmapFactory.decodeResource(context.resources, R.drawable.default_profile)
-}
-
+@Suppress("DEPRECATION")
 fun convertToBitmap(context: Context, uri: Uri?): Bitmap? {
     var bitmap: Bitmap? = null
     uri?.let {
         bitmap = if (Build.VERSION.SDK_INT < 28) {
             MediaStore.Images
                 .Media.getBitmap(context.contentResolver, it)
-
         } else {
             val source = ImageDecoder
                 .createSource(context.contentResolver, it)
@@ -455,7 +485,7 @@ fun convertToBitmap(context: Context, uri: Uri?): Bitmap? {
 }
 
 @Composable
-fun ProfileImageField(onBitmapChange: (Bitmap) -> Unit) {
+fun ProfileImageField(defaultProfileImageBitmap: Bitmap, onBitmapChange: (Bitmap) -> Unit) {
     var isMenuExpanded: Boolean by remember { mutableStateOf(false) }
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
     Text(
@@ -472,7 +502,9 @@ fun ProfileImageField(onBitmapChange: (Bitmap) -> Unit) {
         ),
         elevation = ButtonDefaults.elevation(defaultElevation = 0.dp, pressedElevation = 0.dp),
     ) {
-        ProfileImageSelectDropDownMenu(isMenuExpanded, { isMenuExpanded = it }) { bitmap = it }
+        ProfileImageSelectDropDownMenu(isMenuExpanded, { isMenuExpanded = it }, defaultProfileImageBitmap) {
+            bitmap = it
+        }
         bitmap?.let {
             onBitmapChange(it)
             Image(

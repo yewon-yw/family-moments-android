@@ -7,6 +7,7 @@ import io.familymoments.app.core.network.repository.SignInRepository
 import io.familymoments.app.feature.join.model.UserInfoFormatChecker
 import io.familymoments.app.feature.join.model.mapper.toRequest
 import io.familymoments.app.feature.join.model.JoinInfoUiModel
+import io.familymoments.app.feature.join.model.uistate.JoinFormatValidatedUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,19 +20,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class JoinViewModel @Inject constructor(private val signInRepository: SignInRepository) :
-        BaseViewModel() {
+    BaseViewModel() {
 
-    private val _userIdFormatValidated: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val userIdFormatValidated: StateFlow<Boolean> = _userIdFormatValidated.asStateFlow()
-
-    private val _passwordFormatValidated: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val passwordFormatValidated: StateFlow<Boolean> = _passwordFormatValidated.asStateFlow()
-
-    private val _emailFormatValidated: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val emailFormatValidated: StateFlow<Boolean> = _emailFormatValidated.asStateFlow()
-
-    private val _nicknameFormatValidated: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    val nicknameFormatValidated: StateFlow<Boolean> = _nicknameFormatValidated.asStateFlow()
+    private val _joinFormatValidatedUiState: MutableStateFlow<JoinFormatValidatedUiState> =
+        MutableStateFlow(JoinFormatValidatedUiState())
+    var joinFormatValidatedUiState: StateFlow<JoinFormatValidatedUiState> = _joinFormatValidatedUiState.asStateFlow()
 
     private val _userIdDuplicationCheck: MutableStateFlow<Boolean?> = MutableStateFlow(null)
     val userIdDuplicationCheck: StateFlow<Boolean?> = _userIdDuplicationCheck.asStateFlow()
@@ -40,19 +33,19 @@ class JoinViewModel @Inject constructor(private val signInRepository: SignInRepo
     val emailDuplicationCheck: StateFlow<Boolean?> = _emailDuplicationCheck.asStateFlow()
 
     fun checkIdFormat(id: String) {
-        _userIdFormatValidated.value = UserInfoFormatChecker.checkId(id)
+        _joinFormatValidatedUiState.value = _joinFormatValidatedUiState.value.copy(userIdFormatValidated = UserInfoFormatChecker.checkId(id))
     }
 
     fun checkPasswordFormat(password: String) {
-        _passwordFormatValidated.value = UserInfoFormatChecker.checkPassword(password)
+        _joinFormatValidatedUiState.value = _joinFormatValidatedUiState.value.copy(passwordFormatValidated = UserInfoFormatChecker.checkPassword(password))
     }
 
     fun checkEmailFormat(email: String) {
-        _emailFormatValidated.value = UserInfoFormatChecker.checkEmail(email)
+        _joinFormatValidatedUiState.value = _joinFormatValidatedUiState.value.copy(emailFormatValidated = UserInfoFormatChecker.checkEmail(email))
     }
 
     fun checkNicknameFormat(nickname: String) {
-        _nicknameFormatValidated.value = UserInfoFormatChecker.checkNickname(nickname)
+        _joinFormatValidatedUiState.value = _joinFormatValidatedUiState.value.copy(nicknameFormatValidated = UserInfoFormatChecker.checkNickname(nickname))
     }
 
     fun checkIdDuplication(id: String) {
@@ -74,9 +67,9 @@ class JoinViewModel @Inject constructor(private val signInRepository: SignInRepo
         val imageRequestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
         val profileImgPart = MultipartBody.Part.createFormData("profileImg", imageFile.name, imageRequestBody)
         async(
-                operation = { signInRepository.join(profileImgPart, joinInfoUiModel.toRequest()) },
-                onSuccess = { },
-                onFailure = { })
+            operation = { signInRepository.join(profileImgPart, joinInfoUiModel.toRequest()) },
+            onSuccess = { },
+            onFailure = { })
     }
 
     private fun bitmapToFile(bitmap: Bitmap): File {

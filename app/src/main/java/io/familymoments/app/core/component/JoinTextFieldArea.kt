@@ -29,22 +29,40 @@ import io.familymoments.app.core.theme.AppTypography
 
 @Composable
 fun JoinTextFieldArea(
-    modifier:Modifier = Modifier,
-    title:String,
+    modifier: Modifier = Modifier,
+    title: String,
     hint: String,
     onValueChange: (TextFieldValue) -> Unit,
     showCheckButton: Boolean = false,
-    checkButtonAvailable:Boolean = false,
+    checkButtonAvailable: Boolean = false,
     onCheckButtonClick: (TextFieldValue) -> Unit = {},
     showDeleteButton: Boolean = false,
-    borderColor: Color = AppColors.grey2,
-    textColor:Color = AppColors.grey2
+    validated: Boolean = true,
+    showWarningText: Boolean = false,
+    warningText: String = "",
+    isFocused: Boolean
 ) {
     var textFieldValue by remember {
         mutableStateOf(TextFieldValue())
     }
-    Column {
+    var textFieldBorderColor by remember {
+        mutableStateOf(AppColors.grey2)
+    }
+    var textColor by remember {
+        mutableStateOf(AppColors.black1)
+    }
 
+    if (!isFocused) {
+        textFieldBorderColor = AppColors.grey2
+    }
+    if ((isFocused && (validated || textFieldValue.text.isEmpty()))) {
+        textFieldBorderColor = AppColors.purple2
+    }
+    if (textFieldValue.text.isNotEmpty() && !validated) {
+        textFieldBorderColor = AppColors.red1
+        textColor = AppColors.red1
+    }
+    Column {
         Text(
             text = title,
             color = AppColors.deepPurple1,
@@ -57,8 +75,11 @@ fun JoinTextFieldArea(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             FMTextField(
-                modifier = modifier.then(if (showCheckButton) Modifier.weight(1f)
-                else Modifier.fillMaxWidth()),
+                modifier = modifier.then(
+                    if (showCheckButton) Modifier
+                        .weight(1f)
+                    else Modifier.fillMaxWidth()
+                ),
                 onValueChange = {
                     textFieldValue = it
                     onValueChange(textFieldValue)
@@ -66,18 +87,34 @@ fun JoinTextFieldArea(
                 value = textFieldValue,
                 hint = hint,
                 showDeleteButton = showDeleteButton,
-                borderColor = borderColor,
+                borderColor = textFieldBorderColor,
                 textColor = textColor
             )
             if (showCheckButton) {
-                CheckButton(checkButtonAvailable,textFieldValue, onCheckButtonClick)
+                CheckButton(checkButtonAvailable, textFieldValue, onCheckButtonClick)
             }
+
+        }
+
+        if (showWarningText) {
+            ShowWarningText(
+                text = warningText,
+                textFieldValue = textFieldValue,
+                validation = validated,
+                colorChange = {
+                    textColor = it
+                    textFieldBorderColor = it
+                })
         }
     }
 }
 
 @Composable
-private fun CheckButton(checkButtonAvailable: Boolean, textFieldValue:TextFieldValue, onCheckButtonClick: (TextFieldValue) -> Unit){
+private fun CheckButton(
+    checkButtonAvailable: Boolean,
+    textFieldValue: TextFieldValue,
+    onCheckButtonClick: (TextFieldValue) -> Unit
+) {
     Button(
         modifier = Modifier
             .wrapContentWidth()
@@ -96,10 +133,11 @@ private fun CheckButton(checkButtonAvailable: Boolean, textFieldValue:TextFieldV
 
 @Composable
 fun ShowWarningText(
-    text:String,
+    text: String,
     textFieldValue: TextFieldValue,
-    validation:Boolean,
-    colorChange:(Color)->Unit){
+    validation: Boolean,
+    colorChange: (Color) -> Unit
+) {
 
     if (textFieldValue.text.isNotEmpty() && !validation) {
         colorChange(AppColors.red1)
@@ -110,12 +148,12 @@ fun ShowWarningText(
         )
     }
     if (textFieldValue.text.isEmpty() || validation) {
-        colorChange(AppColors.grey2)
+        colorChange(AppColors.black1)
     }
 }
 
 @Preview
 @Composable
 fun PreviewJoinTextField() {
-    JoinTextFieldArea(title = "",hint = "", onValueChange = {})
+    JoinTextFieldArea(title = "", hint = "", isFocused = false, onValueChange = {})
 }

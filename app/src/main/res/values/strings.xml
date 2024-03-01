@@ -46,6 +46,7 @@
     <string name="login_login">로그인</string>
 
     <string name="title_activity_join">JoinActivity</string>
+
     <string name="join_id_field_title">아이디</string>
     <string name="join_id_field_hint">아이디를 입력하세요</string>
     <string name="join_check_duplication_btn">중복확인</string>
