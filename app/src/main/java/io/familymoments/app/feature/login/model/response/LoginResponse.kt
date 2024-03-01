@@ -8,4 +8,4 @@ data class LoginResponse(
     val loginResult: LoginResult = LoginResult(),
 )
 
-data class LoginResult(val familyId: Long = 0)
+data class LoginResult(val familyId: Long? = null)

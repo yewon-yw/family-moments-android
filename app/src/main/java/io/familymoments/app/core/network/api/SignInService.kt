@@ -12,7 +12,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
 
-interface PublicService {
+interface SignInService {
     @POST("/users/check-id")
     suspend fun checkId(@Body checkIdRequest: CheckIdRequest): CheckIdResponse
 
@@ -21,7 +21,7 @@ interface PublicService {
 
     @Multipart
     @POST("/users/sign-up")
-    suspend fun join(@Part profileImg:MultipartBody.Part,
+    suspend fun join(@Part profileImg: MultipartBody.Part,
                      @Part("newUser") joinRequest: JoinRequest
     ): JoinResponse
 }
