@@ -29,12 +29,41 @@ class CalendarViewModel @Inject constructor(
         val yearMonth = YearMonth.now()
         val firstOfMonth = yearMonth.atDay(1)
         val firstOfFollowingMonth = yearMonth.plusMonths(1).atDay(1)
-        _calendarUiState.value = CalendarUiState(
-            yearMonth = yearMonth,
-            dates = getDatesBetween(
-                firstOfMonth,
-                firstOfFollowingMonth
-            )
+
+        async(
+            operation = {
+                //TODO: familyId 수정예정
+                postRepository.getPostsByMonth(
+                    2,
+                    yearMonth.year,
+                    yearMonth.monthValue
+                )
+            },
+            onSuccess = {
+                _calendarUiState.value = _calendarUiState.value.copy(
+                    isSuccess = true,
+                    isLoading = isLoading.value,
+                    yearMonth = yearMonth,
+                    dates = getDatesBetween(
+                        firstOfMonth,
+                        firstOfFollowingMonth
+                    ),
+                    postResult = it.result.distinct() // distinct()로 중복 제거
+                )
+            },
+            onFailure = {
+                _calendarUiState.value = _calendarUiState.value.copy(
+                    isSuccess = false,
+                    isLoading = isLoading.value,
+                    errorMessage = it.message,
+                    yearMonth = yearMonth,
+                    dates = getDatesBetween(
+                        firstOfMonth,
+                        firstOfFollowingMonth
+                    ),
+                    postResult = emptyList()
+                )
+            }
         )
     }
 
@@ -42,12 +71,41 @@ class CalendarViewModel @Inject constructor(
         val firstDayOfMonth = _calendarUiState.value.startDate
         val prevDay = firstDayOfMonth.minusDays(1)
         val prevMonth = YearMonth.of(prevDay.year, prevDay.month)
-        _calendarUiState.value = CalendarUiState(
-            yearMonth = prevMonth,
-            dates = getDatesInBetween(
-                prevMonth.atDay(1),
-                firstDayOfMonth
-            )
+
+        async(
+            //TODO: familyId 수정예정
+            operation = {
+                postRepository.getPostsByMonth(
+                    2,
+                    prevMonth.year,
+                    prevMonth.monthValue
+                )
+            },
+            onSuccess = {
+                _calendarUiState.value = _calendarUiState.value.copy(
+                    isSuccess = true,
+                    isLoading = isLoading.value,
+                    yearMonth = prevMonth,
+                    dates = getDatesInBetween(
+                        prevMonth.atDay(1),
+                        firstDayOfMonth
+                    ),
+                    postResult = it.result.distinct() // distinct()로 중복 제거
+                )
+            },
+            onFailure = {
+                _calendarUiState.value = _calendarUiState.value.copy(
+                    isSuccess = false,
+                    isLoading = isLoading.value,
+                    errorMessage = it.message,
+                    yearMonth = prevMonth,
+                    dates = getDatesInBetween(
+                        prevMonth.atDay(1),
+                        firstDayOfMonth
+                    ),
+                    postResult = emptyList()
+                )
+            }
         )
     }
 
@@ -55,12 +113,40 @@ class CalendarViewModel @Inject constructor(
         val lastDayOfMonth = _calendarUiState.value.endDate
         val nextDay = lastDayOfMonth.plusDays(1)
         val nextMonth = YearMonth.of(nextDay.year, nextDay.month)
-        _calendarUiState.value = CalendarUiState(
-            yearMonth = nextMonth,
-            dates = getDatesBetween(
-                nextMonth.atDay(1),
-                nextMonth.plusMonths(1).atDay(1)
-            )
+        async(
+            //TODO: familyId 수정예정
+            operation = {
+                postRepository.getPostsByMonth(
+                    2,
+                    nextMonth.year,
+                    nextMonth.monthValue
+                )
+            },
+            onSuccess = {
+                _calendarUiState.value = _calendarUiState.value.copy(
+                    isSuccess = true,
+                    isLoading = isLoading.value,
+                    yearMonth = nextMonth,
+                    dates = getDatesBetween(
+                        nextMonth.atDay(1),
+                        nextMonth.plusMonths(1).atDay(1)
+                    ),
+                    postResult = it.result.distinct() // distinct()로 중복 제거
+                )
+            },
+            onFailure = {
+                _calendarUiState.value = _calendarUiState.value.copy(
+                    isSuccess = false,
+                    isLoading = isLoading.value,
+                    errorMessage = it.message,
+                    yearMonth = nextMonth,
+                    dates = getDatesBetween(
+                        nextMonth.atDay(1),
+                        nextMonth.plusMonths(1).atDay(1)
+                    ),
+                    postResult = emptyList()
+                )
+            }
         )
     }
 

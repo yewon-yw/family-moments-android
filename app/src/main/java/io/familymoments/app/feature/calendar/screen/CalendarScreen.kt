@@ -1,6 +1,7 @@
 package io.familymoments.app.feature.calendar.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,11 +9,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,7 +28,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
@@ -41,30 +44,47 @@ fun CalendarScreen(
 ) {
     val calendarUiState = viewModel.calendarUiState.collectAsStateWithLifecycle()
     val daysOfweek = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
-    Column(
-        modifier = modifier
-            .padding(horizontal = 16.dp)
-            .fillMaxSize(),
-    ) {
-        Text(
-            modifier = Modifier
-                .padding(vertical = 18.dp)
-                .align(Alignment.CenterHorizontally),
-            text = "캘린더",
-            style = AppTypography.B1_16,
-            color = AppColors.black1
-        )
-        CalendarHeader(
-            formattedYearMonth = calendarUiState.value.yearMonth.format(DateTimeFormatter.ofPattern("yyyy.MM")),
-            onClickPrevMonth = viewModel::getPreviousMonth,
-            onClickNextMonth = viewModel::getNextMonth
-        )
-        CalendarContent(
-            daysOfweek = daysOfweek,
-            dates = calendarUiState.value.dates,
-            today = calendarUiState.value.today,
-            isTodayInMonth = calendarUiState.value.isTodayInMonth
-        )
+    val isLoading = calendarUiState.value.isLoading
+    val postResult = calendarUiState.value.postResult
+
+    if (isLoading != false) {
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(64.dp),
+                color = MaterialTheme.colorScheme.secondary,
+                trackColor = MaterialTheme.colorScheme.surfaceVariant,
+            )
+        }
+    } else {
+        Column(
+            modifier = modifier
+                .padding(horizontal = 16.dp)
+                .fillMaxSize(),
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(vertical = 18.dp)
+                    .align(Alignment.CenterHorizontally),
+                text = "캘린더",
+                style = AppTypography.B1_16,
+                color = AppColors.black1
+            )
+            CalendarHeader(
+                formattedYearMonth = calendarUiState.value.yearMonth.format(DateTimeFormatter.ofPattern("yyyy.MM")),
+                onClickPrevMonth = viewModel::getPreviousMonth,
+                onClickNextMonth = viewModel::getNextMonth
+            )
+            CalendarContent(
+                daysOfweek = daysOfweek,
+                dates = calendarUiState.value.dates,
+                today = calendarUiState.value.today,
+                isTodayInMonth = calendarUiState.value.isTodayInMonth,
+                postResult = postResult
+            )
+        }
     }
 }
 
@@ -73,10 +93,12 @@ private fun CalendarContent(
     daysOfweek: List<String>,
     dates: List<LocalDate>,
     today: String,
-    isTodayInMonth: Boolean
+    isTodayInMonth: Boolean,
+    postResult: List<String>
 ) {
     val firstDay = dates[0]
     val dateStrings = dates.map { it.dayOfMonth.toString() }.toMutableList()
+    val postDateList = postResult.map { it.substring(8, 10) }
 
     when (firstDay.dayOfWeek) {
         DayOfWeek.MONDAY -> {
@@ -163,7 +185,7 @@ private fun CalendarContent(
                         style = AppTypography.BTN5_16,
                         color = if (isToday) AppColors.grey6 else AppColors.black1,
                     )
-                    if (text.isNotEmpty()) {
+                    if (text.isNotEmpty() && postDateList.contains(dateStrings[index])) {
                         Icon(
                             modifier = Modifier.padding(top = 6.dp),
                             imageVector = ImageVector.vectorResource(R.drawable.ic_calendar_dot),
@@ -251,7 +273,8 @@ fun CalendarScreenPreview() {
             daysOfweek = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"),
             dates = (1..31).map { LocalDate.of(2024, 3, it) },
             today = "15",
-            isTodayInMonth = true
+            isTodayInMonth = true,
+            postResult = listOf("2024-03-01", "2024-03-02", "2024-03-03")
         )
     }
 }
