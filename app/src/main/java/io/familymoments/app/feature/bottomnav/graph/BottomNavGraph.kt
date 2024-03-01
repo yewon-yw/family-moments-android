@@ -5,6 +5,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import io.familymoments.app.core.graph.CommonRoute
 import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.bottomnav.model.BottomNavItem
 import io.familymoments.app.feature.calendar.screen.CalendarScreen
@@ -21,7 +22,7 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
                 ),
             viewModel = hiltViewModel(),
             navigateToPostDetail = {
-                navController.navigate("PostDetail")
+                navController.navigate(CommonRoute.POST_DETAIL.name)
             }
         )
     }
@@ -40,9 +41,11 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
                 .scaffoldState(
                     hasShadow = false,
                     hasBackButton = true,
-                    selectedBottomNav = BottomNavItem.Calendar
                 ),
-            viewModel = hiltViewModel()
+            viewModel = hiltViewModel(),
+            navigateToCalendarDay = {
+                navController.navigate(CommonRoute.CALENDAR_DAY.name)
+            }
         )
     }
 

@@ -1,6 +1,7 @@
 package io.familymoments.app.feature.calendar.screen
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -40,7 +41,8 @@ import java.time.format.DateTimeFormatter
 @Composable
 fun CalendarScreen(
     modifier: Modifier,
-    viewModel: CalendarViewModel
+    viewModel: CalendarViewModel,
+    navigateToCalendarDay: () -> Unit
 ) {
     val calendarUiState = viewModel.calendarUiState.collectAsStateWithLifecycle()
     val daysOfweek = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
@@ -82,7 +84,8 @@ fun CalendarScreen(
                 dates = calendarUiState.value.dates,
                 today = calendarUiState.value.today,
                 isTodayInMonth = calendarUiState.value.isTodayInMonth,
-                postResult = postResult
+                postResult = postResult,
+                navigateToCalendarDay = navigateToCalendarDay
             )
         }
     }
@@ -94,7 +97,8 @@ private fun CalendarContent(
     dates: List<LocalDate>,
     today: String,
     isTodayInMonth: Boolean,
-    postResult: List<String>
+    postResult: List<String>,
+    navigateToCalendarDay: () -> Unit
 ) {
     val firstDay = dates[0]
     val dateStrings = dates.map { it.dayOfMonth.toString() }.toMutableList()
@@ -177,7 +181,8 @@ private fun CalendarContent(
                         .background(
                             if (isToday) Color(0xB29378FF)
                             else Color.Unspecified
-                        ),
+                        )
+                        .clickable { navigateToCalendarDay() },
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
@@ -224,7 +229,7 @@ private fun CalendarHeader(
             .background(color = AppColors.deepPurple2),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        IconButton(onClick = onClickPrevMonth) {
+        IconButton(modifier = Modifier.size(32.dp), onClick = onClickPrevMonth) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_calendar_previous_arrow),
                 contentDescription = null,
@@ -238,7 +243,7 @@ private fun CalendarHeader(
             color = AppColors.grey6,
             textAlign = TextAlign.Center
         )
-        IconButton(onClick = onClickNextMonth) {
+        IconButton(modifier = Modifier.size(32.dp), onClick = onClickNextMonth) {
             Icon(
                 imageVector = ImageVector.vectorResource(R.drawable.ic_calendar_next_arrow),
                 contentDescription = null,
@@ -274,7 +279,8 @@ fun CalendarScreenPreview() {
             dates = (1..31).map { LocalDate.of(2024, 3, it) },
             today = "15",
             isTodayInMonth = true,
-            postResult = listOf("2024-03-01", "2024-03-02", "2024-03-03")
+            postResult = listOf("2024-03-01", "2024-03-02", "2024-03-03"),
+            navigateToCalendarDay = {}
         )
     }
 }
