@@ -15,6 +15,7 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,9 +28,11 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import io.familymoments.app.R
 import io.familymoments.app.core.component.AppBarScreen
@@ -97,9 +100,15 @@ fun BottomNavigationBar(navController: NavHostController) {
         BottomNavItem.Calendar,
         BottomNavItem.MyPage
     )
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
 
-    val scaffoldState = LocalScaffoldState.current
-
+    // Don't display bottom nav when current destination is not in bottom nav graph
+    if (currentDestination?.hierarchy?.any { currentScreen ->
+            bottomNavItems.map { it.route }.contains(currentScreen.route)
+        } == false) {
+        return
+    }
     BottomNavigation(
         modifier = Modifier
             .bottomNavShadow()
@@ -108,7 +117,7 @@ fun BottomNavigationBar(navController: NavHostController) {
         backgroundColor = Color.White
     ) {
         bottomNavItems.forEach { item ->
-            val selected = scaffoldState.selectedBottomNav == item.route
+            val selected = currentDestination?.hierarchy?.any { it.route == item.route } == true
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -116,7 +125,7 @@ fun BottomNavigationBar(navController: NavHostController) {
                     .clickable {
                         navController.navigate(item.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = false
+                                saveState = true
                             }
                             launchSingleTop = true
                             restoreState = true
