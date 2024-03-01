@@ -4,6 +4,7 @@ import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
@@ -54,38 +55,20 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.feature.join.activity.JoinActivity
+import io.familymoments.app.feature.login.model.uistate.LoginUiState
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
     val loginUiState = viewModel.loginUiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    var loginErrorUi: @Composable () -> Unit = {}
     val goToJoin = {
         context.startActivity(Intent(context, JoinActivity::class.java))
     }
 
-    when (loginUiState.value.isSuccess) {
-        true -> {
-            val intent = Intent(context, MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            context.startActivity(intent)
-        }
-
-        false -> {
-            loginErrorUi = {
-                if (loginUiState.value.isSuccess == false) {
-                    Text(
-                        text = loginUiState.value.errorMessage ?: stringResource(R.string.login_default_error_message),
-                        style = AppTypography.BTN6_13,
-                        color = AppColors.red2,
-                    )
-                }
-            }
-        }
-
-        else -> {
-
-        }
+    if (loginUiState.value.isSuccess == true) {
+        val intent = Intent(context, MainActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        context.startActivity(intent)
     }
 
     AppBarScreen(title = {
@@ -95,7 +78,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
             color = AppColors.deepPurple1
         )
     }) {
-        LoginScreen(login = viewModel::loginUser, loginErrorUi, goToJoin)
+        LoginScreen(login = viewModel::loginUser, loginUiState.value, goToJoin)
     }
 }
 
@@ -103,7 +86,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
 @Composable
 fun LoginScreen(
     login: (String, String) -> Unit,
-    loginErrorUi: @Composable () -> Unit,
+    loginUiState: LoginUiState,
     goToJoin: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
@@ -115,7 +98,7 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LoginLogo()
-        LoginForm(login = login, loginErrorUi)
+        LoginForm(login = login, loginUiState)
         LoginOption(goToJoin)
         SocialLogin()
     }
@@ -152,7 +135,7 @@ fun LoginLogo() {
 @Composable
 fun LoginForm(
     login: (String, String) -> Unit,
-    errorUi: @Composable () -> Unit
+    loginUiState: LoginUiState
 ) {
     var id by remember { mutableStateOf(TextFieldValue()) }
     var password by remember { mutableStateOf(TextFieldValue()) }
@@ -163,11 +146,18 @@ fun LoginForm(
             onValueChanged = { id = it })
         Spacer(modifier = Modifier.height(8.dp))
         LoginFormRoundedCornerTextField(
-            modifier =  Modifier.padding(bottom = 10.dp),
             label = stringResource(R.string.login_password_text_field_hint),
             onValueChanged = { password = it })
-        errorUi()
-        Spacer(modifier = Modifier.height(37.dp))
+        if (loginUiState.isSuccess == false) {
+            Text(
+                modifier = Modifier.padding(vertical = 10.dp),
+                text = loginUiState.errorMessage ?: stringResource(R.string.login_default_error_message),
+                style = AppTypography.BTN6_13,
+                color = AppColors.red2,
+            )
+        } else {
+            Box(modifier = Modifier.height(37.dp))
+        }
         Surface(shape = RoundedCornerShape(8.dp), modifier = Modifier.fillMaxWidth()) {
             Button(
                 onClick = {
@@ -271,7 +261,10 @@ fun LoginOption(goToJoin: () -> Unit) {
 
 @Composable
 fun SocialLogin() {
-    Row(modifier = Modifier.padding(top = 23.dp, start = 17.dp, end = 17.dp), verticalAlignment = Alignment.CenterVertically) {
+    Row(
+        modifier = Modifier.padding(top = 23.dp, start = 17.dp, end = 17.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         Divider(
             modifier = Modifier
                 .weight(1f)
@@ -294,7 +287,11 @@ fun SocialLogin() {
     }
 
     Spacer(modifier = Modifier.height(30.dp))
-    Row(modifier = Modifier.height(50.dp).padding(bottom = 61.dp)) {
+    Row(
+        modifier = Modifier
+            .height(50.dp)
+            .padding(bottom = 61.dp)
+    ) {
         Image(painter = painterResource(id = R.drawable.ic_kakao_login), contentDescription = null)
         Spacer(modifier = Modifier.width(37.dp))
         Image(painter = painterResource(id = R.drawable.ic_naver_login), contentDescription = null)
@@ -305,6 +302,6 @@ fun SocialLogin() {
 @Composable
 fun PreviewLoginScreen() {
     FamilyMomentsTheme {
-        LoginScreen(login = { _, _ -> }, loginErrorUi = {}, goToJoin = {})
+        LoginScreen(login = { _, _ -> }, loginUiState = LoginUiState(), goToJoin = {})
     }
 }
