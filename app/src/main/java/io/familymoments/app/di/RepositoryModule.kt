@@ -6,17 +6,17 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
-import io.familymoments.app.core.network.api.AuthService
 import io.familymoments.app.core.network.api.PostService
-import io.familymoments.app.core.network.api.PublicService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourceImpl
-import io.familymoments.app.core.network.repository.AuthRepository
+import io.familymoments.app.core.network.api.SignInService
+import io.familymoments.app.core.network.api.UserService
+import io.familymoments.app.core.network.repository.SignInRepository
+import io.familymoments.app.core.network.repository.UserRepository
+import io.familymoments.app.core.network.repository.impl.SignInRepositoryImpl
+import io.familymoments.app.core.network.repository.impl.UserRepositoryImpl
 import io.familymoments.app.core.network.repository.PostRepository
-import io.familymoments.app.core.network.repository.PublicRepository
-import io.familymoments.app.core.network.repository.impl.AuthRepositoryImpl
 import io.familymoments.app.core.network.repository.impl.PostRepositoryImpl
-import io.familymoments.app.core.network.repository.impl.PublicRepositoryImpl
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -27,21 +27,24 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideAuthRepository(authService: AuthService, userInfoPreferencesDataSource: UserInfoPreferencesDataSource): AuthRepository {
-        return AuthRepositoryImpl(authService, userInfoPreferencesDataSource)
+    fun provideUserRepository(
+        userService: UserService,
+        userInfoPreferencesDataSource: UserInfoPreferencesDataSource
+    ): UserRepository {
+        return UserRepositoryImpl(userService, userInfoPreferencesDataSource)
     }
 
     @Provides
     @Singleton
-    fun provideTokenPreferencesDataSource(@ApplicationContext context: Context): UserInfoPreferencesDataSource {
+    fun provideUserInfoPreferencesDataSource(@ApplicationContext context: Context): UserInfoPreferencesDataSource {
         val preferences = context.getSharedPreferences(USER_INFO_PREFERENCES_KEY, Context.MODE_PRIVATE)
         return UserInfoPreferencesDataSourceImpl(preferences)
     }
 
     @Provides
     @Singleton
-    fun providePublicRepository(publicService: PublicService): PublicRepository {
-        return PublicRepositoryImpl(publicService)
+    fun provideSignInRepository(signInService: SignInService): SignInRepository {
+        return SignInRepositoryImpl(signInService)
     }
 
     @Provides

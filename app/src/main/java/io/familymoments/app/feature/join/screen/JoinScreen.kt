@@ -64,13 +64,13 @@ import io.familymoments.app.feature.join.model.response.CheckIdResponse
 import io.familymoments.app.feature.join.model.response.JoinResponse
 import io.familymoments.app.feature.join.model.JoinInfoUiModel
 import io.familymoments.app.feature.join.model.JoinTermUiModel
-import io.familymoments.app.core.network.api.PublicService
 import io.familymoments.app.core.component.FMCheckBox
 import io.familymoments.app.core.component.CheckedStatus
 import io.familymoments.app.core.component.JoinTextFieldArea
 import io.familymoments.app.feature.join.viewmodel.JoinViewModel
 import io.familymoments.app.core.component.ShowWarningText
-import io.familymoments.app.core.network.repository.impl.PublicRepositoryImpl
+import io.familymoments.app.core.network.api.SignInService
+import io.familymoments.app.core.network.repository.impl.SignInRepositoryImpl
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
@@ -610,7 +610,7 @@ fun JoinTextFieldVerticalSpacer() {
 @Composable
 fun PreviewJoinScreen() {
     FamilyMomentsTheme {
-        JoinScreen(JoinViewModel(PublicRepositoryImpl(object : PublicService {
+        JoinScreen(JoinViewModel(SignInRepositoryImpl(object : SignInService {
             override suspend fun checkId(checkIdRequest: CheckIdRequest): CheckIdResponse {
                 return CheckIdResponse(true, 200, "", "")
             }

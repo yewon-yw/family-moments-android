@@ -6,10 +6,10 @@ import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.familymoments.app.BuildConfig
 import io.familymoments.app.core.network.AuthInterceptor
-import io.familymoments.app.core.network.api.AuthService
-import io.familymoments.app.core.network.api.PostService
-import io.familymoments.app.core.network.api.PublicService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
+import io.familymoments.app.core.network.api.SignInService
+import io.familymoments.app.core.network.api.UserService
+import io.familymoments.app.core.network.api.PostService
 import okhttp3.JavaNetCookieJar
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -87,14 +87,14 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideAuthService(@AuthRetrofit retrofit: Retrofit): AuthService {
-        return retrofit.create(AuthService::class.java)
+    fun provideUserService(@AuthRetrofit retrofit: Retrofit): UserService {
+        return retrofit.create(UserService::class.java)
     }
 
     @Provides
     @Singleton
-    fun provideDefaultService(@DefaultRetrofit retrofit: Retrofit): PublicService {
-        return retrofit.create(PublicService::class.java)
+    fun provideSignInService(@DefaultRetrofit retrofit:Retrofit):SignInService{
+        return retrofit.create(SignInService::class.java)
     }
 
     @Provides
