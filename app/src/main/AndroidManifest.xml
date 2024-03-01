@@ -45,6 +45,17 @@
             android:name="io.familymoments.app.feature.forgotpassword.activity.ForgotPasswordActivity"
             android:screenOrientation="portrait"
             android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".feature.choosingfamily.activity.ChoosingFamilyActivity"
+            android:exported="true"
+            android:theme="@style/Theme.FamilyMoments">
+
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
     </application>
 
