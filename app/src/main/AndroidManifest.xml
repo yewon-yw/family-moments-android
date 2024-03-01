@@ -27,7 +27,7 @@
         </activity>
         <activity
             android:name="io.familymoments.app.feature.login.activity.LoginActivity"
-            android:exported="false"
+            android:exported="true"
             android:theme="@style/Theme.FamilyMoments" />
         <activity
             android:name="io.familymoments.app.feature.bottomnav.activity.MainActivity"
