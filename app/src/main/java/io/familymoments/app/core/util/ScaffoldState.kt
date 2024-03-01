@@ -12,7 +12,6 @@ import androidx.compose.ui.node.ObserverModifierNode
 import androidx.compose.ui.node.currentValueOf
 import androidx.compose.ui.node.observeReads
 import androidx.compose.ui.platform.InspectorInfo
-import io.familymoments.app.feature.bottomnav.model.BottomNavItem
 
 @Stable
 class ScaffoldState {
@@ -22,19 +21,12 @@ class ScaffoldState {
     var hasBackButton by mutableStateOf(false)
         private set
 
-    var selectedBottomNav by mutableStateOf(BottomNavItem.Home.route)
-        private set
-
     fun updateShadow(hasShadow: Boolean) {
         this.hasShadow = hasShadow
     }
 
     fun updateBackButton(hasBackButton: Boolean) {
         this.hasBackButton = hasBackButton
-    }
-
-    fun updateBottomNavSelection(bottomNavItem: BottomNavItem) {
-        this.selectedBottomNav = bottomNavItem.route
     }
 }
 
@@ -43,7 +35,6 @@ val LocalScaffoldState = compositionLocalOf { ScaffoldState() }
 private class ScaffoldNode(
     var hasShadow: Boolean,
     var hasBackButton: Boolean,
-    var selectedBottomNav: BottomNavItem
 ) : Modifier.Node(), CompositionLocalConsumerModifierNode, ObserverModifierNode {
     private var observedValue: ScaffoldState? = null
     override fun onAttach() {
@@ -59,7 +50,6 @@ private class ScaffoldNode(
             observedValue = currentValueOf(LocalScaffoldState).let {
                 it.updateShadow(hasShadow)
                 it.updateBackButton(hasBackButton)
-                it.updateBottomNavSelection(selectedBottomNav)
                 it
             }
         }
@@ -68,8 +58,7 @@ private class ScaffoldNode(
 
 private data class ScaffoldElement(
     val hasShadow: Boolean,
-    val hasBackButton: Boolean,
-    val selectedBottomNav: BottomNavItem
+    val hasBackButton: Boolean
 ) : ModifierNodeElement<ScaffoldNode>() {
     override fun InspectorInfo.inspectableProperties() {
         name = "topAppBar"
@@ -78,17 +67,15 @@ private data class ScaffoldElement(
     }
 
     override fun create() =
-        ScaffoldNode(hasShadow = hasShadow, hasBackButton = hasBackButton, selectedBottomNav = selectedBottomNav)
+        ScaffoldNode(hasShadow = hasShadow, hasBackButton = hasBackButton)
 
     override fun update(node: ScaffoldNode) {
         node.hasShadow = hasShadow
         node.hasBackButton = hasBackButton
-        node.selectedBottomNav = selectedBottomNav
     }
 }
 
 fun Modifier.scaffoldState(
     hasShadow: Boolean,
-    hasBackButton: Boolean,
-    selectedBottomNav: BottomNavItem
-) = this then ScaffoldElement(hasShadow, hasBackButton, selectedBottomNav)
+    hasBackButton: Boolean
+) = this then ScaffoldElement(hasShadow, hasBackButton)
