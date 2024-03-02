@@ -23,10 +23,12 @@ import androidx.compose.ui.unit.dp
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.feature.calendar.viewmodel.CalendarDayViewModel
 
 @Composable
 fun CalendarDayScreen(
-    modifier: Modifier
+    modifier: Modifier,
+    viewModel: CalendarDayViewModel,
 ) {
     Column(modifier = modifier) {
         CalendarHeader(
@@ -82,5 +84,5 @@ private fun CalendarHeader(
 @Preview(showBackground = true)
 @Composable
 fun CalendarDayScreenPreview() {
-    CalendarDayScreen(modifier = Modifier)
+//    CalendarDayScreen(modifier = Modifier)
 }

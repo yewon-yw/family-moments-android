@@ -67,4 +67,25 @@ class PostRepositoryImpl(
             emit(Resource.Fail(e))
         }
     }
+
+    override suspend fun getPostsByDay(
+        familyId: Long,
+        year: Int,
+        month: Int,
+        day: Int
+    ): Flow<Resource<GetPostsResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = postService.getPostsByDay(familyId, year, month, day)
+            val responseBody = response.body() ?: GetPostsResponse()
+
+            if (responseBody.isSuccess) {
+                emit(Resource.Success(responseBody))
+            } else {
+                emit(Resource.Fail(Throwable(responseBody.message)))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
 }

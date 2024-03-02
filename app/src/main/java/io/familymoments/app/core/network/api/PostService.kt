@@ -22,4 +22,12 @@ interface PostService {
         @Query("year") year: Int,
         @Query("month") month: Int
     ): Response<GetPostsByMonthResponse>
+
+    @GET("/posts/calendar")
+    suspend fun getPostsByDay(
+        @Query("familyId") familyId: Long,
+        @Query("year") year: Int,
+        @Query("month") month: Int,
+        @Query("day") day: Int
+    ): Response<GetPostsResponse>
 }
