@@ -6,6 +6,7 @@ import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.feature.calendar.model.CalendarUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.YearMonth
 import java.time.temporal.ChronoUnit
@@ -29,6 +30,7 @@ class CalendarViewModel @Inject constructor(
         val yearMonth = YearMonth.now()
         val firstOfMonth = yearMonth.atDay(1)
         val firstOfFollowingMonth = yearMonth.plusMonths(1).atDay(1)
+        val dates = transformedDates(firstOfMonth, firstOfFollowingMonth)
 
         async(
             operation = {
@@ -44,10 +46,7 @@ class CalendarViewModel @Inject constructor(
                     isSuccess = true,
                     isLoading = isLoading.value,
                     yearMonth = yearMonth,
-                    dates = getDatesBetween(
-                        firstOfMonth,
-                        firstOfFollowingMonth
-                    ),
+                    dates = dates,
                     postResult = it.result.distinct() // distinct()로 중복 제거
                 )
             },
@@ -57,10 +56,7 @@ class CalendarViewModel @Inject constructor(
                     isLoading = isLoading.value,
                     errorMessage = it.message,
                     yearMonth = yearMonth,
-                    dates = getDatesBetween(
-                        firstOfMonth,
-                        firstOfFollowingMonth
-                    ),
+                    dates = dates,
                     postResult = emptyList()
                 )
             }
@@ -71,6 +67,7 @@ class CalendarViewModel @Inject constructor(
         val firstDayOfMonth = _calendarUiState.value.startDate
         val prevDay = firstDayOfMonth.minusDays(1)
         val prevMonth = YearMonth.of(prevDay.year, prevDay.month)
+        val dates = transformedDates(prevMonth.atDay(1), firstDayOfMonth)
 
         async(
             //TODO: familyId 수정예정
@@ -86,10 +83,7 @@ class CalendarViewModel @Inject constructor(
                     isSuccess = true,
                     isLoading = isLoading.value,
                     yearMonth = prevMonth,
-                    dates = getDatesInBetween(
-                        prevMonth.atDay(1),
-                        firstDayOfMonth
-                    ),
+                    dates = dates,
                     postResult = it.result.distinct() // distinct()로 중복 제거
                 )
             },
@@ -99,10 +93,7 @@ class CalendarViewModel @Inject constructor(
                     isLoading = isLoading.value,
                     errorMessage = it.message,
                     yearMonth = prevMonth,
-                    dates = getDatesInBetween(
-                        prevMonth.atDay(1),
-                        firstDayOfMonth
-                    ),
+                    dates = dates,
                     postResult = emptyList()
                 )
             }
@@ -113,6 +104,8 @@ class CalendarViewModel @Inject constructor(
         val lastDayOfMonth = _calendarUiState.value.endDate
         val nextDay = lastDayOfMonth.plusDays(1)
         val nextMonth = YearMonth.of(nextDay.year, nextDay.month)
+        val dates = transformedDates(nextMonth.atDay(1), nextMonth.plusMonths(1).atDay(1))
+
         async(
             //TODO: familyId 수정예정
             operation = {
@@ -127,10 +120,7 @@ class CalendarViewModel @Inject constructor(
                     isSuccess = true,
                     isLoading = isLoading.value,
                     yearMonth = nextMonth,
-                    dates = getDatesBetween(
-                        nextMonth.atDay(1),
-                        nextMonth.plusMonths(1).atDay(1)
-                    ),
+                    dates = dates,
                     postResult = it.result.distinct() // distinct()로 중복 제거
                 )
             },
@@ -140,21 +130,11 @@ class CalendarViewModel @Inject constructor(
                     isLoading = isLoading.value,
                     errorMessage = it.message,
                     yearMonth = nextMonth,
-                    dates = getDatesBetween(
-                        nextMonth.atDay(1),
-                        nextMonth.plusMonths(1).atDay(1)
-                    ),
+                    dates = dates,
                     postResult = emptyList()
                 )
             }
         )
-    }
-
-    private fun getDatesInBetween(startDate: LocalDate, endDate: LocalDate): List<LocalDate> {
-        val numOfDays = ChronoUnit.DAYS.between(startDate, endDate)
-        return Stream.iterate(startDate) { date ->
-            date.plusDays(/* daysToAdd = */ 1)
-        }.limit(numOfDays).collect(Collectors.toList())
     }
 
     private fun getDatesBetween(startDate: LocalDate, endDate: LocalDate): List<LocalDate> {
@@ -162,5 +142,50 @@ class CalendarViewModel @Inject constructor(
         return Stream.iterate(startDate) { date ->
             date.plusDays(/* daysToAdd = */ 1)
         }.limit(numOfDays).collect(Collectors.toList())
+    }
+
+    private fun transformedDates(startDate: LocalDate, endDate: LocalDate): List<LocalDate> {
+        val dates = getDatesBetween(startDate, endDate).toMutableList()
+        val firstDay = dates.first()
+        when (firstDay.dayOfWeek) {
+            DayOfWeek.MONDAY -> {
+                dates.add(0, LocalDate.MIN)
+            }
+
+            DayOfWeek.TUESDAY -> {
+                repeat(2) {
+                    dates.add(0, LocalDate.MIN)
+                }
+            }
+
+            DayOfWeek.WEDNESDAY -> {
+                repeat(3) {
+                    dates.add(0, LocalDate.MIN)
+                }
+            }
+
+            DayOfWeek.THURSDAY -> {
+                repeat(4) {
+                    dates.add(0, LocalDate.MIN)
+                }
+            }
+
+            DayOfWeek.FRIDAY -> {
+                repeat(5) {
+                    dates.add(0, LocalDate.MIN)
+                }
+            }
+
+            DayOfWeek.SATURDAY -> {
+                repeat(6) {
+                    dates.add(0, LocalDate.MIN)
+                }
+            }
+
+            else -> {
+                // do nothing
+            }
+        }
+        return dates.toList()
     }
 }

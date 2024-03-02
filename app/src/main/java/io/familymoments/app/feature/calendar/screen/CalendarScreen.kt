@@ -34,7 +34,6 @@ import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.calendar.viewmodel.CalendarViewModel
-import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
@@ -95,55 +94,11 @@ fun CalendarScreen(
 private fun CalendarContent(
     daysOfweek: List<String>,
     dates: List<LocalDate>,
-    today: String,
+    today: LocalDate,
     isTodayInMonth: Boolean,
     postResult: List<String>,
     navigateToCalendarDay: () -> Unit
 ) {
-    val firstDay = dates[0]
-    val dateStrings = dates.map { it.dayOfMonth.toString() }.toMutableList()
-    val postDateList = postResult.map { it.substring(8, 10) }
-
-    when (firstDay.dayOfWeek) {
-        DayOfWeek.MONDAY -> {
-            dateStrings.add(0, "")
-        }
-
-        DayOfWeek.TUESDAY -> {
-            repeat(2) {
-                dateStrings.add(0, "")
-            }
-        }
-
-        DayOfWeek.WEDNESDAY -> {
-            repeat(3) {
-                dateStrings.add(0, "")
-            }
-        }
-
-        DayOfWeek.THURSDAY -> {
-            repeat(4) {
-                dateStrings.add(0, "")
-            }
-        }
-
-        DayOfWeek.FRIDAY -> {
-            repeat(5) {
-                dateStrings.add(0, "")
-            }
-        }
-
-        DayOfWeek.SATURDAY -> {
-            repeat(6) {
-                dateStrings.add(0, "")
-            }
-        }
-
-        else -> {
-            // do nothing
-        }
-    }
-
     Column(
         modifier = Modifier
             .clip(RoundedCornerShape((16.5).dp))
@@ -170,9 +125,11 @@ private fun CalendarContent(
         LazyVerticalGrid(
             columns = GridCells.Fixed(7),
         ) {
-            items(dateStrings.size) { index ->
-                val text = transformDate(dateStrings[index])
-                val isToday = dateStrings[index] == today && isTodayInMonth
+            items(dates.size) { index ->
+                if (dates[index] == LocalDate.MIN) return@items
+
+                val text = transformDate(dates.map { it.dayOfMonth.toString() }[index])
+                val isToday = dates[index] == today && isTodayInMonth
                 Column(
                     modifier = Modifier
                         .padding(all = (3.2).dp)
@@ -190,7 +147,7 @@ private fun CalendarContent(
                         style = AppTypography.BTN5_16,
                         color = if (isToday) AppColors.grey6 else AppColors.black1,
                     )
-                    if (text.isNotEmpty() && postDateList.contains(dateStrings[index])) {
+                    if (postResult.contains(dates[index].toString())) {
                         Icon(
                             modifier = Modifier.padding(top = 6.dp),
                             imageVector = ImageVector.vectorResource(R.drawable.ic_calendar_dot),
@@ -277,7 +234,7 @@ fun CalendarScreenPreview() {
         CalendarContent(
             daysOfweek = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"),
             dates = (1..31).map { LocalDate.of(2024, 3, it) },
-            today = "15",
+            today = LocalDate.now(),
             isTodayInMonth = true,
             postResult = listOf("2024-03-01", "2024-03-02", "2024-03-03"),
             navigateToCalendarDay = {}

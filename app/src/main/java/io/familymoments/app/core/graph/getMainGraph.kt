@@ -1,6 +1,7 @@
 package io.familymoments.app.core.graph
 
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
@@ -34,7 +35,11 @@ fun getMainGraph(
             modifier = Modifier.scaffoldState(
                 hasShadow = true,
                 hasBackButton = true,
-            )
+            ),
+            viewModel = hiltViewModel(),
+            navigateToPostDetail = {
+                navController.navigate(CommonRoute.POST_DETAIL.name)
+            }
         )
     }
 }

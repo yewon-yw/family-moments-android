@@ -2,6 +2,7 @@ package io.familymoments.app.feature.calendar.screen
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -20,7 +21,10 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
+import io.familymoments.app.core.component.PostItem
+import io.familymoments.app.core.component.PostItemPreview
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.calendar.viewmodel.CalendarDayViewModel
@@ -29,15 +33,25 @@ import io.familymoments.app.feature.calendar.viewmodel.CalendarDayViewModel
 fun CalendarDayScreen(
     modifier: Modifier,
     viewModel: CalendarDayViewModel,
+    navigateToPostDetail: () -> Unit
 ) {
+    val calendarDayUiState = viewModel.calendarDayUiState.collectAsStateWithLifecycle()
+    val posts = calendarDayUiState.value.posts
     Column(modifier = modifier) {
         CalendarHeader(
             formattedYearMonth = "2023.08.16",
             onClickPrevMonth = {},
             onClickNextMonth = {}
         )
-        LazyColumn {
-
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 16.dp)
+        ) {
+            items(posts.size) { index ->
+                PostItem(
+                    post = posts[index],
+                    navigateToPostDetail = navigateToPostDetail
+                )
+            }
         }
     }
 }
@@ -84,5 +98,18 @@ private fun CalendarHeader(
 @Preview(showBackground = true)
 @Composable
 fun CalendarDayScreenPreview() {
-//    CalendarDayScreen(modifier = Modifier)
+    Column(modifier = Modifier) {
+        CalendarHeader(
+            formattedYearMonth = "2023.08.16",
+            onClickPrevMonth = {},
+            onClickNextMonth = {}
+        )
+        LazyColumn(
+            contentPadding = PaddingValues(horizontal = 16.dp)
+        ) {
+            items(10) {
+                PostItemPreview()
+            }
+        }
+    }
 }
