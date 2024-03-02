@@ -92,7 +92,7 @@ private fun CurrentPasswordField(viewModel: ModifyPasswordViewModel) {
             },
             value = currentPassword,
             hint = stringResource(id = R.string.modify_password_current_password),
-            borderColor = if (currentPasswordValid || currentPassword.text.isEmpty()) AppColors.grey2 else AppColors.red2,
+            borderColor = if (currentPasswordValid) AppColors.grey2 else AppColors.red2,
             showDeleteButton = false,
             showText = false
         )

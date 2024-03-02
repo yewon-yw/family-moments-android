@@ -8,7 +8,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
 class ModifyPasswordViewModel @Inject constructor() : BaseViewModel() {
-    private val _currentPasswordValid = MutableStateFlow(false)
+    private val _currentPasswordValid = MutableStateFlow(true)
     val currentPasswordValid: StateFlow<Boolean> = _currentPasswordValid.asStateFlow()
 
     private val _newPasswordValid = MutableStateFlow(false)
@@ -27,7 +27,7 @@ class ModifyPasswordViewModel @Inject constructor() : BaseViewModel() {
     fun checkNewPassword(newPassword: String, newPasswordCheck: String) {
         if (newPassword.isEmpty() && newPasswordCheck.isEmpty()) {
             _newPasswordWarning.value = null
-        } else if (!isValidPasswordFormat(newPassword)) {
+        } else if (!checkPasswordFormat(newPassword)) {
             _newPasswordWarning.value = WarningType.InvalidPasswordFormat
         } else if(newPasswordCheck.isEmpty()) {
             _newPasswordWarning.value = null
@@ -39,7 +39,11 @@ class ModifyPasswordViewModel @Inject constructor() : BaseViewModel() {
         }
     }
 
-    private fun isValidPasswordFormat(password: String): Boolean {
+    fun requestModifyPassword(current: String, new: String, newCheck: String) {
+
+    }
+
+    private fun checkPasswordFormat(password: String): Boolean {
         return password.matches(ModifyPassword.passwordRegex)
     }
 }
