@@ -44,10 +44,10 @@ class ModifyPasswordViewModel @Inject constructor() : BaseViewModel() {
     }
 
     private fun checkPasswordFormat(password: String): Boolean {
-        return password.matches(ModifyPassword.passwordRegex)
+        return password.matches(passwordRegex)
     }
-}
 
-private object ModifyPassword {
-    val passwordRegex = Regex("^(?=.*[0-9])(?=.*[a-zA-Z])[0-9a-zA-Z]{8,12}\$")
+    companion object {
+        private val passwordRegex = Regex("^(?=.*[0-9])(?=.*[a-zA-Z])[0-9a-zA-Z]{8,12}\$")
+    }
 }

@@ -38,13 +38,13 @@ fun ModifyPasswordScreen(
         modifier = modifier.padding(horizontal = 16.dp)
     ) {
         ModifyPasswordTitle()
-        Spacer(modifier = Modifier.padding(top = 40.dp))
+        Spacer(modifier = Modifier.height(40.dp))
         ModifyPasswordInfo()
-        Spacer(modifier = Modifier.padding(top = 26.dp))
+        Spacer(modifier = Modifier.height(26.dp))
         CurrentPasswordField(viewModel = viewModel)
         NewPasswordField(viewModel = viewModel)
         ModifyPasswordButton(viewModel = viewModel)
-        Spacer(modifier = Modifier.padding(top = 20.dp))
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }
 
