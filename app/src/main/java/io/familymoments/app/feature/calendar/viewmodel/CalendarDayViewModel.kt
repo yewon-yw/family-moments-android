@@ -8,6 +8,7 @@ import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.feature.calendar.model.CalendarDayUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import timber.log.Timber
 import java.time.LocalDate
 import javax.inject.Inject
 
@@ -29,6 +30,7 @@ class CalendarDayViewModel @Inject constructor(
     }
 
     private fun getPostsByDay() {
+        Timber.d("getPostsByDay")
         val selectedDate = _calendarDayUiState.value.selectedDate
         val year = selectedDate.year
         val month = selectedDate.monthValue
@@ -48,20 +50,48 @@ class CalendarDayViewModel @Inject constructor(
                 _calendarDayUiState.value = _calendarDayUiState.value.copy(
                     isSuccess = false,
                     isLoading = isLoading.value,
-                    errorMessage = it.message,
-                    posts = emptyList()
+                    errorMessage = it.message
+                )
+            }
+        )
+    }
+
+    fun loadMorePostsByDay() {
+        Timber.d("loadMorePostsByDay")
+        val selectedDate = _calendarDayUiState.value.selectedDate
+        val year = selectedDate.year
+        val month = selectedDate.monthValue
+        val day = selectedDate.dayOfMonth
+        async(
+            //TODO: familyId 수정예정
+            operation = { postRepository.loadMorePostsByDay(2, year, month, day, minPostId) },
+            onSuccess = {
+                _calendarDayUiState.value = _calendarDayUiState.value.copy(
+                    isSuccess = true,
+                    isLoading = isLoading.value,
+                    posts = _calendarDayUiState.value.posts + it.result
+                )
+                minPostId = it.result.minOf { post -> post.postId }
+            },
+            onFailure = {
+                _calendarDayUiState.value = _calendarDayUiState.value.copy(
+                    isSuccess = false,
+                    isLoading = isLoading.value,
+                    errorMessage = it.message
                 )
             }
         )
     }
 
     fun getPostsByPrevDay() {
+        Timber.d("getPostsByPrevDay")
         val selectedDate = _calendarDayUiState.value.selectedDate.minusDays(1)
         _calendarDayUiState.value = _calendarDayUiState.value.copy(selectedDate = selectedDate)
         getPostsByDay()
     }
 
     fun getPostsByNextDay() {
+        Timber.d("getPostsByNextDay")
         val selectedDate = _calendarDayUiState.value.selectedDate.plusDays(1)
         _calendarDayUiState.value = _calendarDayUiState.value.copy(selectedDate = selectedDate)
         getPostsByDay()

@@ -30,4 +30,13 @@ interface PostService {
         @Query("month") month: Int,
         @Query("day") day: Int
     ): Response<GetPostsResponse>
+
+    @GET("/posts/calendar")
+    suspend fun loadMorePostsByDay(
+        @Query("familyId") familyId: Long,
+        @Query("year") year: Int,
+        @Query("month") month: Int,
+        @Query("day") day: Int,
+        @Query("postId") postId: Long
+    ): Response<GetPostsResponse>
 }
