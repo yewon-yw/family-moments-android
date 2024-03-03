@@ -91,6 +91,7 @@ fun CalendarDayScreen(
             }
         } else {
             LazyColumn(
+                state = lazyListState,
                 contentPadding = PaddingValues(horizontal = 16.dp)
             ) {
                 items(posts.size) { index ->
