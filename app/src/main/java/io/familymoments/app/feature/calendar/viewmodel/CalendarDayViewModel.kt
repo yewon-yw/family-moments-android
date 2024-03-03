@@ -54,4 +54,16 @@ class CalendarDayViewModel @Inject constructor(
             }
         )
     }
+
+    fun getPostsByPrevDay() {
+        val selectedDate = _calendarDayUiState.value.selectedDate.minusDays(1)
+        _calendarDayUiState.value = _calendarDayUiState.value.copy(selectedDate = selectedDate)
+        getPostsByDay()
+    }
+
+    fun getPostsByNextDay() {
+        val selectedDate = _calendarDayUiState.value.selectedDate.plusDays(1)
+        _calendarDayUiState.value = _calendarDayUiState.value.copy(selectedDate = selectedDate)
+        getPostsByDay()
+    }
 }

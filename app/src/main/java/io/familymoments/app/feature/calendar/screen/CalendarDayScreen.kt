@@ -41,8 +41,8 @@ fun CalendarDayScreen(
     Column(modifier = modifier) {
         CalendarHeader(
             formattedYearMonth = initialDate.toString().replace("-", "."),
-            onClickPrevMonth = {},
-            onClickNextMonth = {}
+            onClickPrevMonth = viewModel::getPostsByPrevDay,
+            onClickNextMonth = viewModel::getPostsByNextDay
         )
         LazyColumn(
             contentPadding = PaddingValues(horizontal = 16.dp)
