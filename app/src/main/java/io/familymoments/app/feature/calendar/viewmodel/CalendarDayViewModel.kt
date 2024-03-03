@@ -50,7 +50,8 @@ class CalendarDayViewModel @Inject constructor(
                 _calendarDayUiState.value = _calendarDayUiState.value.copy(
                     isSuccess = false,
                     isLoading = isLoading.value,
-                    errorMessage = it.message
+                    errorMessage = it.message,
+                    posts = emptyList()
                 )
             }
         )
