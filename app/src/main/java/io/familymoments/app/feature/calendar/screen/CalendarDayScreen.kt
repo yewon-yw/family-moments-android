@@ -1,9 +1,12 @@
 package io.familymoments.app.feature.calendar.screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -38,20 +41,43 @@ fun CalendarDayScreen(
     val calendarDayUiState = viewModel.calendarDayUiState.collectAsStateWithLifecycle()
     val initialDate = calendarDayUiState.value.selectedDate
     val posts = calendarDayUiState.value.posts
+    val hasNoPost = calendarDayUiState.value.hasNoPost
     Column(modifier = modifier) {
         CalendarHeader(
             formattedYearMonth = initialDate.toString().replace("-", "."),
             onClickPrevMonth = viewModel::getPostsByPrevDay,
             onClickNextMonth = viewModel::getPostsByNextDay
         )
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal = 16.dp)
-        ) {
-            items(posts.size) { index ->
-                PostItem(
-                    post = posts[index],
-                    navigateToPostDetail = navigateToPostDetail
+
+        if (hasNoPost) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    modifier = Modifier.size(56.dp),
+                    imageVector = ImageVector.vectorResource(R.drawable.ic_no_post),
+                    contentDescription = null
                 )
+                Text(
+                    modifier = Modifier.padding(top = 17.dp),
+                    text = "공유된 순간이 없는 날입니다 :-(\n다른 날짜를 선택해주세요",
+                    style = AppTypography.BTN5_16,
+                    color = AppColors.grey2,
+                    textAlign = TextAlign.Center
+                )
+            }
+        } else {
+            LazyColumn(
+                contentPadding = PaddingValues(horizontal = 16.dp)
+            ) {
+                items(posts.size) { index ->
+                    PostItem(
+                        post = posts[index],
+                        navigateToPostDetail = navigateToPostDetail
+                    )
+                }
             }
         }
     }
