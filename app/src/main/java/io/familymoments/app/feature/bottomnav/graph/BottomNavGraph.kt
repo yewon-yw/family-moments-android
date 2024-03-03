@@ -6,6 +6,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import io.familymoments.app.core.graph.CommonRoute
+import io.familymoments.app.core.graph.Route
 import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.bottomnav.model.BottomNavItem
 import io.familymoments.app.feature.calendar.screen.CalendarScreen
@@ -43,8 +44,8 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
                     hasBackButton = true,
                 ),
             viewModel = hiltViewModel(),
-            navigateToCalendarDay = { localeDateString ->
-                navController.navigate("${CommonRoute.CALENDAR_DAY.name}?localDateString=$localeDateString")
+            navigateToCalendarDay = { localDateString ->
+                navController.navigate(Route.CalendarDay.getRoute(localDateString))
             }
         )
     }

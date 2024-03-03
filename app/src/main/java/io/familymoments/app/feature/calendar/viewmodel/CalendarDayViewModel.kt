@@ -3,6 +3,7 @@ package io.familymoments.app.feature.calendar.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
+import io.familymoments.app.core.graph.Route
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.feature.calendar.model.CalendarDayUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +17,7 @@ class CalendarDayViewModel @Inject constructor(
     private val postRepository: PostRepository
 ) : BaseViewModel() {
 
-    private val initialLocalDate = LocalDate.parse(savedStateHandle.get<String>("localDateString"))
+    private val initialLocalDate = LocalDate.parse(savedStateHandle.get<String>(Route.CalendarDay.localDateStringArgs))
 
     private val _calendarDayUiState = MutableStateFlow(CalendarDayUiState(selectedDate = initialLocalDate))
     val calendarDayUiState = _calendarDayUiState.asStateFlow()

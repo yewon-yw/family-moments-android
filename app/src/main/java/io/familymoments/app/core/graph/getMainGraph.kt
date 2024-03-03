@@ -33,8 +33,8 @@ fun getMainGraph(
     }
 
     composable(
-        route = "${CommonRoute.CALENDAR_DAY.name}?localDateString={localDateString}",
-        arguments = listOf(navArgument("localDateString") { type = NavType.StringType })
+        route = Route.CalendarDay.routeWithArs,
+        arguments = Route.CalendarDay.arguments
     ) {
         CalendarDayScreen(
             modifier = Modifier.scaffoldState(
@@ -50,5 +50,5 @@ fun getMainGraph(
 }
 
 enum class CommonRoute {
-    POST_DETAIL, CALENDAR_DAY
+    POST_DETAIL
 }
