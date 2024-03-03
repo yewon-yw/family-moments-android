@@ -36,10 +36,11 @@ fun CalendarDayScreen(
     navigateToPostDetail: () -> Unit
 ) {
     val calendarDayUiState = viewModel.calendarDayUiState.collectAsStateWithLifecycle()
+    val initialDate = calendarDayUiState.value.selectedDate
     val posts = calendarDayUiState.value.posts
     Column(modifier = modifier) {
         CalendarHeader(
-            formattedYearMonth = "2023.08.16",
+            formattedYearMonth = initialDate.toString().replace("-", "."),
             onClickPrevMonth = {},
             onClickNextMonth = {}
         )

@@ -4,7 +4,9 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.bottomnav.graph.bottomNavGraph
 import io.familymoments.app.feature.mypage.graph.myPageGraph
@@ -30,7 +32,10 @@ fun getMainGraph(
         )
     }
 
-    composable(route = CommonRoute.CALENDAR_DAY.name) {
+    composable(
+        route = "${CommonRoute.CALENDAR_DAY.name}?localDateString={localDateString}",
+        arguments = listOf(navArgument("localDateString") { type = NavType.StringType })
+    ) {
         CalendarDayScreen(
             modifier = Modifier.scaffoldState(
                 hasShadow = true,

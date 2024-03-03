@@ -43,8 +43,8 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
                     hasBackButton = true,
                 ),
             viewModel = hiltViewModel(),
-            navigateToCalendarDay = {
-                navController.navigate(CommonRoute.CALENDAR_DAY.name)
+            navigateToCalendarDay = { localeDateString ->
+                navController.navigate("${CommonRoute.CALENDAR_DAY.name}?localDateString=$localeDateString")
             }
         )
     }

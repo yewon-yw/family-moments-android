@@ -41,7 +41,7 @@ import java.time.format.DateTimeFormatter
 fun CalendarScreen(
     modifier: Modifier,
     viewModel: CalendarViewModel,
-    navigateToCalendarDay: () -> Unit
+    navigateToCalendarDay: (String) -> Unit
 ) {
     val calendarUiState = viewModel.calendarUiState.collectAsStateWithLifecycle()
     val daysOfweek = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
@@ -97,7 +97,7 @@ private fun CalendarContent(
     today: LocalDate,
     isTodayInMonth: Boolean,
     postResult: List<String>,
-    navigateToCalendarDay: () -> Unit
+    navigateToCalendarDay: (String) -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -139,7 +139,7 @@ private fun CalendarContent(
                             if (isToday) Color(0xB29378FF)
                             else Color.Unspecified
                         )
-                        .clickable { navigateToCalendarDay() },
+                        .clickable { navigateToCalendarDay(dates[index].toString()) },
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Text(
