@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -83,7 +84,7 @@ fun CalendarDayScreen(
                 )
                 Text(
                     modifier = Modifier.padding(top = 17.dp),
-                    text = "공유된 순간이 없는 날입니다 :-(\n다른 날짜를 선택해주세요",
+                    text = stringResource(id = R.string.calendar_day_no_post),
                     style = AppTypography.BTN5_16,
                     color = AppColors.grey2,
                     textAlign = TextAlign.Center

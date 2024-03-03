@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -69,7 +70,7 @@ fun CalendarScreen(
                 modifier = Modifier
                     .padding(vertical = 18.dp)
                     .align(Alignment.CenterHorizontally),
-                text = "캘린더",
+                text = stringResource(id = R.string.calendar_title),
                 style = AppTypography.B1_16,
                 color = AppColors.black1
             )
