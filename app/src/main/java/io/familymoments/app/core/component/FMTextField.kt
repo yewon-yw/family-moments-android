@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -16,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.KeyboardType
@@ -38,7 +40,9 @@ fun FMTextField(
     borderColor: Color = AppColors.grey2,
     showDeleteButton:Boolean = true,
     textColor:Color = AppColors.grey2,
-    showText: Boolean = true
+    showText: Boolean = true,
+    onFocusChanged: (Boolean) -> Unit = {},
+    keyboardActions: KeyboardActions = KeyboardActions{}
 ) {
     Box(
         modifier = modifier
@@ -69,9 +73,13 @@ fun FMTextField(
                 },
                 modifier = Modifier
                     .clip(RoundedCornerShape(4.dp))
-                    .weight(1f),
+                    .weight(1f)
+                    .onFocusChanged {
+                        onFocusChanged(it.isFocused)
+                    },
                 visualTransformation = if(showText) VisualTransformation.None else FMVisualTransformation(),
-                keyboardOptions = if(showText) KeyboardOptions.Default else KeyboardOptions(keyboardType = KeyboardType.Password)
+                keyboardOptions = if(showText) KeyboardOptions.Default else KeyboardOptions(keyboardType = KeyboardType.Password),
+                keyboardActions = keyboardActions
             )
 
             if (showDeleteButton && value.text.isNotEmpty()) {

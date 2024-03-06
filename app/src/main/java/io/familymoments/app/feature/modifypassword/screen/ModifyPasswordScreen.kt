@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -16,6 +17,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -83,24 +86,19 @@ private fun CurrentPasswordField(viewModel: ModifyPasswordViewModel) {
     val currentPasswordValid = viewModel.currentPasswordValid.collectAsStateWithLifecycle().value
     val currentPasswordWarning = viewModel.currentPasswordWarning.collectAsStateWithLifecycle().value
 
-    Column {
-        FMTextField(
-            modifier = Modifier.background(AppColors.pink5).height(46.dp),
-            onValueChange = {
-                currentPassword = it
-                viewModel.checkCurrentPassword(it.text)
-            },
-            value = currentPassword,
-            hint = stringResource(id = R.string.modify_password_current_password),
-            borderColor = if (currentPasswordValid) AppColors.grey2 else AppColors.red2,
-            showDeleteButton = false,
-            showText = false
-        )
-        ModifyPasswordWarning(
-            warningResId = currentPasswordWarning?.stringResId,
-            bottomPadding = 70.dp
-        )
-    }
+    ModifyPasswordTextField(
+        onValueChange = {
+            currentPassword = it
+            viewModel.checkCurrentPassword(it.text)
+        },
+        value = currentPassword,
+        hintResId = R.string.modify_password_current_password,
+        borderColor = if (currentPasswordValid) AppColors.grey2 else AppColors.red2
+    )
+    ModifyPasswordWarning(
+        warningResId = currentPasswordWarning?.stringResId,
+        bottomPadding = 70.dp
+    )
 }
 
 @Composable
@@ -109,30 +107,24 @@ private fun NewPasswordField(viewModel: ModifyPasswordViewModel) {
     var newPasswordCheck by remember { mutableStateOf(TextFieldValue()) }
     val newPasswordWarning = viewModel.newPasswordWarning.collectAsStateWithLifecycle().value
 
-    FMTextField(
-        modifier = Modifier.background(AppColors.pink5).height(46.dp),
+    ModifyPasswordTextField(
         onValueChange = {
             newPassword = it
             viewModel.checkNewPassword(it.text, newPasswordCheck.text)
         },
         value = newPassword,
-        hint = stringResource(id = R.string.modify_password_new_password),
-        borderColor = if (newPasswordWarning == null) AppColors.grey2 else AppColors.red2,
-        showDeleteButton = false,
-        showText = false
+        hintResId = R.string.modify_password_new_password,
+        borderColor = if (newPasswordWarning == null) AppColors.grey2 else AppColors.red2
     )
     Spacer(modifier = Modifier.padding(top = 18.dp))
-    FMTextField(
-        modifier = Modifier.background(AppColors.pink5).height(46.dp),
+    ModifyPasswordTextField(
         onValueChange = {
             newPasswordCheck = it
             viewModel.checkNewPassword(newPassword.text, it.text)
         },
         value = newPasswordCheck,
-        hint = stringResource(id = R.string.modify_password_new_password_check),
-        borderColor = if (newPasswordWarning == null) AppColors.grey2 else AppColors.red2,
-        showDeleteButton = false,
-        showText = false
+        hintResId = R.string.modify_password_new_password_check,
+        borderColor = if (newPasswordWarning == null) AppColors.grey2 else AppColors.red2
     )
     ModifyPasswordWarning(
         warningResId = newPasswordWarning?.stringResId,
@@ -160,6 +152,34 @@ fun ModifyPasswordWarning(
             )
         }
     }
+}
+
+@Composable
+fun ModifyPasswordTextField(
+    modifier: Modifier = Modifier,
+    onValueChange: (TextFieldValue) -> Unit,
+    value: TextFieldValue,
+    @StringRes hintResId: Int,
+    borderColor: Color,
+    onFocusChange: (Boolean) -> Unit = {}
+) {
+    val focusManager = LocalFocusManager.current
+    val keyboardActions = KeyboardActions(
+        onDone = { focusManager.clearFocus() }
+    )
+    FMTextField(
+        modifier = modifier
+            .background(AppColors.pink5)
+            .height(46.dp),
+        onValueChange = onValueChange,
+        value = value,
+        hint = stringResource(id = hintResId),
+        borderColor = borderColor,
+        showDeleteButton = false,
+        showText = false,
+        onFocusChanged = onFocusChange,
+        keyboardActions = keyboardActions
+    )
 }
 
 @Composable
