@@ -119,4 +119,15 @@
     <string name="profile_select_photo">사진 선택</string>
     <string name="profile_gallery_select_photo">갤러리에서 선택</string>
     <string name="profile_default_image_select">기본이미지로 하기</string>
+
+    <string name="my_page_title">마이페이지</string>
+    <string name="my_page_account_group">Account</string>
+    <string name="my_page_more_group">More</string>
+    <string name="my_page_label_profile">Profile</string>
+    <string name="my_page_label_password">비밀번호 변경</string>
+    <string name="my_page_label_notification">알림</string>
+    <string name="my_page_label_family_invitation_list">가족 초대 목록</string>
+    <string name="my_page_label_family_settings">가족 설정</string>
+    <string name="my_page_label_logout">로그아웃</string>
+    <string name="my_page_label_account_deletion">계정 탈퇴</string>
 </resources>
