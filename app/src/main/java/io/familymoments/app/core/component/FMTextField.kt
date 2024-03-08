@@ -32,8 +32,8 @@ fun FMTextField(
     hint: String,
     showBorder: Boolean = true,
     borderColor: Color = AppColors.grey2,
-    showDeleteButton:Boolean = true,
-    textColor:Color = AppColors.grey2,
+    showDeleteButton: Boolean = true,
+    textColor: Color = AppColors.black1,
 ) {
     Box(
         modifier = modifier
@@ -55,10 +55,10 @@ fun FMTextField(
                 onValueChange = onValueChange,
                 value = value,
                 singleLine = true,
-                textStyle = AppTypography.BTN5_16,
+                textStyle = AppTypography.BTN5_16.copy(color = textColor),
                 decorationBox = { innerTextField ->
                     if (value.text.isEmpty()) {
-                        Text(text = hint, style = AppTypography.BTN5_16, color = textColor)
+                        Text(text = hint, style = AppTypography.BTN5_16, color = AppColors.grey2)
                     }
                     innerTextField()
                 },

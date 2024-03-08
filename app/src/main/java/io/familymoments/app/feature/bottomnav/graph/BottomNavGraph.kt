@@ -17,7 +17,6 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
                 .scaffoldState(
                     hasShadow = true,
                     hasBackButton = false,
-                    selectedBottomNav = BottomNavItem.Home
                 ),
             viewModel = hiltViewModel(),
             navigateToPostDetail = {
@@ -44,7 +43,6 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
                 .scaffoldState(
                     hasShadow = false,
                     hasBackButton = true,
-                    selectedBottomNav = BottomNavItem.MyPage
                 ),
             onItemClick = { clickedItem ->
                 navController.navigate(clickedItem.route)
