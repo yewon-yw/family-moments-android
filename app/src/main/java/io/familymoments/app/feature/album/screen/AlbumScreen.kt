@@ -19,6 +19,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -28,6 +29,8 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
@@ -38,6 +41,11 @@ fun AlbumScreen(
     modifier: Modifier,
     viewModel: AlbumViewModel
 ) {
+    val albumUiState = viewModel.albumUiState.collectAsStateWithLifecycle()
+    val album = albumUiState.value.album
+    LaunchedEffect(Unit) {
+        viewModel.getAlbum()
+    }
     LazyVerticalGrid(
         modifier = modifier,
         columns = GridCells.Adaptive(minSize = 100.dp),
@@ -78,19 +86,16 @@ fun AlbumScreen(
                 }
             }
         }
-        items(20) {
-            Box(
+        items(album.size) { index ->
+            AsyncImage(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .clip(shape = RoundedCornerShape(5.dp))
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.img_sample_trees),
-                    contentDescription = null,
-                    contentScale = ContentScale.Crop
-                )
-            }
+                    .clip(shape = RoundedCornerShape(5.dp)),
+                model = album[index].img1,
+                contentDescription = null,
+                contentScale = ContentScale.Crop
+            )
         }
     }
 }
