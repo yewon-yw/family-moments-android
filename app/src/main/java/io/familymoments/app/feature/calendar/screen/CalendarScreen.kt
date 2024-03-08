@@ -1,5 +1,6 @@
 package io.familymoments.app.feature.calendar.screen
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -25,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
@@ -100,61 +103,71 @@ private fun CalendarContent(
     postResult: List<String>,
     navigateToCalendarDay: (String) -> Unit
 ) {
-    Column(
+    Box(
         modifier = Modifier
-            .clip(RoundedCornerShape((16.5).dp))
-            .background(color = Color(0xFFF0F0F0))
-            .padding(horizontal = 14.dp, vertical = 8.dp)
+            .clip(RoundedCornerShape(16.5.dp))
+            .background(Color.Transparent)
     ) {
-        Row(
+        Image(
+            painter = painterResource(id = R.drawable.img_calendar_background),
+            contentDescription = null,
+            contentScale = ContentScale.FillBounds,
+            modifier = Modifier.matchParentSize()
+        )
+        Column(
             modifier = Modifier
-                .padding(bottom = 8.dp)
-                .heightIn(min = (32.8).dp),
-            verticalAlignment = Alignment.CenterVertically
+                .padding(horizontal = 14.dp, vertical = 8.dp)
         ) {
-            daysOfweek.forEach { day ->
-                Text(
-                    modifier = Modifier.weight(1f),
-                    text = day,
-                    style = AppTypography.SH3_16,
-                    color = AppColors.black1,
-                    textAlign = TextAlign.Center
-                )
-            }
-        }
-
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(7),
-        ) {
-            items(dates.size) { index ->
-                if (dates[index] == LocalDate.MIN) return@items
-
-                val text = transformDate(dates.map { it.dayOfMonth.toString() }[index])
-                val isToday = dates[index] == today && isTodayInMonth
-                Column(
-                    modifier = Modifier
-                        .padding(all = (3.2).dp)
-                        .heightIn(min = 43.dp)
-                        .clip(RoundedCornerShape(8.dp))
-                        .background(
-                            if (isToday) Color(0xB29378FF)
-                            else Color.Unspecified
-                        )
-                        .clickable { navigateToCalendarDay(dates[index].toString()) },
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                ) {
+            Row(
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
+                    .heightIn(min = (32.8).dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                daysOfweek.forEach { day ->
                     Text(
-                        text = text,
-                        style = AppTypography.BTN5_16,
-                        color = if (isToday) AppColors.grey6 else AppColors.black1,
+                        modifier = Modifier.weight(1f),
+                        text = day,
+                        style = AppTypography.SH3_16,
+                        color = AppColors.black1,
+                        textAlign = TextAlign.Center
                     )
-                    if (postResult.contains(dates[index].toString())) {
-                        Icon(
-                            modifier = Modifier.padding(top = 6.dp),
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_calendar_dot),
-                            contentDescription = null,
-                            tint = Color.Unspecified
+                }
+            }
+
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(7),
+            ) {
+                items(dates.size) { index ->
+                    if (dates[index] == LocalDate.MIN) return@items
+
+                    val text = transformDate(dates.map { it.dayOfMonth.toString() }[index])
+                    val isToday = dates[index] == today && isTodayInMonth
+                    Column(
+                        modifier = Modifier
+                            .padding(all = (3.2).dp)
+                            .heightIn(min = 43.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .background(
+                                if (isToday) Color(0xB29378FF)
+                                else Color.Unspecified
+                            )
+                            .clickable { navigateToCalendarDay(dates[index].toString()) },
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Text(
+                            text = text,
+                            style = AppTypography.BTN5_16,
+                            color = if (isToday) AppColors.grey6 else AppColors.black1,
                         )
+                        if (postResult.contains(dates[index].toString())) {
+                            Icon(
+                                modifier = Modifier.padding(top = 6.dp),
+                                imageVector = ImageVector.vectorResource(R.drawable.ic_calendar_dot),
+                                contentDescription = null,
+                                tint = Color.Unspecified
+                            )
+                        }
                     }
                 }
             }
