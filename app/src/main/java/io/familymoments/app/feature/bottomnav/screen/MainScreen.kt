@@ -15,6 +15,7 @@ import androidx.compose.material.BottomNavigation
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,19 +28,23 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavDestination
+import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import io.familymoments.app.core.util.LocalScaffoldState
 import io.familymoments.app.R
 import io.familymoments.app.core.component.AppBarScreen
+import io.familymoments.app.core.graph.getMainGraph
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.AppTypography.LB2_11
+import io.familymoments.app.core.util.LocalScaffoldState
 import io.familymoments.app.feature.bottomnav.component.bottomNavShadow
 import io.familymoments.app.feature.bottomnav.model.BottomNavItem
-import io.familymoments.app.core.graph.getMainGraph
+import io.familymoments.app.feature.home.screen.HomeScreenPreview
 
 @Composable
 fun MainScreen() {
@@ -70,17 +75,36 @@ fun MainScreen() {
         }
     }
 
+    val bottomNavItems = listOf(
+        BottomNavItem.Home,
+        BottomNavItem.Album,
+        BottomNavItem.AddPost,
+        BottomNavItem.Calendar,
+        BottomNavItem.MyPage
+    )
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    val isBottomNavItem = currentDestination?.hierarchy?.any { currentScreen ->
+        bottomNavItems.map { it.route }.contains(currentScreen.route)
+    } == true
+
     AppBarScreen(
         title = { Text(text = "sweety home", style = AppTypography.SH3_16, color = AppColors.deepPurple1) },
         navigationIcon = navigationIcon,
         bottomBar = {
-            BottomNavigationBar(
-                navController = navController,
-            )
+            if (isBottomNavItem) {
+                BottomNavigationBar(
+                    navController = navController,
+                    bottomNavItems = bottomNavItems,
+                    currentDestination = currentDestination
+                )
+            }
         },
         hasShadow = scaffoldState.hasShadow
     ) {
         NavHost(
+            modifier = Modifier.padding(bottom = if (isBottomNavItem) 75.dp else 0.dp),
             navController = navController,
             startDestination = BottomNavItem.Home.route,
             builder = getMainGraph(navController = navController),
@@ -89,19 +113,11 @@ fun MainScreen() {
 }
 
 @Composable
-private fun BottomNavigationBar(
+fun BottomNavigationBar(
     navController: NavHostController,
+    bottomNavItems: List<BottomNavItem>,
+    currentDestination: NavDestination?
 ) {
-    val bottomNavItems = listOf(
-        BottomNavItem.Home,
-        BottomNavItem.Album,
-        BottomNavItem.AddPost,
-        BottomNavItem.Calendar,
-        BottomNavItem.MyPage
-    )
-
-    val scaffoldState = LocalScaffoldState.current
-
     BottomNavigation(
         modifier = Modifier
             .bottomNavShadow()
@@ -110,7 +126,7 @@ private fun BottomNavigationBar(
         backgroundColor = Color.White
     ) {
         bottomNavItems.forEach { item ->
-            val selected = scaffoldState.selectedBottomNav == item.route
+            val selected = currentDestination?.hierarchy?.any { it.route == item.route } == true
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
@@ -118,7 +134,7 @@ private fun BottomNavigationBar(
                     .clickable {
                         navController.navigate(item.route) {
                             popUpTo(navController.graph.findStartDestination().id) {
-                                saveState = false
+                                saveState = true
                             }
                             launchSingleTop = true
                             restoreState = true
@@ -158,5 +174,30 @@ private fun BottomNavigationBar(
 @Preview
 @Composable
 fun MainScreenPreview() {
-    MainScreen()
+    AppBarScreen(
+        title = { Text(text = "sweety home", style = AppTypography.SH3_16, color = AppColors.deepPurple1) },
+        navigationIcon = {
+            Icon(
+                modifier = Modifier.padding(start = 12.dp),
+                imageVector = ImageVector.vectorResource(id = R.drawable.ic_app_bar_back),
+                contentDescription = null,
+                tint = AppColors.grey3
+            )
+        },
+        bottomBar = {
+            BottomNavigationBar(
+                navController = rememberNavController(),
+                bottomNavItems = listOf(
+                    BottomNavItem.Home,
+                    BottomNavItem.Album,
+                    BottomNavItem.AddPost,
+                    BottomNavItem.Calendar,
+                    BottomNavItem.MyPage
+                ),
+                currentDestination = null
+            )
+        },
+    ) {
+        HomeScreenPreview()
+    }
 }

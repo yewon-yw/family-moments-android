@@ -6,7 +6,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.bottomnav.graph.bottomNavGraph
-import io.familymoments.app.feature.bottomnav.model.BottomNavItem
+import io.familymoments.app.feature.mypage.graph.myPageGraph
 import io.familymoments.app.feature.postdetail.screen.PostDetailScreen
 import io.familymoments.app.feature.profile.graph.profileGraph
 
@@ -16,6 +16,7 @@ fun getMainGraph(
 
     bottomNavGraph(navController)
     profileGraph(navController)
+    myPageGraph(navController)
 
     composable(route = "PostDetail") {
         PostDetailScreen(
@@ -23,7 +24,6 @@ fun getMainGraph(
                 .scaffoldState(
                     hasShadow = true,
                     hasBackButton = true,
-                    selectedBottomNav = BottomNavItem.Home
                 )
         )
     }

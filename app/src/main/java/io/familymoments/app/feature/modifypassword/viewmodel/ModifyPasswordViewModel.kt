@@ -1,5 +1,6 @@
 package io.familymoments.app.feature.modifypassword.viewmodel
 
+import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.feature.modifypassword.model.WarningType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -7,6 +8,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
 
+@HiltViewModel
 class ModifyPasswordViewModel @Inject constructor() : BaseViewModel() {
     private val _currentPasswordValid = MutableStateFlow(true)
     val currentPasswordValid: StateFlow<Boolean> = _currentPasswordValid.asStateFlow()
