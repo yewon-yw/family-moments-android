@@ -43,11 +43,13 @@ import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.convertToBitmap
+import io.familymoments.app.core.util.keyboardAsState
 
 @Composable
 fun AddPostScreen(modifier: Modifier) {
     var content by remember { mutableStateOf("") }
     val context = LocalContext.current
+    val isKeyboardOpen by keyboardAsState()
 
     val bitmapList = remember { mutableStateListOf<Bitmap?>() }
     val launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?> = rememberLauncherForActivityResult(
@@ -155,21 +157,23 @@ fun AddPostScreen(modifier: Modifier) {
                 )
             }
         }
-        Box(
-            modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 24.dp)
-                .fillMaxWidth()
-                .heightIn(min = 59.dp)
-                .clip(RoundedCornerShape(60.dp))
-                .background(color = AppColors.deepPurple1),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = "순간을 가족에게 공유하기",
-                style = AppTypography.BTN4_18,
-                color = AppColors.grey6,
-                textAlign = TextAlign.Center
-            )
+        if (!isKeyboardOpen) {
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 24.dp)
+                    .fillMaxWidth()
+                    .heightIn(min = 59.dp)
+                    .clip(RoundedCornerShape(60.dp))
+                    .background(color = AppColors.deepPurple1),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = "순간을 가족에게 공유하기",
+                    style = AppTypography.BTN4_18,
+                    color = AppColors.grey6,
+                    textAlign = TextAlign.Center
+                )
+            }
         }
     }
 }
