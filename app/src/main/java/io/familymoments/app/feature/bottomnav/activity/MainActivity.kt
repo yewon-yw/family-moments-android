@@ -1,6 +1,8 @@
 package io.familymoments.app.feature.bottomnav.activity
 
+import android.os.Bundle
 import androidx.compose.runtime.Composable
+import androidx.core.view.WindowCompat
 import dagger.hilt.android.AndroidEntryPoint
 import io.familymoments.app.core.base.BaseActivity
 import io.familymoments.app.core.network.AuthErrorManager
@@ -15,4 +17,10 @@ class MainActivity : BaseActivity<MainViewModel>(MainViewModel::class) {
     lateinit var authErrorManager: AuthErrorManager
 
     override val screen: @Composable () -> Unit = { MainScreen(viewModel, authErrorManager) }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+    }
 }
