@@ -3,6 +3,7 @@ package io.familymoments.app.core.network.repository.impl
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.PostService
 import io.familymoments.app.core.network.repository.PostRepository
+import io.familymoments.app.feature.album.model.GetAlbumDetailResponse
 import io.familymoments.app.feature.album.model.GetAlbumResponse
 import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
 import io.familymoments.app.feature.home.model.GetPostsResponse
@@ -79,6 +80,22 @@ class PostRepositoryImpl(
                 if (responseBody.code != 404) {
                     emit(Resource.Fail(Throwable(responseBody.message)))
                 }
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun getAlbumDetail(postId: Long): Flow<Resource<GetAlbumDetailResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = postService.getAlbumDetail(postId)
+            val responseBody = response.body() ?: GetAlbumDetailResponse()
+
+            if (responseBody.isSuccess) {
+                emit(Resource.Success(responseBody))
+            } else {
+                emit(Resource.Fail(Throwable(responseBody.message)))
             }
         }.catch { e ->
             emit(Resource.Fail(e))

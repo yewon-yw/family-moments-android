@@ -3,6 +3,7 @@ package io.familymoments.app.feature.album.viewmodel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.repository.PostRepository
+import io.familymoments.app.feature.album.model.AlbumDetailUiState
 import io.familymoments.app.feature.album.model.AlbumUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
@@ -65,6 +66,39 @@ class AlbumViewModel @Inject constructor(
                     errorMessage = it.message
                 )
             }
+        )
+    }
+
+    fun getAlbumDetail(postId: Long) {
+        Timber.d("getAlbumDetail")
+        async(
+            operation = { postRepository.getAlbumDetail(postId) },
+            onSuccess = {
+                Timber.d("getAlbumDetail: onSuccess")
+                _albumUiState.value = _albumUiState.value.copy(
+                    albumDetail = AlbumDetailUiState(
+                        isSuccess = true,
+                        isLoading = isLoading.value,
+                        imgs = it.result
+                    )
+                )
+            },
+            onFailure = {
+                Timber.d("getAlbumDetail: onFailure")
+                _albumUiState.value = _albumUiState.value.copy(
+                    albumDetail = AlbumDetailUiState(
+                        isSuccess = false,
+                        isLoading = isLoading.value,
+                        errorMessage = it.message
+                    )
+                )
+            }
+        )
+    }
+
+    fun setAlbumDetailEmpty() {
+        _albumUiState.value = _albumUiState.value.copy(
+            albumDetail = AlbumDetailUiState()
         )
     }
 }

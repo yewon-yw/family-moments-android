@@ -2,6 +2,7 @@ package io.familymoments.app.feature.album.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -38,6 +39,7 @@ import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.feature.album.component.AlbumPopup
 import io.familymoments.app.feature.album.viewmodel.AlbumViewModel
 
 @Composable
@@ -55,6 +57,8 @@ fun AlbumScreen(
             mutableStateOf(!lazyGridState.canScrollForward)
         }
     }
+    val showPopup = remember { mutableStateOf(false) }
+    val isPopupLoading = albumUiState.value.albumDetail.isLoading
     LaunchedEffect(Unit) {
         viewModel.getAlbum()
     }
@@ -110,12 +114,27 @@ fun AlbumScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .aspectRatio(1f)
-                    .clip(shape = RoundedCornerShape(5.dp)),
+                    .clip(shape = RoundedCornerShape(5.dp))
+                    .clickable {
+                        viewModel.getAlbumDetail(album[index].postId)
+                        showPopup.value = true
+                    },
                 model = album[index].img1,
                 contentDescription = null,
                 contentScale = ContentScale.Crop
             )
         }
+    }
+
+    if (showPopup.value) {
+        AlbumPopup(
+            isPopupLoading = isPopupLoading,
+            imgs = albumUiState.value.albumDetail.imgs,
+            onDismissRequest = {
+                viewModel.setAlbumDetailEmpty()
+                showPopup.value = false
+            }
+        )
     }
 }
 
