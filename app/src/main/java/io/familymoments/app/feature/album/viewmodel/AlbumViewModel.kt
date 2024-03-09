@@ -16,6 +16,8 @@ class AlbumViewModel @Inject constructor(
     private val _albumUiState = MutableStateFlow(AlbumUiState())
     val albumUiState = _albumUiState
 
+    private var minPostId: Long = 0
+
     fun getAlbum() {
         Timber.d("getAlbum")
         async(
@@ -28,9 +30,35 @@ class AlbumViewModel @Inject constructor(
                     isLoading = isLoading.value,
                     album = it.result
                 )
+                minPostId = it.result.minOf { post -> post.postId }
             },
             onFailure = {
                 Timber.d("getAlbum: onFailure")
+                _albumUiState.value = _albumUiState.value.copy(
+                    isSuccess = false,
+                    isLoading = isLoading.value,
+                    errorMessage = it.message
+                )
+            }
+        )
+    }
+
+    fun loadMoreAlbum() {
+        Timber.d("loadMoreAlbum")
+        async(
+            // TODO: 추후 familyId 수정 예정
+            operation = { postRepository.loadMoreAlbum(2, minPostId) },
+            onSuccess = {
+                Timber.d("loadMoreAlbum: onSuccess")
+                _albumUiState.value = _albumUiState.value.copy(
+                    isSuccess = true,
+                    isLoading = isLoading.value,
+                    album = _albumUiState.value.album + it.result
+                )
+                minPostId = it.result.minOf { post -> post.postId }
+            },
+            onFailure = {
+                Timber.d("loadMoreAlbum: onFailure")
                 _albumUiState.value = _albumUiState.value.copy(
                     isSuccess = false,
                     isLoading = isLoading.value,

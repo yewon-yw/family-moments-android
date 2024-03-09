@@ -16,10 +16,14 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.GridItemSpan
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -43,15 +47,30 @@ fun AlbumScreen(
 ) {
     val albumUiState = viewModel.albumUiState.collectAsStateWithLifecycle()
     val album = albumUiState.value.album
+    val lazyGridState = rememberLazyGridState()
+    val isScrolledToLast by remember(lazyGridState.canScrollForward) {
+        if (album.isEmpty()) {
+            mutableStateOf(false)
+        } else {
+            mutableStateOf(!lazyGridState.canScrollForward)
+        }
+    }
     LaunchedEffect(Unit) {
         viewModel.getAlbum()
     }
+    LaunchedEffect(isScrolledToLast) {
+        if (isScrolledToLast) {
+            viewModel.loadMoreAlbum()
+        }
+    }
+
     LazyVerticalGrid(
         modifier = modifier,
         columns = GridCells.Adaptive(minSize = 100.dp),
+        state = lazyGridState,
         horizontalArrangement = Arrangement.spacedBy(10.dp),
         verticalArrangement = Arrangement.spacedBy(10.dp),
-        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp)
+        contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 16.dp),
     ) {
         item(span = { GridItemSpan(this.maxLineSpan) }) {
             Column {

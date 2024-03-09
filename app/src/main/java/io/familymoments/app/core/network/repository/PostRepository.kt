@@ -10,6 +10,7 @@ interface PostRepository {
     suspend fun getPosts(familyId: Long): Flow<Resource<GetPostsResponse>>
     suspend fun loadMorePosts(familyId: Long, postId: Long): Flow<Resource<GetPostsResponse>>
     suspend fun getAlbum(familyId: Long): Flow<Resource<GetAlbumResponse>>
+    suspend fun loadMoreAlbum(familyId: Long, postId: Long): Flow<Resource<GetAlbumResponse>>
     suspend fun getPostsByMonth(familyId: Long, year: Int, month: Int): Flow<Resource<GetPostsByMonthResponse>>
     suspend fun getPostsByDay(familyId: Long, year: Int, month: Int, day: Int): Flow<Resource<GetPostsResponse>>
     suspend fun loadMorePostsByDay(

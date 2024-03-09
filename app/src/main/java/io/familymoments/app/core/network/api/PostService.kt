@@ -20,6 +20,12 @@ interface PostService {
     @GET("/posts/album")
     suspend fun getAlbum(@Query("familyId") familyId: Long): Response<GetAlbumResponse>
 
+    @GET("/posts/album")
+    suspend fun loadMoreAlbum(
+        @Query("familyId") familyId: Long,
+        @Query("postId") postId: Long
+    ): Response<GetAlbumResponse>
+
     @GET("/posts/calendar")
     suspend fun getPostsByMonth(
         @Query("familyId") familyId: Long,
