@@ -30,6 +30,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -82,7 +83,7 @@ fun AlbumScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 18.dp),
-                    text = "우리 가족 앨범",
+                    text = stringResource(id = R.string.album_screen_title),
                     style = AppTypography.B1_16,
                     color = AppColors.black1,
                     textAlign = TextAlign.Center

@@ -143,6 +143,8 @@
     <string name="modify_password_new_password_same_as_current_warning">현재 비밀번호와 동일합니다.</string>
     <string name="modify_password_invalid_password_format_warning">비밀번호 형식이 잘못되었습니다.</string>
 
+    <string name="album_screen_title">우리 가족 앨범</string>
+
     <string name="calendar_title">캘린더</string>
     <string name="calendar_day_no_post">공유된 순간이 없는 날입니다 :-(\n다른 날짜를 선택해주세요</string>
 </resources>
