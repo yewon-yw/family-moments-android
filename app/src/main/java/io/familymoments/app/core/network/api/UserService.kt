@@ -30,4 +30,10 @@ interface UserService {
 
     @POST("/users/log-out")
     suspend fun logoutUser(): Response<LogoutResponse>
+
+    @GET("/users")
+    suspend fun searchMember(
+        @Query("keyword") keyword: String,
+        @Query("familyId") familyId: Long? = null
+    ): Response<SearchMemberResponse>
 }

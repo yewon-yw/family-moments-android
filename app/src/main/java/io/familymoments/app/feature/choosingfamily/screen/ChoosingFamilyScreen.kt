@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -54,7 +55,10 @@ fun ChoosingFamilyScreen() {
                     })
             }
             composable(ChoosingFamilyRoute.SEARCH_MEMBER.name) {
-                SearchMemberScreen { navController.navigate(ChoosingFamilyRoute.SET_PROFILE.name) }
+                SearchMemberScreen(
+                    navigate = { navController.navigate(ChoosingFamilyRoute.SET_PROFILE.name) },
+                    viewModel = hiltViewModel()
+                )
             }
             composable(ChoosingFamilyRoute.SET_PROFILE.name) {
                 SetProfileScreen { navController.navigate(ChoosingFamilyRoute.SET_ALARM.name) }

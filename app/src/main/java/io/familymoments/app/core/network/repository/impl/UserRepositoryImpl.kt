@@ -8,6 +8,7 @@ import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourc
 import io.familymoments.app.core.network.model.AuthErrorResponse
 import io.familymoments.app.core.network.model.UserProfileResponse
 import io.familymoments.app.core.network.repository.UserRepository
+import io.familymoments.app.feature.creatingfamily.model.response.SearchMemberResponse
 import io.familymoments.app.feature.login.model.request.LoginRequest
 import io.familymoments.app.feature.login.model.response.LoginResponse
 import io.familymoments.app.feature.modifypassword.model.request.ModifyPasswordRequest
@@ -141,6 +142,36 @@ class UserRepositoryImpl @Inject constructor(
             emit(Resource.Fail(Throwable(e)))
         }
     }
+
+    override suspend fun searchMember(keyword: String): Flow<Resource<SearchMemberResponse>> {
+        return flow {
+            emit(Resource.Loading)
+//            val familyId = userInfoPreferencesDataSource.loadFamilyId()
+
+            val response = userService.searchMember(keyword, null)
+            val responseBody = response.body() ?: SearchMemberResponse()
+
+            if (response.code() == 200) {
+                if (responseBody.isSuccess) {
+                    emit(Resource.Success(responseBody))
+                } else {
+                    // 사용자 인증 오류
+                    reissueAccessToken().collect { result ->
+                        if (result is Resource.Success) {
+                            // 새 access token 발급 후 다시 api 실행
+                            searchMember(keyword)
+                        }
+                        if (result is Resource.Fail) emit(Resource.Fail(result.exception))
+                    }
+                }
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
+            }
+
+
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
 
     companion object {
         private const val KEY_ACCESS_TOKEN = "X-AUTH-TOKEN"
