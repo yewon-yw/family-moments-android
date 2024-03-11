@@ -23,8 +23,7 @@ class ModifyPasswordViewModel @Inject constructor() : BaseViewModel() {
 
     fun checkNewPassword(newPassword: String, newPasswordCheck: String) {
         val (newPasswordValid, newPasswordWarning) = validateNewPassword(newPassword, newPasswordCheck)
-        _modifyPasswordUiState.value = _modifyPasswordUiState.value.copy(newPasswordValid = newPasswordValid)
-        _modifyPasswordUiState.value = _modifyPasswordUiState.value.copy(newPasswordWarning = newPasswordWarning)
+        _modifyPasswordUiState.value = _modifyPasswordUiState.value.copy(newPasswordValid = newPasswordValid, newPasswordWarning = newPasswordWarning)
     }
 
     fun requestModifyPassword(current: String, new: String, newCheck: String) {
