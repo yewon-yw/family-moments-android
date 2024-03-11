@@ -64,7 +64,7 @@ fun ModifyPasswordScreen(
             checkCurrentPassword = viewModel::checkCurrentPassword
         )
         NewPasswordField(
-            newPasswordWarning = viewModel.newPasswordWarning.collectAsStateWithLifecycle().value,
+            newPasswordWarning = modifyPasswordUiState.value.newPasswordWarning,
             checkNewPassword = viewModel::checkNewPassword,
             scope = scope,
             requester = requester

@@ -15,9 +15,6 @@ class ModifyPasswordViewModel @Inject constructor() : BaseViewModel() {
     private val _modifyPasswordUiState: MutableStateFlow<ModifyPasswordUiState> = MutableStateFlow(ModifyPasswordUiState())
     val modifyPasswordUiState: StateFlow<ModifyPasswordUiState> = _modifyPasswordUiState.asStateFlow()
 
-    private val _newPasswordWarning = MutableStateFlow<Int?>(null)
-    val newPasswordWarning: StateFlow<Int?> = _newPasswordWarning.asStateFlow()
-
     fun checkCurrentPassword(password: String) {
         _modifyPasswordUiState.value = _modifyPasswordUiState.value.copy(
             currentPasswordValid = validateCurrentPassword(password)
@@ -27,7 +24,7 @@ class ModifyPasswordViewModel @Inject constructor() : BaseViewModel() {
     fun checkNewPassword(newPassword: String, newPasswordCheck: String) {
         val (newPasswordValid, newPasswordWarning) = validateNewPassword(newPassword, newPasswordCheck)
         _modifyPasswordUiState.value = _modifyPasswordUiState.value.copy(newPasswordValid = newPasswordValid)
-        _newPasswordWarning.value = newPasswordWarning
+        _modifyPasswordUiState.value = _modifyPasswordUiState.value.copy(newPasswordWarning = newPasswordWarning)
     }
 
     fun requestModifyPassword(current: String, new: String, newCheck: String) {
