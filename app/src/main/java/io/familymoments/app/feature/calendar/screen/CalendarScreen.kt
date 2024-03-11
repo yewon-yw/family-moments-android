@@ -149,7 +149,7 @@ private fun CalendarContent(
                             .heightIn(min = 43.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .background(
-                                if (isToday) AppColors.purple2
+                                if (isToday) AppColors.purple2.copy(alpha = 0.7f)
                                 else Color.Unspecified
                             )
                             .clickable { navigateToCalendarDay(dates[index].toString()) },
