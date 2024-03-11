@@ -23,7 +23,6 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -50,6 +49,7 @@ fun ModifyPasswordScreen(
 ) {
     val scope = rememberCoroutineScope()
     val requester = BringIntoViewRequester()
+    val modifyPasswordUiState = viewModel.modifyPasswordUiState.collectAsStateWithLifecycle()
     Column(
         modifier = modifier
             .padding(horizontal = 16.dp)
@@ -59,9 +59,21 @@ fun ModifyPasswordScreen(
         Spacer(modifier = Modifier.height(40.dp))
         ModifyPasswordInfo()
         Spacer(modifier = Modifier.height(26.dp))
-        CurrentPasswordField(viewModel = viewModel)
-        NewPasswordField(viewModel = viewModel, scope = scope, requester = requester)
-        ModifyPasswordButton(viewModel = viewModel, requester = requester)
+        CurrentPasswordField(
+            currentPasswordValid = modifyPasswordUiState.value.currentPasswordValid,
+            checkCurrentPassword = viewModel::checkCurrentPassword
+        )
+        NewPasswordField(
+            newPasswordWarning = viewModel.newPasswordWarning.collectAsStateWithLifecycle().value,
+            checkNewPassword = viewModel::checkNewPassword,
+            scope = scope,
+            requester = requester
+        )
+        ModifyPasswordButton(
+            currentPasswordValid = modifyPasswordUiState.value.currentPasswordValid,
+            newPasswordValid = modifyPasswordUiState.value.newPasswordValid,
+            requester = requester
+        )
         Spacer(modifier = Modifier.height(20.dp))
     }
 }
@@ -98,36 +110,38 @@ fun ModifyPasswordInfo() {
 }
 
 @Composable
-private fun CurrentPasswordField(viewModel: ModifyPasswordViewModel) {
+private fun CurrentPasswordField(
+    currentPasswordValid: Boolean,
+    checkCurrentPassword: (String) -> Unit
+) {
     var currentPassword by remember { mutableStateOf(TextFieldValue()) }
-    val currentPasswordValid = viewModel.currentPasswordValid.collectAsStateWithLifecycle().value
-    val currentPasswordWarning = viewModel.currentPasswordWarning.collectAsStateWithLifecycle().value
 
     ModifyPasswordTextField(
         onValueChange = {
             currentPassword = it
-            viewModel.checkCurrentPassword(it.text)
+            checkCurrentPassword(it.text)
         },
         value = currentPassword,
         hintResId = R.string.modify_password_current_password,
-        borderColor = if (currentPasswordValid) AppColors.grey2 else AppColors.red2
+        hideWarning = currentPasswordValid || currentPassword.text.isEmpty()
     )
     ModifyPasswordWarning(
-        warningResId = currentPasswordWarning?.stringResId,
-        bottomPadding = 70.dp
+        warningResId = R.string.modify_password_incorrect_current_password_warning,
+        bottomPadding = 70.dp,
+        hideText = currentPasswordValid || currentPassword.text.isEmpty()
     )
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun NewPasswordField(
-    viewModel: ModifyPasswordViewModel,
+    newPasswordWarning: Int?,
+    checkNewPassword: (String, String) -> Unit,
     scope: CoroutineScope,
     requester: BringIntoViewRequester
 ) {
     var newPassword by remember { mutableStateOf(TextFieldValue()) }
     var newPasswordCheck by remember { mutableStateOf(TextFieldValue()) }
-    val newPasswordWarning = viewModel.newPasswordWarning.collectAsStateWithLifecycle().value
     val onFocusChange: (Boolean) -> Unit = { isFocused ->
         scope.launch {
             if (isFocused) {
@@ -139,48 +153,52 @@ private fun NewPasswordField(
     ModifyPasswordTextField(
         onValueChange = {
             newPassword = it
-            viewModel.checkNewPassword(it.text, newPasswordCheck.text)
+            checkNewPassword(it.text, newPasswordCheck.text)
         },
         value = newPassword,
         hintResId = R.string.modify_password_new_password,
-        borderColor = if (newPasswordWarning == null) AppColors.grey2 else AppColors.red2,
+        hideWarning = newPasswordWarning == null,
         onFocusChange = onFocusChange
     )
     Spacer(modifier = Modifier.padding(top = 18.dp))
     ModifyPasswordTextField(
         onValueChange = {
             newPasswordCheck = it
-            viewModel.checkNewPassword(newPassword.text, it.text)
+            checkNewPassword(newPassword.text, it.text)
         },
         value = newPasswordCheck,
         hintResId = R.string.modify_password_new_password_check,
-        borderColor = if (newPasswordWarning == null) AppColors.grey2 else AppColors.red2,
+        hideWarning = newPasswordWarning == null,
         onFocusChange = onFocusChange
     )
     ModifyPasswordWarning(
-        warningResId = newPasswordWarning?.stringResId,
-        bottomPadding = 67.dp
+        warningResId = newPasswordWarning,
+        bottomPadding = 67.dp,
+        hideText = newPasswordWarning == null
     )
 }
 
 @Composable
 fun ModifyPasswordWarning(
     @StringRes warningResId: Int?,
-    bottomPadding: Dp = 0.dp
+    bottomPadding: Dp = 0.dp,
+    hideText: Boolean = true
 ) {
-    if (warningResId == null) {
+    if (hideText) {
         Spacer(modifier = Modifier.padding(top = bottomPadding))
     } else {
         Box(
             modifier = Modifier
                 .padding(top = 9.dp, bottom = bottomPadding - 25.dp)
         ) {
-            Text(
-                text = stringResource(id = warningResId),
-                style = AppTypography.LB1_13,
-                color = AppColors.red2,
-                modifier = Modifier.height(16.dp)
-            )
+            if(warningResId != null){
+                Text(
+                    text = stringResource(id = warningResId),
+                    style = AppTypography.LB1_13,
+                    color = AppColors.red2,
+                    modifier = Modifier.height(16.dp)
+                )
+            }
         }
     }
 }
@@ -191,7 +209,7 @@ fun ModifyPasswordTextField(
     onValueChange: (TextFieldValue) -> Unit,
     value: TextFieldValue,
     @StringRes hintResId: Int,
-    borderColor: Color,
+    hideWarning: Boolean,
     onFocusChange: (Boolean) -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
@@ -205,7 +223,7 @@ fun ModifyPasswordTextField(
         onValueChange = onValueChange,
         value = value,
         hint = stringResource(id = hintResId),
-        borderColor = borderColor,
+        borderColor = if(hideWarning) AppColors.grey2 else AppColors.red2,
         showDeleteButton = false,
         showText = false,
         onFocusChanged = onFocusChange,
@@ -216,11 +234,10 @@ fun ModifyPasswordTextField(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ModifyPasswordButton(
-    viewModel: ModifyPasswordViewModel,
+    currentPasswordValid: Boolean,
+    newPasswordValid: Boolean,
     requester: BringIntoViewRequester
 ) {
-    val currentPasswordValid = viewModel.currentPasswordValid.collectAsStateWithLifecycle().value
-    val newPasswordValid = viewModel.newPasswordValid.collectAsStateWithLifecycle().value
     FMButton(
         modifier = Modifier
             .fillMaxWidth()
