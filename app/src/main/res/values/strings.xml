@@ -130,4 +130,16 @@
     <string name="my_page_label_family_settings">가족 설정</string>
     <string name="my_page_label_logout">로그아웃</string>
     <string name="my_page_label_account_deletion">계정 탈퇴</string>
+
+    <string name="modify_password_title">비밀번호 변경</string>
+    <string name="modify_password_notification_1">계정을 보호하기 위해 이 세션을 제외한 모든\n세션에서 로그아웃됩니다.</string>
+    <string name="modify_password_notification_2">비밀번호는 8글자 이상 12글자 이하여야\n하고 숫자와 영문의 조합을 포함해야 합니다.</string>
+    <string name="modify_password_current_password">현재 비밀번호</string>
+    <string name="modify_password_new_password">새 비밀번호</string>
+    <string name="modify_password_new_password_check">새 비밀번호 확인</string>
+    <string name="modify_password_btn">비밀번호 변경</string>
+    <string name="modify_password_incorrect_current_password_warning">현재 비밀번호가 일치하지 않습니다.</string>
+    <string name="modify_password_new_passwords_mismatch_warning">새 비밀번호와 비밀번호 확인이 일치하지 않습니다.</string>
+    <string name="modify_password_new_password_same_as_current_warning">현재 비밀번호와 동일합니다.</string>
+    <string name="modify_password_invalid_password_format_warning">비밀번호 형식이 잘못되었습니다.</string>
 </resources>

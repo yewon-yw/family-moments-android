@@ -1,8 +1,11 @@
 package io.familymoments.app.feature.mypage.graph
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import dagger.hilt.android.lifecycle.HiltViewModel
+import io.familymoments.app.feature.modifypassword.screen.ModifyPasswordScreen
 import io.familymoments.app.feature.profile.graph.profileGraph
 
 fun NavGraphBuilder.myPageGraph(navController: NavController){
@@ -10,7 +13,7 @@ fun NavGraphBuilder.myPageGraph(navController: NavController){
         profileGraph(navController)
     }
     composable(route = MyPageRoute.Password.name) {
-        // Password Screen
+        ModifyPasswordScreen(viewModel = hiltViewModel())
     }
     composable(route = MyPageRoute.Notification.name) {
         // Notification Screen
