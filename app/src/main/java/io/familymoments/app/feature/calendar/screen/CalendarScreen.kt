@@ -48,7 +48,7 @@ fun CalendarScreen(
     navigateToCalendarDay: (String) -> Unit
 ) {
     val calendarUiState = viewModel.calendarUiState.collectAsStateWithLifecycle()
-    val daysOfweek = listOf("Su", "Mo", "Tu", "We", "Th", "Fr", "Sa")
+    val daysOfweek = listOf(SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY)
     val isLoading = calendarUiState.value.isLoading
     val postResult = calendarUiState.value.postResult
 
@@ -255,3 +255,11 @@ fun CalendarScreenPreview() {
         )
     }
 }
+
+private const val SUNDAY = "Su"
+private const val MONDAY = "Mo"
+private const val TUESDAY = "Tu"
+private const val WEDNESDAY = "We"
+private const val THURSDAY = "Th"
+private const val FRIDAY = "Fr"
+private const val SATURDAY = "Sa"

@@ -1,7 +1,6 @@
 package io.familymoments.app.core.component
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -30,7 +29,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -187,125 +185,19 @@ private fun String.formattedDate(): String {
     return outputFormat.format(date ?: Date())
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Preview(showBackground = true)
 @Composable
 fun PostItemPreview() {
-    Column {
-        Spacer(modifier = Modifier.height(10.dp))
-        Row(
-            modifier = Modifier.padding(start = 20.dp, end = 17.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(39.dp)
-                    .clip(shape = CircleShape)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.img_sample_dog),
-                    contentScale = ContentScale.Crop,
-                    contentDescription = "profile"
-                )
-            }
-            Spacer(modifier = Modifier.width(14.dp))
-            Text(
-                modifier = Modifier.weight(1f),
-                text = "딸내미",
-                style = AppTypography.LB1_13,
-                color = AppColors.black2
-            )
-            Text(
-                text = "2023.06.12(토)",
-                style = AppTypography.LB2_11,
-                color = AppColors.grey3
-            )
-        }
-        Spacer(modifier = Modifier.height(10.dp))
-        Box(modifier = Modifier.postItemContentShadow()) {
-            Column(
-                modifier = Modifier
-                    .padding(horizontal = 11.dp)
-                    .heightIn(min = 282.dp)
-                    .clip(shape = RoundedCornerShape(10.dp))
-                    .background(AppColors.grey6)
-                    .clickable { }
-            ) {
-                Box(
-                    modifier = Modifier
-                        .height(168.dp)
-                ) {
-                    val pagerState = rememberPagerState(pageCount = { 3 })
-                    HorizontalPager(
-                        state = pagerState,
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Image(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .align(Alignment.Center),
-                            painter = painterResource(id = R.drawable.img_sample_trees),
-                            contentScale = ContentScale.Crop,
-                            contentDescription = null
-                        )
-                    }
-                    Row(
-                        modifier = Modifier
-                            .wrapContentHeight()
-                            .fillMaxWidth()
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 6.dp),
-                        horizontalArrangement = Arrangement.Center
-                    ) {
-                        repeat(pagerState.pageCount) { iteration ->
-                            val color =
-                                if (pagerState.currentPage == iteration) AppColors.purple2 else AppColors.grey6
-                            Box(
-                                modifier = Modifier
-                                    .padding(horizontal = (3.5).dp)
-                                    .clip(CircleShape)
-                                    .background(color)
-                                    .size(7.dp)
-                            )
-                        }
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(start = 18.dp, end = 6.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Text(
-                        modifier = Modifier
-                            .padding(top = 11.dp, end = 10.dp)
-                            .weight(1f),
-                        text = "우리 가족사진 삼각대로 찍기~~\n너무 잘나왔다!",
-                        style = AppTypography.B2_14,
-                        color = AppColors.black2
-                    )
-                    Column(
-                        modifier = Modifier.padding(top = 5.dp),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_three_dots_row),
-                            tint = AppColors.deepPurple1,
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Icon(
-                            imageVector = ImageVector.vectorResource(R.drawable.ic_heart_empty),
-                            tint = AppColors.deepPurple1,
-                            contentDescription = null
-                        )
-                        Spacer(modifier = Modifier.height(3.dp))
-                        Text(text = "3", style = AppTypography.LB2_11, color = AppColors.black1)
-                    }
-                }
-            }
-        }
-        Spacer(modifier = Modifier.height(24.dp))
-    }
+    PostItem(
+        post = Post(
+            postId = 0,
+            writer = "writer",
+            profileImg = "",
+            createdAt = "2023-03-12",
+            content = "게시글 내용",
+            imgs = listOf(""),
+            loved = false
+        ),
+        navigateToPostDetail = {}
+    )
 }
