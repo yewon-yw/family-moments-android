@@ -1,11 +1,11 @@
 package io.familymoments.app.core.network.api
 
-import io.familymoments.app.feature.join.model.request.CheckEmailRequest
-import io.familymoments.app.feature.join.model.request.CheckIdRequest
-import io.familymoments.app.feature.join.model.request.JoinRequest
-import io.familymoments.app.feature.join.model.response.CheckEmailResponse
-import io.familymoments.app.feature.join.model.response.CheckIdResponse
-import io.familymoments.app.feature.join.model.response.JoinResponse
+import io.familymoments.app.feature.signup.model.request.CheckEmailRequest
+import io.familymoments.app.feature.signup.model.request.CheckIdRequest
+import io.familymoments.app.feature.signup.model.request.SignUpRequest
+import io.familymoments.app.feature.signup.model.response.CheckEmailResponse
+import io.familymoments.app.feature.signup.model.response.CheckIdResponse
+import io.familymoments.app.feature.signup.model.response.SignUpResponse
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.Multipart
@@ -21,7 +21,8 @@ interface SignInService {
 
     @Multipart
     @POST("/users/sign-up")
-    suspend fun join(@Part profileImg: MultipartBody.Part,
-                     @Part("newUser") joinRequest: JoinRequest
-    ): JoinResponse
+    suspend fun executeSignUp(
+        @Part profileImg: MultipartBody.Part,
+        @Part("newUser") signUpRequest: SignUpRequest
+    ): SignUpResponse
 }

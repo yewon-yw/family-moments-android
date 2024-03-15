@@ -1,10 +1,10 @@
 package io.familymoments.app.core.network.repository
 
 import io.familymoments.app.core.network.Resource
-import io.familymoments.app.feature.join.model.request.JoinRequest
-import io.familymoments.app.feature.join.model.response.CheckEmailResponse
-import io.familymoments.app.feature.join.model.response.CheckIdResponse
-import io.familymoments.app.feature.join.model.response.JoinResponse
+import io.familymoments.app.feature.signup.model.request.SignUpRequest
+import io.familymoments.app.feature.signup.model.response.CheckEmailResponse
+import io.familymoments.app.feature.signup.model.response.CheckIdResponse
+import io.familymoments.app.feature.signup.model.response.SignUpResponse
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 
@@ -12,5 +12,5 @@ import okhttp3.MultipartBody
 interface SignInRepository {
     suspend fun checkId(id:String): Flow<Resource<CheckIdResponse>>
     suspend fun checkEmail(email:String): Flow<Resource<CheckEmailResponse>>
-    suspend fun join(profileImg: MultipartBody.Part, joinRequest: JoinRequest): Flow<Resource<JoinResponse>>
+    suspend fun executeSignUp(profileImg: MultipartBody.Part, signUpRequest: SignUpRequest): Flow<Resource<SignUpResponse>>
 }

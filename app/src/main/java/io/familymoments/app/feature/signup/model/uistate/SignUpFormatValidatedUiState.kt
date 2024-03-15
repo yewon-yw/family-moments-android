@@ -1,6 +1,6 @@
-package io.familymoments.app.feature.join.model.uistate
+package io.familymoments.app.feature.signup.model.uistate
 
-data class JoinFormatValidatedUiState(
+data class SignUpFormatValidatedUiState(
     val userIdFormatValidated: Boolean = false,
     val passwordFormatValidated: Boolean = false,
     val emailFormatValidated: Boolean = false,
