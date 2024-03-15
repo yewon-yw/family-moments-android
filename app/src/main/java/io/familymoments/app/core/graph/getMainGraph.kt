@@ -1,11 +1,16 @@
 package io.familymoments.app.core.graph
 
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.bottomnav.graph.bottomNavGraph
+import io.familymoments.app.feature.mypage.graph.myPageGraph
+import io.familymoments.app.feature.calendar.screen.CalendarDayScreen
 import io.familymoments.app.feature.postdetail.screen.PostDetailScreen
 import io.familymoments.app.feature.profile.graph.profileGraph
 
@@ -15,8 +20,9 @@ fun getMainGraph(
 
     bottomNavGraph(navController)
     profileGraph(navController)
+    myPageGraph(navController)
 
-    composable(route = "PostDetail") {
+    composable(route = CommonRoute.POST_DETAIL.name) {
         PostDetailScreen(
             modifier = Modifier
                 .scaffoldState(
@@ -25,4 +31,24 @@ fun getMainGraph(
                 )
         )
     }
+
+    composable(
+        route = Route.CalendarDay.routeWithArs,
+        arguments = Route.CalendarDay.arguments
+    ) {
+        CalendarDayScreen(
+            modifier = Modifier.scaffoldState(
+                hasShadow = true,
+                hasBackButton = true,
+            ),
+            viewModel = hiltViewModel(),
+            navigateToPostDetail = {
+                navController.navigate(CommonRoute.POST_DETAIL.name)
+            }
+        )
+    }
+}
+
+enum class CommonRoute {
+    POST_DETAIL
 }

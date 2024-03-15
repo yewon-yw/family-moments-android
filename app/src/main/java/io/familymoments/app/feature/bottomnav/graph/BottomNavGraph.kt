@@ -5,9 +5,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import io.familymoments.app.core.graph.CommonRoute
+import io.familymoments.app.core.graph.Route
 import io.familymoments.app.core.util.scaffoldState
+import io.familymoments.app.feature.album.screen.AlbumScreen
 import io.familymoments.app.feature.bottomnav.model.BottomNavItem
+import io.familymoments.app.feature.calendar.screen.CalendarScreen
 import io.familymoments.app.feature.home.screen.HomeScreen
+import io.familymoments.app.feature.mypage.screen.MyPageScreen
 
 fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
     composable(route = BottomNavItem.Home.route) {
@@ -19,13 +24,20 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
                 ),
             viewModel = hiltViewModel(),
             navigateToPostDetail = {
-                navController.navigate("PostDetail")
+                navController.navigate(CommonRoute.POST_DETAIL.name)
             }
         )
     }
 
     composable(route = BottomNavItem.Album.route) {
-        // AlbumScreen()
+         AlbumScreen(
+             modifier = Modifier
+                 .scaffoldState(
+                     hasShadow = false,
+                     hasBackButton = false
+                 ),
+             viewModel = hiltViewModel()
+         )
     }
 
     composable(route = BottomNavItem.AddPost.route) {
@@ -33,10 +45,29 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
     }
 
     composable(route = BottomNavItem.Calendar.route) {
-        // CalendarScreen()
+        CalendarScreen(
+            modifier = Modifier
+                .scaffoldState(
+                    hasShadow = false,
+                    hasBackButton = true,
+                ),
+            viewModel = hiltViewModel(),
+            navigateToCalendarDay = { localDateString ->
+                navController.navigate(Route.CalendarDay.getRoute(localDateString))
+            }
+        )
     }
 
     composable(route = BottomNavItem.MyPage.route) {
-        // MyPageScreen()
+        MyPageScreen(
+            modifier = Modifier
+                .scaffoldState(
+                    hasShadow = false,
+                    hasBackButton = true,
+                ),
+            onItemClick = { clickedItem ->
+                navController.navigate(clickedItem.route)
+            }
+        )
     }
 }
