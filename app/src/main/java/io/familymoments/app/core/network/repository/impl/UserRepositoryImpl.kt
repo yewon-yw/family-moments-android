@@ -172,6 +172,7 @@ class UserRepositoryImpl @Inject constructor(
         }.catch { e ->
             emit(Resource.Fail(e))
         }
+    }
 
     companion object {
         private const val KEY_ACCESS_TOKEN = "X-AUTH-TOKEN"
