@@ -1,9 +1,12 @@
 package io.familymoments.app.core.network.api
 
+import io.familymoments.app.feature.album.model.GetAlbumDetailResponse
+import io.familymoments.app.feature.album.model.GetAlbumResponse
 import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
 import io.familymoments.app.feature.home.model.GetPostsResponse
 import retrofit2.Response
 import retrofit2.http.GET
+import retrofit2.http.Path
 import retrofit2.http.Query
 
 interface PostService {
@@ -15,6 +18,18 @@ interface PostService {
         @Query("familyId") familyId: Long,
         @Query("postId") postId: Long
     ): Response<GetPostsResponse>
+
+    @GET("/posts/album")
+    suspend fun getAlbum(@Query("familyId") familyId: Long): Response<GetAlbumResponse>
+
+    @GET("/posts/album")
+    suspend fun loadMoreAlbum(
+        @Query("familyId") familyId: Long,
+        @Query("postId") postId: Long
+    ): Response<GetAlbumResponse>
+
+    @GET("/posts/album/{postId}")
+    suspend fun getAlbumDetail(@Path("postId") postId: Long): Response<GetAlbumDetailResponse>
 
     @GET("/posts/calendar")
     suspend fun getPostsByMonth(

@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import io.familymoments.app.core.graph.CommonRoute
 import io.familymoments.app.core.graph.Route
 import io.familymoments.app.core.util.scaffoldState
+import io.familymoments.app.feature.album.screen.AlbumScreen
 import io.familymoments.app.feature.bottomnav.model.BottomNavItem
 import io.familymoments.app.feature.calendar.screen.CalendarScreen
 import io.familymoments.app.feature.home.screen.HomeScreen
@@ -29,7 +30,14 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
     }
 
     composable(route = BottomNavItem.Album.route) {
-        // AlbumScreen()
+         AlbumScreen(
+             modifier = Modifier
+                 .scaffoldState(
+                     hasShadow = false,
+                     hasBackButton = false
+                 ),
+             viewModel = hiltViewModel()
+         )
     }
 
     composable(route = BottomNavItem.AddPost.route) {
