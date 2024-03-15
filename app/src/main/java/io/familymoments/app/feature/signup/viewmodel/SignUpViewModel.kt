@@ -1,13 +1,13 @@
-package io.familymoments.app.feature.join.viewmodel
+package io.familymoments.app.feature.signup.viewmodel
 
 import android.graphics.Bitmap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.repository.SignInRepository
-import io.familymoments.app.feature.join.model.UserInfoFormatChecker
-import io.familymoments.app.feature.join.model.mapper.toRequest
-import io.familymoments.app.feature.join.model.JoinInfoUiModel
-import io.familymoments.app.feature.join.model.uistate.JoinFormatValidatedUiState
+import io.familymoments.app.feature.signup.model.SignUpInfoUiModel
+import io.familymoments.app.feature.signup.model.UserInfoFormatChecker
+import io.familymoments.app.feature.signup.model.mapper.toRequest
+import io.familymoments.app.feature.signup.model.uistate.SignUpFormatValidatedUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,12 +19,13 @@ import java.io.FileOutputStream
 import javax.inject.Inject
 
 @HiltViewModel
-class JoinViewModel @Inject constructor(private val signInRepository: SignInRepository) :
+class SignUpViewModel @Inject constructor(private val signInRepository: SignInRepository) :
     BaseViewModel() {
 
-    private val _joinFormatValidatedUiState: MutableStateFlow<JoinFormatValidatedUiState> =
-        MutableStateFlow(JoinFormatValidatedUiState())
-    var joinFormatValidatedUiState: StateFlow<JoinFormatValidatedUiState> = _joinFormatValidatedUiState.asStateFlow()
+    private val _signUpFormatValidatedUiState: MutableStateFlow<SignUpFormatValidatedUiState> =
+        MutableStateFlow(SignUpFormatValidatedUiState())
+    var signUpFormatValidatedUiState: StateFlow<SignUpFormatValidatedUiState> =
+        _signUpFormatValidatedUiState.asStateFlow()
 
     private val _userIdDuplicationCheck: MutableStateFlow<Boolean?> = MutableStateFlow(null)
     val userIdDuplicationCheck: StateFlow<Boolean?> = _userIdDuplicationCheck.asStateFlow()
@@ -33,19 +34,25 @@ class JoinViewModel @Inject constructor(private val signInRepository: SignInRepo
     val emailDuplicationCheck: StateFlow<Boolean?> = _emailDuplicationCheck.asStateFlow()
 
     fun checkIdFormat(id: String) {
-        _joinFormatValidatedUiState.value = _joinFormatValidatedUiState.value.copy(userIdFormatValidated = UserInfoFormatChecker.checkId(id))
+        _signUpFormatValidatedUiState.value =
+            _signUpFormatValidatedUiState.value.copy(userIdFormatValidated = UserInfoFormatChecker.checkId(id))
     }
 
     fun checkPasswordFormat(password: String) {
-        _joinFormatValidatedUiState.value = _joinFormatValidatedUiState.value.copy(passwordFormatValidated = UserInfoFormatChecker.checkPassword(password))
+        _signUpFormatValidatedUiState.value = _signUpFormatValidatedUiState.value.copy(
+            passwordFormatValidated = UserInfoFormatChecker.checkPassword(password)
+        )
     }
 
     fun checkEmailFormat(email: String) {
-        _joinFormatValidatedUiState.value = _joinFormatValidatedUiState.value.copy(emailFormatValidated = UserInfoFormatChecker.checkEmail(email))
+        _signUpFormatValidatedUiState.value =
+            _signUpFormatValidatedUiState.value.copy(emailFormatValidated = UserInfoFormatChecker.checkEmail(email))
     }
 
     fun checkNicknameFormat(nickname: String) {
-        _joinFormatValidatedUiState.value = _joinFormatValidatedUiState.value.copy(nicknameFormatValidated = UserInfoFormatChecker.checkNickname(nickname))
+        _signUpFormatValidatedUiState.value = _signUpFormatValidatedUiState.value.copy(
+            nicknameFormatValidated = UserInfoFormatChecker.checkNickname(nickname)
+        )
     }
 
     fun checkIdDuplication(id: String) {
@@ -62,12 +69,12 @@ class JoinViewModel @Inject constructor(private val signInRepository: SignInRepo
             onFailure = { _emailDuplicationCheck.value = false })
     }
 
-    fun join(joinInfoUiModel: JoinInfoUiModel) {
-        val imageFile = bitmapToFile(joinInfoUiModel.bitmap)
+    fun executeSignUp(signUpInfoUiModel: SignUpInfoUiModel) {
+        val imageFile = bitmapToFile(signUpInfoUiModel.bitmap)
         val imageRequestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
         val profileImgPart = MultipartBody.Part.createFormData("profileImg", imageFile.name, imageRequestBody)
         async(
-            operation = { signInRepository.join(profileImgPart, joinInfoUiModel.toRequest()) },
+            operation = { signInRepository.executeSignUp(profileImgPart, signUpInfoUiModel.toRequest()) },
             onSuccess = { },
             onFailure = { })
     }

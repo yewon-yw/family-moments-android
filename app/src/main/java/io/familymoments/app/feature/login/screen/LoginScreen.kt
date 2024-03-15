@@ -54,7 +54,7 @@ import io.familymoments.app.feature.login.viewmodel.LoginViewModel
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
-import io.familymoments.app.feature.join.activity.JoinActivity
+import io.familymoments.app.feature.signup.activity.SignUpActivity
 import io.familymoments.app.feature.login.model.uistate.LoginUiState
 
 @Composable
@@ -62,7 +62,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
     val loginUiState = viewModel.loginUiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val goToJoin = {
-        context.startActivity(Intent(context, JoinActivity::class.java))
+        context.startActivity(Intent(context, SignUpActivity::class.java))
     }
 
     if (loginUiState.value.isSuccess == true) {

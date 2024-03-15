@@ -34,7 +34,7 @@
             android:theme="@style/Theme.FamilyMoments"
             android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.join.activity.JoinActivity"
+            android:name=".feature.signup.activity.SignUpActivity"
             android:exported="true"
             android:label="@string/title_activity_join"
             android:theme="@style/Theme.FamilyMoments" />

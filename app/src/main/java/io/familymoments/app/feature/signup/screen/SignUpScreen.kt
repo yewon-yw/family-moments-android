@@ -1,6 +1,5 @@
-package io.familymoments.app.feature.join.screen
+package io.familymoments.app.feature.signup.screen
 
-import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
@@ -56,34 +55,33 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.AppBarScreen
-import io.familymoments.app.core.component.FMButton
-import io.familymoments.app.feature.join.model.request.CheckEmailRequest
-import io.familymoments.app.feature.join.model.request.CheckIdRequest
-import io.familymoments.app.feature.join.model.request.JoinRequest
-import io.familymoments.app.feature.join.model.response.CheckEmailResponse
-import io.familymoments.app.feature.join.model.response.CheckIdResponse
-import io.familymoments.app.feature.join.model.response.JoinResponse
-import io.familymoments.app.feature.join.model.JoinInfoUiModel
-import io.familymoments.app.feature.join.model.JoinTermUiModel
-import io.familymoments.app.core.component.FMCheckBox
 import io.familymoments.app.core.component.CheckedStatus
-import io.familymoments.app.core.component.JoinTextFieldArea
+import io.familymoments.app.core.component.FMButton
+import io.familymoments.app.core.component.FMCheckBox
+import io.familymoments.app.core.component.SignUpTextFieldArea
 import io.familymoments.app.core.network.api.SignInService
 import io.familymoments.app.core.network.repository.impl.SignInRepositoryImpl
-import io.familymoments.app.feature.join.viewmodel.JoinViewModel
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
+import io.familymoments.app.feature.signup.model.SignUpInfoUiModel
+import io.familymoments.app.feature.signup.model.SignUpTermUiModel
+import io.familymoments.app.feature.signup.model.request.CheckEmailRequest
+import io.familymoments.app.feature.signup.model.request.CheckIdRequest
+import io.familymoments.app.feature.signup.model.request.SignUpRequest
+import io.familymoments.app.feature.signup.model.response.CheckEmailResponse
+import io.familymoments.app.feature.signup.model.response.CheckIdResponse
+import io.familymoments.app.feature.signup.model.response.SignUpResponse
+import io.familymoments.app.feature.signup.viewmodel.SignUpViewModel
 import okhttp3.MultipartBody
 
-@SuppressLint("UnusedMaterialScaffoldPaddingParameter")
 @Composable
-fun JoinScreen(viewModel: JoinViewModel) {
+fun SignUpScreen(viewModel: SignUpViewModel) {
     val context = LocalContext.current
     AppBarScreen(
         title = {
             Text(
-                text = stringResource(id = R.string.join_activity_app_bar_title),
+                text = stringResource(id = R.string.sign_up_activity_app_bar_title),
                 style = AppTypography.SH3_16,
                 color = AppColors.deepPurple1
             )
@@ -104,7 +102,7 @@ fun JoinScreen(viewModel: JoinViewModel) {
                 .padding(horizontal = 20.dp)
         ) {
             item {
-                JoinContentScreen(
+                SignUpContentScreen(
                     viewModel,
                     context
                 )
@@ -115,11 +113,11 @@ fun JoinScreen(viewModel: JoinViewModel) {
 
 
 @Composable
-fun JoinContentScreen(
-    viewModel: JoinViewModel,
+fun SignUpContentScreen(
+    viewModel: SignUpViewModel,
     context: Context
 ) {
-    val joinFormatValidatedUiState = viewModel.joinFormatValidatedUiState.collectAsStateWithLifecycle()
+    val signUpFormatValidatedUiState = viewModel.signUpFormatValidatedUiState.collectAsStateWithLifecycle()
     val userIdDuplicationCheck = viewModel.userIdDuplicationCheck.collectAsStateWithLifecycle()
     val emailDuplicationCheck = viewModel.emailDuplicationCheck.collectAsStateWithLifecycle()
 
@@ -136,49 +134,49 @@ fun JoinContentScreen(
     var passwordSameCheck by remember {
         mutableStateOf(false)
     }
-    var joinInfoUiModel: JoinInfoUiModel by remember {
+    var signUpInfoUiModel: SignUpInfoUiModel by remember {
         mutableStateOf(
-            JoinInfoUiModel(bitmap = bitmap)
+            SignUpInfoUiModel(bitmap = bitmap)
         )
     }
 
     Column {
         Spacer(modifier = Modifier.height(40.dp))
         IdField(
-            userIdFormatValidated = joinFormatValidatedUiState.value.userIdFormatValidated,
+            userIdFormatValidated = signUpFormatValidatedUiState.value.userIdFormatValidated,
             checkIdFormat = viewModel::checkIdFormat,
             checkIdDuplication = viewModel::checkIdDuplication
-        ) { joinInfoUiModel = joinInfoUiModel.copy(id = it) }
+        ) { signUpInfoUiModel = signUpInfoUiModel.copy(id = it) }
         FirstPasswordField(
-            passwordFormatValidated = joinFormatValidatedUiState.value.passwordFormatValidated,
+            passwordFormatValidated = signUpFormatValidatedUiState.value.passwordFormatValidated,
             checkPasswordFormat = viewModel::checkPasswordFormat
         ) {
             password = it
-            joinInfoUiModel = joinInfoUiModel.copy(password = it)
+            signUpInfoUiModel = signUpInfoUiModel.copy(password = it)
         }
         SecondPasswordField(
-            firstPassword = joinInfoUiModel.password,
+            firstPassword = signUpInfoUiModel.password,
             checkPasswordIsSame = { passwordSameCheck = it },
         )
-        NameField { joinInfoUiModel = joinInfoUiModel.copy(name = it) }
+        NameField { signUpInfoUiModel = signUpInfoUiModel.copy(name = it) }
         EmailField(
             checkEmailFormat = viewModel::checkEmailFormat,
             checkEmailDuplication = viewModel::checkEmailDuplication,
-            emailFormatValidated = joinFormatValidatedUiState.value.emailFormatValidated,
-        ) { joinInfoUiModel = joinInfoUiModel.copy(email = it) }
-        BirthDayField { joinInfoUiModel = joinInfoUiModel.copy(birthDay = it) }
+            emailFormatValidated = signUpFormatValidatedUiState.value.emailFormatValidated,
+        ) { signUpInfoUiModel = signUpInfoUiModel.copy(email = it) }
+        BirthDayField { signUpInfoUiModel = signUpInfoUiModel.copy(birthDay = it) }
         NicknameField(
-            nicknameFormatValidated = joinFormatValidatedUiState.value.nicknameFormatValidated,
+            nicknameFormatValidated = signUpFormatValidatedUiState.value.nicknameFormatValidated,
             checkNicknameFormat = viewModel::checkNicknameFormat,
-        ) { joinInfoUiModel = joinInfoUiModel.copy(nickname = it) }
+        ) { signUpInfoUiModel = signUpInfoUiModel.copy(nickname = it) }
         ProfileImageField(defaultProfileImageBitmap) {
-            joinInfoUiModel = joinInfoUiModel.copy(bitmap = it)
+            signUpInfoUiModel = signUpInfoUiModel.copy(bitmap = it)
         }
         Spacer(modifier = Modifier.height(53.dp))
         TermsField { allEssentialTermsAgree = it }
         StartButtonField(
-            viewModel::join,
-            joinInfoUiModel,
+            viewModel::executeSignUp,
+            signUpInfoUiModel,
             viewModel.userIdDuplicationCheck.value ?: false,
             passwordSameCheck,
             viewModel.emailDuplicationCheck.value ?: false,
@@ -192,12 +190,12 @@ private fun showUserIdDuplicationCheckResult(userIdDuplicationCheck: Boolean?, c
     if (userIdDuplicationCheck == true) {
         Toast.makeText(
             context,
-            context.getString(R.string.join_check_user_id_duplication_success),
+            context.getString(R.string.sign_up_check_user_id_duplication_success),
             Toast.LENGTH_SHORT
         ).show()
     }
     if (userIdDuplicationCheck == false) {
-        Toast.makeText(context, context.getString(R.string.join_check_user_id_duplication_fail), Toast.LENGTH_SHORT)
+        Toast.makeText(context, context.getString(R.string.sign_up_check_user_id_duplication_fail), Toast.LENGTH_SHORT)
             .show()
     }
 }
@@ -207,12 +205,12 @@ private fun showEmailDuplicationCheckResult(emailDuplicationCheck: Boolean?, con
     if (emailDuplicationCheck == true) {
         Toast.makeText(
             context,
-            context.getString(R.string.join_check_email_duplication_success),
+            context.getString(R.string.sign_up_check_email_duplication_success),
             Toast.LENGTH_SHORT
         ).show()
     }
     if (emailDuplicationCheck == false) {
-        Toast.makeText(context, context.getString(R.string.join_check_email_duplication_fail), Toast.LENGTH_SHORT)
+        Toast.makeText(context, context.getString(R.string.sign_up_check_email_duplication_fail), Toast.LENGTH_SHORT)
             .show()
     }
 }
@@ -228,12 +226,12 @@ fun IdField(
         mutableStateOf(false)
     }
     Column {
-        JoinTextFieldArea(
+        SignUpTextFieldArea(
             modifier = Modifier.onFocusChanged {
                 isFocused = it.isFocused
             },
-            title = stringResource(R.string.join_id_field_title),
-            hint = stringResource(R.string.join_id_field_hint),
+            title = stringResource(R.string.sign_up_id_field_title),
+            hint = stringResource(R.string.sign_up_id_field_hint),
             onValueChange = {
                 onValueChange(it.text)
                 checkIdFormat(it.text)
@@ -245,11 +243,11 @@ fun IdField(
             },
             validated = userIdFormatValidated,
             showWarningText = true,
-            warningText = stringResource(id = R.string.join_id_validation_warning),
+            warningText = stringResource(id = R.string.sign_up_id_validation_warning),
             isFocused = isFocused
         )
     }
-    JoinTextFieldVerticalSpacer()
+    SignUpTextFieldVerticalSpacer()
 }
 
 @Composable
@@ -261,24 +259,24 @@ fun FirstPasswordField(
     var isFocused by remember {
         mutableStateOf(false)
     }
-    JoinTextFieldArea(
+    SignUpTextFieldArea(
         modifier = Modifier.onFocusChanged {
             isFocused = it.isFocused
         },
-        title = stringResource(id = R.string.join_password_field_title),
-        hint = stringResource(R.string.join_password_field_hint),
+        title = stringResource(id = R.string.sign_up_password_field_title),
+        hint = stringResource(R.string.sign_up_password_field_hint),
         onValueChange = {
             onValueChange(it.text)
             checkPasswordFormat(it.text)
         },
         showDeleteButton = true,
         showWarningText = true,
-        warningText = stringResource(id = R.string.join_password_validation_warning),
+        warningText = stringResource(id = R.string.sign_up_password_validation_warning),
         validated = passwordFormatValidated,
         isFocused = isFocused
     )
     Spacer(modifier = Modifier.height(20.dp))
-    JoinTextFieldVerticalSpacer()
+    SignUpTextFieldVerticalSpacer()
 }
 
 @Composable
@@ -293,24 +291,24 @@ fun SecondPasswordField(
         mutableStateOf(false)
     }
     Column {
-        JoinTextFieldArea(
+        SignUpTextFieldArea(
             modifier = Modifier.onFocusChanged {
                 isFocused = it.isFocused
             },
-            title = stringResource(id = R.string.join_password_check_field_title),
-            hint = stringResource(R.string.join_password_check_field_hint),
+            title = stringResource(id = R.string.sign_up_password_check_field_title),
+            hint = stringResource(R.string.sign_up_password_check_field_hint),
             onValueChange = {
                 isPasswordSame = firstPassword == it.text
                 checkPasswordIsSame(isPasswordSame)
             },
             showDeleteButton = true,
             showWarningText = true,
-            warningText = stringResource(id = R.string.join_password_check_validation_warning),
+            warningText = stringResource(id = R.string.sign_up_password_check_validation_warning),
             validated = isPasswordSame,
             isFocused = isFocused
         )
     }
-    JoinTextFieldVerticalSpacer()
+    SignUpTextFieldVerticalSpacer()
 }
 
 @Composable
@@ -318,17 +316,17 @@ fun NameField(onValueChange: (String) -> Unit) {
     var isFocused by remember {
         mutableStateOf(false)
     }
-    JoinTextFieldArea(
+    SignUpTextFieldArea(
         modifier = Modifier.onFocusChanged {
             isFocused = it.isFocused
         },
-        title = stringResource(id = R.string.join_name_field_title),
-        hint = stringResource(R.string.join_name_field_hint),
+        title = stringResource(id = R.string.sign_up_name_field_title),
+        hint = stringResource(R.string.sign_up_name_field_hint),
         onValueChange = { onValueChange(it.text) },
         isFocused = isFocused
     )
 
-    JoinTextFieldVerticalSpacer()
+    SignUpTextFieldVerticalSpacer()
 }
 
 @Composable
@@ -342,12 +340,12 @@ fun EmailField(
         mutableStateOf(false)
     }
     Column {
-        JoinTextFieldArea(
+        SignUpTextFieldArea(
             modifier = Modifier.onFocusChanged {
                 isFocused = it.isFocused
             },
-            title = stringResource(R.string.join_email_field_title),
-            hint = stringResource(id = R.string.join_email_field_hint),
+            title = stringResource(R.string.sign_up_email_field_title),
+            hint = stringResource(id = R.string.sign_up_email_field_hint),
             onValueChange = {
                 onValueChange(it.text)
                 checkEmailFormat(it.text)
@@ -359,11 +357,11 @@ fun EmailField(
             },
             isFocused = isFocused,
             showWarningText = true,
-            warningText = stringResource(id = R.string.join_password_check_validation_warning),
+            warningText = stringResource(id = R.string.sign_up_password_check_validation_warning),
             validated = emailFormatValidated
         )
     }
-    JoinTextFieldVerticalSpacer()
+    SignUpTextFieldVerticalSpacer()
 }
 
 @Composable
@@ -371,17 +369,17 @@ fun BirthDayField(onTextFieldChange: (String) -> Unit) {
     var isFocused by remember {
         mutableStateOf(false)
     }
-    JoinTextFieldArea(
+    SignUpTextFieldArea(
         modifier = Modifier.onFocusChanged {
             isFocused = it.isFocused
         },
-        title = stringResource(id = R.string.join_birthday_field_title),
-        hint = stringResource(R.string.join_birthday_field_hint),
+        title = stringResource(id = R.string.sign_up_birthday_field_title),
+        hint = stringResource(R.string.sign_up_birthday_field_hint),
         onValueChange = { onTextFieldChange(it.text) },
         isFocused = isFocused
     )
 
-    JoinTextFieldVerticalSpacer()
+    SignUpTextFieldVerticalSpacer()
 }
 
 @Composable
@@ -397,12 +395,12 @@ fun NicknameField(
         mutableStateOf(TextFieldValue())
     }
     Column {
-        JoinTextFieldArea(
+        SignUpTextFieldArea(
             modifier = Modifier.onFocusChanged {
                 isFocused = it.isFocused
             },
-            title = stringResource(id = R.string.join_nickname_field_title),
-            hint = stringResource(R.string.join_nickname_field_hint),
+            title = stringResource(id = R.string.sign_up_nickname_field_title),
+            hint = stringResource(R.string.sign_up_nickname_field_hint),
             onValueChange = {
                 nickname = it
                 onTextFieldChange(it.text)
@@ -410,11 +408,11 @@ fun NicknameField(
             },
             isFocused = isFocused,
             showWarningText = true,
-            warningText = stringResource(id = R.string.join_nickname_validation_warning),
+            warningText = stringResource(id = R.string.sign_up_nickname_validation_warning),
             validated = nicknameFormatValidated
         )
     }
-    JoinTextFieldVerticalSpacer()
+    SignUpTextFieldVerticalSpacer()
 }
 
 @Composable
@@ -454,7 +452,7 @@ fun MenuItemGallerySelect(
         )
         isMenuExpandedChanged(false)
     }) {
-        Text(text = stringResource(R.string.join_select_profile_image_drop_down_menu_gallery))
+        Text(text = stringResource(R.string.sign_up_select_profile_image_drop_down_menu_gallery))
     }
 }
 
@@ -464,7 +462,7 @@ fun MenuItemDefaultImage(getDefaultProfileImageBitmap: () -> Unit, isMenuExpande
         getDefaultProfileImageBitmap()
         isMenuExpandedChanged(false)
     }) {
-        Text(text = stringResource(R.string.join_select_profile_image_drop_down_menu_default_image))
+        Text(text = stringResource(R.string.sign_up_select_profile_image_drop_down_menu_default_image))
     }
 }
 
@@ -489,7 +487,7 @@ fun ProfileImageField(defaultProfileImageBitmap: Bitmap, onBitmapChange: (Bitmap
     var isMenuExpanded: Boolean by remember { mutableStateOf(false) }
     var bitmap by remember { mutableStateOf<Bitmap?>(null) }
     Text(
-        text = stringResource(R.string.join_select_profile_image_title),
+        text = stringResource(R.string.sign_up_select_profile_image_title),
         color = Color(0xFF5B6380),
         fontWeight = FontWeight.Bold
     )
@@ -526,12 +524,12 @@ fun ProfileImageField(defaultProfileImageBitmap: Bitmap, onBitmapChange: (Bitmap
                 painter = painterResource(id = R.drawable.ic_select_pic),
                 contentDescription = null,
             )
-            Text(text = stringResource(R.string.join_select_profile_image_btn), color = Color(0xFFBFBFBF))
+            Text(text = stringResource(R.string.sign_up_select_profile_image_btn), color = Color(0xFFBFBFBF))
         }
     }
     Spacer(modifier = Modifier.height(8.dp))
     Text(
-        text = stringResource(R.string.join_select_profile_image_description),
+        text = stringResource(R.string.sign_up_select_profile_image_description),
         color = Color(0xFFA9A9A9),
         modifier = Modifier
             .fillMaxWidth()
@@ -539,27 +537,27 @@ fun ProfileImageField(defaultProfileImageBitmap: Bitmap, onBitmapChange: (Bitmap
                 Alignment.Center,
             ),
     )
-    JoinTextFieldVerticalSpacer()
+    SignUpTextFieldVerticalSpacer()
 }
 
 @Composable
 fun StartButtonField(
-    onClick: (JoinInfoUiModel) -> Unit,
-    joinInfoUiModel: JoinInfoUiModel,
+    onClick: (SignUpInfoUiModel) -> Unit,
+    signUpInfoUiModel: SignUpInfoUiModel,
     idDuplicationCheck: Boolean,
     passwordSameCheck: Boolean,
     emailDuplicationCheck: Boolean,
     allEssentialTermsAgree: Boolean
 ) {
-    var joinEnable by remember {
+    var signUpEnable by remember {
         mutableStateOf(false)
     }
-    joinEnable = idDuplicationCheck && passwordSameCheck && emailDuplicationCheck && allEssentialTermsAgree
+    signUpEnable = idDuplicationCheck && passwordSameCheck && emailDuplicationCheck && allEssentialTermsAgree
     FMButton(
         modifier = Modifier.fillMaxWidth(),
-        onClick = { onClick(joinInfoUiModel) },
-        enabled = joinEnable,
-        text = stringResource(R.string.join_btn)
+        onClick = { onClick(signUpInfoUiModel) },
+        enabled = signUpEnable,
+        text = stringResource(R.string.sign_up_btn)
     )
 }
 
@@ -587,7 +585,7 @@ fun TermItem(
 
 @Composable
 fun TermsList(
-    list: List<JoinTermUiModel>,
+    list: List<SignUpTermUiModel>,
     onTermCheckedChange: (Int, CheckedStatus) -> Unit,
     onTermsCheckedChange: (Boolean) -> Unit
 ) {
@@ -607,16 +605,16 @@ fun TermsField(onAllEssentialTermsAgree: (Boolean) -> Unit) {
 
     val terms = remember {
         mutableStateListOf(
-            JoinTermUiModel(true, R.string.join_service_term_agree, CheckedStatus.UNCHECKED),
-            JoinTermUiModel(true, R.string.join_identification_term_agree, CheckedStatus.UNCHECKED),
-            JoinTermUiModel(false, R.string.join_marketing_alarm_term_agree, CheckedStatus.UNCHECKED)
+            SignUpTermUiModel(true, R.string.sign_up_service_term_agree, CheckedStatus.UNCHECKED),
+            SignUpTermUiModel(true, R.string.sign_up_identification_term_agree, CheckedStatus.UNCHECKED),
+            SignUpTermUiModel(false, R.string.sign_up_marketing_alarm_term_agree, CheckedStatus.UNCHECKED)
         )
     }
 
     Column {
         TermItem(
             imageResources = listOf(R.drawable.circle_uncheck, R.drawable.circle_check),
-            description = R.string.join_all_term_agree,
+            description = R.string.sign_up_all_term_agree,
             checked = if (terms.all { it.checkedStatus == CheckedStatus.CHECKED }) CheckedStatus.CHECKED else CheckedStatus.UNCHECKED,
             fontSize = 16,
             onCheckedChange = {
@@ -629,32 +627,38 @@ fun TermsField(onAllEssentialTermsAgree: (Boolean) -> Unit) {
             terms[index] = terms[index].copy(checkedStatus = checkedStatus)
         }) { onAllEssentialTermsAgree(it) }
     }
-    JoinTextFieldVerticalSpacer()
+    SignUpTextFieldVerticalSpacer()
 }
 
 
 @Composable
-fun JoinTextFieldVerticalSpacer() {
+fun SignUpTextFieldVerticalSpacer() {
     Spacer(modifier = Modifier.height(20.dp))
 }
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewJoinScreen() {
+fun SignUpScreenPreview() {
     FamilyMomentsTheme {
-        JoinScreen(JoinViewModel(SignInRepositoryImpl(object : SignInService {
-            override suspend fun checkId(checkIdRequest: CheckIdRequest): CheckIdResponse {
-                return CheckIdResponse(true, 200, "", "")
-            }
+        SignUpScreen(
+            SignUpViewModel(
+                SignInRepositoryImpl(object : SignInService {
+                    override suspend fun checkId(checkIdRequest: CheckIdRequest): CheckIdResponse {
+                        return CheckIdResponse(true, 200, "", "")
+                    }
 
-            override suspend fun checkEmail(checkEmailRequest: CheckEmailRequest): CheckEmailResponse {
-                return CheckEmailResponse(true, 200, "", "")
-            }
+                    override suspend fun checkEmail(checkEmailRequest: CheckEmailRequest): CheckEmailResponse {
+                        return CheckEmailResponse(true, 200, "", "")
+                    }
 
-            override suspend fun join(profileImg: MultipartBody.Part, joinRequest: JoinRequest): JoinResponse {
-                TODO("Not yet implemented")
-            }
-
-        })))
+                    override suspend fun executeSignUp(
+                        profileImg: MultipartBody.Part,
+                        signUpRequest: SignUpRequest
+                    ): SignUpResponse {
+                        TODO("Not yet implemented")
+                    }
+                })
+            )
+        )
     }
 }

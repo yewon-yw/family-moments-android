@@ -20,15 +20,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 
 @Composable
-fun JoinTextFieldArea(
+fun SignUpTextFieldArea(
     modifier: Modifier = Modifier,
     title: String,
     hint: String,
@@ -121,7 +123,12 @@ private fun CheckButton(
             .padding(start = 7.dp),
         enabled = textFieldValue.text.isNotEmpty() && checkButtonAvailable,
         onClick = { onCheckButtonClick(textFieldValue) },
-        content = { Text(text = "중복확인", fontSize = 16.sp) },
+        content = {
+            Text(
+                text = stringResource(id = R.string.sign_up_check_duplication_btn),
+                fontSize = 16.sp
+            )
+        },
         colors = ButtonDefaults.buttonColors(
             backgroundColor = AppColors.deepPurple1,
             contentColor = Color.White,
@@ -152,8 +159,8 @@ fun ShowWarningText(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
-fun PreviewJoinTextField() {
-    JoinTextFieldArea(title = "", hint = "", isFocused = false, onValueChange = {})
+private fun JoinTextFieldPreview() {
+    SignUpTextFieldArea(title = "", hint = "", isFocused = false, onValueChange = {})
 }
