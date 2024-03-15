@@ -32,11 +32,13 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.creatingfamily.model.AlarmCycle
 import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
+import io.familymoments.app.feature.creatingfamily.model.FamilyProfile
+import timber.log.Timber
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SetAlarmScreen(navigate: () -> Unit = {}) {
-
+fun SetAlarmScreen(familyProfile: FamilyProfile = FamilyProfile("", null), navigate: () -> Unit = {}) {
+    Timber.tag("hkhk").d(familyProfile.toString())
     var isExpanded by remember {
         mutableStateOf(false)
     }

@@ -5,10 +5,7 @@ import android.app.Activity
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.graphics.ImageDecoder
 import android.net.Uri
-import android.os.Build
-import android.provider.MediaStore
 import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -74,6 +71,7 @@ import io.familymoments.app.feature.join.viewmodel.JoinViewModel
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
+import io.familymoments.app.core.util.convertUriToBitmap
 import okhttp3.MultipartBody
 
 @SuppressLint("UnusedMaterialScaffoldPaddingParameter")
@@ -428,14 +426,17 @@ fun ProfileImageSelectDropDownMenu(
     var bitmap by remember {
         mutableStateOf<Bitmap?>(null)
     }
+
+    //갤러리에서 사진 선택 후 bitmap 으로 변환
     val launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?> = rememberLauncherForActivityResult(
         contract =
         ActivityResultContracts.PickVisualMedia()
     ) {
         if (it == null) return@rememberLauncherForActivityResult
-        bitmap = convertToBitmap(context, it)
+        bitmap = convertUriToBitmap(it, context)
         getBitmap(bitmap)
     }
+
     DropdownMenu(expanded = isMenuExpanded,
         onDismissRequest = { isMenuExpandedChanged(false) }) {
         MenuItemGallerySelect(launcher, isMenuExpandedChanged)
@@ -466,22 +467,6 @@ fun MenuItemDefaultImage(getDefaultProfileImageBitmap: () -> Unit, isMenuExpande
     }) {
         Text(text = stringResource(R.string.join_select_profile_image_drop_down_menu_default_image))
     }
-}
-
-@Suppress("DEPRECATION")
-fun convertToBitmap(context: Context, uri: Uri?): Bitmap? {
-    var bitmap: Bitmap? = null
-    uri?.let {
-        bitmap = if (Build.VERSION.SDK_INT < 28) {
-            MediaStore.Images
-                .Media.getBitmap(context.contentResolver, it)
-        } else {
-            val source = ImageDecoder
-                .createSource(context.contentResolver, it)
-            ImageDecoder.decodeBitmap(source)
-        }
-    }
-    return bitmap
 }
 
 @Composable
