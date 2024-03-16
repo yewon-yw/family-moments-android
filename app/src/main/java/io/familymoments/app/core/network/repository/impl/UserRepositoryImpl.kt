@@ -97,6 +97,7 @@ class UserRepositoryImpl @Inject constructor(
             emit(Resource.Loading)
             val response = userService.logoutUser()
             if (response.code() == 200) {
+                userInfoPreferencesDataSource.resetPreferencesData()
                 emit(Resource.Success(Unit))
             } else {
                 emit(Resource.Fail(Throwable(response.message())))

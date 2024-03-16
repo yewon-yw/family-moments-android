@@ -82,6 +82,10 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
         )
     }
 
+    override suspend fun resetPreferencesData() {
+        sharedPreferences.edit().clear().commit()
+    }
+
     companion object {
         private const val ACCESS_TOKEN_KEY = "access_token"
         private const val ACCESS_TOKEN_KEY_NOT_EXIST_ERROR = "액세스 토큰이 존재하지 않습니다."

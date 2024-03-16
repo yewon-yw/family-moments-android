@@ -9,4 +9,6 @@ interface UserInfoPreferencesDataSource {
     suspend fun loadFamilyId():Long
     suspend fun saveUserProfile(userProfile: UserProfile)
     suspend fun loadUserProfile():UserProfile
+
+    suspend fun resetPreferencesData()
 }
