@@ -19,7 +19,6 @@
             android:name="io.familymoments.app.feature.splash.activity.SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.App.Starting">
-
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -33,15 +32,12 @@
             android:name="io.familymoments.app.feature.bottomnav.activity.MainActivity"
             android:exported="true"
             android:theme="@style/Theme.FamilyMoments"
-            android:windowSoftInputMode="adjustResize">
-
-        </activity>
+            android:windowSoftInputMode="adjustResize" />
         <activity
-            android:name=".feature.join.activity.JoinActivity"
+            android:name=".feature.signup.activity.SignUpActivity"
             android:exported="true"
             android:label="@string/title_activity_join"
-            android:theme="@style/Theme.FamilyMoments">
-        </activity>
+            android:theme="@style/Theme.FamilyMoments" />
         <activity
             android:name="io.familymoments.app.feature.forgotpassword.activity.ForgotPasswordActivity"
             android:screenOrientation="portrait"
@@ -49,14 +45,7 @@
         <activity
             android:name=".feature.choosingfamily.activity.ChoosingFamilyActivity"
             android:exported="true"
-            android:theme="@style/Theme.FamilyMoments">
-
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            android:theme="@style/Theme.FamilyMoments" />
 
     </application>
 
