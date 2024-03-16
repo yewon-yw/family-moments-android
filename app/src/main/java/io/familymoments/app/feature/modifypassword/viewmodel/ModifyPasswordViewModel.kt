@@ -3,8 +3,6 @@ package io.familymoments.app.feature.modifypassword.viewmodel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.repository.UserRepository
-import io.familymoments.app.feature.modifypassword.model.ModifyPasswordConstants.INCORRECT_CURRENT_PASSWORD
-import io.familymoments.app.feature.modifypassword.model.ModifyPasswordConstants.NEW_PASSWORD_SAME_AS_CURRENT
 import io.familymoments.app.feature.modifypassword.model.WarningType
 import io.familymoments.app.feature.modifypassword.model.mapper.toRequest
 import io.familymoments.app.feature.modifypassword.model.uistate.ModifyPasswordUiState
@@ -87,5 +85,10 @@ class ModifyPasswordViewModel @Inject constructor(private val userRepository: Us
         _modifyPasswordValidUiState.value = _modifyPasswordValidUiState.value.copy(
             newPassword = _modifyPasswordValidUiState.value.newPassword.copy(reset = false)
         )
+    }
+
+    companion object {
+        private const val INCORRECT_CURRENT_PASSWORD = 4000
+        private const val NEW_PASSWORD_SAME_AS_CURRENT = 4003
     }
 }

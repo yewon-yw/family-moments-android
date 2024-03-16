@@ -40,7 +40,6 @@ import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.login.activity.LoginActivity
-import io.familymoments.app.feature.modifypassword.model.ModifyPasswordConstants.MODIFY_PASSWORD_SUCCESS
 import io.familymoments.app.feature.modifypassword.model.uistate.ModifyPasswordUiState
 import io.familymoments.app.feature.modifypassword.model.uistate.ModifyPasswordValid
 import io.familymoments.app.feature.modifypassword.viewmodel.ModifyPasswordViewModel
@@ -60,8 +59,8 @@ fun ModifyPasswordScreen(
     val modifyPasswordValidUiState = viewModel.modifyPasswordValidUiState.collectAsStateWithLifecycle()
     val modifyPasswordUiState = viewModel.modifyPasswordUiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(modifyPasswordValidUiState.value.code) {
-        if(modifyPasswordValidUiState.value.code == MODIFY_PASSWORD_SUCCESS) {
+    LaunchedEffect(modifyPasswordValidUiState.value.isSuccess) {
+        if(modifyPasswordValidUiState.value.isSuccess) {
             val intent = Intent(context, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             context.startActivity(intent)
