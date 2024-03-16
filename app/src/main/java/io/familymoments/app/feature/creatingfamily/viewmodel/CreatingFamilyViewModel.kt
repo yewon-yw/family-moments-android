@@ -1,7 +1,9 @@
 package io.familymoments.app.feature.creatingfamily.viewmodel
 
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
+import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.core.util.convertBitmapToFile
@@ -12,6 +14,7 @@ import io.familymoments.app.feature.creatingfamily.model.uistate.SearchMemberUiS
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -20,7 +23,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CreatingFamilyViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val familyRepository: FamilyRepository
+    private val familyRepository: FamilyRepository,
+    private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
 ) : BaseViewModel() {
 
     private val _searchMemberUiState: MutableStateFlow<SearchMemberUiState> = MutableStateFlow(SearchMemberUiState())
@@ -66,6 +70,9 @@ class CreatingFamilyViewModel @Inject constructor(
                         isLoading = isLoading.value,
                         result = it.result
                     )
+                viewModelScope.launch {
+                    userInfoPreferencesDataSource.saveFamilyId(it.result.familyId)
+                }
             },
             onFailure = {
                 _createFamilyResultUiState.value =
