@@ -8,6 +8,7 @@ import io.familymoments.app.BuildConfig
 import io.familymoments.app.core.network.AuthErrorManager
 import io.familymoments.app.core.network.AuthInterceptor
 import io.familymoments.app.core.network.api.CommentService
+import io.familymoments.app.core.network.api.FamilyService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.api.SignInService
 import io.familymoments.app.core.network.api.UserService
@@ -115,5 +116,11 @@ object AppModule {
     @Singleton
     fun provideCommentService(@AuthRetrofit retrofit: Retrofit):CommentService{
         return retrofit.create(CommentService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFamilyService(@AuthRetrofit retrofit: Retrofit): FamilyService {
+        return retrofit.create(FamilyService::class.java)
     }
 }

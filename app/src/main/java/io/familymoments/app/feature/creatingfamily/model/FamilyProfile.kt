@@ -6,6 +6,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class FamilyProfile(
-    val name:String,
-    val img:Bitmap?
-):Parcelable
+    val name: String = "",
+    val img: Bitmap? = null,
+    val uploadCycle: Int? = null
+) : Parcelable

@@ -160,3 +160,12 @@ object FileUtil {
     }
 
 }
+
+fun convertBitmapToFile(bitmap: Bitmap?): File {
+    val file = File.createTempFile("profile_image", ".jpg") // 임시 파일 생성
+    val outputStream = FileOutputStream(file)
+    bitmap?.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
+    outputStream.flush()
+    outputStream.close()
+    return file
+}

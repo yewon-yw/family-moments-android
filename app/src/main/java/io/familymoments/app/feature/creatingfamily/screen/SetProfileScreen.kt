@@ -29,10 +29,10 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.component.GalleryOrDefaultImageSelectButton
 import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
-import timber.log.Timber
+import io.familymoments.app.feature.creatingfamily.model.FamilyProfile
 
 @Composable
-fun SetProfileScreen(navigate: (String, Bitmap?) -> Unit) {
+fun SetProfileScreen(navigate: (FamilyProfile) -> Unit) {
     val context = LocalContext.current
     var familyName by remember {
         mutableStateOf("")
@@ -46,7 +46,7 @@ fun SetProfileScreen(navigate: (String, Bitmap?) -> Unit) {
             header = stringResource(id = R.string.select_create_family_header),
             button = stringResource(id = R.string.next_btn_two_third),
             onClick = {
-                navigate(familyName, familyImg)
+                navigate(FamilyProfile(familyName, familyImg))
             }
         ) {
             Column(
@@ -54,7 +54,6 @@ fun SetProfileScreen(navigate: (String, Bitmap?) -> Unit) {
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 SetUpFamilyName {
-                    Timber.tag("hkhk").d("값 변함 ")
                     familyName = it.text
                 }
                 Spacer(modifier = Modifier.height(20.dp))
@@ -125,5 +124,5 @@ fun SetUpFamilyPicture(context: Context, onBitmapChanged: (Bitmap?) -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewSetProfileScreen() {
-    SetProfileScreen { _, _ -> }
+    SetProfileScreen { }
 }
