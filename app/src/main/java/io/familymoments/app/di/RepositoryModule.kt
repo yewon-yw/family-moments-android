@@ -6,16 +6,19 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import io.familymoments.app.core.network.api.FamilyService
 import io.familymoments.app.core.network.api.PostService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourceImpl
 import io.familymoments.app.core.network.api.SignInService
 import io.familymoments.app.core.network.api.UserService
+import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.repository.SignInRepository
 import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.core.network.repository.impl.SignInRepositoryImpl
 import io.familymoments.app.core.network.repository.impl.UserRepositoryImpl
 import io.familymoments.app.core.network.repository.PostRepository
+import io.familymoments.app.core.network.repository.impl.FamilyRepositoryImpl
 import io.familymoments.app.core.network.repository.impl.PostRepositoryImpl
 import javax.inject.Singleton
 
@@ -51,6 +54,12 @@ object RepositoryModule {
     @Singleton
     fun providePostRepository(postService: PostService): PostRepository {
         return PostRepositoryImpl(postService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideFamilyRepository(familyService: FamilyService):FamilyRepository{
+        return FamilyRepositoryImpl(familyService)
     }
 
 }

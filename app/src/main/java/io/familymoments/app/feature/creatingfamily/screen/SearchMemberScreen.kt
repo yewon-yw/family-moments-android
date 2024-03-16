@@ -39,12 +39,12 @@ import io.familymoments.app.feature.choosingfamily.MemberCheckBox
 import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
 import io.familymoments.app.feature.choosingfamily.SearchTextField
 import io.familymoments.app.feature.creatingfamily.model.response.Member
-import io.familymoments.app.feature.creatingfamily.viewmodel.SearchMemberViewModel
+import io.familymoments.app.feature.creatingfamily.viewmodel.CreatingFamilyViewModel
 
 @Composable
 fun SearchMemberScreen(
     navigate: () -> Unit = {},
-    viewModel: SearchMemberViewModel
+    viewModel: CreatingFamilyViewModel
 ) {
     val context = LocalContext.current
     val searchMemberUiState = viewModel.searchMemberUiState.collectAsStateWithLifecycle()

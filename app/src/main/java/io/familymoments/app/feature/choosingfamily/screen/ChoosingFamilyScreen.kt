@@ -1,7 +1,6 @@
 package io.familymoments.app.feature.choosingfamily.screen
 
 import android.content.Intent
-import android.graphics.Bitmap
 import android.os.Bundle
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -11,9 +10,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.core.os.BundleCompat
 import androidx.core.os.bundleOf
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import io.familymoments.app.R
 import io.familymoments.app.core.component.AppBarScreen
 import io.familymoments.app.core.theme.AppColors
@@ -26,6 +27,8 @@ import io.familymoments.app.feature.creatingfamily.screen.CopyInvitationLinkScre
 import io.familymoments.app.feature.creatingfamily.screen.SearchMemberScreen
 import io.familymoments.app.feature.creatingfamily.screen.SetProfileScreen
 import io.familymoments.app.feature.joiningfamily.screen.JoinScreen
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 enum class ChoosingFamilyRoute {
     START,
@@ -35,6 +38,7 @@ enum class ChoosingFamilyRoute {
     COPY_INVITATION_LINK,
     JOIN
 }
+
 sealed class Destination(val route: String) {
     // 잠재적 리스크가 될 수 있기에 만약 이 방법을 차용하고자 한다면
     // navigation 라이브러리 버전을 올릴 때 항상 주의해야한다.
@@ -73,11 +77,11 @@ fun ChoosingFamilyScreen() {
                 )
             }
             composable(ChoosingFamilyRoute.SET_PROFILE.name) {
-                SetProfileScreen { familyName:String, familyImg:Bitmap? ->
+                SetProfileScreen { familyProfile ->
                     navController.navigate(
                         resId = Destination.SetAlarm.id,
                         args = bundleOf(
-                            "familyProfile" to FamilyProfile(familyName, familyImg)
+                            "familyProfile" to familyProfile
                         )
                     )
                 }
@@ -85,17 +89,25 @@ fun ChoosingFamilyScreen() {
             composable(
                 route = ChoosingFamilyRoute.SET_ALARM.name
             ) { backStackEntry ->
-                val args = backStackEntry.arguments?: Bundle()
+                val args = backStackEntry.arguments ?: Bundle()
                 val familyProfile = BundleCompat.getParcelable(args, "familyProfile", FamilyProfile::class.java)
 
                 if (familyProfile != null) {
                     SetAlarmScreen(
-                        familyProfile
-                    ) { navController.navigate(ChoosingFamilyRoute.COPY_INVITATION_LINK.name) }
+                        viewModel = hiltViewModel(),
+                        familyProfile = familyProfile
+                    ) {
+                        val encodedUrl = URLEncoder.encode(it, StandardCharsets.UTF_8.toString())
+                        navController.navigate("${ChoosingFamilyRoute.COPY_INVITATION_LINK.name}/$encodedUrl")
+                    }
                 }
             }
-            composable(ChoosingFamilyRoute.COPY_INVITATION_LINK.name) {
-                CopyInvitationLinkScreen {
+            composable(
+                route = "${ChoosingFamilyRoute.COPY_INVITATION_LINK.name}/{inviteLink}",
+                arguments = listOf(navArgument("inviteLink") { type = NavType.StringType })
+            ) {
+                backStackEntry ->
+                CopyInvitationLinkScreen(backStackEntry.arguments?.getString("inviteLink")?:"") {
                     context.startActivity(mainActivityIntent)
                 }
             }

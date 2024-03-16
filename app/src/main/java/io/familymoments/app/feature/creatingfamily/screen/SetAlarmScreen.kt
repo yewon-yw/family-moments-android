@@ -27,29 +27,44 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
+import io.familymoments.app.core.component.LoadingIndicator
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.feature.creatingfamily.model.AlarmCycle
+import io.familymoments.app.feature.creatingfamily.model.UploadCycle
 import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
 import io.familymoments.app.feature.creatingfamily.model.FamilyProfile
-import timber.log.Timber
+import io.familymoments.app.feature.creatingfamily.viewmodel.CreatingFamilyViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
-fun SetAlarmScreen(familyProfile: FamilyProfile = FamilyProfile("", null), navigate: () -> Unit = {}) {
-    Timber.tag("hkhk").d(familyProfile.toString())
+fun SetAlarmScreen(
+    viewModel: CreatingFamilyViewModel,
+    familyProfile: FamilyProfile,
+    navigate: (String) -> Unit = {}
+) {
     var isExpanded by remember {
         mutableStateOf(false)
     }
-    var alarmCycle by remember {
+    var uploadCycleTextFieldValue by remember {
         mutableStateOf(TextFieldValue())
     }
+    var uploadCycle by remember {
+        mutableStateOf(UploadCycle.NONE)
+    }
+    val createFamilyResultUiState = viewModel.createFamilyResultUiState.collectAsStateWithLifecycle()
+    if (createFamilyResultUiState.value.isSuccess == true) {
+        navigate(createFamilyResultUiState.value.result.inviteCode)
+    }
+    LoadingIndicator(isLoading = createFamilyResultUiState.value.isLoading?:false)
     ChoosingFamilyHeaderButtonLayout(
         headerBottomPadding = 34.dp,
         header = stringResource(id = R.string.select_create_family_header),
         button = stringResource(R.string.create_family_btn),
-        onClick = navigate
+        onClick = {
+            viewModel.createFamily(familyProfile.copy(uploadCycle = uploadCycle.number))
+        }
     ) {
         ExposedDropdownMenuBox(
             expanded = isExpanded,
@@ -70,46 +85,47 @@ fun SetAlarmScreen(familyProfile: FamilyProfile = FamilyProfile("", null), navig
                     .padding(vertical = 12.dp, horizontal = 11.dp),
             ) {
                 BasicTextField(
-                    value = alarmCycle,
-                    onValueChange = { alarmCycle = it },
+                    value = uploadCycleTextFieldValue,
+                    onValueChange = { uploadCycleTextFieldValue = it },
+                    textStyle = AppTypography.LB1_13.copy(AppColors.black1),
                     readOnly = true
-                ) {
-                    TextFieldContents(isExpanded)
+                ) { innerTextField ->
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        if (uploadCycleTextFieldValue.text.isEmpty()) {
+                            Text(
+                                text = stringResource(R.string.alarm_cycle_text_field_hint),
+                                style = AppTypography.LB1_13,
+                                color = AppColors.grey2
+                            )
+                        }
+                        innerTextField()
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .padding(end = 5.dp),
+                            contentAlignment = Alignment.CenterEnd
+                        ) {
+                            TextFieldExpandedIcon(isExpanded)
+                        }
+                    }
                 }
             }
             ExposedDropdownMenu(
                 modifier = Modifier.fillMaxWidth(),
                 expanded = isExpanded,
                 onDismissRequest = { isExpanded = false }) {
-                AlarmCycle.entries.forEach {
-                    DropdownMenuItem(onClick = { isExpanded = !isExpanded }) {
+                UploadCycle.entries.forEach {
+                    DropdownMenuItem(onClick = {
+                        isExpanded = !isExpanded
+                        uploadCycleTextFieldValue = TextFieldValue(it.value)
+                        uploadCycle = it
+                    }) {
                         Text(text = it.value)
                     }
                 }
             }
 
         }
-    }
-}
-
-@Composable
-private fun TextFieldContents(isExpanded: Boolean) {
-    Row(verticalAlignment = Alignment.CenterVertically) {
-        Text(
-            text = stringResource(R.string.alarm_cycle_text_field_hint),
-            style = AppTypography.LB1_13,
-            color = AppColors.grey2
-        )
-        Box(
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 5.dp),
-            contentAlignment = Alignment.CenterEnd
-        ) {
-            TextFieldExpandedIcon(isExpanded)
-
-        }
-
     }
 }
 
@@ -134,5 +150,5 @@ private fun TextFieldExpandedIcon(isExpanded: Boolean) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewSetAlarmScreen() {
-    SetAlarmScreen()
+//    SetAlarmScreen( FamilyProfile("", null, 0))
 }

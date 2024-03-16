@@ -23,7 +23,7 @@ import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
 
 @Composable
-fun CopyInvitationLinkScreen(navigate: () -> Unit = {}) {
+fun CopyInvitationLinkScreen(inviteLink: String, navigate: () -> Unit = {}) {
     ChoosingFamilyHeaderButtonLayout(
         headerBottomPadding = 16.dp,
         header = stringResource(R.string.family_invitation_link_header),
