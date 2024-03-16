@@ -92,6 +92,20 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun logoutUser(): Flow<Resource<Unit>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = userService.logoutUser()
+            if (response.code() == 200) {
+                emit(Resource.Success(Unit))
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
+            }
+        }.catch {e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
     companion object {
         private const val KEY_ACCESS_TOKEN = "X-AUTH-TOKEN"
         private const val GET_ACCESS_TOKEN_ERROR = "Fail to get Access Token"

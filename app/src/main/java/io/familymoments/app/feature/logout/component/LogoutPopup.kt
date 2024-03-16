@@ -1,5 +1,6 @@
 package io.familymoments.app.feature.logout.component
 
+import android.content.Intent
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,24 +18,41 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.feature.login.activity.LoginActivity
+import io.familymoments.app.feature.logout.viewmodel.LogoutViewModel
 
 @Composable
 fun LogoutPopup(
     onDismissRequest: () -> Unit = {},
-    onLogoutRequest: () -> Unit = {},
+    viewModel: LogoutViewModel
 ) {
+    val context = LocalContext.current
+    val logoutUiState = viewModel.logoutUiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(logoutUiState.value.isSuccess) {
+        if (logoutUiState.value.isSuccess) {
+            val intent = Intent(context, LoginActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            context.startActivity(intent)
+        }
+    }
+
     Dialog(onDismissRequest = onDismissRequest) {
         Box(
             modifier = Modifier
@@ -78,7 +96,7 @@ fun LogoutPopup(
                             .weight(1f),
                         colors = ButtonDefaults.buttonColors(AppColors.purple2, AppColors.grey6),
                         shape = RoundedCornerShape(60.dp),
-                        onClick = onLogoutRequest
+                        onClick = viewModel::logout
                     ) {
                         Text(
                             text = stringResource(id = R.string.logout_btn),
@@ -110,5 +128,5 @@ fun LogoutPopup(
 @Preview(showBackground = true)
 @Composable
 fun LogoutPopupPreview() {
-    LogoutPopup()
+    LogoutPopup(viewModel = hiltViewModel())
 }

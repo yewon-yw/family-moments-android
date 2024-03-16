@@ -10,4 +10,6 @@ interface UserRepository {
     suspend fun loginUser(username: String, password: String): Flow<Resource<LoginResponse>>
     suspend fun reissueAccessToken(): Flow<Resource<Unit>>
     suspend fun loadUserProfile(familyId:Long?):Flow<Resource<UserProfileResponse>>
+
+    suspend fun logoutUser(): Flow<Resource<Unit>>
 }

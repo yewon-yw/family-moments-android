@@ -18,4 +18,7 @@ interface UserService {
     suspend fun loadUserProfile(
         @Query("familyId") familyId:Long? = null
     ): Response<UserProfileResponse>
+
+    @POST("/users/log-out")
+    suspend fun logoutUser(): Response<Void>
 }

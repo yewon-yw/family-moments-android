@@ -80,7 +80,7 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
         if (showLogoutPopup.value) {
             LogoutPopup(
                 onDismissRequest = { showLogoutPopup.value = false },
-                onLogoutRequest = { /* TODO 로그아웃 */ }
+                viewModel = hiltViewModel()
             )
         }
     }
