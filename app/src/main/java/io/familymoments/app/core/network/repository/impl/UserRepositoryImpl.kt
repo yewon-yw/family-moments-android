@@ -1,5 +1,6 @@
 package io.familymoments.app.core.network.repository.impl
 
+import io.familymoments.app.core.network.AuthErrorManager
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.UserService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 class UserRepositoryImpl @Inject constructor(
     private val userService: UserService,
-    private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
+    private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource,
+    private val authErrorManager: AuthErrorManager
 ) : UserRepository {
     override suspend fun loginUser(
         username: String,
@@ -70,11 +72,12 @@ class UserRepositoryImpl @Inject constructor(
                     emit(Resource.Success(Unit))
                 }.onFailure {
                     emit(Resource.Fail(it))
+                    authErrorManager.emitGetAccessTokenError()
                 }
             } else if (response.code() == 471) {
                 // refresh token 까지 만로 됐다는 것을 뜻함. 따라서 즉 재로그인 필요
                 // screen 에서 RefreshTokenExpiration 오류 발생 확인되면 로그인 화면으로 이동
-                emit(Resource.Fail(AuthErrorResponse.RefreshTokenExpiration))
+                authErrorManager.emitRefreshTokenExpiration()
             } else {
                 emit(Resource.Fail(Throwable(response.message())))
             }
