@@ -27,6 +27,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.LoadingIndicator
@@ -149,5 +150,5 @@ private fun TextFieldExpandedIcon(isExpanded: Boolean) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewSetAlarmScreen() {
-//    SetAlarmScreen( FamilyProfile("", null, 0))
+    SetAlarmScreen( hiltViewModel()) {}
 }
