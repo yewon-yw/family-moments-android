@@ -132,7 +132,9 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
                 userIdFormatValidated = uiState.value.signUpValidatedUiState.userIdValidated,
                 checkIdFormat = viewModel::checkIdFormat,
                 checkIdDuplication = viewModel::checkIdDuplication
-            ) { signUpInfoUiState = signUpInfoUiState.copy(id = it) }
+            ) {
+                signUpInfoUiState = signUpInfoUiState.copy(id = it)
+            }
             FirstPasswordField(
                 passwordFormatValidated = uiState.value.signUpValidatedUiState.passwordValidated,
                 checkPasswordFormat = viewModel::checkPasswordFormat
@@ -259,7 +261,6 @@ fun FirstPasswordField(
         validated = passwordFormatValidated,
         isFocused = isFocused
     )
-    Spacer(modifier = Modifier.height(20.dp))
     Spacer(modifier = Modifier.height(20.dp))
 }
 
