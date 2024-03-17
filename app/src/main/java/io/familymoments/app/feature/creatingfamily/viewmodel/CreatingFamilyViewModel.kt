@@ -27,6 +27,9 @@ class CreatingFamilyViewModel @Inject constructor(
     private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
 ) : BaseViewModel() {
 
+    private val _familyProfile:MutableStateFlow<FamilyProfile> = MutableStateFlow(FamilyProfile())
+    val familyProfile:StateFlow<FamilyProfile> = _familyProfile.asStateFlow()
+
     private val _searchMemberUiState: MutableStateFlow<SearchMemberUiState> = MutableStateFlow(SearchMemberUiState())
     val searchMemberUiState: StateFlow<SearchMemberUiState> = _searchMemberUiState.asStateFlow()
 
@@ -34,6 +37,10 @@ class CreatingFamilyViewModel @Inject constructor(
         CreateFamilyResultUiState()
     )
     val createFamilyResultUiState: StateFlow<CreateFamilyResultUiState> = _createFamilyResultUiState.asStateFlow()
+
+    fun saveFamilyProfile(familyProfile: FamilyProfile){
+        _familyProfile.value = familyProfile
+    }
 
     fun searchMember(keyword: String) {
         async(

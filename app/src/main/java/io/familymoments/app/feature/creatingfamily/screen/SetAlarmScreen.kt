@@ -34,16 +34,15 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.creatingfamily.model.UploadCycle
 import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
-import io.familymoments.app.feature.creatingfamily.model.FamilyProfile
 import io.familymoments.app.feature.creatingfamily.viewmodel.CreatingFamilyViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SetAlarmScreen(
     viewModel: CreatingFamilyViewModel,
-    familyProfile: FamilyProfile,
     navigate: (String) -> Unit = {}
 ) {
+    val familyInfo = viewModel.familyProfile.collectAsStateWithLifecycle().value
     var isExpanded by remember {
         mutableStateOf(false)
     }
@@ -57,13 +56,13 @@ fun SetAlarmScreen(
     if (createFamilyResultUiState.value.isSuccess == true) {
         navigate(createFamilyResultUiState.value.result.inviteCode)
     }
-    LoadingIndicator(isLoading = createFamilyResultUiState.value.isLoading?:false)
+    LoadingIndicator(isLoading = createFamilyResultUiState.value.isLoading ?: false)
     ChoosingFamilyHeaderButtonLayout(
         headerBottomPadding = 34.dp,
         header = stringResource(id = R.string.select_create_family_header),
         button = stringResource(R.string.create_family_btn),
         onClick = {
-            viewModel.createFamily(familyProfile.copy(uploadCycle = uploadCycle.number))
+            viewModel.createFamily(familyInfo.copy(uploadCycle = uploadCycle.number))
         }
     ) {
         ExposedDropdownMenuBox(
