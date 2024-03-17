@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
@@ -34,7 +35,7 @@ import io.familymoments.app.feature.creatingfamily.viewmodel.CreatingFamilyViewM
 
 @Composable
 fun SetProfileScreen(
-    viewModel:CreatingFamilyViewModel,
+    viewModel: CreatingFamilyViewModel,
     navigate: () -> Unit
 ) {
     val context = LocalContext.current
@@ -129,5 +130,5 @@ fun SetUpFamilyPicture(context: Context, onBitmapChanged: (Bitmap?) -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewSetProfileScreen() {
-//    SetProfileScreen { }
+    SetProfileScreen(hiltViewModel()) {}
 }

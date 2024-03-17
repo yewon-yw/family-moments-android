@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -26,13 +27,30 @@ import io.familymoments.app.feature.joiningfamily.screen.JoinScreen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
-enum class ChoosingFamilyRoute {
-    START,
-    SEARCH_MEMBER,
-    SET_PROFILE,
-    SET_ALARM,
-    COPY_INVITATION_LINK,
-    JOIN
+sealed interface ChoosingFamilyRoute {
+    val route: String
+    data object Start : ChoosingFamilyRoute {
+        override val route = "Start"
+    }
+    data object SearchMember : ChoosingFamilyRoute {
+        override val route = "SearchMember"
+    }
+    data object SetProfile : ChoosingFamilyRoute {
+        override val route = "SetProfile"
+    }
+    data object CopyInvitationLink : ChoosingFamilyRoute {
+        override val route = "CopyInvitationLink"
+        const val inviteLinkStringArgs = "inviteLink"
+        val routeWithArgs = "$route/{${inviteLinkStringArgs}}"
+        fun getRoute(inviteLink:String):String = "$route/$inviteLink"
+    }
+    data object Join : ChoosingFamilyRoute {
+        override val route = "Join"
+    }
+
+    data object SetAlarm : ChoosingFamilyRoute {
+        override val route = "SetAlarm"
+    }
 }
 
 @Composable
@@ -49,44 +67,44 @@ fun ChoosingFamilyScreen(viewModel: CreatingFamilyViewModel) {
         )
     }) {
         val navController = rememberNavController()
-        NavHost(navController = navController, startDestination = ChoosingFamilyRoute.START.name) {
-            composable(ChoosingFamilyRoute.START.name) {
+        NavHost(navController = navController, startDestination = ChoosingFamilyRoute.Start.route) {
+            composable(ChoosingFamilyRoute.Start.route) {
                 StartScreen(
-                    { navController.navigate(ChoosingFamilyRoute.SEARCH_MEMBER.name) },
-                    { navController.navigate(ChoosingFamilyRoute.JOIN.name) },
+                    { navController.navigate(ChoosingFamilyRoute.SearchMember.route) },
+                    { navController.navigate(ChoosingFamilyRoute.Join.route) },
                     {
                         context.startActivity(mainActivityIntent)
                     })
             }
-            composable(ChoosingFamilyRoute.SEARCH_MEMBER.name) {
+            composable(ChoosingFamilyRoute.SearchMember.route) {
                 SearchMemberScreen(
-                    navigate = { navController.navigate(ChoosingFamilyRoute.SET_PROFILE.name) },
+                    navigate = { navController.navigate(ChoosingFamilyRoute.SetProfile.route) },
                     viewModel = viewModel
                 )
             }
-            composable(ChoosingFamilyRoute.SET_PROFILE.name) {
+            composable(ChoosingFamilyRoute.SetProfile.route) {
                 SetProfileScreen(viewModel = viewModel) {
-                    navController.navigate(ChoosingFamilyRoute.SET_ALARM.name)
+                    navController.navigate(ChoosingFamilyRoute.SetAlarm.route)
                 }
             }
             composable(
-                route = ChoosingFamilyRoute.SET_ALARM.name
+                route = ChoosingFamilyRoute.SetAlarm.route
             ) {
 
                 SetAlarmScreen(viewModel = viewModel) {
                     val encodedUrl = URLEncoder.encode(it, StandardCharsets.UTF_8.toString())
-                    navController.navigate("${ChoosingFamilyRoute.COPY_INVITATION_LINK.name}/$encodedUrl")
+                    navController.navigate(ChoosingFamilyRoute.CopyInvitationLink.getRoute(encodedUrl))
                 }
             }
             composable(
-                route = "${ChoosingFamilyRoute.COPY_INVITATION_LINK.name}/{inviteLink}",
-                arguments = listOf(navArgument("inviteLink") { type = NavType.StringType })
+                route = ChoosingFamilyRoute.CopyInvitationLink.routeWithArgs,
+                arguments = listOf(navArgument(ChoosingFamilyRoute.CopyInvitationLink.inviteLinkStringArgs) { type = NavType.StringType })
             ) { backStackEntry ->
-                CopyInvitationLinkScreen(backStackEntry.arguments?.getString("inviteLink") ?: "") {
+                CopyInvitationLinkScreen(backStackEntry.arguments?.getString(ChoosingFamilyRoute.CopyInvitationLink.inviteLinkStringArgs) ?: "") {
                     context.startActivity(mainActivityIntent)
                 }
             }
-            composable(ChoosingFamilyRoute.JOIN.name) {
+            composable(ChoosingFamilyRoute.Join.route) {
                 JoinScreen {
                     context.startActivity(mainActivityIntent)
                 }
@@ -100,6 +118,6 @@ fun ChoosingFamilyScreen(viewModel: CreatingFamilyViewModel) {
 @Composable
 fun ChoosingFamilyScreenPreview() {
     FamilyMomentsTheme {
-//        ChoosingFamilyScreen()
+        ChoosingFamilyScreen(hiltViewModel())
     }
 }
