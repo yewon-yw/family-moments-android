@@ -25,7 +25,11 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 
 @Composable
-fun SearchTextField(hint: String, onValueChange: (TextFieldValue) -> Unit) {
+fun SearchTextField(
+    hint: String,
+    singleLine:Boolean = false,
+    onValueChange: (TextFieldValue) -> Unit
+) {
     var textFieldValue by remember {
         mutableStateOf(TextFieldValue())
     }
@@ -60,6 +64,7 @@ fun SearchTextField(hint: String, onValueChange: (TextFieldValue) -> Unit) {
                     }
                     innerTextField()
                 },
+                singleLine = singleLine
             )
         }
 
