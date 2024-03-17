@@ -23,7 +23,7 @@ import io.familymoments.app.feature.creatingfamily.screen.CopyInvitationLinkScre
 import io.familymoments.app.feature.creatingfamily.screen.SearchMemberScreen
 import io.familymoments.app.feature.creatingfamily.screen.SetProfileScreen
 import io.familymoments.app.feature.creatingfamily.viewmodel.CreatingFamilyViewModel
-import io.familymoments.app.feature.joiningfamily.screen.JoinScreen
+import io.familymoments.app.feature.joiningfamily.screen.JoinFamilyScreen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -105,7 +105,7 @@ fun ChoosingFamilyScreen(viewModel: CreatingFamilyViewModel) {
                 }
             }
             composable(ChoosingFamilyRoute.Join.route) {
-                JoinScreen {
+                JoinFamilyScreen(hiltViewModel()) {
                     context.startActivity(mainActivityIntent)
                 }
             }
