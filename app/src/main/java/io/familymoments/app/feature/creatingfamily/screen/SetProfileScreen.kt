@@ -30,9 +30,13 @@ import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.component.GalleryOrDefaultImageSelectButton
 import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
 import io.familymoments.app.feature.creatingfamily.model.FamilyProfile
+import io.familymoments.app.feature.creatingfamily.viewmodel.CreatingFamilyViewModel
 
 @Composable
-fun SetProfileScreen(navigate: (FamilyProfile) -> Unit) {
+fun SetProfileScreen(
+    viewModel:CreatingFamilyViewModel,
+    navigate: () -> Unit
+) {
     val context = LocalContext.current
     var familyName by remember {
         mutableStateOf("")
@@ -46,7 +50,8 @@ fun SetProfileScreen(navigate: (FamilyProfile) -> Unit) {
             header = stringResource(id = R.string.select_create_family_header),
             button = stringResource(id = R.string.next_btn_two_third),
             onClick = {
-                navigate(FamilyProfile(familyName, familyImg))
+                viewModel.saveFamilyProfile(FamilyProfile(familyName, familyImg))
+                navigate()
             }
         ) {
             Column(
@@ -124,5 +129,5 @@ fun SetUpFamilyPicture(context: Context, onBitmapChanged: (Bitmap?) -> Unit) {
 @Preview(showBackground = true)
 @Composable
 fun PreviewSetProfileScreen() {
-    SetProfileScreen { }
+//    SetProfileScreen { }
 }
