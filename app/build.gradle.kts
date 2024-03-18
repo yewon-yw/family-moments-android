@@ -5,7 +5,6 @@ plugins {
     kotlin("kapt")
     id("com.google.dagger.hilt.android")
     id("org.jlleitschuh.gradle.ktlint") version "12.1.0"
-    id("kotlin-parcelize")
 }
 
 android {
