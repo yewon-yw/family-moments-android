@@ -39,8 +39,8 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
                         _isLoading.value = false
                         onFailure(result.exception)
 
-                        if (result.exception.message == TOKEN_403_ERROR_MESSAGE) {
-                            authErrorManager.emitToken403Error()
+                        if (result.exception.message == ERROR_403_MESSAGE || result.exception.message == ERROR_461_MESSAGE) {
+                            authErrorManager.emitNeedReissueToken()
                         }
                     }
                 }
@@ -49,6 +49,7 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
     }
 
     companion object {
-        private const val TOKEN_403_ERROR_MESSAGE = "권한이 없는 유저의 접근입니다."
+        private const val ERROR_403_MESSAGE = "권한이 없는 유저의 접근입니다."
+        private const val ERROR_461_MESSAGE = "Access Token의 기한이 만료되었습니다. 재발급 API를 호출해주세요."
     }
 }

@@ -72,12 +72,14 @@ class UserRepositoryImpl @Inject constructor(
                     emit(Resource.Success(Unit))
                 }.onFailure {
                     emit(Resource.Fail(it))
-                    authErrorManager.emitGetAccessTokenError()
+
+                    // GET_ACCESS_TOKEN_ERROR 발생 시 로그인 화면으로 이동
+                    authErrorManager.emitNeedNavigateToLogin()
                 }
             } else if (response.code() == 471) {
                 // refresh token 까지 만로 됐다는 것을 뜻함. 따라서 즉 재로그인 필요
                 // screen 에서 RefreshTokenExpiration 오류 발생 확인되면 로그인 화면으로 이동
-                authErrorManager.emitRefreshTokenExpiration()
+                authErrorManager.emitNeedNavigateToLogin()
             } else {
                 emit(Resource.Fail(Throwable(response.message())))
             }

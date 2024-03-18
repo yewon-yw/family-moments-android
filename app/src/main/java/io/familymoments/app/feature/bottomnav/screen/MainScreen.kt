@@ -58,33 +58,21 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
     val scaffoldState = LocalScaffoldState.current
     val context = LocalContext.current
 
-    val navigateToLogin = {
-        val intent = Intent(context, LoginActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        }
-        context.startActivity(intent)
-    }
-
-    LaunchedEffect(authErrorManager.token403Error) {
-        authErrorManager.token403Error.collect { event ->
+    LaunchedEffect(authErrorManager.needReissueToken) {
+        authErrorManager.needReissueToken.collect { event ->
             event.getContentIfNotHandled()?.let {
                 viewModel.reissueAccessToken()
             }
         }
     }
 
-    LaunchedEffect(authErrorManager.getAccessTokenError) {
-        authErrorManager.getAccessTokenError.collect { event ->
+    LaunchedEffect(authErrorManager.needNavigateToLogin) {
+        authErrorManager.needNavigateToLogin.collect { event ->
             event.getContentIfNotHandled()?.let {
-                navigateToLogin()
-            }
-        }
-    }
-
-    LaunchedEffect(authErrorManager.refreshTokenExpiration) {
-        authErrorManager.refreshTokenExpiration.collect { event ->
-            event.getContentIfNotHandled()?.let {
-                navigateToLogin()
+                val intent = Intent(context, LoginActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+                context.startActivity(intent)
             }
         }
     }
