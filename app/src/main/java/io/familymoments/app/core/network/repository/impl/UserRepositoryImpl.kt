@@ -1,10 +1,10 @@
 package io.familymoments.app.core.network.repository.impl
 
 import io.familymoments.app.core.network.AuthErrorManager
+import io.familymoments.app.core.network.HttpResponse
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.UserService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
-import io.familymoments.app.core.network.model.AuthErrorResponse
 import io.familymoments.app.core.network.model.UserProfileResponse
 import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.feature.login.model.request.LoginRequest
@@ -64,7 +64,7 @@ class UserRepositoryImpl @Inject constructor(
         return flow {
             emit(Resource.Loading)
             val response = userService.reissueAccessToken()
-            if (response.code() == 200) {
+            if (response.code() == HttpResponse.SUCCESS) {
                 // refresh token 을 기반으로 access token 재발급 성공
                 kotlin.runCatching {
                     saveAccessToken(response.headers())
@@ -76,7 +76,7 @@ class UserRepositoryImpl @Inject constructor(
                     // GET_ACCESS_TOKEN_ERROR 발생 시 로그인 화면으로 이동
                     authErrorManager.emitNeedNavigateToLogin()
                 }
-            } else if (response.code() == 471) {
+            } else if (response.code() == HttpResponse.REFRESH_TOKEN_EXPIRED) {
                 // refresh token 까지 만로 됐다는 것을 뜻함. 따라서 즉 재로그인 필요
                 // screen 에서 RefreshTokenExpiration 오류 발생 확인되면 로그인 화면으로 이동
                 authErrorManager.emitNeedNavigateToLogin()

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.network.AuthErrorManager
+import io.familymoments.app.core.network.HttpResponseMessage
 import io.familymoments.app.core.network.Resource
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -39,17 +40,16 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
                         _isLoading.value = false
                         onFailure(result.exception)
 
-                        if (result.exception.message == ERROR_403_MESSAGE || result.exception.message == ERROR_461_MESSAGE) {
+                        val message = result.exception.message
+
+                        if (message == HttpResponseMessage.ACCESS_DENIED_403
+                            || message == HttpResponseMessage.ACCESS_TOKEN_EXPIRED_461
+                        ) {
                             authErrorManager.emitNeedReissueToken()
                         }
                     }
                 }
             }
         }
-    }
-
-    companion object {
-        private const val ERROR_403_MESSAGE = "권한이 없는 유저의 접근입니다."
-        private const val ERROR_461_MESSAGE = "Access Token의 기한이 만료되었습니다. 재발급 API를 호출해주세요."
     }
 }
