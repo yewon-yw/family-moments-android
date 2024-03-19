@@ -157,4 +157,10 @@
     <string name="logout_content">로그아웃 하시겠습니까?</string>
     <string name="logout_btn">로그아웃</string>
     <string name="logout_cancel_btn">취소</string>
+    <string name="post_detail_screen_show_heart">하트 보기</string>
+    <string name="post_detail_screen_comment_text_field_hint">댓글 작성 (50자 이내)</string>
+    <string name="post_detail_screen_comment_post_button">작성</string>
+    <string name="post_detail_screen_drop_down_menu_modify">수정하기</string>
+    <string name="post_detail_screen_drop_down_menu_report">신고하기</string>
+    <string name="post_detail_screen_drop_down_menu_delete">삭제하기</string>
 </resources>
