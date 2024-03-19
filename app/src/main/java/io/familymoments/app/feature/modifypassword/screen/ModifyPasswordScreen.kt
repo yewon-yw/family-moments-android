@@ -77,13 +77,13 @@ fun ModifyPasswordScreen(
         ModifyPasswordInfo()
         Spacer(modifier = Modifier.height(26.dp))
         CurrentPasswordField(
-            currentPasswordValid = modifyPasswordValidUiState.value.currentPassword,
+            currentPasswordValid = modifyPasswordValidUiState.value.currentPasswordValid,
             checkCurrentPassword = viewModel::checkCurrentPassword,
             updatePasswordUiState = viewModel::updateCurrentPassword,
             resetClearTextFieldVariable = viewModel::resetCurrentPasswordField,
         )
         NewPasswordField(
-            newPasswordValid = modifyPasswordValidUiState.value.newPassword,
+            newPasswordValid = modifyPasswordValidUiState.value.newPasswordValid,
             checkNewPassword = viewModel::checkNewPassword,
             updatePasswordUiState = viewModel::updateNewPassword,
             resetClearTextFieldVariable = viewModel::resetNewPasswordField,
@@ -91,8 +91,8 @@ fun ModifyPasswordScreen(
             requester = requester,
         )
         ModifyPasswordButton(
-            currentPasswordValid = modifyPasswordValidUiState.value.currentPassword.valid,
-            newPasswordValid = modifyPasswordValidUiState.value.newPassword.valid,
+            currentPasswordValid = modifyPasswordValidUiState.value.currentPasswordValid.valid,
+            newPasswordValid = modifyPasswordValidUiState.value.newPasswordValid.valid,
             requester = requester,
             onClick = { modifyPasswordUiState ->
                 viewModel.requestModifyPassword(modifyPasswordUiState)
@@ -157,12 +157,12 @@ private fun CurrentPasswordField(
         },
         value = currentPassword,
         hintResId = R.string.modify_password_current_password,
-        hideWarning = currentPasswordValid.warning == null
+        hideWarning = currentPasswordValid.warningResId == null
     )
     ModifyPasswordWarning(
-        warningResId = currentPasswordValid.warning,
+        warningResId = currentPasswordValid.warningResId,
         bottomPadding = 70.dp,
-        hideText = currentPasswordValid.warning == null
+        hideText = currentPasswordValid.warningResId == null
     )
 }
 
@@ -201,7 +201,7 @@ private fun NewPasswordField(
         },
         value = newPassword,
         hintResId = R.string.modify_password_new_password,
-        hideWarning = newPasswordValid.warning == null,
+        hideWarning = newPasswordValid.warningResId == null,
         onFocusChange = onFocusChange,
     )
     Spacer(modifier = Modifier.padding(top = 18.dp))
@@ -213,13 +213,13 @@ private fun NewPasswordField(
         },
         value = newPasswordCheck,
         hintResId = R.string.modify_password_new_password_check,
-        hideWarning = newPasswordValid.warning == null,
+        hideWarning = newPasswordValid.warningResId == null,
         onFocusChange = onFocusChange
     )
     ModifyPasswordWarning(
-        warningResId = newPasswordValid.warning,
+        warningResId = newPasswordValid.warningResId,
         bottomPadding = 67.dp,
-        hideText = newPasswordValid.warning == null
+        hideText = newPasswordValid.warningResId == null
     )
 }
 

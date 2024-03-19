@@ -24,19 +24,19 @@ class ModifyPasswordViewModel @Inject constructor(private val userRepository: Us
 
     fun checkCurrentPassword(password: String) {
         _modifyPasswordValidUiState.value = _modifyPasswordValidUiState.value.copy(
-            currentPassword = _modifyPasswordValidUiState.value.currentPassword.copy(
+            currentPasswordValid = _modifyPasswordValidUiState.value.currentPasswordValid.copy(
                 valid = validateCurrentPassword(password),
-                warning = null
+                warningResId = null
             )
         )
     }
 
     fun checkNewPassword(newPassword: String, newPasswordCheck: String) {
-        val (newPasswordValid, newPasswordWarning) = validateNewPassword(newPassword, newPasswordCheck)
+        val (newPasswordValid, newPasswordWarningResId) = validateNewPassword(newPassword, newPasswordCheck)
         _modifyPasswordValidUiState.value = _modifyPasswordValidUiState.value.copy(
-            newPassword = _modifyPasswordValidUiState.value.newPassword.copy(
+            newPasswordValid = _modifyPasswordValidUiState.value.newPasswordValid.copy(
                 valid = newPasswordValid,
-                warning = newPasswordWarning
+                warningResId = newPasswordWarningResId
             ),
         )
     }
@@ -48,12 +48,12 @@ class ModifyPasswordViewModel @Inject constructor(private val userRepository: Us
                 _modifyPasswordValidUiState.value = _modifyPasswordValidUiState.value.copy(
                     isSuccess = it.isSuccess,
                     code = it.code,
-                    currentPassword = _modifyPasswordValidUiState.value.currentPassword.copy(
-                        warning = if (it.code == INCORRECT_CURRENT_PASSWORD) WarningType.IncorrectCurrentPassword.stringResId else null,
+                    currentPasswordValid = _modifyPasswordValidUiState.value.currentPasswordValid.copy(
+                        warningResId = if (it.code == INCORRECT_CURRENT_PASSWORD) WarningType.IncorrectCurrentPassword.stringResId else null,
                         reset = it.code == INCORRECT_CURRENT_PASSWORD
                     ),
-                    newPassword = _modifyPasswordValidUiState.value.newPassword.copy(
-                        warning = if (it.code == NEW_PASSWORD_SAME_AS_CURRENT) WarningType.NewPasswordSameAsCurrent.stringResId else null,
+                    newPasswordValid = _modifyPasswordValidUiState.value.newPasswordValid.copy(
+                        warningResId = if (it.code == NEW_PASSWORD_SAME_AS_CURRENT) WarningType.NewPasswordSameAsCurrent.stringResId else null,
                         reset = it.code == NEW_PASSWORD_SAME_AS_CURRENT
                     ),
                 )
@@ -77,13 +77,13 @@ class ModifyPasswordViewModel @Inject constructor(private val userRepository: Us
 
     fun resetCurrentPasswordField() {
         _modifyPasswordValidUiState.value = _modifyPasswordValidUiState.value.copy(
-            currentPassword = _modifyPasswordValidUiState.value.currentPassword.copy(reset = false)
+            currentPasswordValid = _modifyPasswordValidUiState.value.currentPasswordValid.copy(reset = false)
         )
     }
 
     fun resetNewPasswordField() {
         _modifyPasswordValidUiState.value = _modifyPasswordValidUiState.value.copy(
-            newPassword = _modifyPasswordValidUiState.value.newPassword.copy(reset = false)
+            newPasswordValid = _modifyPasswordValidUiState.value.newPasswordValid.copy(reset = false)
         )
     }
 
