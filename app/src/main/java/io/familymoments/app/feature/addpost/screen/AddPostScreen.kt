@@ -37,7 +37,6 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -53,7 +52,7 @@ import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.core.util.convertToBitmap
+import io.familymoments.app.core.util.convertUriToBitmap
 import io.familymoments.app.core.util.keyboardAsState
 import io.familymoments.app.feature.addpost.viewmodel.AddPostViewModel
 
@@ -70,9 +69,11 @@ fun AddPostScreen(
     val launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?> = rememberLauncherForActivityResult(
         contract =
         ActivityResultContracts.PickVisualMedia()
-    ) {
-        if (it == null) return@rememberLauncherForActivityResult
-        bitmapList.add(convertToBitmap(context, it))
+    ) { uri ->
+        if (uri == null) return@rememberLauncherForActivityResult
+        if (bitmapList.size < 10) {
+            bitmapList.add(convertUriToBitmap(uri, context))
+        }
     }
 
     Column(
@@ -128,7 +129,10 @@ fun AddPostScreen(
                     .fillMaxWidth()
                     .heightIn(min = 59.dp)
                     .clip(RoundedCornerShape(60.dp))
-                    .background(color = AppColors.deepPurple1),
+                    .background(color = AppColors.deepPurple1)
+                    .clickable {
+                        viewModel.addPost(content, bitmapList.toList())
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -145,7 +149,7 @@ fun AddPostScreen(
 @Composable
 private fun ImageRow(
     launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
-    bitmapList: SnapshotStateList<Bitmap?>
+    imageUriList: MutableList<Bitmap?>,
 ) {
     Row(
         modifier = Modifier
@@ -176,9 +180,9 @@ private fun ImageRow(
                     text = buildAnnotatedString {
                         withStyle(
                             style = AppTypography.BTN6_13.toSpanStyle()
-                                .copy(color = if (bitmapList.size > 0) AppColors.purple2 else AppColors.grey2)
+                                .copy(color = if (imageUriList.isNotEmpty()) AppColors.purple2 else AppColors.grey2)
                         ) {
-                            append(bitmapList.size.toString())
+                            append(imageUriList.size.toString())
                         }
                         withStyle(style = AppTypography.BTN6_13.toSpanStyle().copy(color = AppColors.grey2)) {
                             append("/10")
@@ -188,18 +192,18 @@ private fun ImageRow(
             }
         }
         Spacer(modifier = Modifier.width(9.dp))
-        if (bitmapList.isNotEmpty()) {
+        if (imageUriList.isNotEmpty()) {
             LazyRow(
                 horizontalArrangement = Arrangement.spacedBy(9.dp),
                 contentPadding = PaddingValues(end = 16.dp)
             ) {
-                items(bitmapList.size) { i ->
+                items(imageUriList.size) { i ->
                     Box {
                         AsyncImage(
                             modifier = Modifier
                                 .size(63.dp)
                                 .clip(shape = RoundedCornerShape(6.dp)),
-                            model = bitmapList[i] ?: return@items,
+                            model = imageUriList[i],
                             contentDescription = null,
                             contentScale = ContentScale.Crop
                         )
@@ -211,7 +215,7 @@ private fun ImageRow(
                                     y = (-8).dp
                                 )
                                 .clickable {
-                                    bitmapList.removeAt(i)
+                                    imageUriList.removeAt(i)
                                 },
                             imageVector = ImageVector.vectorResource(id = R.drawable.ic_text_field_clear),
                             contentDescription = null,
