@@ -163,4 +163,7 @@
     <string name="post_detail_screen_drop_down_menu_modify">수정하기</string>
     <string name="post_detail_screen_drop_down_menu_report">신고하기</string>
     <string name="post_detail_screen_drop_down_menu_delete">삭제하기</string>
+    <string name="report_pop_up_btn_report">신고하기</string>
+    <string name="report_pop_up_label_reason_for_report">신고사유</string>
+    <string name="report_pop_up_label_warning">신고는 반대 의견을 표시하는 기능이 아닙니다</string>
 </resources>
