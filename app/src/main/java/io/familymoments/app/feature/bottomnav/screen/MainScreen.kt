@@ -61,7 +61,7 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
     LaunchedEffect(authErrorManager.needReissueToken) {
         authErrorManager.needReissueToken.collect { event ->
             event.getContentIfNotHandled()?.let {
-                viewModel.reissueAccessToken()
+                viewModel.reissueAccessToken(it)
             }
         }
     }

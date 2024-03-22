@@ -48,7 +48,7 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
                         ) {
                             authErrorManager.emitNeedNavigateToLogin()
                         } else if (message == HttpResponseMessage.ACCESS_TOKEN_EXPIRED_461) {
-                            authErrorManager.emitNeedReissueToken()
+                            authErrorManager.emitNeedReissueToken(operation)
                         }
                     }
                 }
