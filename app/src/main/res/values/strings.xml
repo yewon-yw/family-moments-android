@@ -166,4 +166,7 @@
     <string name="report_pop_up_btn_report">신고하기</string>
     <string name="report_pop_up_label_reason_for_report">신고사유</string>
     <string name="report_pop_up_label_warning">신고는 반대 의견을 표시하는 기능이 아닙니다</string>
+    <string name="post_delete_pop_up_content">게시글을\n삭제하시겠습니까?</string>
+    <string name="post_delete_pop_up_btn_delete">삭제</string>
+    <string name="post_delete_pop_up_btn_cancel">취소</string>
 </resources>
