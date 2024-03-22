@@ -32,9 +32,10 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 
 @Composable
-fun PostDeletePopUp(
+fun PostDetailExecutePopUp(
+    content:String,
+    execute: () -> Unit = {},
     onDismissRequest: () -> Unit = {},
-    onPostDeleteRequest: () -> Unit = {},
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
         Box(
@@ -60,7 +61,7 @@ fun PostDeletePopUp(
                     )
                 }
                 Text(
-                    text = stringResource(R.string.post_delete_pop_up_content),
+                    text = content,
                     style = AppTypography.BTN4_18,
                     color = AppColors.deepPurple1,
                     modifier = Modifier
@@ -80,7 +81,7 @@ fun PostDeletePopUp(
                             .weight(1f),
                         colors = ButtonDefaults.buttonColors(containerColor = AppColors.pink1),
                         shape = RoundedCornerShape(60.dp),
-                        onClick = onPostDeleteRequest
+                        onClick = execute
                     ) {
                         Text(
                             text = stringResource(R.string.post_delete_pop_up_btn_delete),
@@ -111,6 +112,6 @@ fun PostDeletePopUp(
 
 @Preview(showBackground = true)
 @Composable
-fun PostDeletePopUpPreview() {
-    PostDeletePopUp()
+fun PostDetailExecutePopUpPreview() {
+    PostDetailExecutePopUp("댓글을\n삭제하시겠습니까?")
 }
