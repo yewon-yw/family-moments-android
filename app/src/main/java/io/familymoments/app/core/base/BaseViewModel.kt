@@ -6,6 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.network.AuthErrorManager
 import io.familymoments.app.core.network.HttpResponseMessage
 import io.familymoments.app.core.network.Resource
+import io.familymoments.app.core.network.model.AuthErrorResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -43,8 +44,10 @@ open class BaseViewModel @Inject constructor() : ViewModel() {
                         val message = result.exception.message
 
                         if (message == HttpResponseMessage.ACCESS_DENIED_403
-                            || message == HttpResponseMessage.ACCESS_TOKEN_EXPIRED_461
+                            || result.exception == AuthErrorResponse.RefreshTokenExpiration
                         ) {
+                            authErrorManager.emitNeedNavigateToLogin()
+                        } else if (message == HttpResponseMessage.ACCESS_TOKEN_EXPIRED_461) {
                             authErrorManager.emitNeedReissueToken()
                         }
                     }
