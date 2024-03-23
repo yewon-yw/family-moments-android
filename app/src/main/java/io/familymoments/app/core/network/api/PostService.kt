@@ -8,6 +8,7 @@ import io.familymoments.app.feature.home.model.GetPostsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import io.familymoments.app.feature.postdetail.model.response.GetPostByIndexResponse
+import io.familymoments.app.feature.postdetail.model.response.GetPostLovesByIndexResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -74,4 +75,9 @@ interface PostService {
     suspend fun getPostByIndex(
         @Path("index") index: Int
     ):Response<GetPostByIndexResponse>
+
+    @GET("/posts/{index}/post-loves")
+    suspend fun getPostLovesByIndex(
+        @Path("index") index:Int
+    ):Response<GetPostLovesByIndexResponse>
 }

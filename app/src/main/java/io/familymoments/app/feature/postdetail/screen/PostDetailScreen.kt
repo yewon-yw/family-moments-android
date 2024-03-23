@@ -1,5 +1,7 @@
 package io.familymoments.app.feature.postdetail.screen
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -44,6 +46,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -59,6 +62,7 @@ import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.home.component.postItemContentShadow
 import io.familymoments.app.feature.postdetail.model.response.GetCommentsByPostIndexResult
+import io.familymoments.app.feature.postdetail.model.uistate.PostLovesUiState
 import io.familymoments.app.feature.postdetail.viewmodel.PostDetailViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -71,6 +75,7 @@ fun PostDetailScreen(
     LaunchedEffect(Unit) {
         viewModel.getPostByIndex(index)
         viewModel.getCommentsByPostIndex(index)
+        viewModel.getPostLovesByIndex(index)
     }
     val postDetailUiState = viewModel.postDetailUiState.collectAsStateWithLifecycle().value
     val _postDetailInfo = postDetailUiState.result
@@ -80,8 +85,10 @@ fun PostDetailScreen(
         countLove = 1
     )
     val commentsUiState = viewModel.commentsUiState.collectAsStateWithLifecycle().value
+    val postLovesUiState = viewModel.postLovesUiState.collectAsStateWithLifecycle().value
     val pagerState = rememberPagerState(pageCount = { postDetailInfo.imgs.size })
 
+    val context = LocalContext.current
 
     LazyColumn {
         item {
@@ -104,7 +111,7 @@ fun PostDetailScreen(
                                 .height(5.dp)
                                 .background(color = AppColors.grey4)
                         )
-                        Comments(commentsUiState.result)
+                        Comments(commentsUiState.result, context, postLovesUiState)
                         Spacer(modifier = Modifier.height(20.dp))
                     }
 
@@ -114,6 +121,11 @@ fun PostDetailScreen(
 
     }
 
+}
+
+
+fun showNoPostLovesToastMessage(context: Context, postLovesUiState: PostLovesUiState) {
+    Toast.makeText(context, postLovesUiState.message, Toast.LENGTH_SHORT).show()
 }
 
 @Composable
@@ -261,7 +273,7 @@ fun PostContent(content: String, countLove: Int, loved: Boolean) {
 }
 
 @Composable
-fun Comments(comments: List<GetCommentsByPostIndexResult>) {
+fun Comments(comments: List<GetCommentsByPostIndexResult>, context: Context, postLovesUiState: PostLovesUiState) {
     var showLoveListPopUp by remember {
         mutableStateOf(false)
     }
@@ -284,9 +296,16 @@ fun Comments(comments: List<GetCommentsByPostIndexResult>) {
                 style = AppTypography.B2_14,
                 color = AppColors.grey2,
                 modifier = Modifier.noRippleClickable {
-                    showLoveListPopUp = !showLoveListPopUp
+                    if (postLovesUiState.isSuccess == false) {
+                        showNoPostLovesToastMessage(context, postLovesUiState)
+                    } else {
+                        showLoveListPopUp = true
+                    }
                 }
             )
+        }
+        if (showLoveListPopUp) {
+            LoveListPopUp(postLovesUiState.result) { showLoveListPopUp = false }
         }
         Spacer(modifier = Modifier.height(10.dp))
         CommentTextField()

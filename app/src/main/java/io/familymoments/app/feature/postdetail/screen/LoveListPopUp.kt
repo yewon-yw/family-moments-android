@@ -21,18 +21,21 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
+import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.noRippleClickable
+import io.familymoments.app.feature.postdetail.model.response.GetPostLovesByIndexResult
 
 @Composable
 fun LoveListPopUp(
+    postLoves:List<GetPostLovesByIndexResult>,
     onDismissRequest: () -> Unit = {}
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
@@ -50,7 +53,7 @@ fun LoveListPopUp(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "하트를 누른 사람",
+                        text = stringResource(R.string.love_list_pop_up_label),
                         style = AppTypography.B1_16,
                         color = AppColors.black2,
                         modifier = Modifier
@@ -67,8 +70,8 @@ fun LoveListPopUp(
                     )
                 }
                 LazyColumn(modifier = Modifier.padding(vertical = 17.dp)) {
-                    items(3) {
-                        LoveListItem()
+                    items(postLoves.size) {
+                        LoveListItem(postLoves[it])
                         Divider(thickness = 0.75.dp, color = AppColors.grey3)
                     }
                 }
@@ -78,13 +81,13 @@ fun LoveListPopUp(
 }
 
 @Composable
-fun LoveListItem() {
+fun LoveListItem(member:GetPostLovesByIndexResult) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(horizontal = 13.dp, vertical = 6.dp)
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.default_profile),
+        AsyncImage(
+            model = member.profileImg,
             contentDescription = null,
             modifier = Modifier
                 .padding(end = 11.5.dp)
@@ -92,7 +95,7 @@ fun LoveListItem() {
                 .clip(shape = CircleShape)
         )
         Text(
-            text = "Darlene Steward",
+            text = member.nickname,
             style = AppTypography.LB1_13,
             color = Color(0xFF1B1A57)
         )
@@ -102,5 +105,5 @@ fun LoveListItem() {
 @Preview(showBackground = true)
 @Composable
 fun LoveListPopUpPreview() {
-    LoveListPopUp()
+    LoveListPopUp(listOf())
 }

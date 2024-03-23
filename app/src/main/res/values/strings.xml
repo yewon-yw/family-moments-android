@@ -170,4 +170,5 @@
     <string name="post_delete_pop_up_btn_delete">삭제</string>
     <string name="post_delete_pop_up_btn_cancel">취소</string>
     <string name="complete_pop_up_btn_ok">확인</string>
+    <string name="love_list_pop_up_label">하트를 누른 사람</string>
 </resources>
