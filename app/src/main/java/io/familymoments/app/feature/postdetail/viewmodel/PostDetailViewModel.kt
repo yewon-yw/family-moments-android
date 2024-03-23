@@ -144,4 +144,24 @@ class PostDetailViewModel @Inject constructor(
             }
         )
     }
+
+    fun postCommentLoves(commentId:Int){
+        async(
+            operation = {commentRepository.postCommentLoves(commentId)},
+            onSuccess = {
+            },
+            onFailure = {
+            }
+        )
+    }
+
+    fun deleteCommentLoves(commentId:Int){
+        async(
+            operation = {commentRepository.deleteCommentLoves(commentId)},
+            onSuccess = {
+            },
+            onFailure = {
+            }
+        )
+    }
 }

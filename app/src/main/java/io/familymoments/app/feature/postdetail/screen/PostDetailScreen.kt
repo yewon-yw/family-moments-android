@@ -129,7 +129,9 @@ fun PostDetailScreen(
                             postLovesUiState,
                             viewModel::postComment,
                             index,
-                            viewModel::deleteComment
+                            viewModel::deleteComment,
+                            viewModel::postCommentLoves,
+                            viewModel::deleteCommentLoves
                         )
                         Spacer(modifier = Modifier.height(20.dp))
                     }
@@ -305,7 +307,9 @@ fun Comments(
     postLovesUiState: PostLovesUiState,
     postComment: (Int, String) -> Unit,
     postIndex: Int,
-    deleteComment: (Int) -> Unit
+    deleteComment: (Int) -> Unit,
+    postCommentLoves: (Int) -> Unit,
+    deleteCommentLoves: (Int) -> Unit
 ) {
     var showLoveListPopUp by remember {
         mutableStateOf(false)
@@ -343,7 +347,7 @@ fun Comments(
         Spacer(modifier = Modifier.height(10.dp))
         CommentTextField(postIndex, postComment)
         Spacer(modifier = Modifier.height(18.dp))
-        CommentItems(comments, deleteComment)
+        CommentItems(comments, deleteComment, postCommentLoves, deleteCommentLoves)
     }
 }
 
@@ -406,17 +410,27 @@ fun CommentTextField(index: Int, postComment: (Int, String) -> Unit) {
 }
 
 @Composable
-fun CommentItems(comments: List<GetCommentsByPostIndexResult>, deleteComment: (Int) -> Unit) {
+fun CommentItems(
+    comments: List<GetCommentsByPostIndexResult>,
+    deleteComment: (Int) -> Unit,
+    postCommentLoves: (Int) -> Unit,
+    deleteCommentLoves: (Int) -> Unit
+) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         comments.forEach {
-            CommentItem(it, deleteComment)
+            CommentItem(it, deleteComment, postCommentLoves, deleteCommentLoves)
         }
     }
 
 }
 
 @Composable
-fun CommentItem(comment: GetCommentsByPostIndexResult, deleteComment: (Int) -> Unit) {
+fun CommentItem(
+    comment: GetCommentsByPostIndexResult,
+    deleteComment: (Int) -> Unit,
+    postCommentLoves: (Int) -> Unit,
+    deleteCommentLoves: (Int) -> Unit
+) {
     var expanded by remember {
         mutableStateOf(false)
     }
@@ -517,9 +531,9 @@ fun CommentItem(comment: GetCommentsByPostIndexResult, deleteComment: (Int) -> U
                     .align(Alignment.End)
                     .noRippleClickable {
                         if (commentLikeState) {
-                            // todo 하트 취소 요청
+                            deleteCommentLoves(comment.commentId)
                         } else {
-                            // todo 하트 요청
+                            postCommentLoves(comment.commentId)
                         }
                         commentLikeState = !commentLikeState
                     }
