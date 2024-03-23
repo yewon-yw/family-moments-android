@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,6 +34,7 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -48,25 +50,57 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.home.component.postItemContentShadow
+import io.familymoments.app.feature.postdetail.viewmodel.PostDetailViewModel
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostDetailScreen(
+    viewModel: PostDetailViewModel,
+    index: Int = 0,
     modifier: Modifier
 ) {
+    val postDetailUiState = viewModel.postDetailUiState.collectAsStateWithLifecycle()
+    val postDetailInfo = postDetailUiState.value.result
+
+    val pagerState = rememberPagerState(pageCount = { postDetailInfo.imgs.size })
+
+    viewModel.getPostByIndex(index)
+
     LazyColumn {
         item {
-            Column(modifier = modifier.padding(top = 26.dp, bottom = 63.dp)) {
-                WriterInfo()
+            Column(modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 26.dp, bottom = 63.dp)) {
+                WriterInfo(postDetailInfo.writer, postDetailInfo.profileImg, postDetailInfo.createdAt)
                 Spacer(modifier = Modifier.height(15.dp))
                 Divider(Modifier.height(1.dp), color = AppColors.deepPurple3)
                 Spacer(modifier = Modifier.height(19.dp))
-                PostBox()
+                Box(modifier = Modifier.postItemContentShadow()) {
+                    Column(
+                        modifier = Modifier
+                            .clip(shape = RoundedCornerShape(10.dp))
+                            .background(AppColors.grey6)
+                    ) {
+                        PostPhotos(postDetailInfo.imgs, pagerState)
+                        PostContent(postDetailInfo.content, postDetailInfo.countLove, postDetailInfo.loved)
+                        Spacer(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .height(5.dp)
+                                .background(color = AppColors.grey4)
+                        )
+                        Comments()
+                        Spacer(modifier = Modifier.height(20.dp))
+                    }
+
+                }
             }
         }
 
@@ -75,75 +109,43 @@ fun PostDetailScreen(
 }
 
 @Composable
-fun WriterInfo() {
+fun WriterInfo(writer: String, profileImg: String, createdAt: String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(modifier = Modifier.width(11.dp))
-        Image(
-            painter = painterResource(id = R.drawable.default_profile),
+        AsyncImage(
+            model = profileImg,
             contentDescription = null,
             modifier = Modifier
                 .clip(CircleShape)
                 .size(45.dp)
         )
         Spacer(modifier = Modifier.width(14.dp))
-        Text(text = "딸내미", style = AppTypography.B1_16, color = AppColors.black2, modifier = Modifier.weight(1f))
-        Text(text = "2023.06.12 (토)", style = AppTypography.LB1_13, color = AppColors.grey3)
-    }
-}
-
-@Composable
-fun PostBox() {
-    Box(modifier = Modifier.postItemContentShadow()) {
-        Column(
-            modifier = Modifier
-                .padding(horizontal = 11.dp)
-                .clip(shape = RoundedCornerShape(10.dp))
-                .background(AppColors.grey6)
-        ) {
-            Post()
-            Spacer(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(5.dp)
-                    .background(color = AppColors.grey4)
-            )
-            Comments()
-            Spacer(modifier = Modifier.height(20.dp))
-        }
-
-    }
-}
-
-@Composable
-fun Post() {
-    Column {
-        PostPhotos()
-        PostContent()
+        Text(text = writer, style = AppTypography.B1_16, color = AppColors.black2, modifier = Modifier.weight(1f))
+        Text(text = createdAt, style = AppTypography.LB1_13, color = AppColors.grey3)
     }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-fun PostPhotos() {
+fun PostPhotos(imgs: List<String>, pagerState: PagerState) {
     Box(
         modifier = Modifier
             .height(168.dp)
     ) {
-        val pagerState = rememberPagerState(pageCount = { 3 })
         HorizontalPager(
             state = pagerState,
-            modifier = Modifier.fillMaxSize()
-        ) {
-            Image(
+            modifier = Modifier.fillMaxSize(),
+        ) { page ->
+            AsyncImage(
+                model = imgs[page],
+                contentDescription = null,
                 modifier = Modifier
                     .height(180.dp)
                     .align(Alignment.Center),
-                painter = painterResource(id = R.drawable.img_sample_trees),
-                contentScale = ContentScale.Crop,
-                contentDescription = null
+                contentScale = ContentScale.Crop
             )
         }
         Row(
@@ -170,7 +172,7 @@ fun PostPhotos() {
 }
 
 @Composable
-fun PostContent() {
+fun PostContent(content: String, countLove: Int, loved: Boolean) {
     var expanded by remember {
         mutableStateOf(false)
     }
@@ -186,7 +188,7 @@ fun PostContent() {
                     .heightIn(183.dp)
                     .padding(top = 11.dp, end = 10.dp)
                     .weight(1f),
-                text = "우리 가족사진 삼각대로 찍기~~\n너무 잘나왔다!",
+                text = content,
                 style = AppTypography.B2_14,
                 color = AppColors.black2
             )
@@ -215,20 +217,36 @@ fun PostContent() {
 
                 Spacer(modifier = Modifier.height(6.dp))
 
-                var commentLike by remember {
-                    mutableStateOf(false)
+                var lovedState by remember {
+                    mutableStateOf(loved)
+                }
+                var countLoveState by remember {
+                    mutableIntStateOf(countLove)
                 }
 
                 Icon(
                     imageVector =
-                    if (!commentLike) ImageVector.vectorResource(R.drawable.ic_heart_empty)
+                    if (!lovedState) ImageVector.vectorResource(R.drawable.ic_heart_empty)
                     else ImageVector.vectorResource(R.drawable.ic_heart_filled),
                     contentDescription = null,
                     tint = Color.Unspecified,
-                    modifier = Modifier.noRippleClickable { commentLike = !commentLike }
+                    modifier = Modifier.noRippleClickable {
+                        if (lovedState) {
+                            // todo 하트 취소 요청 성공하면 실행되도록 추후 로직 수정
+                            countLoveState -= 1
+                        } else {
+                            // todo 하트 요청 성공하면 실행되도록 추후 로직 수정
+                            countLoveState += 1
+                        }
+                        lovedState = !lovedState
+                    }
                 )
                 Spacer(modifier = Modifier.height(3.dp))
-                androidx.compose.material3.Text(text = "3", style = AppTypography.LB2_11, color = AppColors.black2)
+                androidx.compose.material3.Text(
+                    text = countLoveState.toString(),
+                    style = AppTypography.LB2_11,
+                    color = AppColors.black2
+                )
             }
         }
     }
@@ -462,7 +480,7 @@ fun PostDetailDropdownMenu(
 @Composable
 fun PostDetailPreview() {
     FamilyMomentsTheme {
-        PostDetailScreen(modifier = Modifier)
+        PostDetailScreen(hiltViewModel(), 0, modifier = Modifier)
     }
 }
 

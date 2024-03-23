@@ -4,9 +4,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
-import androidx.navigation.NavType
 import androidx.navigation.compose.composable
-import androidx.navigation.navArgument
 import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.bottomnav.graph.bottomNavGraph
 import io.familymoments.app.feature.mypage.graph.myPageGraph
@@ -24,6 +22,9 @@ fun getMainGraph(
 
     composable(route = CommonRoute.POST_DETAIL.name) {
         PostDetailScreen(
+            viewModel = hiltViewModel(),
+            // todo 추후 인덱스 변경
+            index = 1,
             modifier = Modifier
                 .scaffoldState(
                     hasShadow = true,

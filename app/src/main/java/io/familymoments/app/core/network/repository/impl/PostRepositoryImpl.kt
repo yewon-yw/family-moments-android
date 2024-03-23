@@ -9,6 +9,7 @@ import io.familymoments.app.feature.album.model.GetAlbumDetailResponse
 import io.familymoments.app.feature.album.model.GetAlbumResponse
 import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
 import io.familymoments.app.feature.home.model.GetPostsResponse
+import io.familymoments.app.feature.postdetail.model.response.GetPostByIndexResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -183,6 +184,22 @@ class PostRepositoryImpl(
 
             val response = postService.addPost(familyId, postInfo, imageFiles)
             val responseBody = response.body() ?: AddPostResponse()
+
+            if (responseBody.isSuccess) {
+                emit(Resource.Success(responseBody))
+            } else {
+                emit(Resource.Fail(Throwable(responseBody.message)))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun getPostByIndex(index: Int): Flow<Resource<GetPostByIndexResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = postService.getPostByIndex(index)
+            val responseBody = response.body() ?: GetPostByIndexResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))

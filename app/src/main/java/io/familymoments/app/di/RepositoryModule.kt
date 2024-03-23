@@ -7,17 +7,22 @@ import dagger.hilt.InstallIn
 import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.familymoments.app.core.network.AuthErrorManager
+import io.familymoments.app.core.network.api.CommentService
 import io.familymoments.app.core.network.api.PostService
 import io.familymoments.app.core.network.api.SignInService
 import io.familymoments.app.core.network.api.UserService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourceImpl
 import io.familymoments.app.core.network.repository.PostRepository
+import io.familymoments.app.core.network.repository.CommentRepository
 import io.familymoments.app.core.network.repository.SignInRepository
 import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.core.network.repository.impl.PostRepositoryImpl
 import io.familymoments.app.core.network.repository.impl.SignInRepositoryImpl
 import io.familymoments.app.core.network.repository.impl.UserRepositoryImpl
+import io.familymoments.app.core.network.repository.PostRepository
+import io.familymoments.app.core.network.repository.impl.CommentRepositoryImpl
+import io.familymoments.app.core.network.repository.impl.PostRepositoryImpl
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)
@@ -53,6 +58,12 @@ object RepositoryModule {
     @Singleton
     fun providePostRepository(postService: PostService): PostRepository {
         return PostRepositoryImpl(postService)
+    }
+
+    @Provides
+    @Singleton
+    fun provideCommentRepository(commentService: CommentService):CommentRepository{
+        return CommentRepositoryImpl()
     }
 
 }

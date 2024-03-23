@@ -7,6 +7,7 @@ import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
 import io.familymoments.app.feature.home.model.GetPostsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import io.familymoments.app.feature.postdetail.model.response.GetPostByIndexResponse
 import retrofit2.Response
 import retrofit2.http.GET
 import retrofit2.http.Multipart
@@ -68,4 +69,9 @@ interface PostService {
         @Part("postInfo") postInfo: RequestBody,
         @Part images: List<MultipartBody.Part>?
     ): Response<AddPostResponse>
+
+    @GET("/posts/{index}")
+    suspend fun getPostByIndex(
+        @Path("index") index: Int
+    ):Response<GetPostByIndexResponse>
 }
