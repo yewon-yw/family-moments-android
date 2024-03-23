@@ -148,4 +148,8 @@
 
     <string name="calendar_title">캘린더</string>
     <string name="calendar_day_no_post">공유된 순간이 없는 날입니다 :-(\n다른 날짜를 선택해주세요</string>
+
+    <string name="logout_content">로그아웃 하시겠습니까?</string>
+    <string name="logout_btn">로그아웃</string>
+    <string name="logout_cancel_btn">취소</string>
 </resources>

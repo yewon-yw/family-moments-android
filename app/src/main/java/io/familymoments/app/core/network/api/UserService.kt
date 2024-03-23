@@ -5,6 +5,7 @@ import io.familymoments.app.feature.login.model.request.LoginRequest
 import io.familymoments.app.feature.login.model.response.LoginResponse
 import io.familymoments.app.feature.modifypassword.model.request.ModifyPasswordRequest
 import io.familymoments.app.feature.modifypassword.model.response.ModifyPasswordResponse
+import io.familymoments.app.feature.mypage.model.response.LogoutResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -26,4 +27,7 @@ interface UserService {
     suspend fun modifyPassword(
         @Body modifyPasswordRequest: ModifyPasswordRequest
     ): Response<ModifyPasswordResponse>
+
+    @POST("/users/log-out")
+    suspend fun logoutUser(): Response<LogoutResponse>
 }

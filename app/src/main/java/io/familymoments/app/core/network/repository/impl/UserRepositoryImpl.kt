@@ -12,6 +12,7 @@ import io.familymoments.app.feature.login.model.request.LoginRequest
 import io.familymoments.app.feature.login.model.response.LoginResponse
 import io.familymoments.app.feature.modifypassword.model.request.ModifyPasswordRequest
 import io.familymoments.app.feature.modifypassword.model.response.ModifyPasswordResponse
+import io.familymoments.app.feature.mypage.model.response.LogoutResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -122,6 +123,22 @@ class UserRepositoryImpl @Inject constructor(
             }
         }.catch { e ->
             emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun logoutUser(): Flow<Resource<LogoutResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = userService.logoutUser()
+            val responseBody = response.body() ?: LogoutResponse()
+            if (responseBody.isSuccess) {
+                userInfoPreferencesDataSource.resetPreferencesData()
+                emit(Resource.Success(responseBody))
+            } else {
+                emit(Resource.Fail(Throwable(responseBody.message)))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(Throwable(e)))
         }
     }
 
