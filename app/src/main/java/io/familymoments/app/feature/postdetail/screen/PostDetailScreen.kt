@@ -1,7 +1,6 @@
 package io.familymoments.app.feature.postdetail.screen
 
 import androidx.compose.foundation.ExperimentalFoundationApi
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -33,6 +32,7 @@ import androidx.compose.material.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -44,7 +44,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -59,6 +58,7 @@ import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.home.component.postItemContentShadow
+import io.familymoments.app.feature.postdetail.model.response.GetCommentsByPostIndexResult
 import io.familymoments.app.feature.postdetail.viewmodel.PostDetailViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -68,12 +68,20 @@ fun PostDetailScreen(
     index: Int = 0,
     modifier: Modifier
 ) {
-    val postDetailUiState = viewModel.postDetailUiState.collectAsStateWithLifecycle()
-    val postDetailInfo = postDetailUiState.value.result
-
+    LaunchedEffect(Unit) {
+        viewModel.getPostByIndex(index)
+        viewModel.getCommentsByPostIndex(index)
+    }
+    val postDetailUiState = viewModel.postDetailUiState.collectAsStateWithLifecycle().value
+    val _postDetailInfo = postDetailUiState.result
+    val postDetailInfo = _postDetailInfo.copy(
+        imgs = listOf("https://fm-content-bucket-01.s3.ap-northeast-2.amazonaws.com/331c4c4d-84a2-412f-a68c-4db883f059c4.png"),
+        loved = true,
+        countLove = 1
+    )
+    val commentsUiState = viewModel.commentsUiState.collectAsStateWithLifecycle().value
     val pagerState = rememberPagerState(pageCount = { postDetailInfo.imgs.size })
 
-    viewModel.getPostByIndex(index)
 
     LazyColumn {
         item {
@@ -96,7 +104,7 @@ fun PostDetailScreen(
                                 .height(5.dp)
                                 .background(color = AppColors.grey4)
                         )
-                        Comments()
+                        Comments(commentsUiState.result)
                         Spacer(modifier = Modifier.height(20.dp))
                     }
 
@@ -253,7 +261,10 @@ fun PostContent(content: String, countLove: Int, loved: Boolean) {
 }
 
 @Composable
-fun Comments() {
+fun Comments(comments: List<GetCommentsByPostIndexResult>) {
+    var showLoveListPopUp by remember {
+        mutableStateOf(false)
+    }
     Column {
         Row(
             modifier = Modifier.padding(
@@ -263,7 +274,7 @@ fun Comments() {
             )
         ) {
             Text(
-                text = "댓글 2개",
+                text = "댓글 ${comments.size}개",
                 style = AppTypography.B2_14,
                 color = AppColors.grey2,
                 modifier = Modifier.weight(1f)
@@ -271,13 +282,16 @@ fun Comments() {
             Text(
                 text = stringResource(R.string.post_detail_screen_show_heart),
                 style = AppTypography.B2_14,
-                color = AppColors.grey2
+                color = AppColors.grey2,
+                modifier = Modifier.noRippleClickable {
+                    showLoveListPopUp = !showLoveListPopUp
+                }
             )
         }
         Spacer(modifier = Modifier.height(10.dp))
         CommentTextField()
         Spacer(modifier = Modifier.height(18.dp))
-        CommentItems()
+        CommentItems(comments)
     }
 }
 
@@ -338,18 +352,17 @@ fun CommentTextField() {
 }
 
 @Composable
-fun CommentItems() {
+fun CommentItems(comments: List<GetCommentsByPostIndexResult>) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-        CommentItem()
-        CommentItem()
-        CommentItem()
-        CommentItem()
+        comments.forEach {
+            CommentItem(it)
+        }
     }
 
 }
 
 @Composable
-fun CommentItem() {
+fun CommentItem(comment: GetCommentsByPostIndexResult) {
     var expanded by remember {
         mutableStateOf(false)
     }
@@ -366,8 +379,8 @@ fun CommentItem() {
             modifier = Modifier.weight(1f)
         ) {
             Row(modifier = Modifier.padding(start = 11.dp, top = 10.dp)) {
-                Image(
-                    painter = painterResource(id = R.drawable.default_profile),
+                AsyncImage(
+                    model = comment.profileImg,
                     contentDescription = null,
                     modifier = Modifier
                         .padding(end = 11.dp)
@@ -375,15 +388,14 @@ fun CommentItem() {
                         .size(24.dp)
                 )
                 Text(
-                    text = "마미",
+                    text = comment.nickname,
                     style = AppTypography.BTN6_13,
                     color = AppColors.black2
                 )
             }
             Text(
                 modifier = Modifier.padding(start = 11.dp, bottom = 14.58.dp, top = 9.73.dp),
-                text = "우리 가족 사진 너무 잘 나왔다~~!\n" +
-                    "엄마도 카톡으로 보내줘~",
+                text = comment.content,
                 style = AppTypography.LB2_11,
                 color = AppColors.black2
             )
@@ -391,18 +403,14 @@ fun CommentItem() {
 
         Column(
             modifier = Modifier
-                .padding(end = 6.dp, bottom = 8.dp),
+                .padding(top = 3.dp, end = 6.dp, bottom = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box {
+            Box(modifier = Modifier.align(Alignment.End)) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_three_dots_row),
                     contentDescription = null,
-                    modifier = Modifier
-                        .padding(top = 3.dp)
-                        .noRippleClickable {
-                            expanded = true
-                        },
+                    modifier = Modifier.noRippleClickable { expanded = true },
                     tint = Color.Unspecified,
                 )
                 PostDetailDropdownMenu(
@@ -414,23 +422,30 @@ fun CommentItem() {
                 ) { expanded = it }
             }
 
-            var commentLike by remember {
-                mutableStateOf(false)
+            var commentLikeState by remember {
+                mutableStateOf(comment.heart)
             }
 
             Icon(
                 imageVector =
-                if (!commentLike) ImageVector.vectorResource(R.drawable.ic_heart_empty)
+                if (!commentLikeState) ImageVector.vectorResource(R.drawable.ic_heart_empty)
                 else ImageVector.vectorResource(R.drawable.ic_heart_filled),
                 contentDescription = null,
                 tint = Color.Unspecified,
                 modifier = Modifier
                     .padding(top = 5.dp)
                     .align(Alignment.End)
-                    .noRippleClickable { commentLike = !commentLike }
+                    .noRippleClickable {
+                        if (commentLikeState) {
+                            // todo 하트 취소 요청
+                        } else {
+                            // todo 하트 요청
+                        }
+                        commentLikeState = !commentLikeState
+                    }
             )
             Text(
-                text = "7분 전",
+                text = comment.createdAt,
                 style = AppTypography.LB2_11,
                 color = AppColors.grey3,
                 modifier = Modifier.padding(top = 4.dp)

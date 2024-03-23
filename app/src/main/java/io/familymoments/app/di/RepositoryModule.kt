@@ -63,7 +63,7 @@ object RepositoryModule {
     @Provides
     @Singleton
     fun provideCommentRepository(commentService: CommentService):CommentRepository{
-        return CommentRepositoryImpl()
+        return CommentRepositoryImpl(commentService)
     }
 
 }
