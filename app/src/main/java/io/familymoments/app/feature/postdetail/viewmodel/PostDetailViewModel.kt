@@ -5,6 +5,7 @@ import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.repository.CommentRepository
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.feature.postdetail.model.uistate.CommentsUiState
+import io.familymoments.app.feature.postdetail.model.uistate.DeleteCommentUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostCommentUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostDetailUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostLovesUiState
@@ -38,6 +39,11 @@ class PostDetailViewModel @Inject constructor(
         MutableStateFlow(PostCommentUiState())
     val postCommentUiState:StateFlow<PostCommentUiState> =
         _postCommentUiState.asStateFlow()
+
+    private val _deleteCommentUiState:MutableStateFlow<DeleteCommentUiState> =
+        MutableStateFlow(DeleteCommentUiState())
+    val deleteCommentUiState:StateFlow<DeleteCommentUiState> =
+        _deleteCommentUiState.asStateFlow()
 
     fun getPostByIndex(index: Int) {
         async(
@@ -111,6 +117,26 @@ class PostDetailViewModel @Inject constructor(
             },
             onFailure = {
                 _postCommentUiState.value = _postCommentUiState.value.copy(
+                    isSuccess = false,
+                    isLoading = isLoading.value,
+                    message = it.message
+                )
+            }
+        )
+    }
+
+    fun deleteComment(index:Int){
+        async(
+            operation = {commentRepository.deleteComment(index)},
+            onSuccess = {
+                _deleteCommentUiState.value = _deleteCommentUiState.value.copy(
+                    isSuccess = true,
+                    isLoading = isLoading.value,
+                    result = it.result
+                )
+            },
+            onFailure = {
+                _deleteCommentUiState.value = _deleteCommentUiState.value.copy(
                     isSuccess = false,
                     isLoading = isLoading.value,
                     message = it.message

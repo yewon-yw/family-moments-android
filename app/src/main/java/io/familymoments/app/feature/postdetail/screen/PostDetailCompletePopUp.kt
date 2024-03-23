@@ -2,7 +2,6 @@ package io.familymoments.app.feature.postdetail.screen
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -28,6 +27,7 @@ import androidx.compose.ui.window.Dialog
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.util.noRippleClickable
 
 @Composable
 fun PostDetailCompletePopUp(
@@ -51,7 +51,7 @@ fun PostDetailCompletePopUp(
                 ) {
                     Image(
                         modifier = Modifier
-                            .clickable { onDismissRequest() }
+                            .noRippleClickable { onDismissRequest() }
                             .align(Alignment.Center),
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_album_popup_close),
                         contentDescription = "close popup",

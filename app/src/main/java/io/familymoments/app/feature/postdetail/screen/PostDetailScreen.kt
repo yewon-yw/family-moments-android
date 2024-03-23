@@ -77,21 +77,30 @@ fun PostDetailScreen(
         viewModel.getCommentsByPostIndex(index)
         viewModel.getPostLovesByIndex(index)
     }
+
+    val context = LocalContext.current
     val postDetailUiState = viewModel.postDetailUiState.collectAsStateWithLifecycle().value
     val postDetailInfo = postDetailUiState.result
     val commentsUiState = viewModel.commentsUiState.collectAsStateWithLifecycle().value
     val postLovesUiState = viewModel.postLovesUiState.collectAsStateWithLifecycle().value
     val postCommentUiState = viewModel.postCommentUiState.collectAsStateWithLifecycle().value
+    val deleteCommentUiState = viewModel.deleteCommentUiState.collectAsStateWithLifecycle().value
 
-    LaunchedEffect(postCommentUiState) {
-        if (postCommentUiState.isSuccess == true) {
-            viewModel.getCommentsByPostIndex(index)
-        }
+    var showCompletePopUp by remember {
+        mutableStateOf(false)
     }
-
+    if (postCommentUiState.isSuccess == true) {
+        viewModel.getCommentsByPostIndex(index)
+    }
+    if (postCommentUiState.isSuccess == true) {
+        showCompletePopUp = true
+        CompletePopUpWithContent(
+            content = stringResource(R.string.post_detail_delete_complete_pop_label),
+            showCompletePopUp
+        ) { showCompletePopUp = false }
+        viewModel.getCommentsByPostIndex(index)
+    }
     val pagerState = rememberPagerState(pageCount = { postDetailInfo.imgs.size })
-
-    val context = LocalContext.current
 
     LazyColumn {
         item {
@@ -114,7 +123,14 @@ fun PostDetailScreen(
                                 .height(5.dp)
                                 .background(color = AppColors.grey4)
                         )
-                        Comments(commentsUiState.result, context, postLovesUiState, viewModel::postComment, index)
+                        Comments(
+                            commentsUiState.result,
+                            context,
+                            postLovesUiState,
+                            viewModel::postComment,
+                            index,
+                            viewModel::deleteComment
+                        )
                         Spacer(modifier = Modifier.height(20.dp))
                     }
 
@@ -127,8 +143,15 @@ fun PostDetailScreen(
 }
 
 
-fun showNoPostLovesToastMessage(context: Context, postLovesUiState: PostLovesUiState) {
-    Toast.makeText(context, postLovesUiState.message, Toast.LENGTH_SHORT).show()
+fun showToastMessage(context: Context, message: String?) {
+    Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
+}
+
+@Composable
+fun CompletePopUpWithContent(content: String, showCompletePopUp: Boolean, onDismissRequest: () -> Unit) {
+    if (showCompletePopUp) {
+        PostDetailCompletePopUp(content = content, onDismissRequest)
+    }
 }
 
 @Composable
@@ -281,7 +304,8 @@ fun Comments(
     context: Context,
     postLovesUiState: PostLovesUiState,
     postComment: (Int, String) -> Unit,
-    index: Int
+    postIndex: Int,
+    deleteComment: (Int) -> Unit
 ) {
     var showLoveListPopUp by remember {
         mutableStateOf(false)
@@ -306,7 +330,7 @@ fun Comments(
                 color = AppColors.grey2,
                 modifier = Modifier.noRippleClickable {
                     if (postLovesUiState.isSuccess == false) {
-                        showNoPostLovesToastMessage(context, postLovesUiState)
+                        showToastMessage(context, postLovesUiState.message)
                     } else {
                         showLoveListPopUp = true
                     }
@@ -317,9 +341,9 @@ fun Comments(
             LoveListPopUp(postLovesUiState.result) { showLoveListPopUp = false }
         }
         Spacer(modifier = Modifier.height(10.dp))
-        CommentTextField(index, postComment)
+        CommentTextField(postIndex, postComment)
         Spacer(modifier = Modifier.height(18.dp))
-        CommentItems(comments)
+        CommentItems(comments, deleteComment)
     }
 }
 
@@ -382,17 +406,17 @@ fun CommentTextField(index: Int, postComment: (Int, String) -> Unit) {
 }
 
 @Composable
-fun CommentItems(comments: List<GetCommentsByPostIndexResult>) {
+fun CommentItems(comments: List<GetCommentsByPostIndexResult>, deleteComment: (Int) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         comments.forEach {
-            CommentItem(it)
+            CommentItem(it, deleteComment)
         }
     }
 
 }
 
 @Composable
-fun CommentItem(comment: GetCommentsByPostIndexResult) {
+fun CommentItem(comment: GetCommentsByPostIndexResult, deleteComment: (Int) -> Unit) {
     var expanded by remember {
         mutableStateOf(false)
     }
@@ -431,6 +455,28 @@ fun CommentItem(comment: GetCommentsByPostIndexResult) {
             )
         }
 
+        var showDeleteCommentPopUp by remember {
+            mutableStateOf(false)
+        }
+        var showReportCommentPopUp by remember {
+            mutableStateOf(false)
+        }
+        if (showDeleteCommentPopUp) {
+            PostDetailExecutePopUp(content = stringResource(R.string.post_detail_pop_up_delete_comment_label),
+                execute = {
+                    deleteComment(comment.commentId)
+                }) {
+                showDeleteCommentPopUp = false
+            }
+        }
+        if (showReportCommentPopUp) {
+            ReportPopUp(onDismissRequest = {
+                showReportCommentPopUp = false
+            }) {
+
+            }
+        }
+
         Column(
             modifier = Modifier
                 .padding(top = 3.dp, end = 6.dp, bottom = 8.dp),
@@ -445,8 +491,12 @@ fun CommentItem(comment: GetCommentsByPostIndexResult) {
                 )
                 PostDetailDropdownMenu(
                     items = listOf(
-                        Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report), {}),
-                        Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_delete), {}),
+                        Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {
+                            showReportCommentPopUp = true
+                        },
+                        Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_delete)) {
+                            showDeleteCommentPopUp = true
+                        },
                     ),
                     expanded = expanded
                 ) { expanded = it }

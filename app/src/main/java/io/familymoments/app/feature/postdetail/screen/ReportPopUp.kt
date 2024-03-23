@@ -43,6 +43,7 @@ import androidx.compose.ui.window.Dialog
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.util.noRippleClickable
 
 @Composable
 fun ReportPopUp(
@@ -152,10 +153,18 @@ fun ReportItems(modifier: Modifier) {
 @Composable
 fun ReportItem() {
     Row(verticalAlignment = Alignment.CenterVertically) {
+        var checkStatus by remember {
+            mutableStateOf(false)
+        }
         Icon(
-            imageVector = ImageVector.vectorResource(R.drawable.ic_pink_circle_check),
+            imageVector =
+            if (checkStatus) ImageVector.vectorResource(R.drawable.ic_pink_circle_check)
+            else ImageVector.vectorResource(R.drawable.ic_pink_circle_uncheck),
             contentDescription = null,
-            tint = Color.Unspecified
+            tint = Color.Unspecified,
+            modifier = Modifier.noRippleClickable {
+                checkStatus = !checkStatus
+            }
         )
         Spacer(modifier = Modifier.width(6.dp))
         Text(

@@ -4,6 +4,7 @@ import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.CommentService
 import io.familymoments.app.core.network.repository.CommentRepository
 import io.familymoments.app.feature.postdetail.model.request.PostCommentRequest
+import io.familymoments.app.feature.postdetail.model.response.DeleteCommentResponse
 import io.familymoments.app.feature.postdetail.model.response.GetCommentsByPostIndexResponse
 import io.familymoments.app.feature.postdetail.model.response.PostCommentResponse
 import kotlinx.coroutines.flow.Flow
@@ -35,6 +36,22 @@ class CommentRepositoryImpl @Inject constructor(
             emit(Resource.Loading)
             val response = commentService.postComment(index, PostCommentRequest(comment))
             val responseBody = response.body() ?: PostCommentResponse()
+
+            if (responseBody.isSuccess) {
+                emit(Resource.Success(responseBody))
+            } else {
+                emit(Resource.Fail(Throwable(responseBody.message)))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun deleteComment(index: Int): Flow<Resource<DeleteCommentResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = commentService.deleteComment(index)
+            val responseBody = response.body() ?: DeleteCommentResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
