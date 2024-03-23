@@ -78,14 +78,17 @@ fun PostDetailScreen(
         viewModel.getPostLovesByIndex(index)
     }
     val postDetailUiState = viewModel.postDetailUiState.collectAsStateWithLifecycle().value
-    val _postDetailInfo = postDetailUiState.result
-    val postDetailInfo = _postDetailInfo.copy(
-        imgs = listOf("https://fm-content-bucket-01.s3.ap-northeast-2.amazonaws.com/331c4c4d-84a2-412f-a68c-4db883f059c4.png"),
-        loved = true,
-        countLove = 1
-    )
+    val postDetailInfo = postDetailUiState.result
     val commentsUiState = viewModel.commentsUiState.collectAsStateWithLifecycle().value
     val postLovesUiState = viewModel.postLovesUiState.collectAsStateWithLifecycle().value
+    val postCommentUiState = viewModel.postCommentUiState.collectAsStateWithLifecycle().value
+
+    LaunchedEffect(postCommentUiState) {
+        if (postCommentUiState.isSuccess == true) {
+            viewModel.getCommentsByPostIndex(index)
+        }
+    }
+
     val pagerState = rememberPagerState(pageCount = { postDetailInfo.imgs.size })
 
     val context = LocalContext.current
@@ -111,7 +114,7 @@ fun PostDetailScreen(
                                 .height(5.dp)
                                 .background(color = AppColors.grey4)
                         )
-                        Comments(commentsUiState.result, context, postLovesUiState)
+                        Comments(commentsUiState.result, context, postLovesUiState, viewModel::postComment, index)
                         Spacer(modifier = Modifier.height(20.dp))
                     }
 
@@ -273,7 +276,13 @@ fun PostContent(content: String, countLove: Int, loved: Boolean) {
 }
 
 @Composable
-fun Comments(comments: List<GetCommentsByPostIndexResult>, context: Context, postLovesUiState: PostLovesUiState) {
+fun Comments(
+    comments: List<GetCommentsByPostIndexResult>,
+    context: Context,
+    postLovesUiState: PostLovesUiState,
+    postComment: (Int, String) -> Unit,
+    index: Int
+) {
     var showLoveListPopUp by remember {
         mutableStateOf(false)
     }
@@ -308,14 +317,14 @@ fun Comments(comments: List<GetCommentsByPostIndexResult>, context: Context, pos
             LoveListPopUp(postLovesUiState.result) { showLoveListPopUp = false }
         }
         Spacer(modifier = Modifier.height(10.dp))
-        CommentTextField()
+        CommentTextField(index, postComment)
         Spacer(modifier = Modifier.height(18.dp))
         CommentItems(comments)
     }
 }
 
 @Composable
-fun CommentTextField() {
+fun CommentTextField(index: Int, postComment: (Int, String) -> Unit) {
     var comments by remember {
         mutableStateOf(TextFieldValue())
     }
@@ -350,7 +359,9 @@ fun CommentTextField() {
                 innerTextField()
             }
             Button(
-                onClick = { },
+                onClick = {
+                    postComment(index, comments.text)
+                },
                 modifier = Modifier
                     .padding(end = 6.dp)
                     .clip(RoundedCornerShape(10.dp))

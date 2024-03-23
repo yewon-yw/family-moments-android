@@ -5,6 +5,7 @@ import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.repository.CommentRepository
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.feature.postdetail.model.uistate.CommentsUiState
+import io.familymoments.app.feature.postdetail.model.uistate.PostCommentUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostDetailUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostLovesUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,6 +33,11 @@ class PostDetailViewModel @Inject constructor(
         MutableStateFlow(PostLovesUiState())
     val postLovesUiState:StateFlow<PostLovesUiState> =
         _postLovesUiState.asStateFlow()
+
+    private val _postCommentUiState:MutableStateFlow<PostCommentUiState> =
+        MutableStateFlow(PostCommentUiState())
+    val postCommentUiState:StateFlow<PostCommentUiState> =
+        _postCommentUiState.asStateFlow()
 
     fun getPostByIndex(index: Int) {
         async(
@@ -85,6 +91,26 @@ class PostDetailViewModel @Inject constructor(
             },
             onFailure = {
                 _postLovesUiState.value = _postLovesUiState.value.copy(
+                    isSuccess = false,
+                    isLoading = isLoading.value,
+                    message = it.message
+                )
+            }
+        )
+    }
+
+    fun postComment(index:Int, content:String){
+        async(
+            operation = {commentRepository.postComment(content, index)},
+            onSuccess = {
+                _postCommentUiState.value = _postCommentUiState.value.copy(
+                    isSuccess = true,
+                    isLoading = isLoading.value,
+                    result = it.result
+                )
+            },
+            onFailure = {
+                _postCommentUiState.value = _postCommentUiState.value.copy(
                     isSuccess = false,
                     isLoading = isLoading.value,
                     message = it.message
