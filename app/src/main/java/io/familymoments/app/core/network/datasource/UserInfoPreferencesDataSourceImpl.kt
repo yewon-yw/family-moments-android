@@ -2,6 +2,7 @@ package io.familymoments.app.core.network.datasource
 
 import android.content.SharedPreferences
 import io.familymoments.app.core.network.model.UserProfile
+import io.familymoments.app.feature.profile.model.response.ProfileEditResult
 import javax.inject.Inject
 
 class UserInfoPreferencesDataSourceImpl @Inject constructor(
@@ -84,6 +85,16 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
 
     override suspend fun resetPreferencesData() {
         sharedPreferences.edit().clear().commit()
+    }
+
+    override suspend fun updateUserProfile(profileEditResult: ProfileEditResult) {
+        with(sharedPreferences.edit()) {
+            putString(USER_NAME_KEY, profileEditResult.name)
+            putString(USER_NICKNAME_KEY, profileEditResult.nickname)
+            putString(USER_BIRTH_DATE_KEY, profileEditResult.birthdate)
+            putString(USER_PROFILE_IMG_KEY, profileEditResult.profileImg)
+            apply()
+        }
     }
 
     companion object {
