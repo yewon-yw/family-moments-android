@@ -104,7 +104,14 @@ fun PostDetailScreen(
     LazyColumn {
         item {
             Column(modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 26.dp, bottom = 63.dp)) {
-                WriterInfo(postDetailInfo.writer, postDetailInfo.profileImg, postDetailInfo.createdAt)
+                if (postDetailUiState.isSuccess == true) {
+                    WriterInfo(
+                        postDetailInfo.writer,
+                        postDetailInfo.profileImg,
+                        postDetailInfo.createdAt,
+                        viewModel::formatPostCreatedDate
+                    )
+                }
                 Spacer(modifier = Modifier.height(15.dp))
                 Divider(Modifier.height(1.dp), color = AppColors.deepPurple3)
                 Spacer(modifier = Modifier.height(19.dp))
@@ -114,31 +121,37 @@ fun PostDetailScreen(
                             .clip(shape = RoundedCornerShape(10.dp))
                             .background(AppColors.grey6)
                     ) {
-                        PostPhotos(postDetailInfo.imgs, pagerState)
-                        PostContent(
-                            postDetailInfo.content,
-                            postDetailInfo.countLove,
-                            postDetailInfo.loved,
-                            postDetailInfo.postId,
-                            viewModel::postPostLoves,
-                            viewModel::deletePostLoves
-                        )
+                        if (postDetailUiState.isSuccess == true) {
+                            PostPhotos(postDetailInfo.imgs, pagerState)
+                            PostContent(
+                                postDetailInfo.content,
+                                postDetailInfo.countLove,
+                                postDetailInfo.loved,
+                                postDetailInfo.postId,
+                                viewModel::postPostLoves,
+                                viewModel::deletePostLoves
+                            )
+                        }
                         Spacer(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(5.dp)
                                 .background(color = AppColors.grey4)
                         )
-                        Comments(
-                            commentsUiState.result,
-                            context,
-                            postLovesUiState,
-                            viewModel::postComment,
-                            index,
-                            viewModel::deleteComment,
-                            viewModel::postCommentLoves,
-                            viewModel::deleteCommentLoves
-                        )
+                        if (commentsUiState.isSuccess == true) {
+                            Comments(
+                                commentsUiState.result,
+                                context,
+                                postLovesUiState,
+                                viewModel::postComment,
+                                index,
+                                viewModel::deleteComment,
+                                viewModel::postCommentLoves,
+                                viewModel::deleteCommentLoves,
+                                viewModel::formatCommentCreatedDate
+                            )
+                        }
+
                         Spacer(modifier = Modifier.height(20.dp))
                     }
 
@@ -163,7 +176,7 @@ fun CompletePopUpWithContent(content: String, showCompletePopUp: Boolean, onDism
 }
 
 @Composable
-fun WriterInfo(writer: String, profileImg: String, createdAt: String) {
+fun WriterInfo(writer: String, profileImg: String, createdAt: String, formatPostCreatedDate: (String) -> String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -178,7 +191,7 @@ fun WriterInfo(writer: String, profileImg: String, createdAt: String) {
         )
         Spacer(modifier = Modifier.width(14.dp))
         Text(text = writer, style = AppTypography.B1_16, color = AppColors.black2, modifier = Modifier.weight(1f))
-        Text(text = createdAt, style = AppTypography.LB1_13, color = AppColors.grey3)
+        Text(text = formatPostCreatedDate(createdAt), style = AppTypography.LB1_13, color = AppColors.grey3)
     }
 }
 
@@ -322,7 +335,8 @@ fun Comments(
     postIndex: Int,
     deleteComment: (Int) -> Unit,
     postCommentLoves: (Int) -> Unit,
-    deleteCommentLoves: (Int) -> Unit
+    deleteCommentLoves: (Int) -> Unit,
+    formatCommentCreatedDate: (String) -> String
 ) {
     var showLoveListPopUp by remember {
         mutableStateOf(false)
@@ -360,7 +374,13 @@ fun Comments(
         Spacer(modifier = Modifier.height(10.dp))
         CommentTextField(postIndex, postComment)
         Spacer(modifier = Modifier.height(18.dp))
-        CommentItems(comments, deleteComment, postCommentLoves, deleteCommentLoves)
+        CommentItems(
+            comments,
+            deleteComment,
+            postCommentLoves,
+            deleteCommentLoves,
+            formatCommentCreatedDate
+        )
     }
 }
 
@@ -427,11 +447,12 @@ fun CommentItems(
     comments: List<GetCommentsByPostIndexResult>,
     deleteComment: (Int) -> Unit,
     postCommentLoves: (Int) -> Unit,
-    deleteCommentLoves: (Int) -> Unit
+    deleteCommentLoves: (Int) -> Unit,
+    formatCommentCreatedDate: (String) -> String
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         comments.forEach {
-            CommentItem(it, deleteComment, postCommentLoves, deleteCommentLoves)
+            CommentItem(it, deleteComment, postCommentLoves, deleteCommentLoves, formatCommentCreatedDate)
         }
     }
 
@@ -442,7 +463,8 @@ fun CommentItem(
     comment: GetCommentsByPostIndexResult,
     deleteComment: (Int) -> Unit,
     postCommentLoves: (Int) -> Unit,
-    deleteCommentLoves: (Int) -> Unit
+    deleteCommentLoves: (Int) -> Unit,
+    formatCommentCreatedDate: (String) -> String
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -552,7 +574,7 @@ fun CommentItem(
                     }
             )
             Text(
-                text = comment.createdAt,
+                text = formatCommentCreatedDate(comment.createdAt),
                 style = AppTypography.LB2_11,
                 color = AppColors.grey3,
                 modifier = Modifier.padding(top = 4.dp)

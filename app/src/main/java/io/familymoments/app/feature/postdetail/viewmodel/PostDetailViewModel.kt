@@ -12,6 +12,10 @@ import io.familymoments.app.feature.postdetail.model.uistate.PostLovesUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.time.DayOfWeek
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -25,24 +29,24 @@ class PostDetailViewModel @Inject constructor(
     val postDetailUiState: StateFlow<PostDetailUiState> =
         _postDetailUiState.asStateFlow()
 
-    private val _commentsUiState:MutableStateFlow<CommentsUiState> =
+    private val _commentsUiState: MutableStateFlow<CommentsUiState> =
         MutableStateFlow(CommentsUiState())
-    val commentsUiState:StateFlow<CommentsUiState> =
+    val commentsUiState: StateFlow<CommentsUiState> =
         _commentsUiState.asStateFlow()
 
-    private val _postLovesUiState:MutableStateFlow<PostLovesUiState> =
+    private val _postLovesUiState: MutableStateFlow<PostLovesUiState> =
         MutableStateFlow(PostLovesUiState())
-    val postLovesUiState:StateFlow<PostLovesUiState> =
+    val postLovesUiState: StateFlow<PostLovesUiState> =
         _postLovesUiState.asStateFlow()
 
-    private val _postCommentUiState:MutableStateFlow<PostCommentUiState> =
+    private val _postCommentUiState: MutableStateFlow<PostCommentUiState> =
         MutableStateFlow(PostCommentUiState())
-    val postCommentUiState:StateFlow<PostCommentUiState> =
+    val postCommentUiState: StateFlow<PostCommentUiState> =
         _postCommentUiState.asStateFlow()
 
-    private val _deleteCommentUiState:MutableStateFlow<DeleteCommentUiState> =
+    private val _deleteCommentUiState: MutableStateFlow<DeleteCommentUiState> =
         MutableStateFlow(DeleteCommentUiState())
-    val deleteCommentUiState:StateFlow<DeleteCommentUiState> =
+    val deleteCommentUiState: StateFlow<DeleteCommentUiState> =
         _deleteCommentUiState.asStateFlow()
 
     fun getPostByIndex(index: Int) {
@@ -65,9 +69,9 @@ class PostDetailViewModel @Inject constructor(
 
     }
 
-    fun getCommentsByPostIndex(index:Int){
+    fun getCommentsByPostIndex(index: Int) {
         async(
-            operation = {commentRepository.getCommentsByPostIndex(index)},
+            operation = { commentRepository.getCommentsByPostIndex(index) },
             onSuccess = {
                 _commentsUiState.value = _commentsUiState.value.copy(
                     isSuccess = true,
@@ -85,9 +89,9 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun getPostLovesByIndex(index:Int){
+    fun getPostLovesByIndex(index: Int) {
         async(
-            operation = {postRepository.getPostLovesByIndex(index)},
+            operation = { postRepository.getPostLovesByIndex(index) },
             onSuccess = {
                 _postLovesUiState.value = _postLovesUiState.value.copy(
                     isSuccess = true,
@@ -105,9 +109,9 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun postComment(index:Int, content:String){
+    fun postComment(index: Int, content: String) {
         async(
-            operation = {commentRepository.postComment(content, index)},
+            operation = { commentRepository.postComment(content, index) },
             onSuccess = {
                 _postCommentUiState.value = _postCommentUiState.value.copy(
                     isSuccess = true,
@@ -125,9 +129,9 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun deleteComment(index:Int){
+    fun deleteComment(index: Int) {
         async(
-            operation = {commentRepository.deleteComment(index)},
+            operation = { commentRepository.deleteComment(index) },
             onSuccess = {
                 _deleteCommentUiState.value = _deleteCommentUiState.value.copy(
                     isSuccess = true,
@@ -145,9 +149,9 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun postCommentLoves(commentId:Int){
+    fun postCommentLoves(commentId: Int) {
         async(
-            operation = {commentRepository.postCommentLoves(commentId)},
+            operation = { commentRepository.postCommentLoves(commentId) },
             onSuccess = {
             },
             onFailure = {
@@ -155,18 +159,9 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun deleteCommentLoves(commentId:Int){
+    fun deleteCommentLoves(commentId: Int) {
         async(
-            operation = {commentRepository.deleteCommentLoves(commentId)},
-            onSuccess = {
-            },
-            onFailure = {
-            }
-        )
-    }
-    fun postPostLoves(postId:Int){
-        async(
-            operation = {postRepository.postPostLoves(postId)},
+            operation = { commentRepository.deleteCommentLoves(commentId) },
             onSuccess = {
             },
             onFailure = {
@@ -174,13 +169,45 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun deletePostLoves(postId:Int){
+    fun postPostLoves(postId: Int) {
         async(
-            operation = {postRepository.deletePostLoves(postId)},
+            operation = { postRepository.postPostLoves(postId) },
             onSuccess = {
             },
             onFailure = {
             }
         )
+    }
+
+    fun deletePostLoves(postId: Int) {
+        async(
+            operation = { postRepository.deletePostLoves(postId) },
+            onSuccess = {
+            },
+            onFailure = {
+            }
+        )
+    }
+
+    @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
+    fun formatPostCreatedDate(createdAt: String): String {
+        val date = LocalDate.parse(createdAt, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
+        val formattedString = date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))
+        return "$formattedString (${
+            when (date.dayOfWeek) {
+                DayOfWeek.MONDAY -> "월"
+                DayOfWeek.TUESDAY -> "화"
+                DayOfWeek.WEDNESDAY -> "수"
+                DayOfWeek.THURSDAY -> "목"
+                DayOfWeek.FRIDAY -> "금"
+                DayOfWeek.SATURDAY -> "토"
+                DayOfWeek.SUNDAY -> "일"
+            }
+        })"
+    }
+
+    fun formatCommentCreatedDate(createdAt: String): String {
+        val date = LocalDateTime.parse(createdAt)
+        return date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))
     }
 }
