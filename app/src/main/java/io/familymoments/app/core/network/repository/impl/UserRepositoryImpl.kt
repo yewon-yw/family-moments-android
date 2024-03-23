@@ -10,6 +10,8 @@ import io.familymoments.app.core.network.model.UserProfileResponse
 import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.feature.login.model.request.LoginRequest
 import io.familymoments.app.feature.login.model.response.LoginResponse
+import io.familymoments.app.feature.modifypassword.model.request.ModifyPasswordRequest
+import io.familymoments.app.feature.modifypassword.model.response.ModifyPasswordResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -101,6 +103,23 @@ class UserRepositoryImpl @Inject constructor(
                 emit(Resource.Fail(Throwable(responseBody.message)))
             }
 
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun modifyPassword(modifyPasswordRequest: ModifyPasswordRequest): Flow<Resource<ModifyPasswordResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = userService.modifyPassword(modifyPasswordRequest)
+            val responseBody = response.body()?: ModifyPasswordResponse()
+            if (responseBody.isSuccess) {
+                emit(Resource.Success(responseBody))
+            } else if (responseBody.code == 4000 || responseBody.code == 4003) {
+                emit(Resource.Success(responseBody))
+            } else {
+                emit(Resource.Fail(Throwable(responseBody.message)))
+            }
         }.catch { e ->
             emit(Resource.Fail(e))
         }
