@@ -5,6 +5,7 @@ import io.familymoments.app.core.network.model.UserProfileResponse
 import io.familymoments.app.feature.login.model.response.LoginResponse
 import io.familymoments.app.feature.modifypassword.model.request.ModifyPasswordRequest
 import io.familymoments.app.feature.modifypassword.model.response.ModifyPasswordResponse
+import io.familymoments.app.feature.mypage.model.response.LogoutResponse
 import kotlinx.coroutines.flow.Flow
 
 // User API 중 토큰이 필요한 API 들
@@ -15,5 +16,5 @@ interface UserRepository {
 
     suspend fun modifyPassword(modifyPasswordRequest: ModifyPasswordRequest): Flow<Resource<ModifyPasswordResponse>>
 
-    suspend fun logoutUser(): Flow<Resource<Unit>>
+    suspend fun logoutUser(): Flow<Resource<LogoutResponse>>
 }
