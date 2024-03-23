@@ -164,4 +164,23 @@ class PostDetailViewModel @Inject constructor(
             }
         )
     }
+    fun postPostLoves(postId:Int){
+        async(
+            operation = {postRepository.postPostLoves(postId)},
+            onSuccess = {
+            },
+            onFailure = {
+            }
+        )
+    }
+
+    fun deletePostLoves(postId:Int){
+        async(
+            operation = {postRepository.deletePostLoves(postId)},
+            onSuccess = {
+            },
+            onFailure = {
+            }
+        )
+    }
 }

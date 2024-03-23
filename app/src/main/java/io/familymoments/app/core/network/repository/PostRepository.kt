@@ -6,8 +6,10 @@ import io.familymoments.app.feature.album.model.GetAlbumDetailResponse
 import io.familymoments.app.feature.album.model.GetAlbumResponse
 import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
 import io.familymoments.app.feature.home.model.GetPostsResponse
+import io.familymoments.app.feature.postdetail.model.response.DeletePostLovesResponse
 import io.familymoments.app.feature.postdetail.model.response.GetPostByIndexResponse
 import io.familymoments.app.feature.postdetail.model.response.GetPostLovesByIndexResponse
+import io.familymoments.app.feature.postdetail.model.response.PostPostLovesResponse
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 
@@ -36,4 +38,6 @@ interface PostRepository {
     ): Flow<Resource<AddPostResponse>>
     suspend fun getPostByIndex(index:Int):Flow<Resource<GetPostByIndexResponse>>
     suspend fun getPostLovesByIndex(index:Int):Flow<Resource<GetPostLovesByIndexResponse>>
+    suspend fun postPostLoves(postId:Int):Flow<Resource<PostPostLovesResponse>>
+    suspend fun deletePostLoves(postId:Int):Flow<Resource<DeletePostLovesResponse>>
 }

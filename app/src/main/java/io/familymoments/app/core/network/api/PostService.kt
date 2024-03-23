@@ -7,13 +7,19 @@ import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
 import io.familymoments.app.feature.home.model.GetPostsResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
+import io.familymoments.app.feature.postdetail.model.request.PostLovesRequest
+import io.familymoments.app.feature.postdetail.model.response.DeletePostLovesResponse
 import io.familymoments.app.feature.postdetail.model.response.GetPostByIndexResponse
 import io.familymoments.app.feature.postdetail.model.response.GetPostLovesByIndexResponse
+import io.familymoments.app.feature.postdetail.model.response.PostPostLovesResponse
 import retrofit2.Response
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.Part
+import retrofit2.http.HTTP
+import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -80,4 +86,14 @@ interface PostService {
     suspend fun getPostLovesByIndex(
         @Path("index") index:Int
     ):Response<GetPostLovesByIndexResponse>
+
+    @POST("/postloves")
+    suspend fun postPostloves(
+        @Body postlovesRequest: PostLovesRequest
+    ):Response<PostPostLovesResponse>
+
+    @HTTP(method="DELETE", hasBody=true, path="/postloves")
+    suspend fun deletePostloves(
+        @Body postlovesRequest: PostLovesRequest
+    ):Response<DeletePostLovesResponse>
 }

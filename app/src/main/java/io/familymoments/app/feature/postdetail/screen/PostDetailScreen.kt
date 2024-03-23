@@ -84,7 +84,6 @@ fun PostDetailScreen(
     val commentsUiState = viewModel.commentsUiState.collectAsStateWithLifecycle().value
     val postLovesUiState = viewModel.postLovesUiState.collectAsStateWithLifecycle().value
     val postCommentUiState = viewModel.postCommentUiState.collectAsStateWithLifecycle().value
-    val deleteCommentUiState = viewModel.deleteCommentUiState.collectAsStateWithLifecycle().value
 
     var showCompletePopUp by remember {
         mutableStateOf(false)
@@ -116,7 +115,14 @@ fun PostDetailScreen(
                             .background(AppColors.grey6)
                     ) {
                         PostPhotos(postDetailInfo.imgs, pagerState)
-                        PostContent(postDetailInfo.content, postDetailInfo.countLove, postDetailInfo.loved)
+                        PostContent(
+                            postDetailInfo.content,
+                            postDetailInfo.countLove,
+                            postDetailInfo.loved,
+                            postDetailInfo.postId,
+                            viewModel::postPostLoves,
+                            viewModel::deletePostLoves
+                        )
                         Spacer(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -220,7 +226,14 @@ fun PostPhotos(imgs: List<String>, pagerState: PagerState) {
 }
 
 @Composable
-fun PostContent(content: String, countLove: Int, loved: Boolean) {
+fun PostContent(
+    content: String,
+    countLove: Int,
+    loved: Boolean,
+    postId: Int,
+    postPostLoves: (Int) -> Unit,
+    deletePostLoves: (Int) -> Unit
+) {
     var expanded by remember {
         mutableStateOf(false)
     }
@@ -280,10 +293,10 @@ fun PostContent(content: String, countLove: Int, loved: Boolean) {
                     tint = Color.Unspecified,
                     modifier = Modifier.noRippleClickable {
                         if (lovedState) {
-                            // todo 하트 취소 요청 성공하면 실행되도록 추후 로직 수정
+                            deletePostLoves(postId)
                             countLoveState -= 1
                         } else {
-                            // todo 하트 요청 성공하면 실행되도록 추후 로직 수정
+                            postPostLoves(postId)
                             countLoveState += 1
                         }
                         lovedState = !lovedState
