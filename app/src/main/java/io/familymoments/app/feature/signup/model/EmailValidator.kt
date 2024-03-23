@@ -16,7 +16,7 @@ object UserInfoFormatChecker {
     }
 
     fun checkNickname(nickname: String): Boolean {
-        val regex = Regex("[a-zA-Z0-9]+")
+        val regex = Regex("[a-zA-Z0-9가-힣]+")
         return nickname.matches(regex)
     }
 }

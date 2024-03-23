@@ -103,6 +103,15 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
         showEmailDuplicationCheckResult(emailDuplicated, context)
     }
 
+    LaunchedEffect(uiState.value.signUpSuccess) {
+        if (uiState.value.signUpSuccess == true) {
+            Toast.makeText(context, context.getString(R.string.sign_up_success), Toast.LENGTH_SHORT).show()
+            (context as Activity).finish()
+        } else if (uiState.value.signUpSuccess == false) {
+            Toast.makeText(context, context.getString(R.string.sign_up_fail), Toast.LENGTH_SHORT).show()
+        }
+    }
+
     AppBarScreen(
         title = {
             Text(

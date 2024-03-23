@@ -106,6 +106,8 @@
     <string name="sign_up_check_email_duplication_fail">사용할 수 없는 이메일 입니다.</string>
     <string name="sign_up_activity_app_bar_title">회원가입</string>
     <string name="sign_up_select_profile_image_btn">사진 선택</string>
+    <string name="sign_up_success">회원가입이 완료되었습니다! 로그인을 진행해주세요!</string>
+    <string name="sign_up_fail">회원가입에 실패하였습니다. 잠시 후 다시 시도해주세요.</string>
 
     <string name="profile_title">프로필</string>
     <string name="edit_profile_title">프로필 편집</string>
