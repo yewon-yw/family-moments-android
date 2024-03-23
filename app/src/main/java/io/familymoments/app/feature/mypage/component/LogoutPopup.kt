@@ -1,4 +1,4 @@
-package io.familymoments.app.feature.logout.component
+package io.familymoments.app.feature.mypage.component
 
 import android.content.Intent
 import androidx.compose.foundation.Image
@@ -35,18 +35,19 @@ import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.login.activity.LoginActivity
-import io.familymoments.app.feature.logout.viewmodel.LogoutViewModel
+import io.familymoments.app.feature.mypage.viewmodel.MyPageViewModel
 
 @Composable
 fun LogoutPopup(
     onDismissRequest: () -> Unit = {},
-    viewModel: LogoutViewModel
+    viewModel: MyPageViewModel
 ) {
     val context = LocalContext.current
-    val logoutUiState = viewModel.logoutUiState.collectAsStateWithLifecycle()
+    val myPageUiState = viewModel.myPageUiState.collectAsStateWithLifecycle()
+    val logoutUiState = myPageUiState.value.logoutUiState
 
-    LaunchedEffect(logoutUiState.value.isSuccess) {
-        if (logoutUiState.value.isSuccess) {
+    LaunchedEffect(logoutUiState.isSuccess) {
+        if (logoutUiState.isSuccess) {
             val intent = Intent(context, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             context.startActivity(intent)

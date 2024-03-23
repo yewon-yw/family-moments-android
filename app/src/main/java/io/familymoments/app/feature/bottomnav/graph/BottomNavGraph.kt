@@ -1,7 +1,5 @@
 package io.familymoments.app.feature.bottomnav.graph
 
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
@@ -14,8 +12,6 @@ import io.familymoments.app.feature.album.screen.AlbumScreen
 import io.familymoments.app.feature.bottomnav.model.BottomNavItem
 import io.familymoments.app.feature.calendar.screen.CalendarScreen
 import io.familymoments.app.feature.home.screen.HomeScreen
-import io.familymoments.app.feature.logout.component.LogoutPopup
-import io.familymoments.app.feature.mypage.graph.MyPageRoute
 import io.familymoments.app.feature.mypage.screen.MyPageScreen
 
 fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
@@ -63,7 +59,6 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
     }
 
     composable(route = BottomNavItem.MyPage.route) {
-        val showLogoutPopup = remember { mutableStateOf(false) }
         MyPageScreen(
             modifier = Modifier
                 .scaffoldState(
@@ -71,17 +66,8 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
                     hasBackButton = true,
                 ),
             onItemClick = { clickedItem ->
-                when(clickedItem.route) {
-                    MyPageRoute.Logout.name -> { showLogoutPopup.value = true }
-                    else -> { navController.navigate(clickedItem.route) }
-                }
+                navController.navigate(clickedItem.route)
             }
         )
-        if (showLogoutPopup.value) {
-            LogoutPopup(
-                onDismissRequest = { showLogoutPopup.value = false },
-                viewModel = hiltViewModel()
-            )
-        }
     }
 }
