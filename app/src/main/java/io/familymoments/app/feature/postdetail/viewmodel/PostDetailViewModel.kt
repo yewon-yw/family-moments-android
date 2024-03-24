@@ -4,12 +4,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.repository.CommentRepository
 import io.familymoments.app.core.network.repository.PostRepository
-import io.familymoments.app.feature.postdetail.model.uistate.CommentsUiState
-import io.familymoments.app.feature.postdetail.model.uistate.DeleteCommentUiState
-import io.familymoments.app.feature.postdetail.model.uistate.DeletePostUiState
-import io.familymoments.app.feature.postdetail.model.uistate.PostCommentUiState
-import io.familymoments.app.feature.postdetail.model.uistate.PostDetailUiState
-import io.familymoments.app.feature.postdetail.model.uistate.PostLovesUiState
+import io.familymoments.app.feature.postdetail.model.uistate.CommentLogics
+import io.familymoments.app.feature.postdetail.model.uistate.CommentUiState
+import io.familymoments.app.feature.postdetail.model.uistate.PostLogics
+import io.familymoments.app.feature.postdetail.model.uistate.PostUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,51 +23,54 @@ class PostDetailViewModel @Inject constructor(
     private val commentRepository: CommentRepository
 ) : BaseViewModel() {
 
-    private val _postDetailUiState: MutableStateFlow<PostDetailUiState> =
-        MutableStateFlow(PostDetailUiState())
-    val postDetailUiState: StateFlow<PostDetailUiState> =
-        _postDetailUiState.asStateFlow()
+    private val _postUiState: MutableStateFlow<PostUiState> =
+        MutableStateFlow(
+            PostUiState(
+                logics = PostLogics(
+                    getPost = this::getPostByIndex,
+                    getPostLoves = this::getPostLovesByIndex,
+                    postPostLoves = this::postPostLoves,
+                    deletePostLoves = this::deletePostLoves,
+                    deletePost = this::deletePost
+                )
+            )
+        )
+    val postUiState: StateFlow<PostUiState> = _postUiState.asStateFlow()
 
-    private val _commentsUiState: MutableStateFlow<CommentsUiState> =
-        MutableStateFlow(CommentsUiState())
-    val commentsUiState: StateFlow<CommentsUiState> =
-        _commentsUiState.asStateFlow()
-
-    private val _postLovesUiState: MutableStateFlow<PostLovesUiState> =
-        MutableStateFlow(PostLovesUiState())
-    val postLovesUiState: StateFlow<PostLovesUiState> =
-        _postLovesUiState.asStateFlow()
-
-    private val _postCommentUiState: MutableStateFlow<PostCommentUiState> =
-        MutableStateFlow(PostCommentUiState())
-    val postCommentUiState: StateFlow<PostCommentUiState> =
-        _postCommentUiState.asStateFlow()
-
-    private val _deleteCommentUiState: MutableStateFlow<DeleteCommentUiState> =
-        MutableStateFlow(DeleteCommentUiState())
-    val deleteCommentUiState: StateFlow<DeleteCommentUiState> =
-        _deleteCommentUiState.asStateFlow()
-
-    private val _deletePostUiState: MutableStateFlow<DeletePostUiState> =
-        MutableStateFlow(DeletePostUiState())
-    val deletePostUiState: StateFlow<DeletePostUiState> =
-        _deletePostUiState.asStateFlow()
+    private val _commentUiState: MutableStateFlow<CommentUiState> =
+        MutableStateFlow(CommentUiState(
+            logics = CommentLogics(
+                getComments = this::getCommentsByPostIndex,
+                postComment = this::postComment,
+                deleteComment = this::deleteComment,
+                postCommentLoves = this::postCommentLoves,
+                deleteCommentLoves = this::deleteCommentLoves
+            )
+        ))
+    val commentUiState: StateFlow<CommentUiState> =
+        _commentUiState.asStateFlow()
 
     fun getPostByIndex(index: Int) {
         async(
             operation = { postRepository.getPostByIndex(index) },
             onSuccess = {
-                _postDetailUiState.value = _postDetailUiState.value.copy(
-                    isSuccess = true,
-                    isLoading = isLoading.value,
-                    result = it.result
+                val getPostUiState = _postUiState.value.getPostUiState
+                _postUiState.value = _postUiState.value.copy(
+                    getPostUiState = getPostUiState.copy(
+                        isSuccess = true,
+                        isLoading = isLoading.value,
+                        result = it.result
+                    )
                 )
             },
             onFailure = {
-                _postDetailUiState.value = _postDetailUiState.value.copy(
-                    isSuccess = false,
-                    isLoading = isLoading.value,
-                    message = it.message
+                val postDetailUiState = _postUiState.value.getPostUiState
+                _postUiState.value = _postUiState.value.copy(
+                    getPostUiState = postDetailUiState.copy(
+                        isSuccess = false,
+                        isLoading = isLoading.value,
+                        message = it.message
+                    )
                 )
             })
 
@@ -79,17 +80,23 @@ class PostDetailViewModel @Inject constructor(
         async(
             operation = { commentRepository.getCommentsByPostIndex(index) },
             onSuccess = {
-                _commentsUiState.value = _commentsUiState.value.copy(
-                    isSuccess = true,
-                    isLoading = isLoading.value,
-                    result = it.result
+                val getCommentsUiState = _commentUiState.value.getCommentsUiState
+                _commentUiState.value = _commentUiState.value.copy(
+                    getCommentsUiState = getCommentsUiState.copy(
+                        isSuccess = true,
+                        isLoading = isLoading.value,
+                        result = it.result
+                    )
                 )
             },
             onFailure = {
-                _commentsUiState.value = _commentsUiState.value.copy(
-                    isSuccess = false,
-                    isLoading = isLoading.value,
-                    message = it.message
+                val getCommentsUiState = _commentUiState.value.getCommentsUiState
+                _commentUiState.value = _commentUiState.value.copy(
+                    getCommentsUiState = getCommentsUiState.copy(
+                        isSuccess = false,
+                        isLoading = isLoading.value,
+                        message = it.message
+                    )
                 )
             }
         )
@@ -99,17 +106,23 @@ class PostDetailViewModel @Inject constructor(
         async(
             operation = { postRepository.getPostLovesByIndex(index) },
             onSuccess = {
-                _postLovesUiState.value = _postLovesUiState.value.copy(
-                    isSuccess = true,
-                    isLoading = isLoading.value,
-                    result = it.results
+                val getPostLovesUiState = _postUiState.value.getPostLovesUiState
+                _postUiState.value = _postUiState.value.copy(
+                    getPostLovesUiState = getPostLovesUiState.copy(
+                        isSuccess = true,
+                        isLoading = isLoading.value,
+                        result = it.results
+                    )
                 )
             },
             onFailure = {
-                _postLovesUiState.value = _postLovesUiState.value.copy(
-                    isSuccess = false,
-                    isLoading = isLoading.value,
-                    message = it.message
+                val getPostLovesUiState = _postUiState.value.getPostLovesUiState
+                _postUiState.value = _postUiState.value.copy(
+                    getPostLovesUiState = getPostLovesUiState.copy(
+                        isSuccess = false,
+                        isLoading = isLoading.value,
+                        message = it.message
+                    )
                 )
             }
         )
@@ -119,17 +132,23 @@ class PostDetailViewModel @Inject constructor(
         async(
             operation = { commentRepository.postComment(content, index) },
             onSuccess = {
-                _postCommentUiState.value = _postCommentUiState.value.copy(
-                    isSuccess = true,
-                    isLoading = isLoading.value,
-                    result = it.result
+                val postCommentUiState = _commentUiState.value.postCommentUiState
+                _commentUiState.value = _commentUiState.value.copy(
+                    postCommentUiState = postCommentUiState.copy(
+                        isSuccess = true,
+                        isLoading = isLoading.value,
+                        result = it.result
+                    )
                 )
             },
             onFailure = {
-                _postCommentUiState.value = _postCommentUiState.value.copy(
-                    isSuccess = false,
-                    isLoading = isLoading.value,
-                    message = it.message
+                val postCommentUiState = _commentUiState.value.postCommentUiState
+                _commentUiState.value = _commentUiState.value.copy(
+                    postCommentUiState = postCommentUiState.copy(
+                        isSuccess = false,
+                        isLoading = isLoading.value,
+                        message = it.message
+                    )
                 )
             }
         )
@@ -139,17 +158,23 @@ class PostDetailViewModel @Inject constructor(
         async(
             operation = { commentRepository.deleteComment(index) },
             onSuccess = {
-                _deleteCommentUiState.value = _deleteCommentUiState.value.copy(
-                    isSuccess = true,
-                    isLoading = isLoading.value,
-                    result = it.result
+                val deleteCommentUiState = _commentUiState.value.deleteCommentUiState
+                _commentUiState.value = _commentUiState.value.copy(
+                    deleteCommentUiState = deleteCommentUiState.copy(
+                        isSuccess = true,
+                        isLoading = isLoading.value,
+                        result = it.result
+                    )
                 )
             },
             onFailure = {
-                _deleteCommentUiState.value = _deleteCommentUiState.value.copy(
-                    isSuccess = false,
-                    isLoading = isLoading.value,
-                    message = it.message
+                val deleteCommentUiState = _commentUiState.value.deleteCommentUiState
+                _commentUiState.value = _commentUiState.value.copy(
+                    deleteCommentUiState = deleteCommentUiState.copy(
+                        isSuccess = false,
+                        isLoading = isLoading.value,
+                        message = it.message
+                    )
                 )
             }
         )
@@ -159,8 +184,24 @@ class PostDetailViewModel @Inject constructor(
         async(
             operation = { commentRepository.postCommentLoves(commentId) },
             onSuccess = {
+                val postCommentLovesUiState = _commentUiState.value.postCommentLovesUiState
+                _commentUiState.value = _commentUiState.value.copy(
+                    postCommentLovesUiState = postCommentLovesUiState.copy(
+                        isSuccess = true,
+                        isLoading = isLoading.value,
+                        result = it.result
+                    )
+                )
             },
             onFailure = {
+                val postCommentLovesUiState = _commentUiState.value.postCommentLovesUiState
+                _commentUiState.value = _commentUiState.value.copy(
+                    postCommentLovesUiState = postCommentLovesUiState.copy(
+                        isSuccess = false,
+                        isLoading = isLoading.value,
+                        message = it.message
+                    )
+                )
             }
         )
     }
@@ -169,8 +210,24 @@ class PostDetailViewModel @Inject constructor(
         async(
             operation = { commentRepository.deleteCommentLoves(commentId) },
             onSuccess = {
+                val deleteCommentLovesUiState = _commentUiState.value.deleteCommentLovesUiState
+                _commentUiState.value = _commentUiState.value.copy(
+                    deleteCommentLovesUiState = deleteCommentLovesUiState.copy(
+                        isSuccess = true,
+                        isLoading = isLoading.value,
+                        result = it.result
+                    )
+                )
             },
             onFailure = {
+                val deleteCommentLovesUiState = _commentUiState.value.deleteCommentLovesUiState
+                _commentUiState.value = _commentUiState.value.copy(
+                    deleteCommentLovesUiState = deleteCommentLovesUiState.copy(
+                        isSuccess = false,
+                        isLoading = isLoading.value,
+                        message = it.message
+                    )
+                )
             }
         )
     }
@@ -179,8 +236,24 @@ class PostDetailViewModel @Inject constructor(
         async(
             operation = { postRepository.postPostLoves(postId) },
             onSuccess = {
+                val postPostLovesUiState = _postUiState.value.postPostLovesUiState
+                _postUiState.value = _postUiState.value.copy(
+                    postPostLovesUiState = postPostLovesUiState.copy(
+                        isSuccess = true,
+                        isLoading = isLoading.value,
+                        result = it.result
+                    )
+                )
             },
             onFailure = {
+                val postPostLovesUiState = _postUiState.value.postPostLovesUiState
+                _postUiState.value = _postUiState.value.copy(
+                    postPostLovesUiState = postPostLovesUiState.copy(
+                        isSuccess = false,
+                        isLoading = isLoading.value,
+                        message = it.message
+                    )
+                )
             }
         )
     }
@@ -188,8 +261,26 @@ class PostDetailViewModel @Inject constructor(
     fun deletePostLoves(postId: Int) {
         async(
             operation = { postRepository.deletePostLoves(postId) },
-            onSuccess = {},
-            onFailure = {}
+            onSuccess = {
+                val deletePostLovesUiState = _postUiState.value.deletePostLovesUiState
+                _postUiState.value = _postUiState.value.copy(
+                    deletePostLovesUiState = deletePostLovesUiState.copy(
+                        isSuccess = true,
+                        isLoading = isLoading.value,
+                        result = it.result
+                    )
+                )
+            },
+            onFailure = {
+                val deletePostLovesUiState = _postUiState.value.deletePostLovesUiState
+                _postUiState.value = _postUiState.value.copy(
+                    deletePostLovesUiState = deletePostLovesUiState.copy(
+                        isSuccess = true,
+                        isLoading = isLoading.value,
+                        message = it.message
+                    )
+                )
+            }
         )
     }
 
@@ -197,17 +288,23 @@ class PostDetailViewModel @Inject constructor(
         async(
             operation = { postRepository.deletePost(index) },
             onSuccess = {
-                _deletePostUiState.value = _deletePostUiState.value.copy(
-                    isSuccess = true,
-                    isLoading = isLoading.value,
-                    result = it.message
+                val deletePostUiState = _postUiState.value.deletePostUiState
+                _postUiState.value = _postUiState.value.copy(
+                    deletePostUiState = deletePostUiState.copy(
+                        isSuccess = true,
+                        isLoading = isLoading.value,
+                        result = it.message
+                    )
                 )
             },
             onFailure = {
-                _deletePostUiState.value = _deletePostUiState.value.copy(
-                    isSuccess = false,
-                    isLoading = isLoading.value,
-                    result = it.message
+                val deletePostUiState = _postUiState.value.deletePostUiState
+                _postUiState.value = _postUiState.value.copy(
+                    deletePostUiState = deletePostUiState.copy(
+                        isSuccess = false,
+                        isLoading = isLoading.value,
+                        result = it.message
+                    )
                 )
             }
         )

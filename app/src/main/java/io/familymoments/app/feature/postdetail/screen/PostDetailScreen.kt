@@ -62,9 +62,11 @@ import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.postdetail.model.component.postDetailContentShadow
 import io.familymoments.app.feature.postdetail.model.response.GetCommentsByPostIndexResult
+import io.familymoments.app.feature.postdetail.model.response.GetPostByIndexResult
+import io.familymoments.app.feature.postdetail.model.uistate.CommentLogics
 import io.familymoments.app.feature.postdetail.model.uistate.DeleteCommentUiState
-import io.familymoments.app.feature.postdetail.model.uistate.DeletePostUiState
-import io.familymoments.app.feature.postdetail.model.uistate.PostLovesUiState
+import io.familymoments.app.feature.postdetail.model.uistate.GetPostLovesUiState
+import io.familymoments.app.feature.postdetail.model.uistate.PostLogics
 import io.familymoments.app.feature.postdetail.viewmodel.PostDetailViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -79,14 +81,9 @@ fun PostDetailScreen(
         viewModel.getCommentsByPostIndex(index)
         viewModel.getPostLovesByIndex(index)
     }
-
     val context = LocalContext.current
-    val postDetailUiState = viewModel.postDetailUiState.collectAsStateWithLifecycle().value
-    val postDetailInfo = postDetailUiState.result
-    val commentsUiState = viewModel.commentsUiState.collectAsStateWithLifecycle().value
-    val postLovesUiState = viewModel.postLovesUiState.collectAsStateWithLifecycle().value
-    val deleteCommentUiState = viewModel.deleteCommentUiState.collectAsStateWithLifecycle().value
-    val deletePostUiState = viewModel.deletePostUiState.collectAsStateWithLifecycle().value
+    val postUiState = viewModel.postUiState.collectAsStateWithLifecycle().value
+    val commentUiState = viewModel.commentUiState.collectAsStateWithLifecycle().value
 
     var showDeleteCompletePopUp by remember {
         mutableStateOf(false)
@@ -97,16 +94,14 @@ fun PostDetailScreen(
         ) { showDeleteCompletePopUp = false }
     }
 
-    val pagerState = rememberPagerState(pageCount = { postDetailInfo.imgs.size })
+    val pagerState = rememberPagerState(pageCount = { postUiState.getPostUiState.result.imgs.size })
 
     LazyColumn {
         item {
             Column(modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 26.dp, bottom = 63.dp)) {
-                if (postDetailUiState.isSuccess == true) {
+                if (postUiState.getPostUiState.isSuccess == true) {
                     WriterInfo(
-                        postDetailInfo.writer,
-                        postDetailInfo.profileImg,
-                        postDetailInfo.createdAt,
+                        postUiState.getPostUiState.result,
                         viewModel::formatPostCreatedDate
                     )
                 }
@@ -119,16 +114,11 @@ fun PostDetailScreen(
                             .clip(shape = RoundedCornerShape(10.dp))
                             .background(AppColors.grey6)
                     ) {
-                        PostPhotos(postDetailInfo.imgs, pagerState)
+                        PostPhotos(postUiState.getPostUiState.result.imgs, pagerState)
                         PostContent(
-                            postDetailInfo.content,
-                            postDetailInfo.countLove,
-                            postDetailInfo.loved,
-                            postDetailInfo.postId,
-                            viewModel::postPostLoves,
-                            viewModel::deletePostLoves,
-                            viewModel::deletePost,
-                            deletePostUiState
+                            postUiState.getPostUiState.result,
+                            postUiState.logics,
+                            postUiState.deletePostUiState.isSuccess,
                         ) { showDeleteCompletePopUp = true }
                         Spacer(
                             modifier = Modifier
@@ -137,23 +127,20 @@ fun PostDetailScreen(
                                 .background(color = AppColors.grey4)
                         )
                         CommentTextField(
-                            postId = postDetailInfo.postId,
-                            postComment = viewModel::postComment,
-                            commentsCount = commentsUiState.result.size,
-                            postLovesUiState = postLovesUiState,
-                            context = context
+                            commentUiState.getCommentsUiState.result.size,
+                            postUiState.getPostUiState.result.postId,
+                            viewModel::postComment,
+                            postUiState.getPostLovesUiState,
+                            context
                         )
                         Spacer(modifier = Modifier.height(18.dp))
-                        if (commentsUiState.isSuccess == true) {
+                        if (commentUiState.getCommentsUiState.isSuccess == true) {
                             CommentItems(
-                                comments = commentsUiState.result,
-                                deleteComment = viewModel::deleteComment,
-                                postCommentLoves = viewModel::postCommentLoves,
-                                deleteCommentLoves = viewModel::deleteCommentLoves,
-                                formatCommentCreatedDate = viewModel::formatCommentCreatedDate,
-                                deleteCommentUiState = deleteCommentUiState,
-                                showCompletePopUp = { showDeleteCompletePopUp = true }
-                            )
+                                commentUiState.getCommentsUiState.result,
+                                commentUiState.logics,
+                                viewModel::formatCommentCreatedDate,
+                                commentUiState.deleteCommentUiState
+                            ) { showDeleteCompletePopUp = true }
                         }
 
                         Spacer(modifier = Modifier.height(20.dp))
@@ -173,22 +160,31 @@ fun showToastMessage(context: Context, message: String?) {
 }
 
 @Composable
-fun WriterInfo(writer: String, profileImg: String, createdAt: String, formatPostCreatedDate: (String) -> String) {
+fun WriterInfo(postInfo: GetPostByIndexResult, formatPostCreatedDate: (String) -> String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(modifier = Modifier.width(11.dp))
         AsyncImage(
-            model = profileImg,
+            model = postInfo.profileImg,
             contentDescription = null,
             modifier = Modifier
                 .clip(CircleShape)
                 .size(45.dp)
         )
         Spacer(modifier = Modifier.width(14.dp))
-        Text(text = writer, style = AppTypography.B1_16, color = AppColors.black2, modifier = Modifier.weight(1f))
-        Text(text = formatPostCreatedDate(createdAt), style = AppTypography.LB1_13, color = AppColors.grey3)
+        Text(
+            text = postInfo.writer,
+            style = AppTypography.B1_16,
+            color = AppColors.black2,
+            modifier = Modifier.weight(1f)
+        )
+        Text(
+            text = formatPostCreatedDate(postInfo.createdAt),
+            style = AppTypography.LB1_13,
+            color = AppColors.grey3
+        )
     }
 }
 
@@ -237,14 +233,9 @@ fun PostPhotos(imgs: List<String>, pagerState: PagerState) {
 
 @Composable
 fun PostContent(
-    content: String,
-    countLove: Int,
-    loved: Boolean,
-    postId: Int,
-    postPostLoves: (Int) -> Unit,
-    deletePostLoves: (Int) -> Unit,
-    deletePost: (Int) -> Unit,
-    deletePostUiState: DeletePostUiState,
+    postInfo: GetPostByIndexResult,
+    logics: PostLogics,
+    deletePostSuccess: Boolean?,
     showCompletePopUp: () -> Unit
 ) {
     var expanded by remember {
@@ -262,7 +253,7 @@ fun PostContent(
                     .heightIn(183.dp)
                     .padding(top = 11.dp, end = 10.dp)
                     .weight(1f),
-                text = content,
+                text = postInfo.content,
                 style = AppTypography.B2_14,
                 color = AppColors.black2
             )
@@ -289,8 +280,8 @@ fun PostContent(
                         PostDetailExecutePopUp(content = stringResource(R.string.post_detail_delete_post_pop_up_label),
                             onDismissRequest = { showDeletePopUp = false },
                             execute = {
-                                deletePost(postId)
-                                if (deletePostUiState.isSuccess == true) {
+                                logics.deletePost(postInfo.postId)
+                                if (deletePostSuccess == true) {
                                     showCompletePopUp()
                                 }
                             })
@@ -319,10 +310,10 @@ fun PostContent(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 var lovedState by remember {
-                    mutableStateOf(loved)
+                    mutableStateOf(postInfo.loved)
                 }
                 var countLoveState by remember {
-                    mutableIntStateOf(countLove)
+                    mutableIntStateOf(postInfo.countLove)
                 }
 
                 Icon(
@@ -333,10 +324,10 @@ fun PostContent(
                     tint = Color.Unspecified,
                     modifier = Modifier.noRippleClickable {
                         if (lovedState) {
-                            deletePostLoves(postId)
+                            logics.deletePostLoves(postInfo.postId)
                             countLoveState -= 1
                         } else {
-                            postPostLoves(postId)
+                            logics.postPostLoves(postInfo.postId)
                             countLoveState += 1
                         }
                         lovedState = !lovedState
@@ -358,7 +349,7 @@ fun CommentTextField(
     commentsCount: Int,
     postId: Int,
     postComment: (Int, String) -> Unit,
-    postLovesUiState: PostLovesUiState,
+    getPostLovesUiState: GetPostLovesUiState,
     context: Context
 ) {
     var showLoveListPopUp by remember {
@@ -383,8 +374,8 @@ fun CommentTextField(
                 style = AppTypography.B2_14,
                 color = AppColors.grey2,
                 modifier = Modifier.noRippleClickable {
-                    if (postLovesUiState.isSuccess == false) {
-                        showToastMessage(context, postLovesUiState.message)
+                    if (getPostLovesUiState.isSuccess == false) {
+                        showToastMessage(context, getPostLovesUiState.message)
                     } else {
                         showLoveListPopUp = true
                     }
@@ -392,7 +383,7 @@ fun CommentTextField(
             )
         }
         if (showLoveListPopUp) {
-            LoveListPopUp(postLovesUiState.result) { showLoveListPopUp = false }
+            LoveListPopUp(getPostLovesUiState.result) { showLoveListPopUp = false }
         }
         Spacer(modifier = Modifier.height(10.dp))
         var comments by remember {
@@ -455,9 +446,7 @@ fun CommentTextField(
 @Composable
 fun CommentItems(
     comments: List<GetCommentsByPostIndexResult>,
-    deleteComment: (Int) -> Unit,
-    postCommentLoves: (Int) -> Unit,
-    deleteCommentLoves: (Int) -> Unit,
+    logics: CommentLogics,
     formatCommentCreatedDate: (String) -> String,
     deleteCommentUiState: DeleteCommentUiState,
     showCompletePopUp: () -> Unit
@@ -466,9 +455,7 @@ fun CommentItems(
         comments.forEach {
             CommentItem(
                 it,
-                deleteComment,
-                postCommentLoves,
-                deleteCommentLoves,
+                logics,
                 formatCommentCreatedDate,
                 deleteCommentUiState,
                 showCompletePopUp
@@ -481,9 +468,7 @@ fun CommentItems(
 @Composable
 fun CommentItem(
     comment: GetCommentsByPostIndexResult,
-    deleteComment: (Int) -> Unit,
-    postCommentLoves: (Int) -> Unit,
-    deleteCommentLoves: (Int) -> Unit,
+    logics: CommentLogics,
     formatCommentCreatedDate: (String) -> String,
     deleteCommentUiState: DeleteCommentUiState,
     showCompletePopUp: () -> Unit
@@ -536,7 +521,7 @@ fun CommentItem(
             PostDetailExecutePopUp(content = stringResource(R.string.post_detail_pop_up_delete_comment_label),
                 onDismissRequest = { showDeleteCommentPopUp = false },
                 execute = {
-                    deleteComment(comment.commentId)
+                    logics.deleteComment(comment.commentId)
                     if (deleteCommentUiState.isSuccess == true) {
                         showCompletePopUp()
                     }
@@ -590,9 +575,9 @@ fun CommentItem(
                     .align(Alignment.End)
                     .noRippleClickable {
                         if (commentLikeState) {
-                            deleteCommentLoves(comment.commentId)
+                            logics.deleteCommentLoves(comment.commentId)
                         } else {
-                            postCommentLoves(comment.commentId)
+                            logics.postCommentLoves(comment.commentId)
                         }
                         commentLikeState = !commentLikeState
                     }
