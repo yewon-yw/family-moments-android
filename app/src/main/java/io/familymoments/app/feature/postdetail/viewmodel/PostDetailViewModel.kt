@@ -31,8 +31,8 @@ class PostDetailViewModel @Inject constructor(
         MutableStateFlow(
             PostUiState(
                 logics = PostLogics(
-                    getPost = this::getPostByIndex,
-                    getPostLoves = this::getPostLovesByIndex,
+                    getPost = this::getPost,
+                    getPostLoves = this::getPostLoves,
                     postPostLoves = this::postPostLoves,
                     deletePostLoves = this::deletePostLoves,
                     deletePost = this::deletePost
@@ -45,7 +45,7 @@ class PostDetailViewModel @Inject constructor(
         MutableStateFlow(
             CommentUiState(
                 logics = CommentLogics(
-                    getComments = this::getCommentsByPostIndex,
+                    getComments = this::getPostComments,
                     postComment = this::postComment,
                     deleteComment = this::deleteComment,
                     postCommentLoves = this::postCommentLoves,
@@ -65,7 +65,7 @@ class PostDetailViewModel @Inject constructor(
     ))
     val popupUiState: StateFlow<PopupUiState> = _popupUiState.asStateFlow()
 
-    fun getPostByIndex(index: Int) {
+    fun getPost(index: Int) {
         async(
             operation = { postRepository.getPostByIndex(index) },
             onSuccess = {
@@ -91,9 +91,9 @@ class PostDetailViewModel @Inject constructor(
 
     }
 
-    fun getCommentsByPostIndex(index: Int) {
+    fun getPostComments(index: Int) {
         async(
-            operation = { commentRepository.getCommentsByPostIndex(index) },
+            operation = { commentRepository.getPostComments(index) },
             onSuccess = {
                 val getCommentsUiState = _commentUiState.value.getCommentsUiState
                 _commentUiState.value = _commentUiState.value.copy(
@@ -117,7 +117,7 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun getPostLovesByIndex(index: Int) {
+    fun getPostLoves(index: Int) {
         async(
             operation = { postRepository.getPostLovesByIndex(index) },
             onSuccess = {
@@ -247,9 +247,9 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun postPostLoves(postId: Int) {
+    fun postPostLoves(index: Int) {
         async(
-            operation = { postRepository.postPostLoves(postId) },
+            operation = { postRepository.postPostLoves(index) },
             onSuccess = {
                 val postPostLovesUiState = _postUiState.value.postPostLovesUiState
                 _postUiState.value = _postUiState.value.copy(
@@ -273,9 +273,9 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun deletePostLoves(postId: Int) {
+    fun deletePostLoves(index: Int) {
         async(
-            operation = { postRepository.deletePostLoves(postId) },
+            operation = { postRepository.deletePostLoves(index) },
             onSuccess = {
                 val deletePostLovesUiState = _postUiState.value.deletePostLovesUiState
                 _postUiState.value = _postUiState.value.copy(

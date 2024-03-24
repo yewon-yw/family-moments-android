@@ -77,9 +77,9 @@ fun PostDetailScreen(
     modifier: Modifier
 ) {
     LaunchedEffect(Unit) {
-        viewModel.getPostByIndex(index)
-        viewModel.getCommentsByPostIndex(index)
-        viewModel.getPostLovesByIndex(index)
+        viewModel.getPost(index)
+        viewModel.getPostComments(index)
+        viewModel.getPostLoves(index)
     }
     val context = LocalContext.current
     val postUiState = viewModel.postUiState.collectAsStateWithLifecycle().value

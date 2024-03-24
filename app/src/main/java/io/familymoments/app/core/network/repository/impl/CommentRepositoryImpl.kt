@@ -19,10 +19,10 @@ import javax.inject.Inject
 class CommentRepositoryImpl @Inject constructor(
     private val commentService: CommentService
 ) : CommentRepository {
-    override suspend fun getCommentsByPostIndex(index: Int): Flow<Resource<GetCommentsByPostIndexResponse>> {
+    override suspend fun getPostComments(index: Int): Flow<Resource<GetCommentsByPostIndexResponse>> {
         return flow {
             emit(Resource.Loading)
-            val response = commentService.getCommentsByPostIndex(index)
+            val response = commentService.getPostComments(index)
             val responseBody = response.body() ?: GetCommentsByPostIndexResponse()
 
             if (responseBody.isSuccess) {
