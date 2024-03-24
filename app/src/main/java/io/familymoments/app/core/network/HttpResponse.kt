@@ -7,6 +7,8 @@ object HttpResponse {
     const val ACCESS_TOKEN_EXPIRED = 461
     const val REFRESH_TOKEN_EXPIRED = 471
     const val INTERNAL_SERVER_ERROR = 500
+    const val INCORRECT_CURRENT_PASSWORD = 4000
+    const val NEW_PASSWORD_SAME_AS_CURRENT = 4003
 }
 
 object HttpResponseMessage {

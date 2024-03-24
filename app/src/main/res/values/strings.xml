@@ -148,4 +148,13 @@
 
     <string name="calendar_title">캘린더</string>
     <string name="calendar_day_no_post">공유된 순간이 없는 날입니다 :-(\n다른 날짜를 선택해주세요</string>
+
+    <string name="add_post_title">새 글 업로드</string>
+    <string name="add_post_write_content">글 작성</string>
+    <string name="add_post_write_content_hint">| 사진과 어울리는 내용을 작성하세요.</string>
+    <string name="add_post_btn">순간을 가족에게 공유하기</string>
+
+    <string name="logout_content">로그아웃 하시겠습니까?</string>
+    <string name="logout_btn">로그아웃</string>
+    <string name="logout_cancel_btn">취소</string>
 </resources>
