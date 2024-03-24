@@ -150,6 +150,7 @@
     <string name="modify_password_invalid_password_format_warning">비밀번호 형식이 잘못되었습니다.</string>
 
     <string name="album_screen_title">우리 가족 앨범</string>
+    <string name="album_no_post">아직 공유한 순간이 없습니다.\n아래 + 버튼을 눌러 순간을 공유해보세요.</string>
 
     <string name="calendar_title">캘린더</string>
     <string name="calendar_day_no_post">공유된 순간이 없는 날입니다 :-(\n다른 날짜를 선택해주세요</string>
