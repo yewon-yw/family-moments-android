@@ -18,6 +18,7 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.feature.bottomnav.activity.MainActivity
+import io.familymoments.app.feature.choosingfamily.route.ChoosingFamilyRoute
 import io.familymoments.app.feature.creatingfamily.screen.SetAlarmScreen
 import io.familymoments.app.feature.creatingfamily.screen.CopyInvitationLinkScreen
 import io.familymoments.app.feature.creatingfamily.screen.SearchMemberScreen
@@ -28,36 +29,10 @@ import io.familymoments.app.feature.joiningfamily.viewmodel.JoinFamilyViewModel
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
-sealed interface ChoosingFamilyRoute {
-    val route: String
-    data object Start : ChoosingFamilyRoute {
-        override val route = "Start"
-    }
-    data object SearchMember : ChoosingFamilyRoute {
-        override val route = "SearchMember"
-    }
-    data object SetProfile : ChoosingFamilyRoute {
-        override val route = "SetProfile"
-    }
-    data object CopyInvitationLink : ChoosingFamilyRoute {
-        override val route = "CopyInvitationLink"
-        const val inviteLinkStringArgs = "inviteLink"
-        val routeWithArgs = "$route/{${inviteLinkStringArgs}}"
-        fun getRoute(inviteLink:String):String = "$route/$inviteLink"
-    }
-    data object Join : ChoosingFamilyRoute {
-        override val route = "Join"
-    }
-
-    data object SetAlarm : ChoosingFamilyRoute {
-        override val route = "SetAlarm"
-    }
-}
-
 @Composable
 fun ChoosingFamilyScreen(
     creatingFamilyViewModel: CreatingFamilyViewModel,
-    joinFamilyViewModel:JoinFamilyViewModel
+    joinFamilyViewModel: JoinFamilyViewModel
 ) {
     val context = LocalContext.current
     val mainActivityIntent = Intent(context, MainActivity::class.java).apply {
@@ -102,9 +77,14 @@ fun ChoosingFamilyScreen(
             }
             composable(
                 route = ChoosingFamilyRoute.CopyInvitationLink.routeWithArgs,
-                arguments = listOf(navArgument(ChoosingFamilyRoute.CopyInvitationLink.inviteLinkStringArgs) { type = NavType.StringType })
+                arguments = listOf(navArgument(ChoosingFamilyRoute.CopyInvitationLink.inviteLinkStringArgs) {
+                    type = NavType.StringType
+                })
             ) { backStackEntry ->
-                CopyInvitationLinkScreen(backStackEntry.arguments?.getString(ChoosingFamilyRoute.CopyInvitationLink.inviteLinkStringArgs) ?: "") {
+                CopyInvitationLinkScreen(
+                    backStackEntry.arguments?.getString(ChoosingFamilyRoute.CopyInvitationLink.inviteLinkStringArgs)
+                        ?: ""
+                ) {
                     context.startActivity(mainActivityIntent)
                 }
             }
