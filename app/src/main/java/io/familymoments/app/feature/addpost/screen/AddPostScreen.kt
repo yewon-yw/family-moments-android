@@ -48,6 +48,7 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
@@ -59,7 +60,8 @@ import kotlinx.coroutines.launch
 @Composable
 fun AddPostScreen(
     modifier: Modifier,
-    viewModel: AddPostViewModel
+    viewModel: AddPostViewModel,
+    popBackStack:()->Unit
 ) {
     var content by remember { mutableStateOf("") }
     val context = LocalContext.current
@@ -76,7 +78,10 @@ fun AddPostScreen(
             uriList.add(uri)
         }
     }
-
+    val addPostUiState = viewModel.uiState.collectAsStateWithLifecycle().value
+    if (addPostUiState.isSuccess == true) {
+        popBackStack()
+    }
     Column(
         modifier = modifier
             .fillMaxSize()
