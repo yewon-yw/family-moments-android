@@ -178,12 +178,12 @@ private fun ImageRow(
             modifier = Modifier
                 .size(63.dp)
                 .border(width = 1.dp, color = AppColors.deepPurple3, shape = RoundedCornerShape(size = 6.dp))
-                .padding(start = 17.5.dp, top = 13.dp, end = 17.5.dp, bottom = 7.dp)
                 .clickable {
                     launcher.launch(
                         PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
                     )
                 }
+                .padding(start = 17.5.dp, top = 13.dp, end = 17.5.dp, bottom = 7.dp)
         ) {
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -272,8 +272,8 @@ private fun AddPostScreenPreview() {
                     modifier = Modifier
                         .size(63.dp)
                         .border(width = 1.dp, color = AppColors.deepPurple3, shape = RoundedCornerShape(size = 6.dp))
-                        .padding(start = 17.5.dp, top = 13.dp, end = 17.5.dp, bottom = 7.dp)
                         .clickable {}
+                        .padding(start = 17.5.dp, top = 13.dp, end = 17.5.dp, bottom = 7.dp)
                 ) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
