@@ -1,16 +1,14 @@
 package io.familymoments.app.feature.addpost.viewmodel
 
-import android.content.Context
-import android.net.Uri
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.core.network.util.createImageMultiPart
-import io.familymoments.app.core.util.FileUtil
 import io.familymoments.app.feature.addpost.model.AddPostUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import java.io.File
 import javax.inject.Inject
 
 @HiltViewModel
@@ -22,9 +20,8 @@ class AddPostViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(AddPostUiState())
     val uiState = _uiState.asStateFlow()
 
-    suspend fun addPost(content: String, uriList: List<Uri>, context: Context) {
-        val imageFiles = FileUtil.bitmapResize(context, uriList)
-        val imagesMultipart = imageFiles.mapIndexed { index, file ->
+    suspend fun addPost(content: String, files: List<File>) {
+        val imagesMultipart = files.mapIndexed { index, file ->
             createImageMultiPart(file, "img${index + 1}")
         }
         async(

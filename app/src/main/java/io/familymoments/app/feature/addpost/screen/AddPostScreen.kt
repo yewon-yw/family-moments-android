@@ -57,6 +57,7 @@ import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
+import io.familymoments.app.core.util.FileUtil
 import io.familymoments.app.core.util.keyboardAsState
 import io.familymoments.app.feature.addpost.viewmodel.AddPostViewModel
 import kotlinx.coroutines.launch
@@ -147,7 +148,8 @@ fun AddPostScreen(
                                 .clickable {
                                     focusManager.clearFocus()
                                     scope.launch {
-                                        viewModel.addPost(content, uriList.toList(), context)
+                                        val imageFiles = FileUtil.bitmapResize(context, uriList.toList())
+                                        viewModel.addPost(content, imageFiles)
                                     }
                                 }
                         } else {

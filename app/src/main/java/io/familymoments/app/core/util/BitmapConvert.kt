@@ -4,6 +4,8 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
+import android.graphics.Matrix
+import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
@@ -89,13 +91,38 @@ object FileUtil {
             inSampleSize = calculateInSampleSize(this)
             inJustDecodeBounds = false
 
-            bitmap = BitmapFactory.decodeStream(input, null, this)
+            bitmap = BitmapFactory.decodeStream(input, null, this)?.apply {
+                rotateImageIfRequired(context, this, uri)
+            }
         }
 
         input.close()
 
         return bitmap
 
+    }
+
+    private fun rotateImageIfRequired(context: Context, bitmap: Bitmap, uri: Uri): Bitmap? {
+        val input = context.contentResolver.openInputStream(uri) ?: return null
+
+        val exif = if (Build.VERSION.SDK_INT > 23) {
+            ExifInterface(input)
+        } else {
+            ExifInterface(uri.path!!)
+        }
+
+        return when (exif.getAttributeInt(ExifInterface.TAG_ORIENTATION, ExifInterface.ORIENTATION_NORMAL)) {
+            ExifInterface.ORIENTATION_ROTATE_90 -> rotateImage(bitmap, 90)
+            ExifInterface.ORIENTATION_ROTATE_180 -> rotateImage(bitmap, 180)
+            ExifInterface.ORIENTATION_ROTATE_270 -> rotateImage(bitmap, 270)
+            else -> bitmap
+        }
+    }
+
+    private fun rotateImage(bitmap: Bitmap, degree: Int): Bitmap? {
+        val matrix = Matrix()
+        matrix.postRotate(degree.toFloat())
+        return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
     }
 
     // 리샘플링 값 계산 : 타겟 너비와 높이를 기준으로 2의 거듭제곱인 샘플 크기 값을 계산
