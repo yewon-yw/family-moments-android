@@ -6,8 +6,7 @@ import io.familymoments.app.feature.signup.model.uistate.SignUpInfoUiState
 fun SignUpInfoUiState.toRequest() =
     SignUpRequest(
         id = id,
-        passwordA = password,
-        passwordB = password,
+        password = password,
         name = name,
         email = email,
         strBirthDate = birthDay,
