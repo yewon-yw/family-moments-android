@@ -71,40 +71,41 @@
 
     <string name="title_activity_join">JoinActivity</string>
 
-    <string name="join_id_field_title">아이디</string>
-    <string name="join_id_field_hint">아이디를 입력하세요</string>
-    <string name="join_check_duplication_btn">중복확인</string>
-    <string name="join_id_validation_warning">영문과 숫자만 사용하여, 6~12글자의 아이디를 입력해주세요</string>
-    <string name="join_email_validation_warning">이메일 형식이 맞지 않습니다.</string>
-    <string name="join_password_field_title">비밀번호</string>
-    <string name="join_password_field_hint">비밀번호를 입력하세요</string>
-    <string name="join_password_validation_warning">영문과 숫자를 사용하여, 8~12글자의 비밀번호를 입력해주세요</string>
-    <string name="join_password_check_field_title">비밀번호 확인</string>
-    <string name="join_password_check_field_hint">비밀번호를 한번 더 입력하세요</string>
-    <string name="join_password_check_validation_warning">입력한 비밀번호와 일치하지 않습니다.</string>
-    <string name="join_name_field_title">이름</string>
-    <string name="join_name_field_hint">실명을 입력하세요 ex)홍길동</string>
-    <string name="join_email_field_title">이메일 인증</string>
-    <string name="join_email_field_hint">example@email.com</string>
-    <string name="join_birthday_field_title">생년월일</string>
-    <string name="join_birthday_field_hint">8자리 입력 ex) 199990101</string>
-    <string name="join_nickname_field_title">닉네임</string>
-    <string name="join_nickname_field_hint">3~8자리 입력(특수문자 불가)</string>
-    <string name="join_nickname_validation_warning">닉네임에는 특수문자를 사용할 수 없습니다</string>
-    <string name="join_all_term_agree">모두 동의합니다</string>
-    <string name="join_service_term_agree">(필수) 서비스 이용약관에 동의</string>
-    <string name="join_identification_term_agree">(필수) 본인확인 서비스 관련 이용 약관</string>
-    <string name="join_marketing_alarm_term_agree">(선택) 마케팅 정보 알림 및 수신 동의</string>
-    <string name="join_btn">Family Moments 시작하기</string>
-    <string name="join_select_profile_image_description">사용하실 프로필 이미지를 선택헤주세요.</string>
-    <string name="join_select_profile_image_drop_down_menu_default_image">기본 이미지로 하기</string>
-    <string name="join_select_profile_image_drop_down_menu_gallery">갤러리에서 선택</string>
-    <string name="join_select_profile_image_title">프로필 사진 선택</string>
-    <string name="join_check_user_id_duplication_success">사용할 수 있는 아이디 입니다.</string>
-    <string name="join_check_user_id_duplication_fail">사용할 수 없는 아이디 입니다.</string>
-    <string name="join_check_email_duplication_success">사용할 수 있는 이메일 입니다.</string>
-    <string name="join_check_email_duplication_fail">사용할 수 없는 이메일 입니다.</string>
-    <string name="join_activity_app_bar_title">회원가입</string>
+    <string name="sign_up_id_field_title">아이디</string>
+    <string name="sign_up_id_field_hint">아이디를 입력하세요</string>
+    <string name="sign_up_check_duplication_btn">중복확인</string>
+    <string name="sign_up_id_validation_warning">영문과 숫자만 사용하여, 6~12글자의 아이디를 입력해주세요</string>
+    <string name="sign_up_email_validation_warning">이메일 형식이 맞지 않습니다.</string>
+    <string name="sign_up_password_field_title">비밀번호</string>
+    <string name="sign_up_password_field_hint">비밀번호를 입력하세요</string>
+    <string name="sign_up_password_validation_warning">영문과 숫자를 사용하여, 8~12글자의 비밀번호를 입력해주세요</string>
+    <string name="sign_up_password_check_field_title">비밀번호 확인</string>
+    <string name="sign_up_password_check_field_hint">비밀번호를 한번 더 입력하세요</string>
+    <string name="sign_up_password_check_validation_warning">입력한 비밀번호와 일치하지 않습니다.</string>
+    <string name="sign_up_name_field_title">이름</string>
+    <string name="sign_up_name_field_hint">실명을 입력하세요 ex)홍길동</string>
+    <string name="sign_up_email_field_title">이메일 인증</string>
+    <string name="sign_up_email_field_hint">example@email.com</string>
+    <string name="sign_up_birthday_field_title">생년월일</string>
+    <string name="sign_up_birthday_field_hint">8자리 입력 ex) 199990101</string>
+    <string name="sign_up_nickname_field_title">닉네임</string>
+    <string name="sign_up_nickname_field_hint">3~8자리 입력(특수문자 불가)</string>
+    <string name="sign_up_nickname_validation_warning">닉네임에는 특수문자를 사용할 수 없습니다</string>
+    <string name="sign_up_all_term_agree">모두 동의합니다</string>
+    <string name="sign_up_service_term_agree">(필수) 서비스 이용약관에 동의</string>
+    <string name="sign_up_identification_term_agree">(필수) 본인확인 서비스 관련 이용 약관</string>
+    <string name="sign_up_marketing_alarm_term_agree">(선택) 마케팅 정보 알림 및 수신 동의</string>
+    <string name="sign_up_btn">Family Moments 시작하기</string>
+    <string name="sign_up_select_profile_image_description">사용하실 프로필 이미지를 선택헤주세요.</string>
+    <string name="sign_up_select_profile_image_drop_down_menu_default_image">기본 이미지로 하기</string>
+    <string name="sign_up_select_profile_image_drop_down_menu_gallery">갤러리에서 선택</string>
+    <string name="sign_up_select_profile_image_title">프로필 사진 선택</string>
+    <string name="sign_up_check_user_id_duplication_success">사용할 수 있는 아이디 입니다.</string>
+    <string name="sign_up_check_user_id_duplication_fail">사용할 수 없는 아이디 입니다.</string>
+    <string name="sign_up_check_email_duplication_success">사용할 수 있는 이메일 입니다.</string>
+    <string name="sign_up_check_email_duplication_fail">사용할 수 없는 이메일 입니다.</string>
+    <string name="sign_up_activity_app_bar_title">회원가입</string>
+    <string name="sign_up_select_profile_image_btn">사진 선택</string>
 
     <string name="profile_title">프로필</string>
     <string name="edit_profile_title">프로필 편집</string>
@@ -130,4 +131,21 @@
     <string name="my_page_label_family_settings">가족 설정</string>
     <string name="my_page_label_logout">로그아웃</string>
     <string name="my_page_label_account_deletion">계정 탈퇴</string>
+
+    <string name="modify_password_title">비밀번호 변경</string>
+    <string name="modify_password_notification_1">계정을 보호하기 위해 이 세션을 제외한 모든\n세션에서 로그아웃됩니다.</string>
+    <string name="modify_password_notification_2">비밀번호는 8글자 이상 12글자 이하여야\n하고 숫자와 영문의 조합을 포함해야 합니다.</string>
+    <string name="modify_password_current_password">현재 비밀번호</string>
+    <string name="modify_password_new_password">새 비밀번호</string>
+    <string name="modify_password_new_password_check">새 비밀번호 확인</string>
+    <string name="modify_password_btn">비밀번호 변경</string>
+    <string name="modify_password_incorrect_current_password_warning">현재 비밀번호가 일치하지 않습니다.</string>
+    <string name="modify_password_new_passwords_mismatch_warning">새 비밀번호와 비밀번호 확인이 일치하지 않습니다.</string>
+    <string name="modify_password_new_password_same_as_current_warning">현재 비밀번호와 동일합니다.</string>
+    <string name="modify_password_invalid_password_format_warning">비밀번호 형식이 잘못되었습니다.</string>
+
+    <string name="album_screen_title">우리 가족 앨범</string>
+
+    <string name="calendar_title">캘린더</string>
+    <string name="calendar_day_no_post">공유된 순간이 없는 날입니다 :-(\n다른 날짜를 선택해주세요</string>
 </resources>
