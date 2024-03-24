@@ -174,7 +174,7 @@ fun convertBitmapToFile(bitmap: Bitmap?): File {
     return file
 }
 
-suspend fun urlToBitmap(url: String, context: Context): Bitmap? {
+suspend fun convertUrlToBitmap(url: String, context: Context): Bitmap? {
     return withContext(Dispatchers.IO) {
         try {
             val loader = ImageLoader(context)

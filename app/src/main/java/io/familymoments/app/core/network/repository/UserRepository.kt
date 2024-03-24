@@ -17,13 +17,10 @@ interface UserRepository {
     suspend fun loginUser(username: String, password: String): Flow<Resource<LoginResponse>>
     suspend fun reissueAccessToken(): Flow<Resource<Unit>>
     suspend fun loadUserProfile(familyId:Long?):Flow<Resource<UserProfileResponse>>
-
     suspend fun modifyPassword(modifyPasswordRequest: ModifyPasswordRequest): Flow<Resource<ModifyPasswordResponse>>
-
     suspend fun logoutUser(): Flow<Resource<LogoutResponse>>
     suspend fun searchMember(keyword:String, newFamily: Boolean):Flow<Resource<SearchMemberResponse>>
-
-    suspend fun editProfile(
+    suspend fun editUserProfile(
         profileEditRequest: ProfileEditRequest,
         profileImg: MultipartBody.Part
     ): Flow<Resource<ProfileEditResponse>>
