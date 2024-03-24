@@ -5,6 +5,7 @@ import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import io.familymoments.app.BuildConfig
+import io.familymoments.app.core.network.AuthErrorManager
 import io.familymoments.app.core.network.AuthInterceptor
 import io.familymoments.app.core.network.api.FamilyService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
@@ -84,6 +85,12 @@ object AppModule {
                 level = HttpLoggingInterceptor.Level.HEADERS
             })
             .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthErrorManager(): AuthErrorManager {
+        return AuthErrorManager()
     }
 
     @Provides
