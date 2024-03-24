@@ -4,6 +4,7 @@ import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.graph.Route
+import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.feature.calendar.model.CalendarDayUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class CalendarDayViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val postRepository: PostRepository
+    private val postRepository: PostRepository,
+    private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
 ) : BaseViewModel() {
 
     private val initialLocalDate = LocalDate.parse(savedStateHandle.get<String>(Route.CalendarDay.localDateStringArgs))
@@ -36,8 +38,10 @@ class CalendarDayViewModel @Inject constructor(
         val month = selectedDate.monthValue
         val day = selectedDate.dayOfMonth
         async(
-            //TODO: familyId 수정예정
-            operation = { postRepository.getPostsByDay(2, year, month, day) },
+            operation = {
+                val familyId = userInfoPreferencesDataSource.loadFamilyId()
+                postRepository.getPostsByDay(familyId, year, month, day)
+            },
             onSuccess = {
                 _calendarDayUiState.value = _calendarDayUiState.value.copy(
                     isSuccess = true,
@@ -64,8 +68,10 @@ class CalendarDayViewModel @Inject constructor(
         val month = selectedDate.monthValue
         val day = selectedDate.dayOfMonth
         async(
-            //TODO: familyId 수정예정
-            operation = { postRepository.loadMorePostsByDay(2, year, month, day, minPostId) },
+            operation = {
+                val familyId = userInfoPreferencesDataSource.loadFamilyId()
+                postRepository.loadMorePostsByDay(familyId, year, month, day, minPostId)
+            },
             onSuccess = {
                 _calendarDayUiState.value = _calendarDayUiState.value.copy(
                     isSuccess = true,
