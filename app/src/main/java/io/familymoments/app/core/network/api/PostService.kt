@@ -9,11 +9,13 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import io.familymoments.app.feature.postdetail.model.request.PostLovesRequest
 import io.familymoments.app.feature.postdetail.model.response.DeletePostLovesResponse
+import io.familymoments.app.feature.postdetail.model.response.DeletePostResponse
 import io.familymoments.app.feature.postdetail.model.response.GetPostByIndexResponse
 import io.familymoments.app.feature.postdetail.model.response.GetPostLovesByIndexResponse
 import io.familymoments.app.feature.postdetail.model.response.PostPostLovesResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -78,22 +80,17 @@ interface PostService {
     ): Response<AddPostResponse>
 
     @GET("/posts/{index}")
-    suspend fun getPostByIndex(
-        @Path("index") index: Int
-    ):Response<GetPostByIndexResponse>
+    suspend fun getPostByIndex(@Path("index") index: Int): Response<GetPostByIndexResponse>
 
     @GET("/posts/{index}/post-loves")
-    suspend fun getPostLovesByIndex(
-        @Path("index") index:Int
-    ):Response<GetPostLovesByIndexResponse>
+    suspend fun getPostLovesByIndex(@Path("index") index: Int): Response<GetPostLovesByIndexResponse>
 
     @POST("/postloves")
-    suspend fun postPostloves(
-        @Body postlovesRequest: PostLovesRequest
-    ):Response<PostPostLovesResponse>
+    suspend fun postPostloves(@Body postlovesRequest: PostLovesRequest): Response<PostPostLovesResponse>
 
-    @HTTP(method="DELETE", hasBody=true, path="/postloves")
-    suspend fun deletePostloves(
-        @Body postlovesRequest: PostLovesRequest
-    ):Response<DeletePostLovesResponse>
+    @HTTP(method = "DELETE", hasBody = true, path = "/postloves")
+    suspend fun deletePostloves(@Body postlovesRequest: PostLovesRequest): Response<DeletePostLovesResponse>
+
+    @DELETE("/posts/{index}")
+    suspend fun deletePost(@Path("index") index: Int):Response<DeletePostResponse>
 }

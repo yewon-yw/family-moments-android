@@ -11,6 +11,7 @@ import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
 import io.familymoments.app.feature.home.model.GetPostsResponse
 import io.familymoments.app.feature.postdetail.model.request.PostLovesRequest
 import io.familymoments.app.feature.postdetail.model.response.DeletePostLovesResponse
+import io.familymoments.app.feature.postdetail.model.response.DeletePostResponse
 import io.familymoments.app.feature.postdetail.model.response.GetPostByIndexResponse
 import io.familymoments.app.feature.postdetail.model.response.GetPostLovesByIndexResponse
 import io.familymoments.app.feature.postdetail.model.response.PostPostLovesResponse
@@ -252,6 +253,22 @@ class PostRepositoryImpl(
             emit(Resource.Loading)
             val response = postService.deletePostloves(PostLovesRequest(postId))
             val responseBody = response.body() ?: DeletePostLovesResponse()
+
+            if (responseBody.isSuccess) {
+                emit(Resource.Success(responseBody))
+            } else {
+                emit(Resource.Fail(Throwable(responseBody.message)))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun deletePost(index: Int): Flow<Resource<DeletePostResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = postService.deletePost(index)
+            val responseBody = response.body() ?: DeletePostResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))

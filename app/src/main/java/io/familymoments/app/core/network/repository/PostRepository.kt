@@ -7,6 +7,7 @@ import io.familymoments.app.feature.album.model.GetAlbumResponse
 import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
 import io.familymoments.app.feature.home.model.GetPostsResponse
 import io.familymoments.app.feature.postdetail.model.response.DeletePostLovesResponse
+import io.familymoments.app.feature.postdetail.model.response.DeletePostResponse
 import io.familymoments.app.feature.postdetail.model.response.GetPostByIndexResponse
 import io.familymoments.app.feature.postdetail.model.response.GetPostLovesByIndexResponse
 import io.familymoments.app.feature.postdetail.model.response.PostPostLovesResponse
@@ -40,4 +41,5 @@ interface PostRepository {
     suspend fun getPostLovesByIndex(index:Int):Flow<Resource<GetPostLovesByIndexResponse>>
     suspend fun postPostLoves(postId:Int):Flow<Resource<PostPostLovesResponse>>
     suspend fun deletePostLoves(postId:Int):Flow<Resource<DeletePostLovesResponse>>
+    suspend fun deletePost(index:Int):Flow<Resource<DeletePostResponse>>
 }

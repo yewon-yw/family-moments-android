@@ -6,6 +6,7 @@ import io.familymoments.app.core.network.repository.CommentRepository
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.feature.postdetail.model.uistate.CommentsUiState
 import io.familymoments.app.feature.postdetail.model.uistate.DeleteCommentUiState
+import io.familymoments.app.feature.postdetail.model.uistate.DeletePostUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostCommentUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostDetailUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostLovesUiState
@@ -48,6 +49,11 @@ class PostDetailViewModel @Inject constructor(
         MutableStateFlow(DeleteCommentUiState())
     val deleteCommentUiState: StateFlow<DeleteCommentUiState> =
         _deleteCommentUiState.asStateFlow()
+
+    private val _deletePostUiState: MutableStateFlow<DeletePostUiState> =
+        MutableStateFlow(DeletePostUiState())
+    val deletePostUiState: StateFlow<DeletePostUiState> =
+        _deletePostUiState.asStateFlow()
 
     fun getPostByIndex(index: Int) {
         async(
@@ -182,9 +188,27 @@ class PostDetailViewModel @Inject constructor(
     fun deletePostLoves(postId: Int) {
         async(
             operation = { postRepository.deletePostLoves(postId) },
+            onSuccess = {},
+            onFailure = {}
+        )
+    }
+
+    fun deletePost(index: Int) {
+        async(
+            operation = { postRepository.deletePost(index) },
             onSuccess = {
+                _deletePostUiState.value = _deletePostUiState.value.copy(
+                    isSuccess = true,
+                    isLoading = isLoading.value,
+                    result = it.message
+                )
             },
             onFailure = {
+                _deletePostUiState.value = _deletePostUiState.value.copy(
+                    isSuccess = false,
+                    isLoading = isLoading.value,
+                    result = it.message
+                )
             }
         )
     }

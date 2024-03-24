@@ -62,6 +62,8 @@ import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.home.component.postItemContentShadow
 import io.familymoments.app.feature.postdetail.model.response.GetCommentsByPostIndexResult
+import io.familymoments.app.feature.postdetail.model.uistate.DeleteCommentUiState
+import io.familymoments.app.feature.postdetail.model.uistate.DeletePostUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostLovesUiState
 import io.familymoments.app.feature.postdetail.viewmodel.PostDetailViewModel
 
@@ -84,21 +86,18 @@ fun PostDetailScreen(
     val commentsUiState = viewModel.commentsUiState.collectAsStateWithLifecycle().value
     val postLovesUiState = viewModel.postLovesUiState.collectAsStateWithLifecycle().value
     val postCommentUiState = viewModel.postCommentUiState.collectAsStateWithLifecycle().value
+    val deleteCommentUiState = viewModel.deleteCommentUiState.collectAsStateWithLifecycle().value
+    val deletePostUiState = viewModel.deletePostUiState.collectAsStateWithLifecycle().value
 
-    var showCompletePopUp by remember {
+    var showDeleteCompletePopUp by remember {
         mutableStateOf(false)
     }
-    if (postCommentUiState.isSuccess == true) {
-        viewModel.getCommentsByPostIndex(index)
+    if (showDeleteCompletePopUp) {
+        PostDetailCompletePopUp(
+            content = stringResource(R.string.post_detail_delete_complete_pop_label)
+        ) { showDeleteCompletePopUp = false }
     }
-    if (postCommentUiState.isSuccess == true) {
-        showCompletePopUp = true
-        CompletePopUpWithContent(
-            content = stringResource(R.string.post_detail_delete_complete_pop_label),
-            showCompletePopUp
-        ) { showCompletePopUp = false }
-        viewModel.getCommentsByPostIndex(index)
-    }
+
     val pagerState = rememberPagerState(pageCount = { postDetailInfo.imgs.size })
 
     LazyColumn {
@@ -129,8 +128,10 @@ fun PostDetailScreen(
                                 postDetailInfo.loved,
                                 postDetailInfo.postId,
                                 viewModel::postPostLoves,
-                                viewModel::deletePostLoves
-                            )
+                                viewModel::deletePostLoves,
+                                viewModel::deletePost,
+                                deletePostUiState
+                            ) { showDeleteCompletePopUp = true }
                         }
                         Spacer(
                             modifier = Modifier
@@ -148,8 +149,9 @@ fun PostDetailScreen(
                                 viewModel::deleteComment,
                                 viewModel::postCommentLoves,
                                 viewModel::deleteCommentLoves,
-                                viewModel::formatCommentCreatedDate
-                            )
+                                viewModel::formatCommentCreatedDate,
+                                deleteCommentUiState
+                            ) { showDeleteCompletePopUp = true }
                         }
 
                         Spacer(modifier = Modifier.height(20.dp))
@@ -166,13 +168,6 @@ fun PostDetailScreen(
 
 fun showToastMessage(context: Context, message: String?) {
     Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
-}
-
-@Composable
-fun CompletePopUpWithContent(content: String, showCompletePopUp: Boolean, onDismissRequest: () -> Unit) {
-    if (showCompletePopUp) {
-        PostDetailCompletePopUp(content = content, onDismissRequest)
-    }
 }
 
 @Composable
@@ -245,7 +240,10 @@ fun PostContent(
     loved: Boolean,
     postId: Int,
     postPostLoves: (Int) -> Unit,
-    deletePostLoves: (Int) -> Unit
+    deletePostLoves: (Int) -> Unit,
+    deletePost: (Int) -> Unit,
+    deletePostUiState: DeletePostUiState,
+    showCompletePopUp: () -> Unit
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -279,11 +277,38 @@ fun PostContent(
                             expanded = true
                         }
                     )
+                    var showDeletePopUp by remember {
+                        mutableStateOf(false)
+                    }
+                    var showReportPopUp by remember {
+                        mutableStateOf(false)
+                    }
+                    if (showDeletePopUp) {
+                        PostDetailExecutePopUp(content = stringResource(R.string.post_detail_delete_post_pop_up_label),
+                            onDismissRequest = { showDeletePopUp = false },
+                            execute = {
+                                deletePost(postId)
+                                if (deletePostUiState.isSuccess == true) {
+                                    showCompletePopUp()
+                                }
+                            })
+                    }
+
+                    if (showReportPopUp) {
+                        ReportPopUp(
+                            onDismissRequest = { showReportPopUp = false },
+                            onReportRequest = {}
+                        )
+                    }
                     PostDetailDropdownMenu(
                         items = listOf(
                             Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify), {}),
-                            Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report), {}),
-                            Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_delete), {}),
+                            Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {
+                                showReportPopUp = true
+                            },
+                            Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_delete)) {
+                                showDeletePopUp = true
+                            },
                         ),
                         expanded = expanded
                     ) { expanded = it }
@@ -336,7 +361,9 @@ fun Comments(
     deleteComment: (Int) -> Unit,
     postCommentLoves: (Int) -> Unit,
     deleteCommentLoves: (Int) -> Unit,
-    formatCommentCreatedDate: (String) -> String
+    formatCommentCreatedDate: (String) -> String,
+    deleteCommentUiState: DeleteCommentUiState,
+    showCompletePopUp: () -> Unit
 ) {
     var showLoveListPopUp by remember {
         mutableStateOf(false)
@@ -379,7 +406,9 @@ fun Comments(
             deleteComment,
             postCommentLoves,
             deleteCommentLoves,
-            formatCommentCreatedDate
+            formatCommentCreatedDate,
+            deleteCommentUiState,
+            showCompletePopUp
         )
     }
 }
@@ -448,11 +477,21 @@ fun CommentItems(
     deleteComment: (Int) -> Unit,
     postCommentLoves: (Int) -> Unit,
     deleteCommentLoves: (Int) -> Unit,
-    formatCommentCreatedDate: (String) -> String
+    formatCommentCreatedDate: (String) -> String,
+    deleteCommentUiState: DeleteCommentUiState,
+    showCompletePopUp: () -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         comments.forEach {
-            CommentItem(it, deleteComment, postCommentLoves, deleteCommentLoves, formatCommentCreatedDate)
+            CommentItem(
+                it,
+                deleteComment,
+                postCommentLoves,
+                deleteCommentLoves,
+                formatCommentCreatedDate,
+                deleteCommentUiState,
+                showCompletePopUp
+            )
         }
     }
 
@@ -464,7 +503,9 @@ fun CommentItem(
     deleteComment: (Int) -> Unit,
     postCommentLoves: (Int) -> Unit,
     deleteCommentLoves: (Int) -> Unit,
-    formatCommentCreatedDate: (String) -> String
+    formatCommentCreatedDate: (String) -> String,
+    deleteCommentUiState: DeleteCommentUiState,
+    showCompletePopUp: () -> Unit
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -512,11 +553,13 @@ fun CommentItem(
         }
         if (showDeleteCommentPopUp) {
             PostDetailExecutePopUp(content = stringResource(R.string.post_detail_pop_up_delete_comment_label),
+                onDismissRequest = { showDeleteCommentPopUp = false },
                 execute = {
                     deleteComment(comment.commentId)
-                }) {
-                showDeleteCommentPopUp = false
-            }
+                    if (deleteCommentUiState.isSuccess == true) {
+                        showCompletePopUp()
+                    }
+                })
         }
         if (showReportCommentPopUp) {
             ReportPopUp(onDismissRequest = {

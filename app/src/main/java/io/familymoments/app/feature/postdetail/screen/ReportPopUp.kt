@@ -3,7 +3,6 @@ package io.familymoments.app.feature.postdetail.screen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -78,7 +77,7 @@ fun ReportPopUp(
                         modifier = Modifier
                             .align(Alignment.TopEnd)
                             .padding(top = 14.dp, end = 14.dp)
-                            .clickable { onDismissRequest() },
+                            .noRippleClickable { onDismissRequest() },
                         imageVector = ImageVector.vectorResource(id = R.drawable.ic_album_popup_close),
                         contentDescription = "close popup",
                     )
