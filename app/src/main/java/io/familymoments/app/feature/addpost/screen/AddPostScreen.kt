@@ -43,6 +43,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.buildAnnotatedString
@@ -70,6 +71,7 @@ fun AddPostScreen(
     val context = LocalContext.current
     val isKeyboardOpen by keyboardAsState()
     val scope = rememberCoroutineScope()
+    val focusManager = LocalFocusManager.current
 
     val uriList = remember { mutableStateListOf<Uri>() }
     val launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?> = rememberLauncherForActivityResult(
@@ -143,6 +145,7 @@ fun AddPostScreen(
                             Modifier
                                 .background(color = AppColors.deepPurple1)
                                 .clickable {
+                                    focusManager.clearFocus()
                                     scope.launch {
                                         viewModel.addPost(content, uriList.toList(), context)
                                     }
@@ -169,6 +172,7 @@ private fun ImageRow(
     launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
     imageUriList: MutableList<Uri>,
 ) {
+    val focusManager = LocalFocusManager.current
     Row(
         modifier = Modifier
             .padding(vertical = 30.dp)
@@ -179,6 +183,7 @@ private fun ImageRow(
                 .size(63.dp)
                 .border(width = 1.dp, color = AppColors.deepPurple3, shape = RoundedCornerShape(size = 6.dp))
                 .clickable {
+                    focusManager.clearFocus()
                     launcher.launch(
                         PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
                     )
