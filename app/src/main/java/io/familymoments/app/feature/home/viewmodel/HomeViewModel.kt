@@ -2,6 +2,7 @@ package io.familymoments.app.feature.home.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
+import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.feature.home.model.HomeUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -12,13 +13,37 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val postRepository: PostRepository,
+    private val familyRepository: FamilyRepository
 ) : BaseViewModel() {
+
     private val _homeUiState = MutableStateFlow(HomeUiState())
     val homeUiState = _homeUiState.asStateFlow()
 
     // TODO: 추후 familyId 수정 예정
     private val familyId: Long = 2
     private var minPostId: Long = 0
+
+    fun getNicknameDday() {
+        Timber.d("getNicknameDday")
+        async(
+            operation = { familyRepository.getNicknameDday(familyId) },
+            onSuccess = {
+                _homeUiState.value = _homeUiState.value.copy(
+                    isSuccess = true,
+                    isLoading = isLoading.value,
+                    nickname = it.result.nickname,
+                    dday = it.result.dday
+                )
+            },
+            onFailure = {
+                _homeUiState.value = _homeUiState.value.copy(
+                    isSuccess = false,
+                    isLoading = isLoading.value,
+                    errorMessage = it.message
+                )
+            }
+        )
+    }
 
     fun getPosts() {
         Timber.d("getPosts")

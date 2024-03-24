@@ -59,8 +59,11 @@ fun HomeScreen(
     }
     val isLoading = homeUiState.value.isLoading
     val hasNoPost = homeUiState.value.hasNoPost
+    val nickname = homeUiState.value.nickname
+    val dday = homeUiState.value.dday
 
     LaunchedEffect(Unit) {
+        viewModel.getNicknameDday()
         viewModel.getPosts()
     }
     LaunchedEffect(isScrolledToLast) {
@@ -85,7 +88,7 @@ fun HomeScreen(
             Column(
                 modifier = modifier.padding(horizontal = 16.dp),
             ) {
-                HomeScreenTitle(hasNoPost = true)
+                HomeScreenTitle(hasNoPost = true, nickname = nickname, dday = dday)
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
@@ -112,7 +115,7 @@ fun HomeScreen(
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp)
             ) {
                 item {
-                    HomeScreenTitle(hasNoPost = false)
+                    HomeScreenTitle(hasNoPost = false, nickname = nickname, dday = dday)
                 }
                 items(posts) { post ->
                     PostItem(post = post, navigateToPostDetail = navigateToPostDetail)
@@ -123,10 +126,14 @@ fun HomeScreen(
 }
 
 @Composable
-fun HomeScreenTitle(hasNoPost: Boolean) {
+fun HomeScreenTitle(
+    hasNoPost: Boolean,
+    nickname: String,
+    dday: String
+) {
     Spacer(modifier = Modifier.height(69.dp))
     Text(
-        text = stringResource(id = R.string.home_greeting_1, "딸내미"),
+        text = stringResource(id = R.string.home_greeting_1, nickname),
         style = AppTypography.B2_14,
         color = AppColors.black2
     )
@@ -144,7 +151,7 @@ fun HomeScreenTitle(hasNoPost: Boolean) {
                 }
                 append(" ")
                 withStyle(style = AppTypography.H2_24.toSpanStyle().copy(color = AppColors.black2)) {
-                    append(stringResource(id = R.string.home_greeting_3, 2))
+                    append(stringResource(id = R.string.home_greeting_3, dday))
                 }
                 append(" ")
                 withStyle(style = AppTypography.B1_16.toSpanStyle().copy(color = AppColors.black2)) {
@@ -170,7 +177,7 @@ fun HomeScreenPreview() {
         modifier = Modifier.padding(horizontal = 16.dp)
     ) {
         item {
-            HomeScreenTitle(hasNoPost = false)
+            HomeScreenTitle(hasNoPost = false, nickname = "딸내미", dday = "2")
         }
         items(10) {
             PostItemPreview()

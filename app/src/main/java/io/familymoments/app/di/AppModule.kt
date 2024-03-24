@@ -9,10 +9,10 @@ import io.familymoments.app.core.network.AuthErrorManager
 import io.familymoments.app.core.network.AuthInterceptor
 import io.familymoments.app.core.network.api.CommentService
 import io.familymoments.app.core.network.api.FamilyService
-import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
+import io.familymoments.app.core.network.api.PostService
 import io.familymoments.app.core.network.api.SignInService
 import io.familymoments.app.core.network.api.UserService
-import io.familymoments.app.core.network.api.PostService
+import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import okhttp3.JavaNetCookieJar
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -102,7 +102,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideSignInService(@DefaultRetrofit retrofit:Retrofit):SignInService{
+    fun provideSignInService(@DefaultRetrofit retrofit: Retrofit): SignInService {
         return retrofit.create(SignInService::class.java)
     }
 
@@ -114,7 +114,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideCommentService(@AuthRetrofit retrofit: Retrofit):CommentService{
+    fun provideCommentService(@AuthRetrofit retrofit: Retrofit): CommentService {
         return retrofit.create(CommentService::class.java)
     }
 
