@@ -18,5 +18,5 @@ interface UserRepository {
     suspend fun modifyPassword(modifyPasswordRequest: ModifyPasswordRequest): Flow<Resource<ModifyPasswordResponse>>
 
     suspend fun logoutUser(): Flow<Resource<LogoutResponse>>
-    suspend fun searchMember(keyword:String):Flow<Resource<SearchMemberResponse>>
+    suspend fun searchMember(keyword:String, newFamily: Boolean):Flow<Resource<SearchMemberResponse>>
 }
