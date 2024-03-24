@@ -138,12 +138,19 @@ fun AddPostScreen(
                     .fillMaxWidth()
                     .heightIn(min = 59.dp)
                     .clip(RoundedCornerShape(60.dp))
-                    .background(color = AppColors.deepPurple1)
-                    .clickable {
-                        scope.launch {
-                            viewModel.addPost(content, uriList.toList(), context)
+                    .then(
+                        if (content.isNotEmpty() && uriList.isNotEmpty()) {
+                            Modifier
+                                .background(color = AppColors.deepPurple1)
+                                .clickable {
+                                    scope.launch {
+                                        viewModel.addPost(content, uriList.toList(), context)
+                                    }
+                                }
+                        } else {
+                            Modifier.background(color = AppColors.grey3)
                         }
-                    },
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
