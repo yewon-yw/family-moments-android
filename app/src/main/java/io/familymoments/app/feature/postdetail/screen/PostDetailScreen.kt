@@ -64,7 +64,6 @@ import io.familymoments.app.feature.postdetail.model.component.postDetailContent
 import io.familymoments.app.feature.postdetail.model.response.GetCommentsByPostIndexResult
 import io.familymoments.app.feature.postdetail.model.response.GetPostByIndexResult
 import io.familymoments.app.feature.postdetail.model.uistate.CommentLogics
-import io.familymoments.app.feature.postdetail.model.uistate.DeleteCommentUiState
 import io.familymoments.app.feature.postdetail.model.uistate.GetPostLovesUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostLogics
 import io.familymoments.app.feature.postdetail.viewmodel.PostDetailViewModel
@@ -84,14 +83,15 @@ fun PostDetailScreen(
     val context = LocalContext.current
     val postUiState = viewModel.postUiState.collectAsStateWithLifecycle().value
     val commentUiState = viewModel.commentUiState.collectAsStateWithLifecycle().value
+    val popupUiState = viewModel.popupUiState.collectAsStateWithLifecycle().value
 
-    var showDeleteCompletePopUp by remember {
-        mutableStateOf(false)
-    }
-    if (showDeleteCompletePopUp) {
+    if (
+        (popupUiState.showDeleteComplete && postUiState.deletePostUiState.isSuccess == true)
+        || (popupUiState.showDeleteComplete && commentUiState.deleteCommentUiState.isSuccess == true)
+    ) {
         PostDetailCompletePopUp(
             content = stringResource(R.string.post_detail_delete_complete_pop_label)
-        ) { showDeleteCompletePopUp = false }
+        ) { viewModel.showDeleteCompletePopup(false) }
     }
 
     val pagerState = rememberPagerState(pageCount = { postUiState.getPostUiState.result.imgs.size })
@@ -118,8 +118,8 @@ fun PostDetailScreen(
                         PostContent(
                             postUiState.getPostUiState.result,
                             postUiState.logics,
-                            postUiState.deletePostUiState.isSuccess,
-                        ) { showDeleteCompletePopUp = true }
+                            viewModel::showDeleteCompletePopup
+                        )
                         Spacer(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -139,8 +139,8 @@ fun PostDetailScreen(
                                 commentUiState.getCommentsUiState.result,
                                 commentUiState.logics,
                                 viewModel::formatCommentCreatedDate,
-                                commentUiState.deleteCommentUiState
-                            ) { showDeleteCompletePopUp = true }
+                                viewModel::showDeleteCompletePopup
+                            )
                         }
 
                         Spacer(modifier = Modifier.height(20.dp))
@@ -235,8 +235,7 @@ fun PostPhotos(imgs: List<String>, pagerState: PagerState) {
 fun PostContent(
     postInfo: GetPostByIndexResult,
     logics: PostLogics,
-    deletePostSuccess: Boolean?,
-    showCompletePopUp: () -> Unit
+    showDeleteCompletePopup: (Boolean) -> Unit
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -281,9 +280,7 @@ fun PostContent(
                             onDismissRequest = { showDeletePopUp = false },
                             execute = {
                                 logics.deletePost(postInfo.postId)
-                                if (deletePostSuccess == true) {
-                                    showCompletePopUp()
-                                }
+                                showDeleteCompletePopup(true)
                             })
                     }
 
@@ -448,8 +445,7 @@ fun CommentItems(
     comments: List<GetCommentsByPostIndexResult>,
     logics: CommentLogics,
     formatCommentCreatedDate: (String) -> String,
-    deleteCommentUiState: DeleteCommentUiState,
-    showCompletePopUp: () -> Unit
+    showDeleteCompletePopup: (Boolean) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         comments.forEach {
@@ -457,8 +453,7 @@ fun CommentItems(
                 it,
                 logics,
                 formatCommentCreatedDate,
-                deleteCommentUiState,
-                showCompletePopUp
+                showDeleteCompletePopup
             )
         }
     }
@@ -470,8 +465,7 @@ fun CommentItem(
     comment: GetCommentsByPostIndexResult,
     logics: CommentLogics,
     formatCommentCreatedDate: (String) -> String,
-    deleteCommentUiState: DeleteCommentUiState,
-    showCompletePopUp: () -> Unit
+    showDeleteCompletePopup: (Boolean) -> Unit
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -522,9 +516,7 @@ fun CommentItem(
                 onDismissRequest = { showDeleteCommentPopUp = false },
                 execute = {
                     logics.deleteComment(comment.commentId)
-                    if (deleteCommentUiState.isSuccess == true) {
-                        showCompletePopUp()
-                    }
+                    showDeleteCompletePopup(true)
                 })
         }
         if (showReportCommentPopUp) {

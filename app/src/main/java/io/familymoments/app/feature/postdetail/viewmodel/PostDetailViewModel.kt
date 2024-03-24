@@ -6,6 +6,7 @@ import io.familymoments.app.core.network.repository.CommentRepository
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.feature.postdetail.model.uistate.CommentLogics
 import io.familymoments.app.feature.postdetail.model.uistate.CommentUiState
+import io.familymoments.app.feature.postdetail.model.uistate.PopupUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostLogics
 import io.familymoments.app.feature.postdetail.model.uistate.PostUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -49,6 +50,9 @@ class PostDetailViewModel @Inject constructor(
         ))
     val commentUiState: StateFlow<CommentUiState> =
         _commentUiState.asStateFlow()
+
+    private val _popupUiState:MutableStateFlow<PopupUiState> = MutableStateFlow(PopupUiState())
+    val popupUiState:StateFlow<PopupUiState> = _popupUiState.asStateFlow()
 
     fun getPostByIndex(index: Int) {
         async(
@@ -307,6 +311,12 @@ class PostDetailViewModel @Inject constructor(
                     )
                 )
             }
+        )
+    }
+
+    fun showDeleteCompletePopup(status:Boolean){
+        _popupUiState.value = _popupUiState.value.copy(
+            showDeleteComplete = status
         )
     }
 
