@@ -120,7 +120,7 @@ class UserRepositoryImpl @Inject constructor(
             val responseBody = response.body() ?: ModifyPasswordResponse()
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
-            } else if (responseBody.code == 4000 || responseBody.code == 4003) {
+            } else if (responseBody.code == HttpResponse.INCORRECT_CURRENT_PASSWORD || responseBody.code == HttpResponse.NEW_PASSWORD_SAME_AS_CURRENT) {
                 emit(Resource.Success(responseBody))
             } else {
                 emit(Resource.Fail(Throwable(responseBody.message)))
