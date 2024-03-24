@@ -6,7 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -121,7 +121,7 @@ fun BottomNavigationBar(
     BottomNavigation(
         modifier = Modifier
             .bottomNavShadow()
-            .heightIn(min = 75.dp)
+            .height(75.dp)
             .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)),
         backgroundColor = Color.White
     ) {
