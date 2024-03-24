@@ -6,9 +6,12 @@ import io.familymoments.app.core.network.repository.CommentRepository
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.feature.postdetail.model.uistate.CommentLogics
 import io.familymoments.app.feature.postdetail.model.uistate.CommentUiState
+import io.familymoments.app.feature.postdetail.model.uistate.ExecutePopupUiState
+import io.familymoments.app.feature.postdetail.model.uistate.PopupStatusLogics
 import io.familymoments.app.feature.postdetail.model.uistate.PopupUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostLogics
 import io.familymoments.app.feature.postdetail.model.uistate.PostUiState
+import io.familymoments.app.feature.postdetail.model.uistate.ReportPopupUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -39,20 +42,28 @@ class PostDetailViewModel @Inject constructor(
     val postUiState: StateFlow<PostUiState> = _postUiState.asStateFlow()
 
     private val _commentUiState: MutableStateFlow<CommentUiState> =
-        MutableStateFlow(CommentUiState(
-            logics = CommentLogics(
-                getComments = this::getCommentsByPostIndex,
-                postComment = this::postComment,
-                deleteComment = this::deleteComment,
-                postCommentLoves = this::postCommentLoves,
-                deleteCommentLoves = this::deleteCommentLoves
+        MutableStateFlow(
+            CommentUiState(
+                logics = CommentLogics(
+                    getComments = this::getCommentsByPostIndex,
+                    postComment = this::postComment,
+                    deleteComment = this::deleteComment,
+                    postCommentLoves = this::postCommentLoves,
+                    deleteCommentLoves = this::deleteCommentLoves
+                )
             )
-        ))
+        )
     val commentUiState: StateFlow<CommentUiState> =
         _commentUiState.asStateFlow()
 
-    private val _popupUiState:MutableStateFlow<PopupUiState> = MutableStateFlow(PopupUiState())
-    val popupUiState:StateFlow<PopupUiState> = _popupUiState.asStateFlow()
+    private val _popupUiState: MutableStateFlow<PopupUiState> = MutableStateFlow(PopupUiState(
+        popupStatusLogics = PopupStatusLogics(
+            this::showDeleteCompletePopup,
+            this::showExecutePopup,
+            this::showReportPopup
+        )
+    ))
+    val popupUiState: StateFlow<PopupUiState> = _popupUiState.asStateFlow()
 
     fun getPostByIndex(index: Int) {
         async(
@@ -314,9 +325,21 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun showDeleteCompletePopup(status:Boolean){
+    fun showDeleteCompletePopup(status: Boolean) {
         _popupUiState.value = _popupUiState.value.copy(
-            showDeleteComplete = status
+            showDeleteCompletePopup = status
+        )
+    }
+
+    fun showExecutePopup(status: Boolean, content:String, execute:()->Unit) {
+        _popupUiState.value = _popupUiState.value.copy(
+            executePopupUiState = ExecutePopupUiState(status, content, execute)
+        )
+    }
+
+    fun showReportPopup(status: Boolean, execute:()->Unit) {
+        _popupUiState.value = _popupUiState.value.copy(
+            reportPopupUiState = ReportPopupUiState(status, execute)
         )
     }
 

@@ -65,6 +65,7 @@ import io.familymoments.app.feature.postdetail.model.response.GetCommentsByPostI
 import io.familymoments.app.feature.postdetail.model.response.GetPostByIndexResult
 import io.familymoments.app.feature.postdetail.model.uistate.CommentLogics
 import io.familymoments.app.feature.postdetail.model.uistate.GetPostLovesUiState
+import io.familymoments.app.feature.postdetail.model.uistate.PopupUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostLogics
 import io.familymoments.app.feature.postdetail.viewmodel.PostDetailViewModel
 
@@ -86,12 +87,42 @@ fun PostDetailScreen(
     val popupUiState = viewModel.popupUiState.collectAsStateWithLifecycle().value
 
     if (
-        (popupUiState.showDeleteComplete && postUiState.deletePostUiState.isSuccess == true)
-        || (popupUiState.showDeleteComplete && commentUiState.deleteCommentUiState.isSuccess == true)
+        (popupUiState.showDeleteCompletePopup && postUiState.deletePostUiState.isSuccess == true)
+        || (popupUiState.showDeleteCompletePopup && commentUiState.deleteCommentUiState.isSuccess == true)
     ) {
         PostDetailCompletePopUp(
             content = stringResource(R.string.post_detail_delete_complete_pop_label)
         ) { viewModel.showDeleteCompletePopup(false) }
+    }
+
+
+    if (popupUiState.executePopupUiState.show) {
+        PostDetailExecutePopUp(content = popupUiState.executePopupUiState.content,
+            onDismissRequest = {
+                popupUiState.popupStatusLogics.showExecutePopup(
+                    false,
+                    popupUiState.executePopupUiState.content,
+                    popupUiState.executePopupUiState.execute
+                )
+            },
+            execute = {
+                popupUiState.executePopupUiState.execute()
+                popupUiState.popupStatusLogics.showExecutePopup(
+                    false,
+                    popupUiState.executePopupUiState.content,
+                    popupUiState.executePopupUiState.execute
+                )
+            })
+    }
+    if (popupUiState.reportPopupUiState.show) {
+        ReportPopUp(onDismissRequest = {
+            popupUiState.popupStatusLogics.showReportPopup(
+                false,
+                popupUiState.reportPopupUiState.execute
+            )
+        }) {
+
+        }
     }
 
     val pagerState = rememberPagerState(pageCount = { postUiState.getPostUiState.result.imgs.size })
@@ -139,7 +170,7 @@ fun PostDetailScreen(
                                 commentUiState.getCommentsUiState.result,
                                 commentUiState.logics,
                                 viewModel::formatCommentCreatedDate,
-                                viewModel::showDeleteCompletePopup
+                                popupUiState
                             )
                         }
 
@@ -445,7 +476,7 @@ fun CommentItems(
     comments: List<GetCommentsByPostIndexResult>,
     logics: CommentLogics,
     formatCommentCreatedDate: (String) -> String,
-    showDeleteCompletePopup: (Boolean) -> Unit
+    popupUiState: PopupUiState
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         comments.forEach {
@@ -453,7 +484,7 @@ fun CommentItems(
                 it,
                 logics,
                 formatCommentCreatedDate,
-                showDeleteCompletePopup
+                popupUiState
             )
         }
     }
@@ -465,7 +496,7 @@ fun CommentItem(
     comment: GetCommentsByPostIndexResult,
     logics: CommentLogics,
     formatCommentCreatedDate: (String) -> String,
-    showDeleteCompletePopup: (Boolean) -> Unit
+    popupUiState: PopupUiState
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -505,28 +536,6 @@ fun CommentItem(
             )
         }
 
-        var showDeleteCommentPopUp by remember {
-            mutableStateOf(false)
-        }
-        var showReportCommentPopUp by remember {
-            mutableStateOf(false)
-        }
-        if (showDeleteCommentPopUp) {
-            PostDetailExecutePopUp(content = stringResource(R.string.post_detail_pop_up_delete_comment_label),
-                onDismissRequest = { showDeleteCommentPopUp = false },
-                execute = {
-                    logics.deleteComment(comment.commentId)
-                    showDeleteCompletePopup(true)
-                })
-        }
-        if (showReportCommentPopUp) {
-            ReportPopUp(onDismissRequest = {
-                showReportCommentPopUp = false
-            }) {
-
-            }
-        }
-
         Column(
             modifier = Modifier
                 .padding(top = 3.dp, end = 6.dp, bottom = 8.dp),
@@ -539,13 +548,16 @@ fun CommentItem(
                     modifier = Modifier.noRippleClickable { expanded = true },
                     tint = Color.Unspecified,
                 )
+                val deleteCommentPopupLabel = stringResource(R.string.post_detail_pop_up_delete_comment_label)
                 PostDetailDropdownMenu(
                     items = listOf(
                         Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {
-                            showReportCommentPopUp = true
+                            popupUiState.popupStatusLogics.showReportPopup(true) {}
                         },
                         Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_delete)) {
-                            showDeleteCommentPopUp = true
+                            popupUiState.popupStatusLogics.showExecutePopup(true, deleteCommentPopupLabel) {
+                                logics.deleteComment(comment.commentId)
+                            }
                         },
                     ),
                     expanded = expanded
