@@ -1,6 +1,5 @@
 package io.familymoments.app.feature.addpost.screen
 
-import android.graphics.Bitmap
 import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -36,6 +35,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -52,9 +52,9 @@ import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.core.util.convertUriToBitmap
 import io.familymoments.app.core.util.keyboardAsState
 import io.familymoments.app.feature.addpost.viewmodel.AddPostViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun AddPostScreen(
@@ -64,15 +64,16 @@ fun AddPostScreen(
     var content by remember { mutableStateOf("") }
     val context = LocalContext.current
     val isKeyboardOpen by keyboardAsState()
+    val scope = rememberCoroutineScope()
 
-    val bitmapList = remember { mutableStateListOf<Bitmap?>() }
+    val uriList = remember { mutableStateListOf<Uri>() }
     val launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?> = rememberLauncherForActivityResult(
         contract =
         ActivityResultContracts.PickVisualMedia()
     ) { uri ->
         if (uri == null) return@rememberLauncherForActivityResult
-        if (bitmapList.size < 10) {
-            bitmapList.add(convertUriToBitmap(uri, context))
+        if (uriList.size < 10) {
+            uriList.add(uri)
         }
     }
 
@@ -90,7 +91,7 @@ fun AddPostScreen(
             color = AppColors.deepPurple1,
             textAlign = TextAlign.Center
         )
-        ImageRow(launcher, bitmapList)
+        ImageRow(launcher, uriList)
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -131,7 +132,9 @@ fun AddPostScreen(
                     .clip(RoundedCornerShape(60.dp))
                     .background(color = AppColors.deepPurple1)
                     .clickable {
-                        viewModel.addPost(content, bitmapList.toList())
+                        scope.launch {
+                            viewModel.addPost(content, uriList.toList(), context)
+                        }
                     },
                 contentAlignment = Alignment.Center
             ) {
@@ -149,7 +152,7 @@ fun AddPostScreen(
 @Composable
 private fun ImageRow(
     launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
-    imageUriList: MutableList<Bitmap?>,
+    imageUriList: MutableList<Uri>,
 ) {
     Row(
         modifier = Modifier

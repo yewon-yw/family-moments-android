@@ -62,7 +62,7 @@ import io.familymoments.app.core.network.repository.impl.SignInRepositoryImpl
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
-import io.familymoments.app.core.util.convertUriToBitmap
+import io.familymoments.app.core.util.FileUtil.convertUriToBitmap
 import io.familymoments.app.feature.signup.model.request.CheckEmailRequest
 import io.familymoments.app.feature.signup.model.request.CheckIdRequest
 import io.familymoments.app.feature.signup.model.request.SignUpRequest

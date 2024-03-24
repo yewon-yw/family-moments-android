@@ -66,6 +66,6 @@ interface PostService {
     suspend fun addPost(
         @Query("familyId") familyId: Long,
         @Part("postInfo") postInfo: RequestBody,
-        @Part images: List<MultipartBody.Part>
+        @Part images: List<MultipartBody.Part>?
     ): Response<AddPostResponse>
 }

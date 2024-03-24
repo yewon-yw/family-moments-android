@@ -13,16 +13,13 @@ fun createPostInfoRequestBody(content: String): RequestBody {
     return json.toRequestBody("application/json; charset=utf-8".toMediaTypeOrNull())
 }
 
-fun createImageParts(imageFiles: List<File>): List<MultipartBody.Part> {
-    return imageFiles.mapIndexed { index, file ->
-        // 파일 확장자에 따른 MIME 타입 결정
-        val mimeType = when (file.extension.lowercase(Locale.getDefault())) {
-            "png" -> "image/png"
-            "jpeg", "jpg" -> "image/jpeg"
-            else -> "application/octet-stream" // 확장자가 지원되지 않는 경우 기본값
-        }
-
-        val requestFile = file.asRequestBody(mimeType.toMediaTypeOrNull())
-        MultipartBody.Part.createFormData("img${index + 1}", file.name, requestFile)
+fun createImageMultiPart(imageFile: File, name: String): MultipartBody.Part {
+    // 파일 확장자에 따른 MIME 타입 결정
+    val mimeType = when (imageFile.extension.lowercase(Locale.getDefault())) {
+        "png" -> "image/png"
+        "jpeg", "jpg" -> "image/jpeg"
+        else -> "application/octet-stream" // 확장자가 지원되지 않는 경우 기본값
     }
+    val fileRequestBody = imageFile.asRequestBody(mimeType.toMediaTypeOrNull())
+    return MultipartBody.Part.createFormData(name, imageFile.name, fileRequestBody)
 }

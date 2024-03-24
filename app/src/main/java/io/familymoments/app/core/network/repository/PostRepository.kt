@@ -7,7 +7,7 @@ import io.familymoments.app.feature.album.model.GetAlbumResponse
 import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
 import io.familymoments.app.feature.home.model.GetPostsResponse
 import kotlinx.coroutines.flow.Flow
-import java.io.File
+import okhttp3.MultipartBody
 
 interface PostRepository {
     suspend fun getPosts(familyId: Long): Flow<Resource<GetPostsResponse>>
@@ -30,6 +30,6 @@ interface PostRepository {
     suspend fun addPost(
         familyId: Long,
         content: String,
-        imageFiles: List<File>
+        uriList: List<MultipartBody.Part>?
     ): Flow<Resource<AddPostResponse>>
 }
