@@ -9,6 +9,7 @@ import io.familymoments.app.core.graph.CommonRoute
 import io.familymoments.app.core.graph.Route
 import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.album.screen.AlbumScreen
+import io.familymoments.app.feature.addpost.screen.AddPostScreen
 import io.familymoments.app.feature.bottomnav.model.BottomNavItem
 import io.familymoments.app.feature.calendar.screen.CalendarScreen
 import io.familymoments.app.feature.home.screen.HomeScreen
@@ -30,18 +31,22 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
     }
 
     composable(route = BottomNavItem.Album.route) {
-         AlbumScreen(
-             modifier = Modifier
-                 .scaffoldState(
-                     hasShadow = false,
-                     hasBackButton = false
-                 ),
-             viewModel = hiltViewModel()
-         )
+        AlbumScreen(
+            modifier = Modifier
+                .scaffoldState(
+                    hasShadow = false,
+                    hasBackButton = false
+                ),
+            viewModel = hiltViewModel()
+        )
     }
 
     composable(route = BottomNavItem.AddPost.route) {
-        // AddPostScreen()
+        AddPostScreen(
+            modifier = Modifier.scaffoldState(hasShadow = true, hasBackButton = true),
+            viewModel = hiltViewModel(),
+            navController::popBackStack
+        )
     }
 
     composable(route = BottomNavItem.Calendar.route) {

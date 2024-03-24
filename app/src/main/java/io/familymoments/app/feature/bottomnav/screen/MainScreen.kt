@@ -8,6 +8,9 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.imePadding
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -46,6 +49,7 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.AppTypography.LB2_11
 import io.familymoments.app.core.util.LocalScaffoldState
+import io.familymoments.app.core.util.keyboardAsState
 import io.familymoments.app.feature.bottomnav.component.bottomNavShadow
 import io.familymoments.app.feature.bottomnav.model.BottomNavItem
 import io.familymoments.app.feature.bottomnav.viewmodel.MainViewModel
@@ -56,6 +60,7 @@ import io.familymoments.app.feature.login.activity.LoginActivity
 fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
     val navController = rememberNavController()
     val scaffoldState = LocalScaffoldState.current
+    val isKeyboardOpen by keyboardAsState()
     val context = LocalContext.current
 
     LaunchedEffect(authErrorManager.needReissueToken) {
@@ -119,7 +124,7 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
         title = { Text(text = "sweety home", style = AppTypography.SH3_16, color = AppColors.deepPurple1) },
         navigationIcon = navigationIcon,
         bottomBar = {
-            if (isBottomNavItem) {
+            if (isBottomNavItem && !isKeyboardOpen) {
                 BottomNavigationBar(
                     navController = navController,
                     bottomNavItems = bottomNavItems,
@@ -130,7 +135,10 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
         hasShadow = scaffoldState.hasShadow
     ) {
         NavHost(
-            modifier = Modifier.padding(bottom = if (isBottomNavItem) 75.dp else 0.dp),
+            modifier = Modifier
+                .navigationBarsPadding()
+                .imePadding()
+                .padding(bottom = if (isBottomNavItem && !isKeyboardOpen) 75.dp else 0.dp),
             navController = navController,
             startDestination = BottomNavItem.Home.route,
             builder = getMainGraph(navController = navController),
@@ -147,6 +155,7 @@ fun BottomNavigationBar(
     BottomNavigation(
         modifier = Modifier
             .bottomNavShadow()
+            .navigationBarsPadding()
             .height(75.dp)
             .clip(RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)),
         backgroundColor = Color.White

@@ -35,7 +35,7 @@ class UserRepositoryImpl @Inject constructor(
 
             if (responseBody.isSuccess) {
                 saveAccessToken(response.headers())
-                val familyId: Long? = responseBody.loginResult.familyId
+                val familyId: Long? = responseBody.result.familyId
                 if (familyId != null) {
                     userInfoPreferencesDataSource.saveFamilyId(familyId)
                 }
