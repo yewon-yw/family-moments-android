@@ -31,20 +31,21 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
     }
 
     composable(route = BottomNavItem.Album.route) {
-         AlbumScreen(
-             modifier = Modifier
-                 .scaffoldState(
-                     hasShadow = false,
-                     hasBackButton = false
-                 ),
-             viewModel = hiltViewModel()
-         )
+        AlbumScreen(
+            modifier = Modifier
+                .scaffoldState(
+                    hasShadow = false,
+                    hasBackButton = false
+                ),
+            viewModel = hiltViewModel()
+        )
     }
 
     composable(route = BottomNavItem.AddPost.route) {
         AddPostScreen(
             modifier = Modifier.scaffoldState(hasShadow = true, hasBackButton = true),
-            viewModel = hiltViewModel()
+            viewModel = hiltViewModel(),
+            navController::popBackStack
         )
     }
 
