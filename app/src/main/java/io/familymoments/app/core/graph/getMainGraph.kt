@@ -4,7 +4,9 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.bottomnav.graph.bottomNavGraph
 import io.familymoments.app.feature.mypage.graph.myPageGraph
@@ -20,11 +22,13 @@ fun getMainGraph(
     profileGraph(navController)
     myPageGraph(navController)
 
-    composable(route = CommonRoute.POST_DETAIL.name) {
+    composable(
+        route = CommonRoute.POST_DETAIL.name + "/{postId}",
+        arguments = listOf(navArgument("postId") { type = NavType.IntType })
+    ) { backStackEntry ->
         PostDetailScreen(
             viewModel = hiltViewModel(),
-            // todo 추후 인덱스 변경
-            index = 1,
+            index = backStackEntry.arguments?.getInt("postId") ?: -1,
             modifier = Modifier
                 .scaffoldState(
                     hasShadow = true,
@@ -43,8 +47,8 @@ fun getMainGraph(
                 hasBackButton = true,
             ),
             viewModel = hiltViewModel(),
-            navigateToPostDetail = {
-                navController.navigate(CommonRoute.POST_DETAIL.name)
+            navigateToPostDetail = { postId ->
+                navController.navigate(CommonRoute.POST_DETAIL.name + "/${postId}")
             }
         )
     }

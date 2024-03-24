@@ -26,11 +26,11 @@ import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.Divider
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
-import androidx.compose.material.DropdownMenu
+import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.runtime.Composable
@@ -71,7 +71,7 @@ import io.familymoments.app.feature.postdetail.viewmodel.PostDetailViewModel
 @Composable
 fun PostDetailScreen(
     viewModel: PostDetailViewModel,
-    index: Int = 0,
+    index: Int,
     modifier: Modifier
 ) {
     LaunchedEffect(Unit) {
@@ -85,7 +85,6 @@ fun PostDetailScreen(
     val postDetailInfo = postDetailUiState.result
     val commentsUiState = viewModel.commentsUiState.collectAsStateWithLifecycle().value
     val postLovesUiState = viewModel.postLovesUiState.collectAsStateWithLifecycle().value
-    val postCommentUiState = viewModel.postCommentUiState.collectAsStateWithLifecycle().value
     val deleteCommentUiState = viewModel.deleteCommentUiState.collectAsStateWithLifecycle().value
     val deletePostUiState = viewModel.deletePostUiState.collectAsStateWithLifecycle().value
 
@@ -120,38 +119,41 @@ fun PostDetailScreen(
                             .clip(shape = RoundedCornerShape(10.dp))
                             .background(AppColors.grey6)
                     ) {
-                        if (postDetailUiState.isSuccess == true) {
-                            PostPhotos(postDetailInfo.imgs, pagerState)
-                            PostContent(
-                                postDetailInfo.content,
-                                postDetailInfo.countLove,
-                                postDetailInfo.loved,
-                                postDetailInfo.postId,
-                                viewModel::postPostLoves,
-                                viewModel::deletePostLoves,
-                                viewModel::deletePost,
-                                deletePostUiState
-                            ) { showDeleteCompletePopUp = true }
-                        }
+                        PostPhotos(postDetailInfo.imgs, pagerState)
+                        PostContent(
+                            postDetailInfo.content,
+                            postDetailInfo.countLove,
+                            postDetailInfo.loved,
+                            postDetailInfo.postId,
+                            viewModel::postPostLoves,
+                            viewModel::deletePostLoves,
+                            viewModel::deletePost,
+                            deletePostUiState
+                        ) { showDeleteCompletePopUp = true }
                         Spacer(
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .height(5.dp)
                                 .background(color = AppColors.grey4)
                         )
+                        CommentTextField(
+                            postId = postDetailInfo.postId,
+                            postComment = viewModel::postComment,
+                            commentsCount = commentsUiState.result.size,
+                            postLovesUiState = postLovesUiState,
+                            context = context
+                        )
+                        Spacer(modifier = Modifier.height(18.dp))
                         if (commentsUiState.isSuccess == true) {
-                            Comments(
-                                commentsUiState.result,
-                                context,
-                                postLovesUiState,
-                                viewModel::postComment,
-                                index,
-                                viewModel::deleteComment,
-                                viewModel::postCommentLoves,
-                                viewModel::deleteCommentLoves,
-                                viewModel::formatCommentCreatedDate,
-                                deleteCommentUiState
-                            ) { showDeleteCompletePopUp = true }
+                            CommentItems(
+                                comments = commentsUiState.result,
+                                deleteComment = viewModel::deleteComment,
+                                postCommentLoves = viewModel::postCommentLoves,
+                                deleteCommentLoves = viewModel::deleteCommentLoves,
+                                formatCommentCreatedDate = viewModel::formatCommentCreatedDate,
+                                deleteCommentUiState = deleteCommentUiState,
+                                showCompletePopUp = { showDeleteCompletePopUp = true }
+                            )
                         }
 
                         Spacer(modifier = Modifier.height(20.dp))
@@ -352,18 +354,12 @@ fun PostContent(
 }
 
 @Composable
-fun Comments(
-    comments: List<GetCommentsByPostIndexResult>,
-    context: Context,
-    postLovesUiState: PostLovesUiState,
+fun CommentTextField(
+    commentsCount: Int,
+    postId: Int,
     postComment: (Int, String) -> Unit,
-    postIndex: Int,
-    deleteComment: (Int) -> Unit,
-    postCommentLoves: (Int) -> Unit,
-    deleteCommentLoves: (Int) -> Unit,
-    formatCommentCreatedDate: (String) -> String,
-    deleteCommentUiState: DeleteCommentUiState,
-    showCompletePopUp: () -> Unit
+    postLovesUiState: PostLovesUiState,
+    context: Context
 ) {
     var showLoveListPopUp by remember {
         mutableStateOf(false)
@@ -377,7 +373,7 @@ fun Comments(
             )
         ) {
             Text(
-                text = "댓글 ${comments.size}개",
+                text = "댓글 ${commentsCount}개",
                 style = AppTypography.B2_14,
                 color = AppColors.grey2,
                 modifier = Modifier.weight(1f)
@@ -399,73 +395,58 @@ fun Comments(
             LoveListPopUp(postLovesUiState.result) { showLoveListPopUp = false }
         }
         Spacer(modifier = Modifier.height(10.dp))
-        CommentTextField(postIndex, postComment)
-        Spacer(modifier = Modifier.height(18.dp))
-        CommentItems(
-            comments,
-            deleteComment,
-            postCommentLoves,
-            deleteCommentLoves,
-            formatCommentCreatedDate,
-            deleteCommentUiState,
-            showCompletePopUp
-        )
-    }
-}
-
-@Composable
-fun CommentTextField(index: Int, postComment: (Int, String) -> Unit) {
-    var comments by remember {
-        mutableStateOf(TextFieldValue())
-    }
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(64.dp)
-            .padding(start = 10.dp, end = 12.dp)
-            .background(
-                color = Color(0xFFF4F4F4),
-                shape = RoundedCornerShape(size = 8.dp)
-            )
-    ) {
-        Row(modifier = Modifier.fillMaxHeight()) {
-            BasicTextField(
-                value = comments,
-                onValueChange = {
-                    if (it.text.length <= 50) comments = it
-                },
-                textStyle = AppTypography.LB2_11.copy(AppColors.black1),
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(11.dp)
-            ) { innerTextField ->
-                if (comments.text.isEmpty()) {
+        var comments by remember {
+            mutableStateOf(TextFieldValue())
+        }
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(64.dp)
+                .padding(start = 10.dp, end = 12.dp)
+                .background(
+                    color = Color(0xFFF4F4F4),
+                    shape = RoundedCornerShape(size = 8.dp)
+                )
+        ) {
+            Row(modifier = Modifier.fillMaxHeight()) {
+                BasicTextField(
+                    value = comments,
+                    onValueChange = {
+                        if (it.text.length <= 50) comments = it
+                    },
+                    textStyle = AppTypography.LB2_11.copy(AppColors.black1),
+                    modifier = Modifier
+                        .weight(1f)
+                        .padding(11.dp)
+                ) { innerTextField ->
+                    if (comments.text.isEmpty()) {
+                        Text(
+                            text = stringResource(R.string.post_detail_screen_comment_text_field_hint),
+                            color = AppColors.grey3,
+                            style = AppTypography.LB2_11
+                        )
+                    }
+                    innerTextField()
+                }
+                Button(
+                    onClick = {
+                        postComment(postId, comments.text)
+                    },
+                    modifier = Modifier
+                        .padding(end = 6.dp)
+                        .clip(RoundedCornerShape(10.dp))
+                        .height(52.dp)
+                        .width(42.dp)
+                        .align(Alignment.CenterVertically),
+                    colors = ButtonDefaults.buttonColors(backgroundColor = AppColors.purple1),
+                    contentPadding = PaddingValues(0.dp),
+                ) {
                     Text(
-                        text = stringResource(R.string.post_detail_screen_comment_text_field_hint),
-                        color = AppColors.grey3,
-                        style = AppTypography.LB2_11
+                        text = stringResource(R.string.post_detail_screen_comment_post_button),
+                        style = AppTypography.BTN6_13,
+                        color = AppColors.grey6
                     )
                 }
-                innerTextField()
-            }
-            Button(
-                onClick = {
-                    postComment(index, comments.text)
-                },
-                modifier = Modifier
-                    .padding(end = 6.dp)
-                    .clip(RoundedCornerShape(10.dp))
-                    .height(52.dp)
-                    .width(42.dp)
-                    .align(Alignment.CenterVertically),
-                colors = ButtonDefaults.buttonColors(backgroundColor = AppColors.purple1),
-                contentPadding = PaddingValues(0.dp),
-            ) {
-                Text(
-                    text = stringResource(R.string.post_detail_screen_comment_post_button),
-                    style = AppTypography.BTN6_13,
-                    color = AppColors.grey6
-                )
             }
         }
     }
