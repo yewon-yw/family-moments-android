@@ -9,5 +9,5 @@ import io.familymoments.app.feature.creatingfamily.viewmodel.CreatingFamilyViewM
 
 @AndroidEntryPoint
 class ChoosingFamilyActivity : BaseActivity<CreatingFamilyViewModel>(CreatingFamilyViewModel::class) {
-    override val screen: @Composable () -> Unit = { ChoosingFamilyScreen(hiltViewModel()) }
+    override val screen: @Composable () -> Unit = { ChoosingFamilyScreen(hiltViewModel(), hiltViewModel()) }
 }

@@ -152,4 +152,5 @@
     <string name="logout_content">로그아웃 하시겠습니까?</string>
     <string name="logout_btn">로그아웃</string>
     <string name="logout_cancel_btn">취소</string>
+    <string name="copy_invitation_link_message">링크가 복사되었습니다.</string>
 </resources>

@@ -47,7 +47,11 @@ fun CopyInvitationLinkScreen(inviteLink: String, navigate: () -> Unit = {}) {
                     .padding(top = 56.dp),
                 onClick = {
                     clipboardManager.setPrimaryClip(clip)
-                    Toast.makeText(context, "링크가 복사되었습니다.", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        context,
+                        context.getString(R.string.copy_invitation_link_message),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 },
                 shape = RoundedCornerShape(60.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = AppColors.purple2),

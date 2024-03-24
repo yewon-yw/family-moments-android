@@ -20,9 +20,7 @@ import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.core.network.repository.impl.PostRepositoryImpl
 import io.familymoments.app.core.network.repository.impl.SignInRepositoryImpl
 import io.familymoments.app.core.network.repository.impl.UserRepositoryImpl
-import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.core.network.repository.impl.FamilyRepositoryImpl
-import io.familymoments.app.core.network.repository.impl.PostRepositoryImpl
 import javax.inject.Singleton
 
 @InstallIn(SingletonComponent::class)

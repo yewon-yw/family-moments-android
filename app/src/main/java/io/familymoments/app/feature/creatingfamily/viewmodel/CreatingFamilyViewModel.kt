@@ -44,7 +44,7 @@ class CreatingFamilyViewModel @Inject constructor(
 
     fun searchMember(keyword: String) {
         async(
-            operation = { userRepository.searchMember(keyword) },
+            operation = { userRepository.searchMember(keyword, true) },
             onSuccess = {
                 _searchMemberUiState.value =
                     _searchMemberUiState.value.copy(isSuccess = true, members = it.result, isLoading = isLoading.value)

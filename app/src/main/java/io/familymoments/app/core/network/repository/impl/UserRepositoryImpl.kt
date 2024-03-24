@@ -114,7 +114,7 @@ class UserRepositoryImpl @Inject constructor(
         return flow {
             emit(Resource.Loading)
             val response = userService.modifyPassword(modifyPasswordRequest)
-            val responseBody = response.body()?: ModifyPasswordResponse()
+            val responseBody = response.body() ?: ModifyPasswordResponse()
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
             } else if (responseBody.code == 4000 || responseBody.code == 4003) {
@@ -127,32 +127,18 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun searchMember(keyword: String): Flow<Resource<SearchMemberResponse>> {
+    override suspend fun searchMember(keyword: String, newFamily: Boolean): Flow<Resource<SearchMemberResponse>> {
         return flow {
             emit(Resource.Loading)
-//            val familyId = userInfoPreferencesDataSource.loadFamilyId()
-
-            val response = userService.searchMember(keyword, null)
+            val familyId = if (newFamily) null else userInfoPreferencesDataSource.loadFamilyId()
+            val response = userService.searchMember(keyword, familyId)
             val responseBody = response.body() ?: SearchMemberResponse()
 
-            if (response.code() == 200) {
-                if (responseBody.isSuccess) {
-                    emit(Resource.Success(responseBody))
-                } else {
-                    // 사용자 인증 오류
-                    reissueAccessToken().collect { result ->
-                        if (result is Resource.Success) {
-                            // 새 access token 발급 후 다시 api 실행
-                            searchMember(keyword)
-                        }
-                        if (result is Resource.Fail) emit(Resource.Fail(result.exception))
-                    }
-                }
+            if (responseBody.isSuccess) {
+                emit(Resource.Success(responseBody))
             } else {
-                emit(Resource.Fail(Throwable(response.message())))
+                emit(Resource.Fail(Throwable(responseBody.message)))
             }
-
-
         }.catch { e ->
             emit(Resource.Fail(e))
         }

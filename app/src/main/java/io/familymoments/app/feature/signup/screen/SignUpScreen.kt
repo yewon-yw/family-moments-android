@@ -72,7 +72,6 @@ import io.familymoments.app.feature.signup.model.response.SignUpResponse
 import io.familymoments.app.feature.signup.model.uistate.SignUpInfoUiState
 import io.familymoments.app.feature.signup.model.uistate.SignUpTermUiState
 import io.familymoments.app.feature.signup.viewmodel.SignUpViewModel
-import io.familymoments.app.core.util.convertUriToBitmap
 import okhttp3.MultipartBody
 
 @Composable

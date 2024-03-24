@@ -24,6 +24,7 @@ import io.familymoments.app.feature.creatingfamily.screen.SearchMemberScreen
 import io.familymoments.app.feature.creatingfamily.screen.SetProfileScreen
 import io.familymoments.app.feature.creatingfamily.viewmodel.CreatingFamilyViewModel
 import io.familymoments.app.feature.joiningfamily.screen.JoinFamilyScreen
+import io.familymoments.app.feature.joiningfamily.viewmodel.JoinFamilyViewModel
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -54,7 +55,10 @@ sealed interface ChoosingFamilyRoute {
 }
 
 @Composable
-fun ChoosingFamilyScreen(viewModel: CreatingFamilyViewModel) {
+fun ChoosingFamilyScreen(
+    creatingFamilyViewModel: CreatingFamilyViewModel,
+    joinFamilyViewModel:JoinFamilyViewModel
+) {
     val context = LocalContext.current
     val mainActivityIntent = Intent(context, MainActivity::class.java).apply {
         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -79,11 +83,11 @@ fun ChoosingFamilyScreen(viewModel: CreatingFamilyViewModel) {
             composable(ChoosingFamilyRoute.SearchMember.route) {
                 SearchMemberScreen(
                     navigate = { navController.navigate(ChoosingFamilyRoute.SetProfile.route) },
-                    viewModel = viewModel
+                    viewModel = creatingFamilyViewModel
                 )
             }
             composable(ChoosingFamilyRoute.SetProfile.route) {
-                SetProfileScreen(viewModel = viewModel) {
+                SetProfileScreen(viewModel = creatingFamilyViewModel) {
                     navController.navigate(ChoosingFamilyRoute.SetAlarm.route)
                 }
             }
@@ -91,7 +95,7 @@ fun ChoosingFamilyScreen(viewModel: CreatingFamilyViewModel) {
                 route = ChoosingFamilyRoute.SetAlarm.route
             ) {
 
-                SetAlarmScreen(viewModel = viewModel) {
+                SetAlarmScreen(viewModel = creatingFamilyViewModel) {
                     val encodedUrl = URLEncoder.encode(it, StandardCharsets.UTF_8.toString())
                     navController.navigate(ChoosingFamilyRoute.CopyInvitationLink.getRoute(encodedUrl))
                 }
@@ -105,7 +109,7 @@ fun ChoosingFamilyScreen(viewModel: CreatingFamilyViewModel) {
                 }
             }
             composable(ChoosingFamilyRoute.Join.route) {
-                JoinFamilyScreen(hiltViewModel()) {
+                JoinFamilyScreen(joinFamilyViewModel) {
                     context.startActivity(mainActivityIntent)
                 }
             }
@@ -118,6 +122,6 @@ fun ChoosingFamilyScreen(viewModel: CreatingFamilyViewModel) {
 @Composable
 fun ChoosingFamilyScreenPreview() {
     FamilyMomentsTheme {
-        ChoosingFamilyScreen(hiltViewModel())
+        ChoosingFamilyScreen(hiltViewModel(), hiltViewModel())
     }
 }
