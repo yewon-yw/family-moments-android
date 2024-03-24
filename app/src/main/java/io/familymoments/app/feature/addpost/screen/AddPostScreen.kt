@@ -43,16 +43,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.keyboardAsState
 import io.familymoments.app.feature.addpost.viewmodel.AddPostViewModel
 import kotlinx.coroutines.launch
@@ -61,7 +64,7 @@ import kotlinx.coroutines.launch
 fun AddPostScreen(
     modifier: Modifier,
     viewModel: AddPostViewModel,
-    popBackStack:()->Unit
+    popBackStack: () -> Unit
 ) {
     var content by remember { mutableStateOf("") }
     val context = LocalContext.current
@@ -91,7 +94,7 @@ fun AddPostScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 48.dp),
-            text = "새 글 업로드",
+            text = stringResource(id = R.string.add_post_title),
             style = AppTypography.SH1_20,
             color = AppColors.deepPurple1,
             textAlign = TextAlign.Center
@@ -101,7 +104,7 @@ fun AddPostScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(bottom = 14.dp),
-            text = "글 작성",
+            text = stringResource(id = R.string.add_post_write_content),
             style = AppTypography.B1_16,
             color = AppColors.black1,
             textAlign = TextAlign.Center
@@ -120,7 +123,7 @@ fun AddPostScreen(
             decorationBox = { innerTextField ->
                 if (content.isEmpty()) {
                     Text(
-                        text = "| 사진과 어울리는 내용을 작성하세요.",
+                        text = stringResource(id = R.string.add_post_write_content_hint),
                         style = AppTypography.LB1_13,
                         color = AppColors.grey3
                     )
@@ -144,7 +147,7 @@ fun AddPostScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "순간을 가족에게 공유하기",
+                    text = stringResource(id = R.string.add_post_btn),
                     style = AppTypography.BTN4_18,
                     color = AppColors.grey6,
                     textAlign = TextAlign.Center
@@ -235,8 +238,100 @@ private fun ImageRow(
     }
 }
 
-//@Preview(showBackground = true)
-//@Composable
-//fun AddPostScreenPreview() {
-//    AddPostScreen(modifier = Modifier)
-//}
+@Preview(showBackground = true)
+@Composable
+private fun AddPostScreenPreview() {
+    FamilyMomentsTheme {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
+        ) {
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 48.dp),
+                text = stringResource(id = R.string.add_post_title),
+                style = AppTypography.SH1_20,
+                color = AppColors.deepPurple1,
+                textAlign = TextAlign.Center
+            )
+            Row(
+                modifier = Modifier
+                    .padding(vertical = 30.dp)
+                    .padding(start = 16.dp),
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(63.dp)
+                        .border(width = 1.dp, color = AppColors.deepPurple3, shape = RoundedCornerShape(size = 6.dp))
+                        .padding(start = 17.5.dp, top = 13.dp, end = 17.5.dp, bottom = 7.dp)
+                        .clickable {}
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                    ) {
+                        Icon(
+                            imageVector = ImageVector.vectorResource(id = R.drawable.ic_bottom_nav_album),
+                            contentDescription = null,
+                            tint = AppColors.grey2,
+                        )
+                        Spacer(modifier = Modifier.height(3.dp))
+                        Text(
+                            text = "0/10",
+                            style = AppTypography.BTN6_13,
+                            color = AppColors.grey2
+                        )
+                    }
+                }
+                Spacer(modifier = Modifier.width(9.dp))
+            }
+            Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 14.dp),
+                text = stringResource(id = R.string.add_post_write_content),
+                style = AppTypography.B1_16,
+                color = AppColors.black1,
+                textAlign = TextAlign.Center
+            )
+            BasicTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+                    .heightIn(min = 268.dp)
+                    .clip(shape = RoundedCornerShape(7.dp))
+                    .background(color = AppColors.grey5)
+                    .padding(all = 20.dp),
+                value = "",
+                onValueChange = { },
+                textStyle = AppTypography.LB1_13.copy(color = AppColors.black1),
+                decorationBox = { innerTextField ->
+                    Text(
+                        text = stringResource(id = R.string.add_post_write_content_hint),
+                        style = AppTypography.LB1_13,
+                        color = AppColors.grey3
+                    )
+                    innerTextField()
+                },
+            )
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 24.dp)
+                    .fillMaxWidth()
+                    .heightIn(min = 59.dp)
+                    .clip(RoundedCornerShape(60.dp))
+                    .background(color = AppColors.deepPurple1)
+                    .clickable {},
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = stringResource(id = R.string.add_post_btn),
+                    style = AppTypography.BTN4_18,
+                    color = AppColors.grey6,
+                    textAlign = TextAlign.Center
+                )
+            }
+        }
+    }
+}
