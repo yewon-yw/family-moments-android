@@ -60,7 +60,7 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.noRippleClickable
-import io.familymoments.app.feature.home.component.postItemContentShadow
+import io.familymoments.app.feature.postdetail.model.component.postDetailContentShadow
 import io.familymoments.app.feature.postdetail.model.response.GetCommentsByPostIndexResult
 import io.familymoments.app.feature.postdetail.model.uistate.DeleteCommentUiState
 import io.familymoments.app.feature.postdetail.model.uistate.DeletePostUiState
@@ -113,7 +113,7 @@ fun PostDetailScreen(
                 Spacer(modifier = Modifier.height(15.dp))
                 Divider(Modifier.height(1.dp), color = AppColors.deepPurple3)
                 Spacer(modifier = Modifier.height(19.dp))
-                Box(modifier = Modifier.postItemContentShadow()) {
+                Box(modifier = Modifier.postDetailContentShadow()) {
                     Column(
                         modifier = Modifier
                             .clip(shape = RoundedCornerShape(10.dp))
@@ -343,7 +343,7 @@ fun PostContent(
                     }
                 )
                 Spacer(modifier = Modifier.height(3.dp))
-                androidx.compose.material3.Text(
+                Text(
                     text = countLoveState.toString(),
                     style = AppTypography.LB2_11,
                     color = AppColors.black2
