@@ -25,7 +25,7 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
                 ),
             viewModel = hiltViewModel(),
             navigateToPostDetail = {
-                navController.navigate(CommonRoute.POST_DETAIL.name)
+                navController.navigate(CommonRoute.POST_DETAIL.name+ "/${it}")
             }
         )
     }
