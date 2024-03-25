@@ -1,4 +1,4 @@
-package io.familymoments.app.feature.postdetail.screen
+package io.familymoments.app.feature.postdetail.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Button
@@ -142,15 +143,23 @@ fun ReportItems(modifier: Modifier) {
         verticalArrangement = Arrangement.spacedBy(19.dp),
         horizontalArrangement = Arrangement.spacedBy(6.dp)
     ) {
-        items(7) {
-            ReportItem()
+        val contents = listOf(
+            "영리목적/홍보성", "저작권 침해",
+            "음란성/선정성", "욕설/인신공격",
+            "같은내용 반복게시", "개인정보노출",
+            "기타"
+
+        )
+        items(contents) {
+            ReportItem(it)
         }
+
 
     }
 }
 
 @Composable
-fun ReportItem() {
+fun ReportItem(content: String) {
     Row(verticalAlignment = Alignment.CenterVertically) {
         var checkStatus by remember {
             mutableStateOf(false)
@@ -167,7 +176,7 @@ fun ReportItem() {
         )
         Spacer(modifier = Modifier.width(6.dp))
         Text(
-            text = "영리목적/홍보성",
+            text = content,
             style = AppTypography.LB2_11
         )
     }

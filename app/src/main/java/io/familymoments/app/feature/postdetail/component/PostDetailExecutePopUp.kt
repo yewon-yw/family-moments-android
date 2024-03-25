@@ -1,4 +1,4 @@
-package io.familymoments.app.feature.postdetail.screen
+package io.familymoments.app.feature.postdetail.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

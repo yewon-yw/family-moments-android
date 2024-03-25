@@ -60,6 +60,10 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.noRippleClickable
+import io.familymoments.app.feature.postdetail.component.LoveListPopUp
+import io.familymoments.app.feature.postdetail.component.PostDetailCompletePopUp
+import io.familymoments.app.feature.postdetail.component.PostDetailExecutePopUp
+import io.familymoments.app.feature.postdetail.component.ReportPopUp
 import io.familymoments.app.feature.postdetail.model.component.postDetailContentShadow
 import io.familymoments.app.feature.postdetail.model.response.GetCommentsResult
 import io.familymoments.app.feature.postdetail.model.response.GetPostResult
@@ -427,7 +431,7 @@ fun CommentTextField(
                 .height(64.dp)
                 .padding(start = 10.dp, end = 12.dp)
                 .background(
-                    color = Color(0xFFF4F4F4),
+                    color = AppColors.grey4,
                     shape = RoundedCornerShape(size = 8.dp)
                 )
         ) {
@@ -510,7 +514,7 @@ fun CommentItem(
             .fillMaxWidth()
             .padding(start = 10.dp, end = 12.dp)
             .background(
-                color = Color(0xFFF4F4F4),
+                color = AppColors.grey4,
                 shape = RoundedCornerShape(size = 8.dp)
             )
     ) {
