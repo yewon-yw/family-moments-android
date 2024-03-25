@@ -34,7 +34,10 @@ fun getMainGraph(
                 .scaffoldState(
                     hasShadow = true,
                     hasBackButton = true,
-                )
+                ),
+            navigateToBack = {
+                navController.popBackStack()
+            }
         ) { post ->
             navController.navigate(
                 Route.AddPost.getRoute(

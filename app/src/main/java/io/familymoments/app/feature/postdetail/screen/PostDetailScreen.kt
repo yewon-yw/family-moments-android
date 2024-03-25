@@ -70,6 +70,7 @@ import io.familymoments.app.feature.postdetail.model.response.GetPostDetailResul
 import io.familymoments.app.feature.postdetail.model.uistate.CommentLogics
 import io.familymoments.app.feature.postdetail.model.uistate.GetPostLovesUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PopupUiState
+import io.familymoments.app.feature.postdetail.model.uistate.PostCommentUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostLogics
 import io.familymoments.app.feature.postdetail.viewmodel.PostDetailViewModel
 
@@ -79,7 +80,8 @@ fun PostDetailScreen(
     viewModel: PostDetailViewModel,
     index: Long,
     modifier: Modifier,
-    navigateToModify: (GetPostDetailResult) -> Unit
+    navigateToBack: () -> Unit,
+    navigateToModify: (GetPostDetailResult) -> Unit,
 ) {
     LaunchedEffect(Unit) {
         viewModel.getPostDetail(index)
@@ -91,43 +93,41 @@ fun PostDetailScreen(
     val commentUiState = viewModel.commentUiState.collectAsStateWithLifecycle().value
     val popupUiState = viewModel.popupUiState.collectAsStateWithLifecycle().value
 
-    if (
-        (popupUiState.showDeleteCompletePopup && postUiState.deletePostUiState.isSuccess == true)
-        || (popupUiState.showDeleteCompletePopup && commentUiState.deleteCommentUiState.isSuccess == true)
-    ) {
+    if (postUiState.deletePostUiState.isSuccess == true && popupUiState.showDeleteCompletePopup) {
         PostDetailCompletePopUp(
             content = stringResource(R.string.post_detail_delete_complete_pop_label)
-        ) { viewModel.showDeleteCompletePopup(false) }
+        ) {
+            popupUiState.popupStatusLogics.showDeleteCompletePopup(false)
+            navigateToBack()
+        }
+    }
+    if (commentUiState.deleteCommentUiState.isSuccess == true && popupUiState.showDeleteCompletePopup) {
+        PostDetailCompletePopUp(
+            content = stringResource(R.string.post_detail_delete_complete_pop_label)
+        ) { popupUiState.popupStatusLogics.showDeleteCompletePopup(false) }
     }
 
 
     if (popupUiState.executePopupUiState.show) {
         PostDetailExecutePopUp(content = popupUiState.executePopupUiState.content,
             onDismissRequest = {
-                popupUiState.popupStatusLogics.showExecutePopup(
-                    false,
-                    popupUiState.executePopupUiState.content,
-                    popupUiState.executePopupUiState.execute
-                )
+                popupUiState.popupStatusLogics.showExecutePopup(false, "") {}
             },
             execute = {
                 popupUiState.executePopupUiState.execute()
-                popupUiState.popupStatusLogics.showExecutePopup(
-                    false,
-                    popupUiState.executePopupUiState.content,
-                    popupUiState.executePopupUiState.execute
-                )
+                popupUiState.popupStatusLogics.showExecutePopup(false, "") {}
             })
     }
     if (popupUiState.reportPopupUiState.show) {
         ReportPopUp(onDismissRequest = {
-            popupUiState.popupStatusLogics.showReportPopup(
-                false,
-                popupUiState.reportPopupUiState.execute
-            )
+            popupUiState.popupStatusLogics.showReportPopup(false) {}
         }) {
-
+            popupUiState.reportPopupUiState.execute()
+            popupUiState.popupStatusLogics.showReportPopup(false) {}
         }
+    }
+    if (commentUiState.postCommentUiState.isSuccess == true || commentUiState.deleteCommentUiState.isSuccess == true) {
+        commentUiState.logics.getComments(index)
     }
 
     val pagerState = rememberPagerState(pageCount = { postUiState.getPostDetailUiState.result.imgs.size })
@@ -154,7 +154,7 @@ fun PostDetailScreen(
                         PostContent(
                             postUiState.getPostDetailUiState.result,
                             postUiState.logics,
-                            viewModel::showDeleteCompletePopup
+                            popupUiState
                         ) { navigateToModify(postUiState.getPostDetailUiState.result) }
                         Spacer(
                             modifier = Modifier
@@ -166,6 +166,7 @@ fun PostDetailScreen(
                             commentUiState.getCommentsUiState.result.size,
                             postUiState.getPostDetailUiState.result.postId,
                             viewModel::postComment,
+                            commentUiState.postCommentUiState,
                             postUiState.getPostLovesUiState,
                             context
                         )
@@ -271,8 +272,8 @@ fun PostPhotos(imgs: List<String>, pagerState: PagerState) {
 fun PostContent(
     postInfo: GetPostDetailResult,
     logics: PostLogics,
-    showDeleteCompletePopup: (Boolean) -> Unit,
-    navigateToModify:()->Unit
+    popupUiState: PopupUiState,
+    navigateToModify: () -> Unit,
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -306,37 +307,24 @@ fun PostContent(
                             expanded = true
                         }
                     )
-                    var showDeletePopUp by remember {
-                        mutableStateOf(false)
-                    }
-                    var showReportPopUp by remember {
-                        mutableStateOf(false)
-                    }
-                    if (showDeletePopUp) {
-                        PostDetailExecutePopUp(content = stringResource(R.string.post_detail_delete_post_pop_up_label),
-                            onDismissRequest = { showDeletePopUp = false },
-                            execute = {
-                                logics.deletePost(postInfo.postId)
-                                showDeleteCompletePopup(true)
-                            })
-                    }
+                    val deletePostPopupLabel = stringResource(R.string.post_detail_delete_post_pop_up_label)
 
-                    if (showReportPopUp) {
-                        ReportPopUp(
-                            onDismissRequest = { showReportPopUp = false },
-                            onReportRequest = {}
-                        )
-                    }
                     PostDetailDropdownMenu(
                         items = listOf(
                             Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify)) {
                                 navigateToModify()
                             },
                             Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {
-                                showReportPopUp = true
+                                popupUiState.popupStatusLogics.showReportPopup(true) {
+                                    popupUiState.popupStatusLogics.showReportPopup(false, {})
+                                }
                             },
                             Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_delete)) {
-                                showDeletePopUp = true
+                                popupUiState.popupStatusLogics.showExecutePopup(true, deletePostPopupLabel) {
+                                    logics.deletePost(postInfo.postId)
+                                    popupUiState.popupStatusLogics.showDeleteCompletePopup(true)
+                                    popupUiState.popupStatusLogics.showExecutePopup(false, "") {}
+                                }
                             },
                         ),
                         expanded = expanded
@@ -385,6 +373,7 @@ fun CommentTextField(
     commentsCount: Int,
     postId: Long,
     postComment: (Long, String) -> Unit,
+    postCommentUiState: PostCommentUiState,
     getPostLovesUiState: GetPostLovesUiState,
     context: Context
 ) {
@@ -454,6 +443,12 @@ fun CommentTextField(
                         )
                     }
                     innerTextField()
+                }
+
+                if (postCommentUiState.isSuccess == true) {
+                    comments = TextFieldValue()
+                } else if (postCommentUiState.isSuccess == false) {
+                    showToastMessage(context, postCommentUiState.message ?: "댓글 전송에 실패했습니다.")
                 }
                 Button(
                     onClick = {
@@ -565,6 +560,7 @@ fun CommentItem(
                         Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_delete)) {
                             popupUiState.popupStatusLogics.showExecutePopup(true, deleteCommentPopupLabel) {
                                 logics.deleteComment(comment.commentId)
+                                popupUiState.popupStatusLogics.showExecutePopup(false, "") {}
                             }
                         },
                     ),
@@ -645,7 +641,7 @@ fun PostDetailDropdownMenu(
 @Composable
 fun PostDetailPreview() {
     FamilyMomentsTheme {
-        PostDetailScreen(hiltViewModel(), 0, modifier = Modifier,{})
+        PostDetailScreen(hiltViewModel(), 0, modifier = Modifier, {}) {}
     }
 }
 

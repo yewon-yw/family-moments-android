@@ -12,7 +12,9 @@ import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.HTTP
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -22,24 +24,25 @@ interface CommentService {
         @Query("postId") postId: Long
     ): Response<GetCommentsIndexResponse>
 
+    @Multipart
     @POST("/comments")
     suspend fun postComment(
         @Query("postId") postId: Long,
-        @Body postCommentReq: PostCommentRequest
+        @Part("postCommentReq") postCommentReq: PostCommentRequest
     ): Response<PostCommentResponse>
 
     @DELETE("/comments/{index}")
     suspend fun deleteComment(
         @Path("index") index: Long
-    ):Response<DeleteCommentResponse>
+    ): Response<DeleteCommentResponse>
 
     @POST("/commentloves")
     suspend fun postCommentLoves(
         @Body commentLovesRequest: CommentLovesRequest
-    ):Response<PostCommentLovesResponse>
+    ): Response<PostCommentLovesResponse>
 
-    @HTTP(method="DELETE", hasBody=true, path="/commentloves")
+    @HTTP(method = "DELETE", hasBody = true, path = "/commentloves")
     suspend fun deleteCommentLoves(
         @Body commentLovesRequest: CommentLovesRequest
-    ):Response<DeleteCommentLovesResponse>
+    ): Response<DeleteCommentLovesResponse>
 }

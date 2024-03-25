@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.time.DayOfWeek
+import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -56,13 +57,15 @@ class PostDetailViewModel @Inject constructor(
     val commentUiState: StateFlow<CommentUiState> =
         _commentUiState.asStateFlow()
 
-    private val _popupUiState: MutableStateFlow<PopupUiState> = MutableStateFlow(PopupUiState(
-        popupStatusLogics = PopupStatusLogics(
-            this::showDeleteCompletePopup,
-            this::showExecutePopup,
-            this::showReportPopup
+    private val _popupUiState: MutableStateFlow<PopupUiState> = MutableStateFlow(
+        PopupUiState(
+            popupStatusLogics = PopupStatusLogics(
+                this::showDeleteCompletePopup,
+                this::showExecutePopup,
+                this::showReportPopup
+            )
         )
-    ))
+    )
     val popupUiState: StateFlow<PopupUiState> = _popupUiState.asStateFlow()
 
     fun getPostDetail(index: Long) {
@@ -331,13 +334,13 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun showExecutePopup(status: Boolean, content:String, execute:()->Unit) {
+    fun showExecutePopup(status: Boolean, content: String, execute: () -> Unit) {
         _popupUiState.value = _popupUiState.value.copy(
             executePopupUiState = ExecutePopupUiState(status, content, execute)
         )
     }
 
-    fun showReportPopup(status: Boolean, execute:()->Unit) {
+    fun showReportPopup(status: Boolean, execute: () -> Unit) {
         _popupUiState.value = _popupUiState.value.copy(
             reportPopupUiState = ReportPopupUiState(status, execute)
         )
@@ -362,6 +365,16 @@ class PostDetailViewModel @Inject constructor(
 
     fun formatCommentCreatedDate(createdAt: String): String {
         val date = LocalDateTime.parse(createdAt)
-        return date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))
+        val now = LocalDateTime.now()
+        val durationSeconds = Duration.between(date, now).seconds
+        return when {
+            durationSeconds < 60 -> "${durationSeconds}초 전"
+            durationSeconds < 3600 -> "${durationSeconds / 60}분 전"
+            durationSeconds < 86400 -> "${durationSeconds / 3600}시간 전"
+            durationSeconds < 604800 -> "${durationSeconds / 86400}일 전"
+            durationSeconds < 2592000 -> "${durationSeconds / 604800}주 전"
+            durationSeconds < 31536000 -> "${durationSeconds / 2592000}달 전"
+            else -> "${durationSeconds / 31536000}년 전"
+        }
     }
 }
