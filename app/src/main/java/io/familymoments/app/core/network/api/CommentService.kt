@@ -5,7 +5,7 @@ import io.familymoments.app.feature.postdetail.model.request.PostCommentRequest
 import io.familymoments.app.feature.postdetail.model.response.DeleteCommentLovesResponse
 import io.familymoments.app.feature.postdetail.model.response.PostCommentLovesResponse
 import io.familymoments.app.feature.postdetail.model.response.DeleteCommentResponse
-import io.familymoments.app.feature.postdetail.model.response.GetCommentsByPostIndexResponse
+import io.familymoments.app.feature.postdetail.model.response.GetCommentsIndexResponse
 import io.familymoments.app.feature.postdetail.model.response.PostCommentResponse
 import retrofit2.Response
 import retrofit2.http.Body
@@ -20,7 +20,7 @@ interface CommentService {
     @GET("/comments")
     suspend fun getPostComments(
         @Query("postId") postId: Long
-    ): Response<GetCommentsByPostIndexResponse>
+    ): Response<GetCommentsIndexResponse>
 
     @POST("/comments")
     suspend fun postComment(

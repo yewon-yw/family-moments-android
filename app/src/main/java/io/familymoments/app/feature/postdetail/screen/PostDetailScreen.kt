@@ -61,7 +61,7 @@ import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.postdetail.model.component.postDetailContentShadow
-import io.familymoments.app.feature.postdetail.model.response.GetCommentsByPostIndexResult
+import io.familymoments.app.feature.postdetail.model.response.GetCommentsResult
 import io.familymoments.app.feature.postdetail.model.response.GetPostResult
 import io.familymoments.app.feature.postdetail.model.uistate.CommentLogics
 import io.familymoments.app.feature.postdetail.model.uistate.GetPostLovesUiState
@@ -477,7 +477,7 @@ fun CommentTextField(
 
 @Composable
 fun CommentItems(
-    comments: List<GetCommentsByPostIndexResult>,
+    comments: List<GetCommentsResult>,
     logics: CommentLogics,
     formatCommentCreatedDate: (String) -> String,
     popupUiState: PopupUiState
@@ -497,7 +497,7 @@ fun CommentItems(
 
 @Composable
 fun CommentItem(
-    comment: GetCommentsByPostIndexResult,
+    comment: GetCommentsResult,
     logics: CommentLogics,
     formatCommentCreatedDate: (String) -> String,
     popupUiState: PopupUiState

@@ -1,6 +1,6 @@
 package io.familymoments.app.feature.postdetail.model.uistate
 
-import io.familymoments.app.feature.postdetail.model.response.GetCommentsByPostIndexResult
+import io.familymoments.app.feature.postdetail.model.response.GetCommentsResult
 
 data class CommentUiState(
     val getCommentsUiState: GetCommentsUiState = GetCommentsUiState(),
@@ -23,7 +23,7 @@ data class GetCommentsUiState(
     val isSuccess: Boolean? = null,
     val isLoading: Boolean? = null,
     val message: String? = null,
-    val result: List<GetCommentsByPostIndexResult> = listOf()
+    val result: List<GetCommentsResult> = listOf()
 
 )
 

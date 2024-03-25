@@ -1,7 +1,7 @@
 package io.familymoments.app.feature.postdetail.model.uistate
 
 import io.familymoments.app.feature.postdetail.model.response.GetPostResult
-import io.familymoments.app.feature.postdetail.model.response.GetPostLovesByIndexResult
+import io.familymoments.app.feature.postdetail.model.response.GetPostLovesResult
 
 data class PostUiState(
     val getPostUiState: GetPostUiState = GetPostUiState(),
@@ -31,7 +31,7 @@ data class GetPostLovesUiState(
     val isSuccess: Boolean? = null,
     val isLoading: Boolean? = null,
     val message: String? = null,
-    val result: List<GetPostLovesByIndexResult> = listOf(),
+    val result: List<GetPostLovesResult> = listOf(),
 )
 
 data class PostPostLovesUiState(

@@ -8,7 +8,7 @@ import io.familymoments.app.feature.postdetail.model.request.PostCommentRequest
 import io.familymoments.app.feature.postdetail.model.response.DeleteCommentLovesResponse
 import io.familymoments.app.feature.postdetail.model.response.PostCommentLovesResponse
 import io.familymoments.app.feature.postdetail.model.response.DeleteCommentResponse
-import io.familymoments.app.feature.postdetail.model.response.GetCommentsByPostIndexResponse
+import io.familymoments.app.feature.postdetail.model.response.GetCommentsIndexResponse
 import io.familymoments.app.feature.postdetail.model.response.PostCommentResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -19,11 +19,11 @@ import javax.inject.Inject
 class CommentRepositoryImpl @Inject constructor(
     private val commentService: CommentService
 ) : CommentRepository {
-    override suspend fun getPostComments(index: Long): Flow<Resource<GetCommentsByPostIndexResponse>> {
+    override suspend fun getPostComments(index: Long): Flow<Resource<GetCommentsIndexResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = commentService.getPostComments(index)
-            val responseBody = response.body() ?: GetCommentsByPostIndexResponse()
+            val responseBody = response.body() ?: GetCommentsIndexResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
