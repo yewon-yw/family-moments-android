@@ -8,7 +8,7 @@ data class GetCommentsByPostIndexResponse(
 )
 
 data class GetCommentsByPostIndexResult(
-    val commentId: Int = -1,
+    val commentId: Long = -1,
     val nickname: String = "",
     val profileImg: String = "",
     val content: String = "",

@@ -65,9 +65,9 @@ class PostDetailViewModel @Inject constructor(
     ))
     val popupUiState: StateFlow<PopupUiState> = _popupUiState.asStateFlow()
 
-    fun getPost(index: Int) {
+    fun getPost(index: Long) {
         async(
-            operation = { postRepository.getPostByIndex(index) },
+            operation = { postRepository.getPost(index) },
             onSuccess = {
                 val getPostUiState = _postUiState.value.getPostUiState
                 _postUiState.value = _postUiState.value.copy(
@@ -91,7 +91,7 @@ class PostDetailViewModel @Inject constructor(
 
     }
 
-    fun getPostComments(index: Int) {
+    fun getPostComments(index: Long) {
         async(
             operation = { commentRepository.getPostComments(index) },
             onSuccess = {
@@ -117,9 +117,9 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun getPostLoves(index: Int) {
+    fun getPostLoves(index: Long) {
         async(
-            operation = { postRepository.getPostLovesByIndex(index) },
+            operation = { postRepository.getPostLoves(index) },
             onSuccess = {
                 val getPostLovesUiState = _postUiState.value.getPostLovesUiState
                 _postUiState.value = _postUiState.value.copy(
@@ -143,7 +143,7 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun postComment(index: Int, content: String) {
+    fun postComment(index: Long, content: String) {
         async(
             operation = { commentRepository.postComment(content, index) },
             onSuccess = {
@@ -169,7 +169,7 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun deleteComment(index: Int) {
+    fun deleteComment(index: Long) {
         async(
             operation = { commentRepository.deleteComment(index) },
             onSuccess = {
@@ -195,7 +195,7 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun postCommentLoves(commentId: Int) {
+    fun postCommentLoves(commentId: Long) {
         async(
             operation = { commentRepository.postCommentLoves(commentId) },
             onSuccess = {
@@ -221,7 +221,7 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun deleteCommentLoves(commentId: Int) {
+    fun deleteCommentLoves(commentId: Long) {
         async(
             operation = { commentRepository.deleteCommentLoves(commentId) },
             onSuccess = {
@@ -247,7 +247,7 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun postPostLoves(index: Int) {
+    fun postPostLoves(index: Long) {
         async(
             operation = { postRepository.postPostLoves(index) },
             onSuccess = {
@@ -273,7 +273,7 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun deletePostLoves(index: Int) {
+    fun deletePostLoves(index: Long) {
         async(
             operation = { postRepository.deletePostLoves(index) },
             onSuccess = {
@@ -299,7 +299,7 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun deletePost(index: Int) {
+    fun deletePost(index: Long) {
         async(
             operation = { postRepository.deletePost(index) },
             onSuccess = {

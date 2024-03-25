@@ -62,7 +62,7 @@ import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.postdetail.model.component.postDetailContentShadow
 import io.familymoments.app.feature.postdetail.model.response.GetCommentsByPostIndexResult
-import io.familymoments.app.feature.postdetail.model.response.GetPostByIndexResult
+import io.familymoments.app.feature.postdetail.model.response.GetPostResult
 import io.familymoments.app.feature.postdetail.model.uistate.CommentLogics
 import io.familymoments.app.feature.postdetail.model.uistate.GetPostLovesUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PopupUiState
@@ -73,9 +73,9 @@ import io.familymoments.app.feature.postdetail.viewmodel.PostDetailViewModel
 @Composable
 fun PostDetailScreen(
     viewModel: PostDetailViewModel,
-    index: Int,
+    index: Long,
     modifier: Modifier,
-    navigateToModify: (GetPostByIndexResult) -> Unit
+    navigateToModify: (GetPostResult) -> Unit
 ) {
     LaunchedEffect(Unit) {
         viewModel.getPost(index)
@@ -192,7 +192,7 @@ fun showToastMessage(context: Context, message: String?) {
 }
 
 @Composable
-fun WriterInfo(postInfo: GetPostByIndexResult, formatPostCreatedDate: (String) -> String) {
+fun WriterInfo(postInfo: GetPostResult, formatPostCreatedDate: (String) -> String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -265,7 +265,7 @@ fun PostPhotos(imgs: List<String>, pagerState: PagerState) {
 
 @Composable
 fun PostContent(
-    postInfo: GetPostByIndexResult,
+    postInfo: GetPostResult,
     logics: PostLogics,
     showDeleteCompletePopup: (Boolean) -> Unit,
     navigateToModify:()->Unit
@@ -379,8 +379,8 @@ fun PostContent(
 @Composable
 fun CommentTextField(
     commentsCount: Int,
-    postId: Int,
-    postComment: (Int, String) -> Unit,
+    postId: Long,
+    postComment: (Long, String) -> Unit,
     getPostLovesUiState: GetPostLovesUiState,
     context: Context
 ) {

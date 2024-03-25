@@ -1,6 +1,6 @@
 package io.familymoments.app.feature.postdetail.model.uistate
 
-import io.familymoments.app.feature.postdetail.model.response.GetPostByIndexResult
+import io.familymoments.app.feature.postdetail.model.response.GetPostResult
 import io.familymoments.app.feature.postdetail.model.response.GetPostLovesByIndexResult
 
 data class PostUiState(
@@ -13,18 +13,18 @@ data class PostUiState(
 )
 
 data class PostLogics(
-    val getPost: (Int) -> Unit = {},
-    val getPostLoves: (Int) -> Unit = {},
-    val postPostLoves: (Int) -> Unit = {},
-    val deletePostLoves: (Int) -> Unit = {},
-    val deletePost: (Int) -> Unit = {}
+    val getPost: (Long) -> Unit = {},
+    val getPostLoves: (Long) -> Unit = {},
+    val postPostLoves: (Long) -> Unit = {},
+    val deletePostLoves: (Long) -> Unit = {},
+    val deletePost: (Long) -> Unit = {}
 )
 
 data class GetPostUiState(
     val isSuccess: Boolean? = null,
     val isLoading: Boolean? = null,
     val message: String? = null,
-    val result: GetPostByIndexResult = GetPostByIndexResult(),
+    val result: GetPostResult = GetPostResult(),
 )
 
 data class GetPostLovesUiState(

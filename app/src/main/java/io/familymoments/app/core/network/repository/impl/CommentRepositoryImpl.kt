@@ -19,7 +19,7 @@ import javax.inject.Inject
 class CommentRepositoryImpl @Inject constructor(
     private val commentService: CommentService
 ) : CommentRepository {
-    override suspend fun getPostComments(index: Int): Flow<Resource<GetCommentsByPostIndexResponse>> {
+    override suspend fun getPostComments(index: Long): Flow<Resource<GetCommentsByPostIndexResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = commentService.getPostComments(index)
@@ -35,7 +35,7 @@ class CommentRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun postComment(comment: String, index: Int): Flow<Resource<PostCommentResponse>> {
+    override suspend fun postComment(comment: String, index: Long): Flow<Resource<PostCommentResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = commentService.postComment(index, PostCommentRequest(comment))
@@ -51,7 +51,7 @@ class CommentRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteComment(index: Int): Flow<Resource<DeleteCommentResponse>> {
+    override suspend fun deleteComment(index: Long): Flow<Resource<DeleteCommentResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = commentService.deleteComment(index)
@@ -67,7 +67,7 @@ class CommentRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun postCommentLoves(commentId: Int): Flow<Resource<PostCommentLovesResponse>> {
+    override suspend fun postCommentLoves(commentId: Long): Flow<Resource<PostCommentLovesResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = commentService.postCommentLoves(CommentLovesRequest(commentId))
@@ -83,7 +83,7 @@ class CommentRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteCommentLoves(commentId: Int): Flow<Resource<DeleteCommentLovesResponse>> {
+    override suspend fun deleteCommentLoves(commentId: Long): Flow<Resource<DeleteCommentLovesResponse>> {
         return flow {
             emit(Resource.Loading)
             Timber.tag("hkhk").d("삭제 수행")

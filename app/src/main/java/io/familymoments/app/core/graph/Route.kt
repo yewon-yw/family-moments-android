@@ -2,7 +2,6 @@ package io.familymoments.app.core.graph
 
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
-import io.familymoments.app.feature.bottomnav.model.BottomNavItem
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -44,7 +43,7 @@ sealed interface Route {
             }
         )
 
-        fun getRoute(mode: Int, editPostId: Int, editImages: Array<String>, editContent: String): String {
+        fun getRoute(mode: Int, editPostId: Long, editImages: Array<String>, editContent: String): String {
             val endcodedImageUrls: Array<String> =
                 editImages.map { URLEncoder.encode(it, StandardCharsets.UTF_8.toString()) }.toTypedArray()
 

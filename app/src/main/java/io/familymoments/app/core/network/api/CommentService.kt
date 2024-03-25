@@ -19,18 +19,18 @@ import retrofit2.http.Query
 interface CommentService {
     @GET("/comments")
     suspend fun getPostComments(
-        @Query("postId") postId: Int
+        @Query("postId") postId: Long
     ): Response<GetCommentsByPostIndexResponse>
 
     @POST("/comments")
     suspend fun postComment(
-        @Query("postId") postId: Int,
+        @Query("postId") postId: Long,
         @Body postCommentReq: PostCommentRequest
     ): Response<PostCommentResponse>
 
     @DELETE("/comments/{index}")
     suspend fun deleteComment(
-        @Path("index") index: Int
+        @Path("index") index: Long
     ):Response<DeleteCommentResponse>
 
     @POST("/commentloves")

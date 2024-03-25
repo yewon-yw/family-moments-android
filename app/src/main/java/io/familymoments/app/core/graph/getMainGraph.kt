@@ -25,11 +25,11 @@ fun getMainGraph(
 
     composable(
         route = CommonRoute.POST_DETAIL.name + "/{postId}",
-        arguments = listOf(navArgument("postId") { type = NavType.IntType })
+        arguments = listOf(navArgument("postId") { type = NavType.LongType })
     ) { backStackEntry ->
         PostDetailScreen(
             viewModel = hiltViewModel(),
-            index = backStackEntry.arguments?.getInt("postId") ?: -1,
+            index = backStackEntry.arguments?.getLong("postId") ?: -1,
             modifier = Modifier
                 .scaffoldState(
                     hasShadow = true,

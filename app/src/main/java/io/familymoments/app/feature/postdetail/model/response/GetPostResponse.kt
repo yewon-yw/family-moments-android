@@ -1,14 +1,14 @@
 package io.familymoments.app.feature.postdetail.model.response
 
-data class GetPostByIndexResponse(
+data class GetPostResponse(
     val isSuccess: Boolean = false,
     val code: Int = 0,
     val message: String = "",
-    val result:GetPostByIndexResult = GetPostByIndexResult()
+    val result:GetPostResult = GetPostResult()
 )
 
-data class GetPostByIndexResult(
-    val postId: Int = 0,
+data class GetPostResult(
+    val postId: Long = 0,
     val writer: String = "",
     val profileImg: String = "",
     val content: String = "",

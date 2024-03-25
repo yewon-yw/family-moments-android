@@ -9,9 +9,9 @@ import io.familymoments.app.feature.postdetail.model.response.PostCommentRespons
 import kotlinx.coroutines.flow.Flow
 
 interface CommentRepository {
-    suspend fun getPostComments(index:Int): Flow<Resource<GetCommentsByPostIndexResponse>>
-    suspend fun postComment(comment:String, index: Int):Flow<Resource<PostCommentResponse>>
-    suspend fun deleteComment(index:Int):Flow<Resource<DeleteCommentResponse>>
-    suspend fun postCommentLoves(commentId:Int):Flow<Resource<PostCommentLovesResponse>>
-    suspend fun deleteCommentLoves(commentId:Int):Flow<Resource<DeleteCommentLovesResponse>>
+    suspend fun getPostComments(index:Long): Flow<Resource<GetCommentsByPostIndexResponse>>
+    suspend fun postComment(comment:String, index: Long):Flow<Resource<PostCommentResponse>>
+    suspend fun deleteComment(index:Long):Flow<Resource<DeleteCommentResponse>>
+    suspend fun postCommentLoves(commentId:Long):Flow<Resource<PostCommentLovesResponse>>
+    suspend fun deleteCommentLoves(commentId:Long):Flow<Resource<DeleteCommentLovesResponse>>
 }

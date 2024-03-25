@@ -12,8 +12,8 @@ import io.familymoments.app.feature.home.model.GetPostsResponse
 import io.familymoments.app.feature.postdetail.model.request.PostLovesRequest
 import io.familymoments.app.feature.postdetail.model.response.DeletePostLovesResponse
 import io.familymoments.app.feature.postdetail.model.response.DeletePostResponse
-import io.familymoments.app.feature.postdetail.model.response.GetPostByIndexResponse
-import io.familymoments.app.feature.postdetail.model.response.GetPostLovesByIndexResponse
+import io.familymoments.app.feature.postdetail.model.response.GetPostResponse
+import io.familymoments.app.feature.postdetail.model.response.GetPostLovesResponse
 import io.familymoments.app.feature.postdetail.model.response.PostPostLovesResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -200,11 +200,11 @@ class PostRepositoryImpl(
         }
     }
 
-    override suspend fun getPostByIndex(index: Int): Flow<Resource<GetPostByIndexResponse>> {
+    override suspend fun getPost(index: Long): Flow<Resource<GetPostResponse>> {
         return flow {
             emit(Resource.Loading)
-            val response = postService.getPostByIndex(index)
-            val responseBody = response.body() ?: GetPostByIndexResponse()
+            val response = postService.getPost(index)
+            val responseBody = response.body() ?: GetPostResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -216,11 +216,11 @@ class PostRepositoryImpl(
         }
     }
 
-    override suspend fun getPostLovesByIndex(index: Int): Flow<Resource<GetPostLovesByIndexResponse>> {
+    override suspend fun getPostLoves(index: Long): Flow<Resource<GetPostLovesResponse>> {
         return flow {
             emit(Resource.Loading)
-            val response = postService.getPostLovesByIndex(index)
-            val responseBody = response.body() ?: GetPostLovesByIndexResponse()
+            val response = postService.getPostLoves(index)
+            val responseBody = response.body() ?: GetPostLovesResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -232,7 +232,7 @@ class PostRepositoryImpl(
         }
     }
 
-    override suspend fun postPostLoves(postId: Int): Flow<Resource<PostPostLovesResponse>> {
+    override suspend fun postPostLoves(postId: Long): Flow<Resource<PostPostLovesResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = postService.postPostloves(PostLovesRequest(postId))
@@ -248,7 +248,7 @@ class PostRepositoryImpl(
         }
     }
 
-    override suspend fun deletePostLoves(postId: Int): Flow<Resource<DeletePostLovesResponse>> {
+    override suspend fun deletePostLoves(postId: Long): Flow<Resource<DeletePostLovesResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = postService.deletePostloves(PostLovesRequest(postId))
@@ -264,7 +264,7 @@ class PostRepositoryImpl(
         }
     }
 
-    override suspend fun deletePost(index: Int): Flow<Resource<DeletePostResponse>> {
+    override suspend fun deletePost(index: Long): Flow<Resource<DeletePostResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = postService.deletePost(index)
