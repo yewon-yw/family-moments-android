@@ -8,6 +8,7 @@ import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourc
 import io.familymoments.app.core.network.model.AuthErrorResponse
 import io.familymoments.app.core.network.model.UserProfileResponse
 import io.familymoments.app.core.network.repository.UserRepository
+import io.familymoments.app.feature.creatingfamily.model.response.SearchMemberResponse
 import io.familymoments.app.feature.login.model.request.LoginRequest
 import io.familymoments.app.feature.login.model.response.LoginResponse
 import io.familymoments.app.feature.modifypassword.model.request.ModifyPasswordRequest
@@ -39,11 +40,11 @@ class UserRepositoryImpl @Inject constructor(
                 if (familyId != null) {
                     userInfoPreferencesDataSource.saveFamilyId(familyId)
                 }
-                loadUserProfile(familyId).collect{ result ->
-                    if (result is Resource.Success){
+                loadUserProfile(familyId).collect { result ->
+                    if (result is Resource.Success) {
                         userInfoPreferencesDataSource.saveUserProfile(result.data.result)
                     }
-                    if (result is Resource.Fail){
+                    if (result is Resource.Fail) {
                         emit(Resource.Fail(Throwable(result.exception.message)))
                     }
 
@@ -113,10 +114,27 @@ class UserRepositoryImpl @Inject constructor(
         return flow {
             emit(Resource.Loading)
             val response = userService.modifyPassword(modifyPasswordRequest)
-            val responseBody = response.body()?: ModifyPasswordResponse()
+            val responseBody = response.body() ?: ModifyPasswordResponse()
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
             } else if (responseBody.code == 4000 || responseBody.code == 4003) {
+                emit(Resource.Success(responseBody))
+            } else {
+                emit(Resource.Fail(Throwable(responseBody.message)))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun searchMember(keyword: String, newFamily: Boolean): Flow<Resource<SearchMemberResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val familyId = if (newFamily) null else userInfoPreferencesDataSource.loadFamilyId()
+            val response = userService.searchMember(keyword, familyId)
+            val responseBody = response.body() ?: SearchMemberResponse()
+
+            if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
             } else {
                 emit(Resource.Fail(Throwable(responseBody.message)))

@@ -1,6 +1,7 @@
 package io.familymoments.app.core.network.api
 
 import io.familymoments.app.core.network.model.UserProfileResponse
+import io.familymoments.app.feature.creatingfamily.model.response.SearchMemberResponse
 import io.familymoments.app.feature.login.model.request.LoginRequest
 import io.familymoments.app.feature.login.model.response.LoginResponse
 import io.familymoments.app.feature.modifypassword.model.request.ModifyPasswordRequest
@@ -30,4 +31,10 @@ interface UserService {
 
     @POST("/users/log-out")
     suspend fun logoutUser(): Response<LogoutResponse>
+
+    @GET("/users")
+    suspend fun searchMember(
+        @Query("keyword") keyword: String,
+        @Query("familyId") familyId: Long? = null
+    ): Response<SearchMemberResponse>
 }
