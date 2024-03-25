@@ -74,7 +74,8 @@ import io.familymoments.app.feature.postdetail.viewmodel.PostDetailViewModel
 fun PostDetailScreen(
     viewModel: PostDetailViewModel,
     index: Int,
-    modifier: Modifier
+    modifier: Modifier,
+    navigateToModify: (GetPostByIndexResult) -> Unit
 ) {
     LaunchedEffect(Unit) {
         viewModel.getPost(index)
@@ -150,7 +151,7 @@ fun PostDetailScreen(
                             postUiState.getPostUiState.result,
                             postUiState.logics,
                             viewModel::showDeleteCompletePopup
-                        )
+                        ) { navigateToModify(postUiState.getPostUiState.result) }
                         Spacer(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -266,7 +267,8 @@ fun PostPhotos(imgs: List<String>, pagerState: PagerState) {
 fun PostContent(
     postInfo: GetPostByIndexResult,
     logics: PostLogics,
-    showDeleteCompletePopup: (Boolean) -> Unit
+    showDeleteCompletePopup: (Boolean) -> Unit,
+    navigateToModify:()->Unit
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -323,7 +325,9 @@ fun PostContent(
                     }
                     PostDetailDropdownMenu(
                         items = listOf(
-                            Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify), {}),
+                            Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify)) {
+                                navigateToModify()
+                            },
                             Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {
                                 showReportPopUp = true
                             },
@@ -637,7 +641,7 @@ fun PostDetailDropdownMenu(
 @Composable
 fun PostDetailPreview() {
     FamilyMomentsTheme {
-        PostDetailScreen(hiltViewModel(), 0, modifier = Modifier)
+        PostDetailScreen(hiltViewModel(), 0, modifier = Modifier,{})
     }
 }
 

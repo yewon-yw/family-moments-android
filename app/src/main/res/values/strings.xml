@@ -174,4 +174,6 @@
     <string name="post_detail_pop_up_delete_comment_label">댓글을\n삭제하시겠습니까?</string>
     <string name="post_detail_delete_complete_pop_label">삭제가 완료되었습니다.</string>
     <string name="post_detail_delete_post_pop_up_label">게시글을\n삭제하시겠습니까?</string>
+    <string name="edit_post_title">글 수정하기</string>
+    <string name="edit_post_btn">수정완료</string>
 </resources>

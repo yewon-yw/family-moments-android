@@ -59,6 +59,7 @@ import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.FileUtil
 import io.familymoments.app.core.util.keyboardAsState
+import io.familymoments.app.feature.addpost.model.AddPostMode.*
 import io.familymoments.app.feature.addpost.viewmodel.AddPostViewModel
 import kotlinx.coroutines.launch
 
@@ -68,13 +69,20 @@ fun AddPostScreen(
     viewModel: AddPostViewModel,
     popBackStack: () -> Unit
 ) {
-    var content by remember { mutableStateOf("") }
+    val addPostUiState = viewModel.uiState.collectAsStateWithLifecycle().value
+    if (addPostUiState.isSuccess == true) {
+        popBackStack()
+    }
+    var content by remember { mutableStateOf(addPostUiState.existPostUiState.editContent) }
     val context = LocalContext.current
     val isKeyboardOpen by keyboardAsState()
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
+    val modeEnum = addPostUiState.mode
 
-    val uriList = remember { mutableStateListOf<Uri>() }
+    val uriList = remember {
+        mutableStateListOf<Uri>(*addPostUiState.existPostUiState.editImages.map { Uri.parse(it) }.toTypedArray())
+    }
     val launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?> = rememberLauncherForActivityResult(
         contract =
         ActivityResultContracts.PickVisualMedia()
@@ -83,10 +91,6 @@ fun AddPostScreen(
         if (uriList.size < 10) {
             uriList.add(uri)
         }
-    }
-    val addPostUiState = viewModel.uiState.collectAsStateWithLifecycle().value
-    if (addPostUiState.isSuccess == true) {
-        popBackStack()
     }
     Column(
         modifier = modifier
@@ -97,7 +101,11 @@ fun AddPostScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(top = 48.dp),
-            text = stringResource(id = R.string.add_post_title),
+            text =
+            when (modeEnum) {
+                ADD -> stringResource(id = R.string.add_post_title)
+                EDIT -> stringResource(id = R.string.edit_post_title)
+            },
             style = AppTypography.SH1_20,
             color = AppColors.deepPurple1,
             textAlign = TextAlign.Center
@@ -149,7 +157,10 @@ fun AddPostScreen(
                                     focusManager.clearFocus()
                                     scope.launch {
                                         val imageFiles = FileUtil.bitmapResize(context, uriList.toList())
-                                        viewModel.addPost(content, imageFiles)
+                                        when (modeEnum) {
+                                            ADD -> viewModel.addPost(content, imageFiles)
+                                            EDIT -> viewModel.addPost(content, imageFiles)
+                                        }
                                     }
                                 }
                         } else {
@@ -159,7 +170,11 @@ fun AddPostScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = stringResource(id = R.string.add_post_btn),
+                    text =
+                    when (modeEnum) {
+                        ADD -> stringResource(id = R.string.add_post_btn)
+                        EDIT -> stringResource(R.string.edit_post_btn)
+                    },
                     style = AppTypography.BTN4_18,
                     color = AppColors.grey6,
                     textAlign = TextAlign.Center
