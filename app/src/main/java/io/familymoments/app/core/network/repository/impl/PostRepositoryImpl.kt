@@ -12,7 +12,7 @@ import io.familymoments.app.feature.home.model.GetPostsResponse
 import io.familymoments.app.feature.postdetail.model.request.PostLovesRequest
 import io.familymoments.app.feature.postdetail.model.response.DeletePostLovesResponse
 import io.familymoments.app.feature.postdetail.model.response.DeletePostResponse
-import io.familymoments.app.feature.postdetail.model.response.GetPostResponse
+import io.familymoments.app.feature.postdetail.model.response.GetPostDetailResponse
 import io.familymoments.app.feature.postdetail.model.response.GetPostLovesResponse
 import io.familymoments.app.feature.postdetail.model.response.PostPostLovesResponse
 import kotlinx.coroutines.flow.Flow
@@ -200,11 +200,11 @@ class PostRepositoryImpl(
         }
     }
 
-    override suspend fun getPost(index: Long): Flow<Resource<GetPostResponse>> {
+    override suspend fun getPostDetail(index: Long): Flow<Resource<GetPostDetailResponse>> {
         return flow {
             emit(Resource.Loading)
-            val response = postService.getPost(index)
-            val responseBody = response.body() ?: GetPostResponse()
+            val response = postService.getPostDetail(index)
+            val responseBody = response.body() ?: GetPostDetailResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))

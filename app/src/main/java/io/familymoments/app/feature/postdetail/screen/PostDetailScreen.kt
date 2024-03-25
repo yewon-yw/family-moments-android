@@ -66,7 +66,7 @@ import io.familymoments.app.feature.postdetail.component.PostDetailExecutePopUp
 import io.familymoments.app.feature.postdetail.component.ReportPopUp
 import io.familymoments.app.feature.postdetail.model.component.postDetailContentShadow
 import io.familymoments.app.feature.postdetail.model.response.GetCommentsResult
-import io.familymoments.app.feature.postdetail.model.response.GetPostResult
+import io.familymoments.app.feature.postdetail.model.response.GetPostDetailResult
 import io.familymoments.app.feature.postdetail.model.uistate.CommentLogics
 import io.familymoments.app.feature.postdetail.model.uistate.GetPostLovesUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PopupUiState
@@ -79,10 +79,10 @@ fun PostDetailScreen(
     viewModel: PostDetailViewModel,
     index: Long,
     modifier: Modifier,
-    navigateToModify: (GetPostResult) -> Unit
+    navigateToModify: (GetPostDetailResult) -> Unit
 ) {
     LaunchedEffect(Unit) {
-        viewModel.getPost(index)
+        viewModel.getPostDetail(index)
         viewModel.getPostComments(index)
         viewModel.getPostLoves(index)
     }
@@ -130,14 +130,14 @@ fun PostDetailScreen(
         }
     }
 
-    val pagerState = rememberPagerState(pageCount = { postUiState.getPostUiState.result.imgs.size })
+    val pagerState = rememberPagerState(pageCount = { postUiState.getPostDetailUiState.result.imgs.size })
 
     LazyColumn {
         item {
             Column(modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 26.dp, bottom = 63.dp)) {
-                if (postUiState.getPostUiState.isSuccess == true) {
+                if (postUiState.getPostDetailUiState.isSuccess == true) {
                     WriterInfo(
-                        postUiState.getPostUiState.result,
+                        postUiState.getPostDetailUiState.result,
                         viewModel::formatPostCreatedDate
                     )
                 }
@@ -150,12 +150,12 @@ fun PostDetailScreen(
                             .clip(shape = RoundedCornerShape(10.dp))
                             .background(AppColors.grey6)
                     ) {
-                        PostPhotos(postUiState.getPostUiState.result.imgs, pagerState)
+                        PostPhotos(postUiState.getPostDetailUiState.result.imgs, pagerState)
                         PostContent(
-                            postUiState.getPostUiState.result,
+                            postUiState.getPostDetailUiState.result,
                             postUiState.logics,
                             viewModel::showDeleteCompletePopup
-                        ) { navigateToModify(postUiState.getPostUiState.result) }
+                        ) { navigateToModify(postUiState.getPostDetailUiState.result) }
                         Spacer(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -164,7 +164,7 @@ fun PostDetailScreen(
                         )
                         CommentTextField(
                             commentUiState.getCommentsUiState.result.size,
-                            postUiState.getPostUiState.result.postId,
+                            postUiState.getPostDetailUiState.result.postId,
                             viewModel::postComment,
                             postUiState.getPostLovesUiState,
                             context
@@ -196,7 +196,7 @@ fun showToastMessage(context: Context, message: String?) {
 }
 
 @Composable
-fun WriterInfo(postInfo: GetPostResult, formatPostCreatedDate: (String) -> String) {
+fun WriterInfo(postInfo: GetPostDetailResult, formatPostCreatedDate: (String) -> String) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -269,7 +269,7 @@ fun PostPhotos(imgs: List<String>, pagerState: PagerState) {
 
 @Composable
 fun PostContent(
-    postInfo: GetPostResult,
+    postInfo: GetPostDetailResult,
     logics: PostLogics,
     showDeleteCompletePopup: (Boolean) -> Unit,
     navigateToModify:()->Unit

@@ -8,7 +8,7 @@ import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
 import io.familymoments.app.feature.home.model.GetPostsResponse
 import io.familymoments.app.feature.postdetail.model.response.DeletePostLovesResponse
 import io.familymoments.app.feature.postdetail.model.response.DeletePostResponse
-import io.familymoments.app.feature.postdetail.model.response.GetPostResponse
+import io.familymoments.app.feature.postdetail.model.response.GetPostDetailResponse
 import io.familymoments.app.feature.postdetail.model.response.GetPostLovesResponse
 import io.familymoments.app.feature.postdetail.model.response.PostPostLovesResponse
 import kotlinx.coroutines.flow.Flow
@@ -37,7 +37,7 @@ interface PostRepository {
         content: String,
         uriList: List<MultipartBody.Part>?
     ): Flow<Resource<AddPostResponse>>
-    suspend fun getPost(index:Long):Flow<Resource<GetPostResponse>>
+    suspend fun getPostDetail(index:Long):Flow<Resource<GetPostDetailResponse>>
     suspend fun getPostLoves(index:Long):Flow<Resource<GetPostLovesResponse>>
     suspend fun postPostLoves(postId:Long):Flow<Resource<PostPostLovesResponse>>
     suspend fun deletePostLoves(postId:Long):Flow<Resource<DeletePostLovesResponse>>

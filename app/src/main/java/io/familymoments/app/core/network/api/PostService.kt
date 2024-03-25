@@ -10,7 +10,7 @@ import okhttp3.RequestBody
 import io.familymoments.app.feature.postdetail.model.request.PostLovesRequest
 import io.familymoments.app.feature.postdetail.model.response.DeletePostLovesResponse
 import io.familymoments.app.feature.postdetail.model.response.DeletePostResponse
-import io.familymoments.app.feature.postdetail.model.response.GetPostResponse
+import io.familymoments.app.feature.postdetail.model.response.GetPostDetailResponse
 import io.familymoments.app.feature.postdetail.model.response.GetPostLovesResponse
 import io.familymoments.app.feature.postdetail.model.response.PostPostLovesResponse
 import retrofit2.Response
@@ -79,7 +79,7 @@ interface PostService {
     ): Response<AddPostResponse>
 
     @GET("/posts/{index}")
-    suspend fun getPost(@Path("index") index: Long): Response<GetPostResponse>
+    suspend fun getPostDetail(@Path("index") index: Long): Response<GetPostDetailResponse>
 
     @GET("/posts/{index}/post-loves")
     suspend fun getPostLoves(@Path("index") index: Long): Response<GetPostLovesResponse>

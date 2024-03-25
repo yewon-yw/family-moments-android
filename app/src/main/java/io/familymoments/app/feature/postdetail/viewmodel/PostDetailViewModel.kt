@@ -31,7 +31,7 @@ class PostDetailViewModel @Inject constructor(
         MutableStateFlow(
             PostUiState(
                 logics = PostLogics(
-                    getPost = this::getPost,
+                    getPostDetail = this::getPostDetail,
                     getPostLoves = this::getPostLoves,
                     postPostLoves = this::postPostLoves,
                     deletePostLoves = this::deletePostLoves,
@@ -65,13 +65,13 @@ class PostDetailViewModel @Inject constructor(
     ))
     val popupUiState: StateFlow<PopupUiState> = _popupUiState.asStateFlow()
 
-    fun getPost(index: Long) {
+    fun getPostDetail(index: Long) {
         async(
-            operation = { postRepository.getPost(index) },
+            operation = { postRepository.getPostDetail(index) },
             onSuccess = {
-                val getPostUiState = _postUiState.value.getPostUiState
+                val getPostUiState = _postUiState.value.getPostDetailUiState
                 _postUiState.value = _postUiState.value.copy(
-                    getPostUiState = getPostUiState.copy(
+                    getPostDetailUiState = getPostUiState.copy(
                         isSuccess = true,
                         isLoading = isLoading.value,
                         result = it.result
@@ -79,9 +79,9 @@ class PostDetailViewModel @Inject constructor(
                 )
             },
             onFailure = {
-                val postDetailUiState = _postUiState.value.getPostUiState
+                val postDetailUiState = _postUiState.value.getPostDetailUiState
                 _postUiState.value = _postUiState.value.copy(
-                    getPostUiState = postDetailUiState.copy(
+                    getPostDetailUiState = postDetailUiState.copy(
                         isSuccess = false,
                         isLoading = isLoading.value,
                         message = it.message

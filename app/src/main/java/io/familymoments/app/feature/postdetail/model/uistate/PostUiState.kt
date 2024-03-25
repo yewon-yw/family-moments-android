@@ -1,10 +1,10 @@
 package io.familymoments.app.feature.postdetail.model.uistate
 
-import io.familymoments.app.feature.postdetail.model.response.GetPostResult
+import io.familymoments.app.feature.postdetail.model.response.GetPostDetailResult
 import io.familymoments.app.feature.postdetail.model.response.GetPostLovesResult
 
 data class PostUiState(
-    val getPostUiState: GetPostUiState = GetPostUiState(),
+    val getPostDetailUiState: GetPostDetailUiState = GetPostDetailUiState(),
     val getPostLovesUiState: GetPostLovesUiState = GetPostLovesUiState(),
     val postPostLovesUiState: PostPostLovesUiState = PostPostLovesUiState(),
     val deletePostLovesUiState: DeletePostLovesUiState = DeletePostLovesUiState(),
@@ -13,18 +13,18 @@ data class PostUiState(
 )
 
 data class PostLogics(
-    val getPost: (Long) -> Unit = {},
+    val getPostDetail: (Long) -> Unit = {},
     val getPostLoves: (Long) -> Unit = {},
     val postPostLoves: (Long) -> Unit = {},
     val deletePostLoves: (Long) -> Unit = {},
     val deletePost: (Long) -> Unit = {}
 )
 
-data class GetPostUiState(
+data class GetPostDetailUiState(
     val isSuccess: Boolean? = null,
     val isLoading: Boolean? = null,
     val message: String? = null,
-    val result: GetPostResult = GetPostResult(),
+    val result: GetPostDetailResult = GetPostDetailResult(),
 )
 
 data class GetPostLovesUiState(
