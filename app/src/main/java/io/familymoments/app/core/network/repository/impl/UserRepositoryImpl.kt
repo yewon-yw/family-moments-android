@@ -160,25 +160,6 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun searchMember(keyword: String, newFamily: Boolean): Flow<Resource<SearchMemberResponse>> {
-        return flow {
-            emit(Resource.Loading)
-            val familyId = if (newFamily) null else userInfoPreferencesDataSource.loadFamilyId()
-            val response = userService.searchMember(keyword, familyId)
-            val responseBody = response.body() ?: SearchMemberResponse()
-
-            if (responseBody.isSuccess) {
-                emit(Resource.Success(responseBody))
-            } else {
-                emit(Resource.Fail(Throwable(responseBody.message)))
-            }
-
-
-        }.catch { e ->
-            emit(Resource.Fail(e))
-        }
-    }
-
     companion object {
         private const val KEY_ACCESS_TOKEN = "X-AUTH-TOKEN"
         private const val GET_ACCESS_TOKEN_ERROR = "Fail to get Access Token"

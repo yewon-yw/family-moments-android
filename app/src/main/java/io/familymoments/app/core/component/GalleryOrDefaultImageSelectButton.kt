@@ -32,7 +32,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
-import io.familymoments.app.core.util.convertUriToBitmap
+import io.familymoments.app.core.util.FileUtil.convertUriToBitmap
 
 @Composable
 fun GalleryOrDefaultImageSelectButton(
