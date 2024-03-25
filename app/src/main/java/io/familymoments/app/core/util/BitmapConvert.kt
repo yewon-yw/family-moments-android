@@ -143,21 +143,21 @@ object FileUtil {
         return inSampleSize
     }
 
-    @Suppress("DEPRECATION")
-    fun convertUriToBitmap(uri: Uri?, context: Context): Bitmap? {
-        var bitmap: Bitmap? = null
-        uri?.let {
-            bitmap = if (Build.VERSION.SDK_INT < 28) {
-                MediaStore.Images
-                    .Media.getBitmap(context.contentResolver, it)
-            } else {
-                val source = ImageDecoder
-                    .createSource(context.contentResolver, it)
-                ImageDecoder.decodeBitmap(source)
-            }
+@Suppress("DEPRECATION")
+fun convertUriToBitmap(uri:Uri?,context: Context): Bitmap? {
+    var bitmap: Bitmap? = null
+    uri?.let {
+        bitmap = if (Build.VERSION.SDK_INT < 28) {
+            MediaStore.Images
+                .Media.getBitmap(context.contentResolver, it)
+        } else {
+            val source = ImageDecoder
+                .createSource(context.contentResolver, it)
+            ImageDecoder.decodeBitmap(source)
         }
-        return bitmap
     }
+    return bitmap
+}
 
 }
 
