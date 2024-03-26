@@ -18,10 +18,12 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ModifyPasswordViewModel @Inject constructor(private val userRepository: UserRepository) : BaseViewModel() {
-    private val _modifyPasswordValidUiState: MutableStateFlow<ModifyPasswordValidUiState> = MutableStateFlow(ModifyPasswordValidUiState())
+    private val _modifyPasswordValidUiState: MutableStateFlow<ModifyPasswordValidUiState> =
+        MutableStateFlow(ModifyPasswordValidUiState())
     val modifyPasswordValidUiState: StateFlow<ModifyPasswordValidUiState> = _modifyPasswordValidUiState.asStateFlow()
 
-    private val _modifyPasswordUiState: MutableStateFlow<ModifyPasswordUiState> = MutableStateFlow(ModifyPasswordUiState())
+    private val _modifyPasswordUiState: MutableStateFlow<ModifyPasswordUiState> =
+        MutableStateFlow(ModifyPasswordUiState())
     val modifyPasswordUiState: StateFlow<ModifyPasswordUiState> = _modifyPasswordUiState.asStateFlow()
 
     fun checkCurrentPassword(password: String) {
@@ -74,7 +76,8 @@ class ModifyPasswordViewModel @Inject constructor(private val userRepository: Us
     }
 
     fun updateNewPassword(newPassword: String, newPasswordCheck: String) {
-        _modifyPasswordUiState.value = _modifyPasswordUiState.value.copy(newPassword = newPassword, newPasswordCheck = newPasswordCheck)
+        _modifyPasswordUiState.value =
+            _modifyPasswordUiState.value.copy(newPassword = newPassword, newPasswordCheck = newPasswordCheck)
     }
 
     fun resetCurrentPasswordField() {

@@ -13,7 +13,7 @@ data class CommentUiState(
 
 data class CommentLogics(
     val getComments: (Long) -> Unit = {},
-    val postComment: (Long, String) -> Unit = {_,_->},
+    val postComment: (Long, String) -> Unit = { _, _ -> },
     val deleteComment: (Long) -> Unit = {},
     val postCommentLoves: (Long) -> Unit = {},
     val deleteCommentLoves: (Long) -> Unit = {}

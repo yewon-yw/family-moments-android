@@ -27,18 +27,18 @@ class CreatingFamilyViewModel @Inject constructor(
     private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
 ) : BaseViewModel() {
 
-    private val _familyProfile:MutableStateFlow<FamilyProfile> = MutableStateFlow(FamilyProfile())
-    val familyProfile:StateFlow<FamilyProfile> = _familyProfile.asStateFlow()
+    private val _familyProfile: MutableStateFlow<FamilyProfile> = MutableStateFlow(FamilyProfile())
+    val familyProfile: StateFlow<FamilyProfile> = _familyProfile.asStateFlow()
 
     private val _searchMemberUiState: MutableStateFlow<SearchMemberUiState> = MutableStateFlow(SearchMemberUiState())
     val searchMemberUiState: StateFlow<SearchMemberUiState> = _searchMemberUiState.asStateFlow()
 
-    private val _createFamilyResultUiState:MutableStateFlow<CreateFamilyResultUiState> = MutableStateFlow(
+    private val _createFamilyResultUiState: MutableStateFlow<CreateFamilyResultUiState> = MutableStateFlow(
         CreateFamilyResultUiState()
     )
     val createFamilyResultUiState: StateFlow<CreateFamilyResultUiState> = _createFamilyResultUiState.asStateFlow()
 
-    fun saveFamilyProfile(familyProfile: FamilyProfile){
+    fun saveFamilyProfile(familyProfile: FamilyProfile) {
         _familyProfile.value = familyProfile
     }
 
@@ -60,14 +60,14 @@ class CreatingFamilyViewModel @Inject constructor(
         )
     }
 
-    fun createFamily(familyProfile: FamilyProfile){
-        val imageFile =convertBitmapToFile(familyProfile.img)
+    fun createFamily(familyProfile: FamilyProfile) {
+        val imageFile = convertBitmapToFile(familyProfile.img)
         val imageRequestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
         val profileImgPart = MultipartBody.Part.createFormData("representImg", imageFile.name, imageRequestBody)
         val createFamilyRequest = CreateFamilyRequest(
             familyName = familyProfile.name,
             uploadCycle = familyProfile.uploadCycle
-            )
+        )
         async(
             operation = { familyRepository.createFamily(profileImgPart, createFamilyRequest) },
             onSuccess = {

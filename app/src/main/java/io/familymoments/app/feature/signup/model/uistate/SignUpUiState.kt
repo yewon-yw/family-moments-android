@@ -6,7 +6,8 @@ import io.familymoments.app.core.component.CheckedStatus
 data class SignUpUiState(
     val signUpInfoUiState: SignUpInfoUiState = SignUpInfoUiState(),
     val signUpValidatedUiState: SignUpValidatedUiState = SignUpValidatedUiState(),
-    val signUpTermUiState: SignUpTermUiState = SignUpTermUiState()
+    val signUpTermUiState: SignUpTermUiState = SignUpTermUiState(),
+    val signUpSuccess: Boolean? = null
 )
 
 data class SignUpInfoUiState(

@@ -7,7 +7,7 @@ data class AddPostUiState(
     val isSuccess: Boolean? = null,
     val isLoading: Boolean? = null,
     val errorMessage: String? = null,
-    val mode:AddPostMode = AddPostMode.ADD,
+    val mode: AddPostMode = AddPostMode.ADD,
     val existPostUiState: ExistPostUiState = ExistPostUiState()
 )
 

@@ -5,11 +5,17 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
+import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourceImpl.Companion.DEFAULT_FAMILY_ID
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourceImpl.Companion.DEFAULT_TOKEN_VALUE
 import io.familymoments.app.core.network.repository.UserRepository
+import io.familymoments.app.feature.bottomnav.model.AppBarUiState
+import io.familymoments.app.feature.bottomnav.model.uistate.MainUiState
 import io.familymoments.app.feature.bottomnav.model.uistate.MainUiState
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -22,11 +28,25 @@ class MainViewModel @Inject constructor(
     private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
 ) : BaseViewModel() {
 
+    private val _appBarUiState = MutableStateFlow(AppBarUiState())
+    val appBarUiState = _appBarUiState.asStateFlow()
+
     private val _mainUiState: MutableStateFlow<MainUiState> = MutableStateFlow(MainUiState())
     val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
 
     init {
+        getProfileImg()
         checkFamilyExist()
+    }
+
+    private fun getProfileImg() {
+        viewModelScope.launch {
+            userInfoPreferencesDataSource.loadUserProfileImg().let {
+                _appBarUiState.value = _appBarUiState.value.copy(
+                    profileImgUrl = it
+                )
+            }
+        }
     }
 
     fun reissueAccessToken(suspendFunction: suspend () -> Flow<Resource<*>>) {

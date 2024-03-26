@@ -100,7 +100,7 @@ fun GalleryOrDefaultImageSelectButton(
 
 @Preview(showBackground = true)
 @Composable
-fun GalleryOrDefaultImageSelectButtonPreview(){
+fun GalleryOrDefaultImageSelectButtonPreview() {
     val context = LocalContext.current
     GalleryOrDefaultImageSelectButton(context) {}
 }

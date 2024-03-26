@@ -7,7 +7,7 @@ import androidx.navigation.compose.composable
 import io.familymoments.app.feature.modifypassword.screen.ModifyPasswordScreen
 import io.familymoments.app.feature.profile.graph.profileGraph
 
-fun NavGraphBuilder.myPageGraph(navController: NavController){
+fun NavGraphBuilder.myPageGraph(navController: NavController) {
     composable(route = MyPageRoute.Profile.name) {
         profileGraph(navController)
     }
@@ -31,7 +31,7 @@ fun NavGraphBuilder.myPageGraph(navController: NavController){
     }
 }
 
-enum class MyPageRoute{
+enum class MyPageRoute {
     Profile,
     Password,
     Notification,

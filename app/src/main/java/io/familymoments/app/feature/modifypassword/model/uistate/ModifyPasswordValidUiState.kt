@@ -10,7 +10,7 @@ data class ModifyPasswordValidUiState(
     val newPasswordValid: ModifyPasswordValid = ModifyPasswordValid()
 )
 
-data class ModifyPasswordValid (
+data class ModifyPasswordValid(
     val valid: Boolean = false,
     @StringRes val warningResId: Int? = null,
     val reset: Boolean = false

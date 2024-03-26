@@ -12,7 +12,7 @@ import javax.inject.Inject
 @HiltViewModel
 class MyPageViewModel @Inject constructor(
     private val userRepository: UserRepository
-): BaseViewModel() {
+) : BaseViewModel() {
     private val _myPageUiState: MutableStateFlow<MyPageUiState> = MutableStateFlow(MyPageUiState())
     val myPageUiState: StateFlow<MyPageUiState> = _myPageUiState.asStateFlow()
 

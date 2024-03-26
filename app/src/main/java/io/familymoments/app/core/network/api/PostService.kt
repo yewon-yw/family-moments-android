@@ -5,22 +5,22 @@ import io.familymoments.app.feature.album.model.GetAlbumDetailResponse
 import io.familymoments.app.feature.album.model.GetAlbumResponse
 import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
 import io.familymoments.app.feature.home.model.GetPostsResponse
-import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import io.familymoments.app.feature.postdetail.model.request.PostLovesRequest
 import io.familymoments.app.feature.postdetail.model.response.DeletePostLovesResponse
 import io.familymoments.app.feature.postdetail.model.response.DeletePostResponse
 import io.familymoments.app.feature.postdetail.model.response.GetPostDetailResponse
 import io.familymoments.app.feature.postdetail.model.response.GetPostLovesResponse
 import io.familymoments.app.feature.postdetail.model.response.PostPostLovesResponse
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
-import retrofit2.http.Multipart
-import retrofit2.http.Part
 import retrofit2.http.HTTP
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -91,5 +91,5 @@ interface PostService {
     suspend fun deletePostloves(@Body postlovesRequest: PostLovesRequest): Response<DeletePostLovesResponse>
 
     @DELETE("/posts/{index}")
-    suspend fun deletePost(@Path("index") index: Long):Response<DeletePostResponse>
+    suspend fun deletePost(@Path("index") index: Long): Response<DeletePostResponse>
 }

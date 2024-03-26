@@ -7,8 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import dagger.hilt.android.AndroidEntryPoint
 import io.familymoments.app.core.base.BaseActivity
-import io.familymoments.app.feature.splash.screen.SplashScreen
 import io.familymoments.app.core.theme.FamilyMomentsTheme
+import io.familymoments.app.feature.splash.screen.SplashScreen
 import io.familymoments.app.feature.splash.viewmodel.SplashViewModel
 
 @SuppressLint("CustomSplashScreen")

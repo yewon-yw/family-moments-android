@@ -128,8 +128,21 @@ class SignUpViewModel @Inject constructor(
         val profileImgPart = MultipartBody.Part.createFormData("profileImg", imageFile.name, imageRequestBody)
         async(
             operation = { signInRepository.executeSignUp(profileImgPart, signUpInfoUiState.toRequest()) },
-            onSuccess = { },
-            onFailure = { })
+            onSuccess = {
+                _uiState.update {
+                    it.copy(
+                        signUpSuccess = true
+                    )
+                }
+            },
+            onFailure = {
+                _uiState.update {
+                    it.copy(
+                        signUpSuccess = false
+                    )
+                }
+            }
+        )
     }
 
     private fun bitmapToFile(bitmap: Bitmap): File {

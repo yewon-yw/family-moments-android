@@ -28,8 +28,8 @@ import com.airbnb.lottie.compose.LottieCompositionSpec
 import com.airbnb.lottie.compose.rememberLottieAnimatable
 import com.airbnb.lottie.compose.rememberLottieComposition
 import io.familymoments.app.R
-import io.familymoments.app.feature.bottomnav.activity.MainActivity
 import io.familymoments.app.core.theme.FamilyMomentsTheme
+import io.familymoments.app.feature.bottomnav.activity.MainActivity
 import kotlinx.coroutines.delay
 
 @Composable

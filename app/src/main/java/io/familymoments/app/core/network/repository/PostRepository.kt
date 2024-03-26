@@ -37,9 +37,10 @@ interface PostRepository {
         content: String,
         uriList: List<MultipartBody.Part>?
     ): Flow<Resource<AddPostResponse>>
-    suspend fun getPostDetail(index:Long):Flow<Resource<GetPostDetailResponse>>
-    suspend fun getPostLoves(index:Long):Flow<Resource<GetPostLovesResponse>>
-    suspend fun postPostLoves(postId:Long):Flow<Resource<PostPostLovesResponse>>
-    suspend fun deletePostLoves(postId:Long):Flow<Resource<DeletePostLovesResponse>>
-    suspend fun deletePost(index:Long):Flow<Resource<DeletePostResponse>>
+
+    suspend fun getPostDetail(index: Long): Flow<Resource<GetPostDetailResponse>>
+    suspend fun getPostLoves(index: Long): Flow<Resource<GetPostLovesResponse>>
+    suspend fun postPostLoves(postId: Long): Flow<Resource<PostPostLovesResponse>>
+    suspend fun deletePostLoves(postId: Long): Flow<Resource<DeletePostLovesResponse>>
+    suspend fun deletePost(index: Long): Flow<Resource<DeletePostResponse>>
 }

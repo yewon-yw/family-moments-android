@@ -24,15 +24,19 @@ enum class CheckedStatus(val number: Int) {
 }
 
 @Composable
-fun FMCheckBox(imageResources: List<Int>, defaultStatus: CheckedStatus = CheckedStatus.UNCHECKED, onCheckedChange: (CheckedStatus) -> Unit = {}) {
+fun FMCheckBox(
+    imageResources: List<Int>,
+    defaultStatus: CheckedStatus = CheckedStatus.UNCHECKED,
+    onCheckedChange: (CheckedStatus) -> Unit = {}
+) {
     var status by remember(key1 = defaultStatus) { mutableStateOf(defaultStatus) }
     Image(
-            painter = painterResource(id = imageResources[status.number]),
-            contentDescription = null,
-            modifier = Modifier
-                    .clickable {
-                        status = status.toggle()
-                        onCheckedChange(status)
-                    }
+        painter = painterResource(id = imageResources[status.number]),
+        contentDescription = null,
+        modifier = Modifier
+            .clickable {
+                status = status.toggle()
+                onCheckedChange(status)
+            }
     )
 }

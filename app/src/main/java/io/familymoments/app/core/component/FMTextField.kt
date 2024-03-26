@@ -16,7 +16,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -42,7 +41,7 @@ fun FMTextField(
     textColor: Color = AppColors.black1,
     showText: Boolean = true,
     onFocusChanged: (Boolean) -> Unit = {},
-    keyboardActions: KeyboardActions = KeyboardActions{}
+    keyboardActions: KeyboardActions = KeyboardActions {}
 ) {
     Box(
         modifier = modifier
@@ -72,13 +71,12 @@ fun FMTextField(
                     innerTextField()
                 },
                 modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
                     .weight(1f)
                     .onFocusChanged {
                         onFocusChanged(it.isFocused)
                     },
-                visualTransformation = if(showText) VisualTransformation.None else FMVisualTransformation(),
-                keyboardOptions = if(showText) KeyboardOptions.Default else KeyboardOptions(keyboardType = KeyboardType.Password),
+                visualTransformation = if (showText) VisualTransformation.None else FMVisualTransformation(),
+                keyboardOptions = if (showText) KeyboardOptions.Default else KeyboardOptions(keyboardType = KeyboardType.Password),
                 keyboardActions = keyboardActions
             )
 
@@ -97,7 +95,7 @@ fun FMTextField(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun FMTextFieldPreview() {
     FMTextField(

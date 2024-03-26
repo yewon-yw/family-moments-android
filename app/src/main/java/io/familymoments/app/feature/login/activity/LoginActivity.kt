@@ -9,5 +9,5 @@ import io.familymoments.app.feature.login.viewmodel.LoginViewModel
 @AndroidEntryPoint
 
 class LoginActivity : BaseActivity<LoginViewModel>(LoginViewModel::class) {
-    override val screen:   @Composable () -> Unit = { LoginScreen(viewModel) }
+    override val screen: @Composable () -> Unit = { LoginScreen(viewModel) }
 }

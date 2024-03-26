@@ -2,6 +2,7 @@ package io.familymoments.app.feature.calendar.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
+import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.feature.calendar.model.CalendarUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CalendarViewModel @Inject constructor(
-    private val postRepository: PostRepository
+    private val postRepository: PostRepository,
+    private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
 ) : BaseViewModel() {
 
     private val _calendarUiState = MutableStateFlow(CalendarUiState())
@@ -34,9 +36,9 @@ class CalendarViewModel @Inject constructor(
 
         async(
             operation = {
-                //TODO: familyId 수정예정
+                val familyId = userInfoPreferencesDataSource.loadFamilyId()
                 postRepository.getPostsByMonth(
-                    2,
+                    familyId,
                     yearMonth.year,
                     yearMonth.monthValue
                 )
@@ -70,10 +72,10 @@ class CalendarViewModel @Inject constructor(
         val dates = transformedDates(prevMonth.atDay(1), firstDayOfMonth)
 
         async(
-            //TODO: familyId 수정예정
             operation = {
+                val familyId = userInfoPreferencesDataSource.loadFamilyId()
                 postRepository.getPostsByMonth(
-                    2,
+                    familyId,
                     prevMonth.year,
                     prevMonth.monthValue
                 )
@@ -107,10 +109,10 @@ class CalendarViewModel @Inject constructor(
         val dates = transformedDates(nextMonth.atDay(1), nextMonth.plusMonths(1).atDay(1))
 
         async(
-            //TODO: familyId 수정예정
             operation = {
+                val familyId = userInfoPreferencesDataSource.loadFamilyId()
                 postRepository.getPostsByMonth(
-                    2,
+                    familyId,
                     nextMonth.year,
                     nextMonth.monthValue
                 )

@@ -12,13 +12,14 @@ import javax.inject.Inject
 @HiltViewModel
 class JoinFamilyViewModel @Inject constructor(
     private val familyRepository: FamilyRepository
-):BaseViewModel(){
+) : BaseViewModel() {
 
-    private val _searchFamilyByInviteLinkUiState:MutableStateFlow<SearchFamilyByInviteLinkUiState>
-     = MutableStateFlow(SearchFamilyByInviteLinkUiState())
-    val searchFamilyByInviteLinkUiState:StateFlow<SearchFamilyByInviteLinkUiState> = _searchFamilyByInviteLinkUiState.asStateFlow()
+    private val _searchFamilyByInviteLinkUiState: MutableStateFlow<SearchFamilyByInviteLinkUiState> =
+        MutableStateFlow(SearchFamilyByInviteLinkUiState())
+    val searchFamilyByInviteLinkUiState: StateFlow<SearchFamilyByInviteLinkUiState> =
+        _searchFamilyByInviteLinkUiState.asStateFlow()
 
-    fun searchFamilyByInviteLink(inviteLink:String){
+    fun searchFamilyByInviteLink(inviteLink: String) {
         async(
             operation = {
                 familyRepository.searchFamilyByInviteLink(inviteLink)

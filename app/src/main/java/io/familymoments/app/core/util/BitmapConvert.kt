@@ -5,13 +5,18 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.graphics.Matrix
+import android.graphics.drawable.BitmapDrawable
 import android.media.ExifInterface
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import coil.ImageLoader
+import coil.request.ImageRequest
+import coil.request.SuccessResult
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.BufferedInputStream
 import java.io.File
@@ -143,22 +148,21 @@ object FileUtil {
         return inSampleSize
     }
 
-@Suppress("DEPRECATION")
-fun convertUriToBitmap(uri:Uri?,context: Context): Bitmap? {
-    var bitmap: Bitmap? = null
-    uri?.let {
-        bitmap = if (Build.VERSION.SDK_INT < 28) {
-            MediaStore.Images
-                .Media.getBitmap(context.contentResolver, it)
-        } else {
-            val source = ImageDecoder
-                .createSource(context.contentResolver, it)
-            ImageDecoder.decodeBitmap(source)
+    @Suppress("DEPRECATION")
+    fun convertUriToBitmap(uri: Uri?, context: Context): Bitmap? {
+        var bitmap: Bitmap? = null
+        uri?.let {
+            bitmap = if (Build.VERSION.SDK_INT < 28) {
+                MediaStore.Images
+                    .Media.getBitmap(context.contentResolver, it)
+            } else {
+                val source = ImageDecoder
+                    .createSource(context.contentResolver, it)
+                ImageDecoder.decodeBitmap(source)
+            }
         }
+        return bitmap
     }
-    return bitmap
-}
-
 }
 
 fun convertBitmapToFile(bitmap: Bitmap?): File {
@@ -168,4 +172,20 @@ fun convertBitmapToFile(bitmap: Bitmap?): File {
     outputStream.flush()
     outputStream.close()
     return file
+}
+
+suspend fun convertUrlToBitmap(url: String, context: Context): Bitmap? {
+    return withContext(Dispatchers.IO) {
+        try {
+            val loader = ImageLoader(context)
+            val request = ImageRequest.Builder(context)
+                .data(url)
+                .build()
+            val result = (loader.execute(request) as SuccessResult).drawable
+            (result as BitmapDrawable).bitmap
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
 }

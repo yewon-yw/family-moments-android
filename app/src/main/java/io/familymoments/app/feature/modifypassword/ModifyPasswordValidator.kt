@@ -14,7 +14,7 @@ fun validateNewPassword(newPassword: String, newPasswordCheck: String): Pair<Boo
         warningResId = null
     } else if (!checkPasswordFormat(newPassword)) {
         warningResId = WarningType.InvalidPasswordFormat.stringResId
-    } else if(newPasswordCheck.isEmpty()) {
+    } else if (newPasswordCheck.isEmpty()) {
         warningResId = null
     } else if (newPassword != newPasswordCheck) {
         warningResId = WarningType.NewPasswordsMismatch.stringResId
@@ -29,6 +29,6 @@ private fun checkPasswordFormat(password: String): Boolean {
     return password.matches(ModifyPasswordCheck.passwordRegex)
 }
 
-private object ModifyPasswordCheck{
+private object ModifyPasswordCheck {
     val passwordRegex = Regex("^(?=.*[0-9])(?=.*[a-zA-Z])[0-9a-zA-Z]{8,12}\$")
 }
