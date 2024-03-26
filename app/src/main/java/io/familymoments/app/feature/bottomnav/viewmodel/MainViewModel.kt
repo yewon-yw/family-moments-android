@@ -68,10 +68,6 @@ class MainViewModel @Inject constructor(
                 _familyUiState.value = MainUiState(
                     familyExist = false
                 )
-            } else {
-                _familyUiState.value = MainUiState(
-                    familyExist = true
-                )
             }
         }
     }
