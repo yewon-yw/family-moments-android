@@ -31,6 +31,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -71,8 +72,11 @@ fun AddPostScreen(
     popBackStack: () -> Unit
 ) {
     val addPostUiState = viewModel.uiState.collectAsStateWithLifecycle().value
-    if (addPostUiState.isSuccess == true) {
-        popBackStack()
+
+    LaunchedEffect(addPostUiState.isSuccess) {
+        if (addPostUiState.isSuccess == true) {
+            popBackStack()
+        }
     }
     var content by remember { mutableStateOf(addPostUiState.existPostUiState.editContent) }
     val context = LocalContext.current
