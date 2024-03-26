@@ -2,6 +2,8 @@ package io.familymoments.app.core.network.datasource
 
 import android.content.SharedPreferences
 import io.familymoments.app.core.network.model.UserProfile
+import io.familymoments.app.core.util.DEFAULT_FAMILY_ID_VALUE
+import io.familymoments.app.core.util.DEFAULT_TOKEN_VALUE
 import io.familymoments.app.feature.profile.model.response.ProfileEditResult
 import javax.inject.Inject
 
@@ -34,7 +36,7 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
     override suspend fun loadFamilyId(): Long {
         return sharedPreferences.getLong(
             FAMILY_ID_KEY,
-            DEFAULT_FAMILY_ID
+            DEFAULT_FAMILY_ID_VALUE
         )
     }
 
@@ -110,9 +112,7 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
     companion object {
         private const val ACCESS_TOKEN_KEY = "access_token"
         private const val ACCESS_TOKEN_KEY_NOT_EXIST_ERROR = "액세스 토큰이 존재하지 않습니다."
-        const val DEFAULT_TOKEN_VALUE = ""
         private const val FAMILY_ID_KEY = "family_id"
-        const val DEFAULT_FAMILY_ID = -1L
 
         private const val USER_NAME_KEY = "name"
         private const val USER_BIRTH_DATE_KEY = "birthDate"
