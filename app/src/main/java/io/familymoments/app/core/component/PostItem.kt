@@ -36,14 +36,22 @@ import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.home.component.postItemContentShadow
 import io.familymoments.app.feature.home.model.Post
+import timber.log.Timber
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
-fun PostItem(post: Post, navigateToPostDetail: (Int) -> Unit) {
+fun PostItem(
+    post: Post, navigateToPostDetail: (Int) -> Unit,
+    postPostHearts: (Long) -> Unit = {},
+    deletePostHearts: (Long) -> Unit = {},
+    deletePost: (Long) -> Unit = {},
+    reportPost: (Long) -> Unit = {}
+) {
     Column {
         Spacer(modifier = Modifier.height(10.dp))
         PostItemHeader(post = post)
@@ -162,7 +170,10 @@ private fun PostItemContent(
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_three_dots_row),
                     tint = AppColors.deepPurple1,
-                    contentDescription = null
+                    contentDescription = null,
+                    modifier = Modifier.noRippleClickable {
+                        Timber.tag("hkhk").d("토스트 메뉴 뜸")
+                    }
                 )
                 Spacer(modifier = Modifier.height(6.dp))
                 Icon(
@@ -170,7 +181,10 @@ private fun PostItemContent(
                         if (post.loved) R.drawable.ic_heart_filled else R.drawable.ic_heart_empty
                     ),
                     tint = Color.Unspecified,
-                    contentDescription = null
+                    contentDescription = null,
+                    modifier = Modifier.noRippleClickable {
+                        Timber.tag("hkhk").d("하트 누름")
+                    }
                 )
                 Spacer(modifier = Modifier.height(3.dp))
                 Text(text = "3", style = AppTypography.LB2_11, color = AppColors.black1)
@@ -200,6 +214,6 @@ fun PostItemPreview() {
             imgs = listOf(""),
             loved = false
         ),
-        navigateToPostDetail = {}
+        navigateToPostDetail = {},
     )
 }
