@@ -51,9 +51,7 @@ fun ChoosingFamilyScreen(
                 StartScreen(
                     { navController.navigate(ChoosingFamilyRoute.SearchMember.route) },
                     { navController.navigate(ChoosingFamilyRoute.Join.route) },
-                    {
-                        context.startActivity(mainActivityIntent)
-                    })
+                )
             }
             composable(ChoosingFamilyRoute.SearchMember.route) {
                 SearchMemberScreen(

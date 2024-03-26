@@ -8,7 +8,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -34,6 +33,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -53,6 +53,7 @@ import io.familymoments.app.core.util.keyboardAsState
 import io.familymoments.app.feature.bottomnav.component.bottomNavShadow
 import io.familymoments.app.feature.bottomnav.model.BottomNavItem
 import io.familymoments.app.feature.bottomnav.viewmodel.MainViewModel
+import io.familymoments.app.feature.choosingfamily.activity.ChoosingFamilyActivity
 import io.familymoments.app.feature.home.screen.HomeScreenPreview
 import io.familymoments.app.feature.login.activity.LoginActivity
 
@@ -62,6 +63,7 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
     val scaffoldState = LocalScaffoldState.current
     val isKeyboardOpen by keyboardAsState()
     val context = LocalContext.current
+    val mainUiState = viewModel.mainUiState.collectAsStateWithLifecycle().value
 
     LaunchedEffect(authErrorManager.needReissueToken) {
         authErrorManager.needReissueToken.collect { event ->
@@ -80,6 +82,12 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
                 context.startActivity(intent)
             }
         }
+    }
+
+    LaunchedEffect(mainUiState.familyExist == false) {
+        val intent = Intent(context, ChoosingFamilyActivity::class.java)
+        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        context.startActivity(intent)
     }
 
     val navigationIcon = @Composable {

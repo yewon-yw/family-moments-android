@@ -5,14 +5,8 @@ import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.waitForUpOrCancellation
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.Button
-import androidx.compose.material.ButtonDefaults
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -28,7 +22,6 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
@@ -37,18 +30,10 @@ import kotlin.math.pow
 import kotlin.math.sqrt
 
 @Composable
-fun StartScreen(goToCreating: () -> Unit = {}, goToJoining: () -> Unit = {}, goToMain: () -> Unit = {}) {
+fun StartScreen(goToCreating: () -> Unit = {}, goToJoining: () -> Unit = {}) {
     DrawCircle(goToCreating = goToCreating, goToJoining = goToJoining, radius = 275)
     CreatingText()
     JoiningText()
-    Row(
-        modifier = Modifier
-            .fillMaxHeight()
-            .padding(bottom = 95.dp), verticalAlignment = Alignment.Bottom
-    ) {
-        SkipButton(goToMain)
-
-    }
 }
 
 
@@ -172,28 +157,6 @@ private fun drawEachCircle(radius: Int, color: Color, circleCenter: Pair<Int, In
             color = color,
             radius = radius.dp.toPx(),
             center = Offset(circleCenter.first.dp.toPx(), circleCenter.second.dp.toPx())
-        )
-    }
-
-}
-
-@Composable
-private fun SkipButton(onClick: () -> Unit = {}) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        shape = RoundedCornerShape(60.dp),
-        colors = ButtonDefaults.buttonColors(
-            backgroundColor = AppColors.deepPurple1,
-            contentColor = Color.White
-        )
-    ) {
-        Text(
-            text = stringResource(R.string.skip_select_family_option),
-            fontSize = 18.sp,
-            modifier = Modifier.padding(vertical = 18.dp)
         )
     }
 }
