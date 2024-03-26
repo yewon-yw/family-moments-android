@@ -4,5 +4,5 @@ data class DeletePostLovesResponse(
     val isSuccess: Boolean = false,
     val code: Int = 0,
     val message: String = "",
-    val result:String = ""
+    val result: String = ""
 )

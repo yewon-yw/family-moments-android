@@ -60,7 +60,7 @@ fun ModifyPasswordScreen(
     val modifyPasswordUiState = viewModel.modifyPasswordUiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(modifyPasswordValidUiState.value.isSuccess) {
-        if(modifyPasswordValidUiState.value.isSuccess) {
+        if (modifyPasswordValidUiState.value.isSuccess) {
             val intent = Intent(context, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             context.startActivity(intent)
@@ -236,7 +236,7 @@ fun ModifyPasswordWarning(
             modifier = Modifier
                 .padding(top = 9.dp, bottom = bottomPadding - 25.dp)
         ) {
-            if(warningResId != null){
+            if (warningResId != null) {
                 Text(
                     text = stringResource(id = warningResId),
                     style = AppTypography.LB1_13,
@@ -268,7 +268,7 @@ fun ModifyPasswordTextField(
         onValueChange = onValueChange,
         value = value,
         hint = stringResource(id = hintResId),
-        borderColor = if(hideWarning) AppColors.grey2 else AppColors.red2,
+        borderColor = if (hideWarning) AppColors.grey2 else AppColors.red2,
         showDeleteButton = false,
         showText = false,
         onFocusChanged = onFocusChange,

@@ -6,11 +6,11 @@ import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
 
-class FMVisualTransformation(private val maskChar: Char = '●'): VisualTransformation {
+class FMVisualTransformation(private val maskChar: Char = '●') : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val input = text.text
         val output = buildAnnotatedString {
-            input.forEach { _->
+            input.forEach { _ ->
                 append(maskChar)
             }
         }

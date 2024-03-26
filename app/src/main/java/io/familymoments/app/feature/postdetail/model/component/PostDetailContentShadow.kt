@@ -34,7 +34,7 @@ fun Modifier.postDetailContentShadow(
         it.drawRoundRect(
             left = -2.dp.toPx(),
             top = 4.dp.toPx(),
-            right = this.size.width +2.dp.toPx(),
+            right = this.size.width + 2.dp.toPx(),
             bottom = this.size.height + 8.dp.toPx(),
             radiusX = 0f,
             radiusY = 0f,

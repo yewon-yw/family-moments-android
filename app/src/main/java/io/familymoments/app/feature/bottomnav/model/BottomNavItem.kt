@@ -19,7 +19,11 @@ sealed class BottomNavItem(
         BottomNavItem(BottomNavRoute.ADD_POST.name, R.drawable.ic_bottom_nav_add_post, R.string.bottom_nav_label_home)
 
     data object Calendar :
-        BottomNavItem(BottomNavRoute.CALENDAR.name, R.drawable.ic_bottom_nav_calendar, R.string.bottom_nav_label_calendar)
+        BottomNavItem(
+            BottomNavRoute.CALENDAR.name,
+            R.drawable.ic_bottom_nav_calendar,
+            R.string.bottom_nav_label_calendar
+        )
 
     data object MyPage :
         BottomNavItem(BottomNavRoute.MY_PAGE.name, R.drawable.ic_bottom_nav_my_page, R.string.bottom_nav_label_my_page)

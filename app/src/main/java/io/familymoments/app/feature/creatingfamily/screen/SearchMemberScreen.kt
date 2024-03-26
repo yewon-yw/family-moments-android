@@ -35,8 +35,8 @@ import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
-import io.familymoments.app.feature.choosingfamily.MemberCheckBox
 import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
+import io.familymoments.app.feature.choosingfamily.MemberCheckBox
 import io.familymoments.app.feature.choosingfamily.SearchTextField
 import io.familymoments.app.feature.creatingfamily.model.response.Member
 import io.familymoments.app.feature.creatingfamily.viewmodel.CreatingFamilyViewModel

@@ -55,7 +55,7 @@ fun MyPageScreen(
             groupNameResId = R.string.my_page_more_group,
             myPageItems = MyPageGroups.moreGroup,
             onItemClick = onItemClick,
-            onLogoutItemClick = {showLogoutPopup.value = true}
+            onLogoutItemClick = { showLogoutPopup.value = true }
         )
         Spacer(modifier = Modifier.padding(bottom = 27.dp))
     }

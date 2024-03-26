@@ -27,7 +27,7 @@ import io.familymoments.app.core.theme.AppTypography
 @Composable
 fun SearchTextField(
     hint: String,
-    singleLine:Boolean = false,
+    singleLine: Boolean = false,
     onValueChange: (TextFieldValue) -> Unit
 ) {
     var textFieldValue by remember {

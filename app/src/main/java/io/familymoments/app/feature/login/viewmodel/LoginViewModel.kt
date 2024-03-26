@@ -18,21 +18,21 @@ class LoginViewModel @Inject constructor(
 
     fun loginUser(username: String, password: String) {
         async(
-                operation = { userRepository.loginUser(username.trimEnd(), password.trimEnd()) },
-                onSuccess = {
-                    _loginUiState.value = _loginUiState.value.copy(
-                            isSuccess = true,
-                            isLoading = isLoading.value,
-                            loginResult = it.result
-                    )
-                },
-                onFailure = {
-                    _loginUiState.value = _loginUiState.value.copy(
-                            isSuccess = false,
-                            isLoading = isLoading.value,
-                            errorMessage = it.message
-                    )
-                }
+            operation = { userRepository.loginUser(username.trimEnd(), password.trimEnd()) },
+            onSuccess = {
+                _loginUiState.value = _loginUiState.value.copy(
+                    isSuccess = true,
+                    isLoading = isLoading.value,
+                    loginResult = it.result
+                )
+            },
+            onFailure = {
+                _loginUiState.value = _loginUiState.value.copy(
+                    isSuccess = false,
+                    isLoading = isLoading.value,
+                    errorMessage = it.message
+                )
+            }
         )
     }
 

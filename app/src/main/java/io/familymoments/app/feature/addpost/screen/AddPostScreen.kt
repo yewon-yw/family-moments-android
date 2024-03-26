@@ -59,7 +59,8 @@ import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.FileUtil
 import io.familymoments.app.core.util.keyboardAsState
-import io.familymoments.app.feature.addpost.model.AddPostMode.*
+import io.familymoments.app.feature.addpost.model.AddPostMode.ADD
+import io.familymoments.app.feature.addpost.model.AddPostMode.EDIT
 import io.familymoments.app.feature.addpost.viewmodel.AddPostViewModel
 import kotlinx.coroutines.launch
 

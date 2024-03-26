@@ -4,7 +4,7 @@ data class GetPostDetailResponse(
     val isSuccess: Boolean = false,
     val code: Int = 0,
     val message: String = "",
-    val result:GetPostDetailResult = GetPostDetailResult()
+    val result: GetPostDetailResult = GetPostDetailResult()
 )
 
 data class GetPostDetailResult(

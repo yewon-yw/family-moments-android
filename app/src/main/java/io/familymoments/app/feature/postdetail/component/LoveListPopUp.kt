@@ -35,7 +35,7 @@ import io.familymoments.app.feature.postdetail.model.response.GetPostLovesResult
 
 @Composable
 fun LoveListPopUp(
-    postLoves:List<GetPostLovesResult>,
+    postLoves: List<GetPostLovesResult>,
     onDismissRequest: () -> Unit = {}
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
@@ -81,7 +81,7 @@ fun LoveListPopUp(
 }
 
 @Composable
-fun LoveListItem(member:GetPostLovesResult) {
+fun LoveListItem(member: GetPostLovesResult) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(horizontal = 13.dp, vertical = 6.dp)

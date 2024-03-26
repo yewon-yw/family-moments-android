@@ -44,7 +44,8 @@ sealed interface Route {
         const val editPostIdArg = "editPostId"
         const val editImagesArg = "editImages"
         const val editContentArg = "editContent"
-        val routeWithArgs = "$route?$modeArg={$modeArg}&$editPostIdArg={$editPostIdArg}?$editImagesArg={$editImagesArg}$editContentArg={$editContentArg}"
+        val routeWithArgs =
+            "$route?$modeArg={$modeArg}&$editPostIdArg={$editPostIdArg}?$editImagesArg={$editImagesArg}$editContentArg={$editContentArg}"
         val arguments = listOf(
             navArgument(modeArg) {
                 nullable = true
