@@ -83,6 +83,11 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
         )
     }
 
+    override suspend fun loadUserProfileImg(): String {
+        return sharedPreferences.getString(USER_PROFILE_IMG_KEY, DEFAULT_STRING_USER_INFO_VALUE)
+            ?: throw IllegalStateException(USER_INFO_KEY_NOT_EXIST_ERROR)
+    }
+
     override suspend fun resetPreferencesData() {
         sharedPreferences.edit().clear().commit()
     }

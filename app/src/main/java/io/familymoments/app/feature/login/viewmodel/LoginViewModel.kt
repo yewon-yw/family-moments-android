@@ -1,9 +1,9 @@
 package io.familymoments.app.feature.login.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
-import io.familymoments.app.feature.login.model.uistate.LoginUiState
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.repository.UserRepository
+import io.familymoments.app.feature.login.model.uistate.LoginUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
@@ -18,7 +18,7 @@ class LoginViewModel @Inject constructor(
 
     fun loginUser(username: String, password: String) {
         async(
-                operation = { userRepository.loginUser(username, password) },
+                operation = { userRepository.loginUser(username.trimEnd(), password.trimEnd()) },
                 onSuccess = {
                     _loginUiState.value = _loginUiState.value.copy(
                             isSuccess = true,
@@ -34,5 +34,12 @@ class LoginViewModel @Inject constructor(
                     )
                 }
         )
+    }
+
+    // errorMessage가 더이상 나타나지 않도록 하기 위함
+    fun updateSuccessNull() {
+        if (_loginUiState.value.isSuccess != null) {
+            _loginUiState.value = _loginUiState.value.copy(isSuccess = null)
+        }
     }
 }

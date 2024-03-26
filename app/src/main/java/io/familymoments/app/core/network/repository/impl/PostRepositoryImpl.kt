@@ -18,9 +18,10 @@ import io.familymoments.app.feature.postdetail.model.response.PostPostLovesRespo
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
+import javax.inject.Inject
 import okhttp3.MultipartBody
 
-class PostRepositoryImpl(
+class PostRepositoryImpl @Inject constructor(
     private val postService: PostService
 ) : PostRepository {
     override suspend fun getPosts(familyId: Long): Flow<Resource<GetPostsResponse>> {

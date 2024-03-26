@@ -28,12 +28,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavDestination
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
@@ -41,6 +41,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.component.AppBarScreen
 import io.familymoments.app.core.graph.getMainGraph
@@ -62,6 +63,8 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
     val scaffoldState = LocalScaffoldState.current
     val isKeyboardOpen by keyboardAsState()
     val context = LocalContext.current
+
+    val appBarUiState = viewModel.appBarUiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(authErrorManager.needReissueToken) {
         authErrorManager.needReissueToken.collect { event ->
@@ -85,24 +88,23 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
     val navigationIcon = @Composable {
         if (scaffoldState.hasBackButton) {
             Icon(
-                modifier = Modifier.padding(start = 12.dp),
+                modifier = Modifier
+                    .padding(start = 12.dp)
+                    .clickable { navController.popBackStack() },
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_app_bar_back),
                 contentDescription = null,
                 tint = AppColors.grey3
             )
         } else {
-            Box(
+            AsyncImage(
                 modifier = Modifier
                     .padding(start = 12.dp)
                     .size(34.dp)
-                    .clip(shape = CircleShape)
-            ) {
-                Image(
-                    painter = painterResource(id = R.drawable.img_sample_dog),
-                    contentScale = ContentScale.Crop,
-                    contentDescription = "profile"
-                )
-            }
+                    .clip(shape = CircleShape),
+                model = appBarUiState.value.profileImgUrl,
+                contentScale = ContentScale.Crop,
+                contentDescription = null,
+            )
         }
     }
 

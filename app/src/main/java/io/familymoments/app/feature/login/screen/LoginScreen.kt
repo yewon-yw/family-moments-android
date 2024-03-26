@@ -1,9 +1,11 @@
 package io.familymoments.app.feature.login.screen
 
 import android.content.Intent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -17,8 +19,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -33,29 +39,36 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusDirection
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
-import io.familymoments.app.feature.bottomnav.activity.MainActivity
 import io.familymoments.app.core.component.AppBarScreen
-import io.familymoments.app.feature.login.viewmodel.LoginViewModel
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
-import io.familymoments.app.feature.signup.activity.SignUpActivity
+import io.familymoments.app.feature.bottomnav.activity.MainActivity
 import io.familymoments.app.feature.login.model.uistate.LoginUiState
+import io.familymoments.app.feature.login.viewmodel.LoginViewModel
+import io.familymoments.app.feature.signup.activity.SignUpActivity
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun LoginScreen(viewModel: LoginViewModel) {
@@ -78,16 +91,17 @@ fun LoginScreen(viewModel: LoginViewModel) {
             color = AppColors.deepPurple1
         )
     }) {
-        LoginScreen(login = viewModel::loginUser, loginUiState.value, goToJoin)
+        LoginScreen(login = viewModel::loginUser, loginUiState.value, goToJoin, viewModel::updateSuccessNull)
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(
+private fun LoginScreen(
     login: (String, String) -> Unit,
     loginUiState: LoginUiState,
     goToJoin: () -> Unit,
+    updateSuccessNull: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -98,7 +112,11 @@ fun LoginScreen(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         LoginLogo()
-        LoginForm(login = login, loginUiState)
+        LoginForm(
+            login = login,
+            loginUiState = loginUiState,
+            updateSuccessNull = updateSuccessNull
+        )
         LoginOption(goToJoin)
         SocialLogin()
     }
@@ -131,23 +149,48 @@ fun LoginLogo() {
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @ExperimentalMaterial3Api
 @Composable
 fun LoginForm(
     login: (String, String) -> Unit,
-    loginUiState: LoginUiState
+    loginUiState: LoginUiState,
+    updateSuccessNull: () -> Unit
 ) {
     var id by remember { mutableStateOf(TextFieldValue()) }
     var password by remember { mutableStateOf(TextFieldValue()) }
+    val focusManager = LocalFocusManager.current
+    val requester = remember { BringIntoViewRequester() }
 
     Column(modifier = Modifier.padding(16.dp)) {
         LoginFormRoundedCornerTextField(
             label = stringResource(R.string.login_id_text_field_hint),
-            onValueChanged = { id = it })
+            onValueChanged = {
+                id = it
+                updateSuccessNull()
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+            keyboardActions = KeyboardActions(onNext = {
+                focusManager.moveFocus(
+                    focusDirection = FocusDirection.Next,
+                )
+            }),
+            requester = requester
+        )
         Spacer(modifier = Modifier.height(8.dp))
         LoginFormRoundedCornerTextField(
             label = stringResource(R.string.login_password_text_field_hint),
-            onValueChanged = { password = it })
+            onValueChanged = {
+                password = it
+                updateSuccessNull()
+            },
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions(onDone = {
+                login(id.text, password.text)
+                focusManager.clearFocus()
+            }),
+            requester = requester
+        )
         if (loginUiState.isSuccess == false) {
             Text(
                 modifier = Modifier.padding(vertical = 10.dp),
@@ -160,8 +203,10 @@ fun LoginForm(
         }
         Surface(shape = RoundedCornerShape(8.dp), modifier = Modifier.fillMaxWidth()) {
             Button(
+                modifier = Modifier.bringIntoViewRequester(requester),
                 onClick = {
                     login(id.text, password.text)
+                    focusManager.clearFocus()
                 },
                 colors =
                 ButtonDefaults.buttonColors(
@@ -182,20 +227,36 @@ fun LoginForm(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun LoginFormRoundedCornerTextField(
     modifier: Modifier = Modifier,
     label: String,
     onValueChanged: (TextFieldValue) -> Unit,
+    keyboardOptions: KeyboardOptions,
+    keyboardActions: KeyboardActions,
+    requester: BringIntoViewRequester
 ) {
     var value by remember { mutableStateOf(TextFieldValue()) }
+    val scope = rememberCoroutineScope()
     Surface(shape = RoundedCornerShape(8.dp), modifier = modifier.then(Modifier.fillMaxWidth())) {
         TextField(
+            modifier = Modifier.onFocusChanged {
+                if (it.isFocused) {
+                    scope.launch {
+                        delay(300)
+                        requester.bringIntoView()
+                    }
+                }
+            },
             value = value,
             onValueChange = {
                 value = it
                 onValueChanged(value)
             },
+            keyboardOptions = keyboardOptions,
+            keyboardActions = keyboardActions,
+            singleLine = true,
             label = { Text(label, color = AppColors.grey3, style = AppTypography.B1_16) },
             colors =
             TextFieldDefaults.colors(
@@ -285,23 +346,24 @@ fun SocialLogin() {
                 .height(1.dp)
         )
     }
-
-    Spacer(modifier = Modifier.height(30.dp))
+    Spacer(modifier = Modifier.height(11.dp))
     Row(
-        modifier = Modifier
-            .height(50.dp)
-            .padding(bottom = 61.dp)
+        horizontalArrangement = Arrangement.spacedBy(37.dp),
     ) {
         Image(painter = painterResource(id = R.drawable.ic_kakao_login), contentDescription = null)
-        Spacer(modifier = Modifier.width(37.dp))
         Image(painter = painterResource(id = R.drawable.ic_naver_login), contentDescription = null)
     }
 }
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewLoginScreen() {
+private fun LoginScreenPreview() {
     FamilyMomentsTheme {
-        LoginScreen(login = { _, _ -> }, loginUiState = LoginUiState(), goToJoin = {})
+        LoginScreen(
+            login = { _, _ -> },
+            loginUiState = LoginUiState(),
+            goToJoin = {},
+            updateSuccessNull = {}
+        )
     }
 }

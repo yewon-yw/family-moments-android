@@ -2,6 +2,7 @@ package io.familymoments.app.feature.album.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
+import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.feature.album.model.AlbumDetailUiState
 import io.familymoments.app.feature.album.model.AlbumUiState
@@ -11,7 +12,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AlbumViewModel @Inject constructor(
-    private val postRepository: PostRepository
+    private val postRepository: PostRepository,
+    private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
 ) : BaseViewModel() {
 
     private val _albumUiState = MutableStateFlow(AlbumUiState())
@@ -22,8 +24,10 @@ class AlbumViewModel @Inject constructor(
     fun getAlbum() {
         Timber.d("getAlbum")
         async(
-            // TODO: 추후 familyId 수정 예정
-            operation = { postRepository.getAlbum(2) },
+            operation = {
+                val familyId = userInfoPreferencesDataSource.loadFamilyId()
+                postRepository.getAlbum(familyId)
+            },
             onSuccess = {
                 Timber.d("getAlbum: onSuccess")
                 _albumUiState.value = _albumUiState.value.copy(
@@ -47,8 +51,10 @@ class AlbumViewModel @Inject constructor(
     fun loadMoreAlbum() {
         Timber.d("loadMoreAlbum")
         async(
-            // TODO: 추후 familyId 수정 예정
-            operation = { postRepository.loadMoreAlbum(2, minPostId) },
+            operation = {
+                val familyId = userInfoPreferencesDataSource.loadFamilyId()
+                postRepository.loadMoreAlbum(familyId, minPostId)
+            },
             onSuccess = {
                 Timber.d("loadMoreAlbum: onSuccess")
                 _albumUiState.value = _albumUiState.value.copy(

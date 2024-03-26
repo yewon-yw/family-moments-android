@@ -72,7 +72,6 @@ fun FMTextField(
                     innerTextField()
                 },
                 modifier = Modifier
-                    .clip(RoundedCornerShape(4.dp))
                     .weight(1f)
                     .onFocusChanged {
                         onFocusChanged(it.isFocused)
@@ -97,7 +96,7 @@ fun FMTextField(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun FMTextFieldPreview() {
     FMTextField(
