@@ -23,7 +23,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -59,16 +58,15 @@ import java.util.Locale
 @Composable
 fun PostItem(
     post: Post,
+    loves: Int,
     navigateToPostDetail: (Int) -> Unit,
     navigateToEditPost: (Long) -> Unit,
     reloadPosts: () -> Unit,
     viewModel: PostItemViewModel
 ) {
-    LaunchedEffect(Unit) {
-        viewModel.getPostLoves(post.postId)
-    }
     val postItemUiState = viewModel.postItemUiState.collectAsStateWithLifecycle().value
     val popupUiState = viewModel.popupUiState.collectAsStateWithLifecycle().value
+
     if (postItemUiState.deletePostUiState.isSuccess == true) {
         reloadPosts()
         if (popupUiState.completePopupUiState.show) {
@@ -119,6 +117,7 @@ fun PostItem(
             PostItemContent(
                 post = post,
                 navigateToPostDetail = navigateToPostDetail,
+                loves = loves,
                 navigateToEditPost = navigateToEditPost,
                 postItemUiState = postItemUiState,
                 popupUiState = popupUiState
@@ -160,6 +159,7 @@ private fun PostItemHeader(post: Post) {
 @Composable
 private fun PostItemContent(
     post: Post,
+    loves: Int = 0,
     navigateToPostDetail: (Int) -> Unit,
     navigateToEditPost: (Long) -> Unit,
     postItemUiState: PostItemUiState,
@@ -288,7 +288,7 @@ private fun PostItemContent(
                     }
                 )
                 Spacer(modifier = Modifier.height(3.dp))
-                Text(text = postItemUiState.loves.toString(), style = AppTypography.LB2_11, color = AppColors.black1)
+                Text(text = loves.toString(), style = AppTypography.LB2_11, color = AppColors.black1)
             }
         }
     }

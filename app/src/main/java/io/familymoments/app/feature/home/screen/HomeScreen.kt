@@ -124,7 +124,8 @@ fun HomeScreen(
                         navigateToPostDetail = navigateToPostDetail,
                         navigateToEditPost = {},
                         viewModel = hiltViewModel(),
-                        reloadPosts = { viewModel.getPosts() }
+                        reloadPosts = { viewModel.getPosts() },
+                        loves = 0
                     )
                 }
             }
