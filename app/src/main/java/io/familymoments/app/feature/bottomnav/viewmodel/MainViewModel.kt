@@ -5,17 +5,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
-import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourceImpl.Companion.DEFAULT_FAMILY_ID
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourceImpl.Companion.DEFAULT_TOKEN_VALUE
 import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.feature.bottomnav.model.AppBarUiState
 import io.familymoments.app.feature.bottomnav.model.uistate.MainUiState
-import io.familymoments.app.feature.bottomnav.model.uistate.MainUiState
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -31,8 +26,8 @@ class MainViewModel @Inject constructor(
     private val _appBarUiState = MutableStateFlow(AppBarUiState())
     val appBarUiState = _appBarUiState.asStateFlow()
 
-    private val _mainUiState: MutableStateFlow<MainUiState> = MutableStateFlow(MainUiState())
-    val mainUiState: StateFlow<MainUiState> = _mainUiState.asStateFlow()
+    private val _familyUiState: MutableStateFlow<MainUiState> = MutableStateFlow(MainUiState())
+    val familyUiState: StateFlow<MainUiState> = _familyUiState.asStateFlow()
 
     init {
         getProfileImg()
@@ -70,11 +65,11 @@ class MainViewModel @Inject constructor(
             val accessToken = userInfoPreferencesDataSource.loadAccessToken()
             val familyId = userInfoPreferencesDataSource.loadFamilyId()
             if (accessToken != DEFAULT_TOKEN_VALUE && familyId == DEFAULT_FAMILY_ID) {
-                _mainUiState.value = MainUiState(
+                _familyUiState.value = MainUiState(
                     familyExist = false
                 )
             } else {
-                _mainUiState.value = MainUiState(
+                _familyUiState.value = MainUiState(
                     familyExist = true
                 )
             }

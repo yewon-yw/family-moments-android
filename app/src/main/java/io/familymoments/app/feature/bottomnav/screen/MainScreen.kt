@@ -63,7 +63,7 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
     val scaffoldState = LocalScaffoldState.current
     val isKeyboardOpen by keyboardAsState()
     val context = LocalContext.current
-    val mainUiState = viewModel.mainUiState.collectAsStateWithLifecycle().value
+    val familyUiState = viewModel.familyUiState.collectAsStateWithLifecycle().value
 
     val appBarUiState = viewModel.appBarUiState.collectAsStateWithLifecycle()
 
@@ -86,7 +86,7 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
         }
     }
 
-    LaunchedEffect(mainUiState.familyExist == false) {
+    LaunchedEffect(familyUiState.familyExist == false) {
         val intent = Intent(context, ChoosingFamilyActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         context.startActivity(intent)
