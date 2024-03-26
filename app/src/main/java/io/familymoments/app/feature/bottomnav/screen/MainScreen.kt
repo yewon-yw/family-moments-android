@@ -131,11 +131,15 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
         bottomNavItems.map { it.route }.contains(currentScreen.route)
     } == true
 
+    val isAddPost = currentDestination?.hierarchy?.any { currentScreen ->
+        currentScreen.route == BottomNavItem.AddPost.route
+    } == true
+
     AppBarScreen(
         title = { Text(text = "sweety home", style = AppTypography.SH3_16, color = AppColors.deepPurple1) },
         navigationIcon = navigationIcon,
         bottomBar = {
-            if (isBottomNavItem && !isKeyboardOpen) {
+            if (isBottomNavItem && !isKeyboardOpen && !isAddPost) {
                 BottomNavigationBar(
                     navController = navController,
                     bottomNavItems = bottomNavItems,
