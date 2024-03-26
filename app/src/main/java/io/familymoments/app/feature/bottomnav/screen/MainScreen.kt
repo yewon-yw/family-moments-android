@@ -53,6 +53,7 @@ import io.familymoments.app.core.util.keyboardAsState
 import io.familymoments.app.feature.bottomnav.component.bottomNavShadow
 import io.familymoments.app.feature.bottomnav.model.BottomNavItem
 import io.familymoments.app.feature.bottomnav.viewmodel.MainViewModel
+import io.familymoments.app.feature.choosingfamily.activity.ChoosingFamilyActivity
 import io.familymoments.app.feature.home.screen.HomeScreenPreview
 import io.familymoments.app.feature.login.activity.LoginActivity
 
@@ -62,6 +63,7 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
     val scaffoldState = LocalScaffoldState.current
     val isKeyboardOpen by keyboardAsState()
     val context = LocalContext.current
+    val familyUiState = viewModel.familyUiState.collectAsStateWithLifecycle().value
 
     val appBarUiState = viewModel.appBarUiState.collectAsStateWithLifecycle()
 
@@ -81,6 +83,14 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
                 }
                 context.startActivity(intent)
             }
+        }
+    }
+
+    LaunchedEffect(familyUiState.familyExist) {
+        if (familyUiState.familyExist == false) {
+            val intent = Intent(context, ChoosingFamilyActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            context.startActivity(intent)
         }
     }
 

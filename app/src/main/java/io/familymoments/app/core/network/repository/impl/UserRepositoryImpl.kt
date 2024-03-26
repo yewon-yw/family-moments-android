@@ -8,6 +8,7 @@ import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourc
 import io.familymoments.app.core.network.model.AuthErrorResponse
 import io.familymoments.app.core.network.model.UserProfileResponse
 import io.familymoments.app.core.network.repository.UserRepository
+import io.familymoments.app.core.util.DEFAULT_FAMILY_ID_VALUE
 import io.familymoments.app.feature.creatingfamily.model.response.SearchMemberResponse
 import io.familymoments.app.feature.login.model.request.LoginRequest
 import io.familymoments.app.feature.login.model.response.LoginResponse
@@ -40,9 +41,7 @@ class UserRepositoryImpl @Inject constructor(
             if (responseBody.isSuccess) {
                 saveAccessToken(response.headers())
                 val familyId: Long? = responseBody.result.familyId
-                if (familyId != null) {
-                    userInfoPreferencesDataSource.saveFamilyId(familyId)
-                }
+                userInfoPreferencesDataSource.saveFamilyId(familyId ?: DEFAULT_FAMILY_ID_VALUE)
                 loadUserProfile(familyId).collect { result ->
                     if (result is Resource.Success) {
                         userInfoPreferencesDataSource.saveUserProfile(result.data.result)
