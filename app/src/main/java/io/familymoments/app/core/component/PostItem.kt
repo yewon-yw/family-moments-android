@@ -40,17 +40,17 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import io.familymoments.app.R
-import io.familymoments.app.core.component.viewmodel.PostItemViewModel
+import io.familymoments.app.core.component.popup.CompletePopUp
+import io.familymoments.app.core.component.popup.DeletePopUp
+import io.familymoments.app.core.component.popup.ReportPopUp
+import io.familymoments.app.core.viewmodel.PostItemViewModel
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.home.component.postItemContentShadow
 import io.familymoments.app.feature.home.model.Post
-import io.familymoments.app.feature.home.model.PostItemUiState
-import io.familymoments.app.feature.postdetail.component.DeletePopUp
-import io.familymoments.app.feature.postdetail.component.PostDetailCompletePopUp
-import io.familymoments.app.feature.postdetail.component.ReportPopUp
-import io.familymoments.app.feature.postdetail.model.uistate.PopupUiState
+import io.familymoments.app.core.uistate.PostItemUiState
+import io.familymoments.app.core.uistate.PopupUiState
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -69,22 +69,22 @@ fun PostItem(
 
     if (postItemUiState.deletePostUiState.isSuccess == true) {
         reloadPosts()
-        if (popupUiState.showDeleteCompletePopup) {
-            PostDetailCompletePopUp(
+        if (popupUiState.completePopupUiState.show) {
+            CompletePopUp(
                 content = stringResource(R.string.post_detail_delete_complete_pop_label),
                 onDismissRequest = {
-                    popupUiState.popupStatusLogics.showDeleteCompletePopup(false)
+                    popupUiState.popupStatusLogics.showCompletePopup(false)
                 }
             )
         }
 
     }
-    if (postItemUiState.deletePostUiState.isSuccess == true && popupUiState.showDeleteCompletePopup) {
-        PostDetailCompletePopUp(
+    if (postItemUiState.deletePostUiState.isSuccess == true && popupUiState.completePopupUiState.show) {
+        CompletePopUp(
             content = stringResource(R.string.post_detail_delete_complete_pop_label),
             onDismissRequest = {
                 reloadPosts()
-                popupUiState.popupStatusLogics.showDeleteCompletePopup(false)
+                popupUiState.popupStatusLogics.showCompletePopup(false)
             }
         )
     }
@@ -261,7 +261,7 @@ private fun PostItemContent(
                             Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_delete)) {
                                 popupUiState.popupStatusLogics.showDeletePopup(true, deletePostPopupLabel) {
                                     postItemUiState.logics.deletePost(post.postId)
-                                    popupUiState.popupStatusLogics.showDeleteCompletePopup(true)
+                                    popupUiState.popupStatusLogics.showCompletePopup(true)
                                     popupUiState.popupStatusLogics.showDeletePopup(false, "") {}
                                 }
                             },

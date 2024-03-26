@@ -4,14 +4,15 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.repository.CommentRepository
 import io.familymoments.app.core.network.repository.PostRepository
+import io.familymoments.app.core.uistate.CompletePopupUiState
 import io.familymoments.app.feature.postdetail.model.uistate.CommentLogics
 import io.familymoments.app.feature.postdetail.model.uistate.CommentUiState
-import io.familymoments.app.feature.postdetail.model.uistate.ExecutePopupUiState
-import io.familymoments.app.feature.postdetail.model.uistate.PopupStatusLogics
-import io.familymoments.app.feature.postdetail.model.uistate.PopupUiState
+import io.familymoments.app.core.uistate.DeletePopupUiState
+import io.familymoments.app.core.uistate.PopupStatusLogics
+import io.familymoments.app.core.uistate.PopupUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostLogics
 import io.familymoments.app.feature.postdetail.model.uistate.PostUiState
-import io.familymoments.app.feature.postdetail.model.uistate.ReportPopupUiState
+import io.familymoments.app.core.uistate.ReportPopupUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -60,8 +61,8 @@ class PostDetailViewModel @Inject constructor(
     private val _popupUiState: MutableStateFlow<PopupUiState> = MutableStateFlow(
         PopupUiState(
             popupStatusLogics = PopupStatusLogics(
-                this::showDeleteCompletePopup,
-                this::showExecutePopup,
+                this::showCompletePopup,
+                this::showDeletePopup,
                 this::showReportPopup
             )
         )
@@ -328,15 +329,15 @@ class PostDetailViewModel @Inject constructor(
         )
     }
 
-    fun showDeleteCompletePopup(status: Boolean) {
+    fun showCompletePopup(status: Boolean) {
         _popupUiState.value = _popupUiState.value.copy(
-            showDeleteCompletePopup = status
+            completePopupUiState = CompletePopupUiState(show = status)
         )
     }
 
-    fun showExecutePopup(status: Boolean, content: String, execute: () -> Unit) {
+    fun showDeletePopup(status: Boolean, content: String, execute: () -> Unit) {
         _popupUiState.value = _popupUiState.value.copy(
-            deletePopupUiState = ExecutePopupUiState(status, content, execute)
+            deletePopupUiState = DeletePopupUiState(status, content, execute)
         )
     }
 

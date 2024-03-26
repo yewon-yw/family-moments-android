@@ -1,4 +1,4 @@
-package io.familymoments.app.feature.home.model
+package io.familymoments.app.core.uistate
 
 data class PostItemUiState(
     val postPostLovesUiState: PostPostLovesUiState = PostPostLovesUiState(),

@@ -1,13 +1,15 @@
-package io.familymoments.app.core.component.viewmodel
+package io.familymoments.app.core.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.repository.PostRepository
-import io.familymoments.app.feature.home.model.PostItemUiState
-import io.familymoments.app.feature.postdetail.model.uistate.ExecutePopupUiState
-import io.familymoments.app.feature.postdetail.model.uistate.PopupStatusLogics
-import io.familymoments.app.feature.postdetail.model.uistate.PopupUiState
-import io.familymoments.app.feature.postdetail.model.uistate.ReportPopupUiState
+import io.familymoments.app.core.uistate.CompletePopupUiState
+import io.familymoments.app.core.uistate.PostItemUiState
+import io.familymoments.app.core.uistate.PostLogics
+import io.familymoments.app.core.uistate.DeletePopupUiState
+import io.familymoments.app.core.uistate.PopupStatusLogics
+import io.familymoments.app.core.uistate.PopupUiState
+import io.familymoments.app.core.uistate.ReportPopupUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -20,7 +22,7 @@ class PostItemViewModel @Inject constructor(
     private val _postItemUiState: MutableStateFlow<PostItemUiState> =
         MutableStateFlow(
             PostItemUiState(
-                logics = io.familymoments.app.feature.home.model.PostLogics(
+                logics = PostLogics(
                     postPostLoves = this::postPostLoves,
                     deletePostLoves = this::deletePostLoves,
                     deletePost = this::deletePost
@@ -32,8 +34,8 @@ class PostItemViewModel @Inject constructor(
     private val _popupUiState: MutableStateFlow<PopupUiState> = MutableStateFlow(
         PopupUiState(
             popupStatusLogics = PopupStatusLogics(
-                this::showDeleteCompletePopup,
-                this::showExecutePopup,
+                this::showCompletePopup,
+                this::showDeletePopup,
                 this::showReportPopup
             )
         )
@@ -118,15 +120,15 @@ class PostItemViewModel @Inject constructor(
         )
     }
 
-    fun showDeleteCompletePopup(status: Boolean) {
+    fun showCompletePopup(status: Boolean) {
         _popupUiState.value = _popupUiState.value.copy(
-            showDeleteCompletePopup = status
+            completePopupUiState = CompletePopupUiState(show = status)
         )
     }
 
-    fun showExecutePopup(status: Boolean, content: String, execute: () -> Unit) {
+    fun showDeletePopup(status: Boolean, content: String, execute: () -> Unit) {
         _popupUiState.value = _popupUiState.value.copy(
-            deletePopupUiState = ExecutePopupUiState(status, content, execute)
+            deletePopupUiState = DeletePopupUiState(status, content, execute)
         )
     }
 
