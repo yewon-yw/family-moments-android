@@ -86,10 +86,12 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
         }
     }
 
-    LaunchedEffect(familyUiState.familyExist == false) {
-        val intent = Intent(context, ChoosingFamilyActivity::class.java)
-        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-        context.startActivity(intent)
+    LaunchedEffect(familyUiState.familyExist) {
+        if (familyUiState.familyExist == false) {
+            val intent = Intent(context, ChoosingFamilyActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            context.startActivity(intent)
+        }
     }
 
     val navigationIcon = @Composable {
