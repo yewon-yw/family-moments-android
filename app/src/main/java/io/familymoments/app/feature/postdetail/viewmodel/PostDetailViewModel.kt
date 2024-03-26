@@ -336,7 +336,7 @@ class PostDetailViewModel @Inject constructor(
 
     fun showExecutePopup(status: Boolean, content: String, execute: () -> Unit) {
         _popupUiState.value = _popupUiState.value.copy(
-            executePopupUiState = ExecutePopupUiState(status, content, execute)
+            deletePopupUiState = ExecutePopupUiState(status, content, execute)
         )
     }
 

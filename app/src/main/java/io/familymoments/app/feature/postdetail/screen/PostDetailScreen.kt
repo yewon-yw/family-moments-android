@@ -29,8 +29,6 @@ import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
 import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -56,13 +54,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import io.familymoments.app.R
+import io.familymoments.app.core.component.PostDropdownMenu
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.postdetail.component.LoveListPopUp
 import io.familymoments.app.feature.postdetail.component.PostDetailCompletePopUp
-import io.familymoments.app.feature.postdetail.component.PostDetailExecutePopUp
+import io.familymoments.app.feature.postdetail.component.DeletePopUp
 import io.familymoments.app.feature.postdetail.component.ReportPopUp
 import io.familymoments.app.feature.postdetail.model.component.postDetailContentShadow
 import io.familymoments.app.feature.postdetail.model.response.GetCommentsResult
@@ -108,14 +107,14 @@ fun PostDetailScreen(
     }
 
 
-    if (popupUiState.executePopupUiState.show) {
-        PostDetailExecutePopUp(content = popupUiState.executePopupUiState.content,
+    if (popupUiState.deletePopupUiState.show) {
+        DeletePopUp(content = popupUiState.deletePopupUiState.content,
             onDismissRequest = {
-                popupUiState.popupStatusLogics.showExecutePopup(false, "") {}
+                popupUiState.popupStatusLogics.showDeletePopup(false, "") {}
             },
-            execute = {
-                popupUiState.executePopupUiState.execute()
-                popupUiState.popupStatusLogics.showExecutePopup(false, "") {}
+            delete = {
+                popupUiState.deletePopupUiState.execute()
+                popupUiState.popupStatusLogics.showDeletePopup(false, "") {}
             })
     }
     if (popupUiState.reportPopupUiState.show) {
@@ -309,7 +308,7 @@ fun PostContent(
                     )
                     val deletePostPopupLabel = stringResource(R.string.post_detail_delete_post_pop_up_label)
 
-                    PostDetailDropdownMenu(
+                    PostDropdownMenu(
                         items = listOf(
                             Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify)) {
                                 navigateToModify()
@@ -320,10 +319,10 @@ fun PostContent(
                                 }
                             },
                             Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_delete)) {
-                                popupUiState.popupStatusLogics.showExecutePopup(true, deletePostPopupLabel) {
+                                popupUiState.popupStatusLogics.showDeletePopup(true, deletePostPopupLabel) {
                                     logics.deletePost(postInfo.postId)
                                     popupUiState.popupStatusLogics.showDeleteCompletePopup(true)
-                                    popupUiState.popupStatusLogics.showExecutePopup(false, "") {}
+                                    popupUiState.popupStatusLogics.showDeletePopup(false, "") {}
                                 }
                             },
                         ),
@@ -552,15 +551,15 @@ fun CommentItem(
                     tint = Color.Unspecified,
                 )
                 val deleteCommentPopupLabel = stringResource(R.string.post_detail_pop_up_delete_comment_label)
-                PostDetailDropdownMenu(
+                PostDropdownMenu(
                     items = listOf(
                         Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {
                             popupUiState.popupStatusLogics.showReportPopup(true) {}
                         },
                         Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_delete)) {
-                            popupUiState.popupStatusLogics.showExecutePopup(true, deleteCommentPopupLabel) {
+                            popupUiState.popupStatusLogics.showDeletePopup(true, deleteCommentPopupLabel) {
                                 logics.deleteComment(comment.commentId)
-                                popupUiState.popupStatusLogics.showExecutePopup(false, "") {}
+                                popupUiState.popupStatusLogics.showDeletePopup(false, "") {}
                             }
                         },
                     ),
@@ -601,42 +600,6 @@ fun CommentItem(
     }
 }
 
-@Composable
-fun PostDetailDropdownMenu(
-    items: List<Pair<String, () -> Unit>>,
-    modifier: Modifier = Modifier,
-    expanded: Boolean,
-    onExpandedChange: (Boolean) -> Unit
-) {
-    DropdownMenu(
-        expanded = expanded,
-        onDismissRequest = { onExpandedChange(false) },
-        modifier = modifier.then(
-            Modifier
-                .width(112.dp)
-                .background(color = AppColors.deepPurple3, shape = RoundedCornerShape(5.dp))
-        )
-    )
-    {
-        items.forEach {
-            DropdownMenuItem(
-                text = {
-                    Text(
-                        text = it.first,
-                        style = AppTypography.LB2_11,
-                        color = AppColors.grey6
-                    )
-                },
-                onClick = {
-                    onExpandedChange(false)
-                    it.second()
-                },
-                modifier = Modifier.height(35.dp)
-            )
-        }
-    }
-}
-
 @Preview(showBackground = true)
 @Composable
 fun PostDetailPreview() {
@@ -649,6 +612,6 @@ fun PostDetailPreview() {
 @Composable
 fun PostDetailDropdownMenuPreview() {
     FamilyMomentsTheme {
-        PostDetailDropdownMenu(items = listOf(), modifier = Modifier, true) {}
+        PostDropdownMenu(items = listOf(), modifier = Modifier, true) {}
     }
 }

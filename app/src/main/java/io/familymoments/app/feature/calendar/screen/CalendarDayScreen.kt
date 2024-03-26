@@ -30,6 +30,7 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.PostItem
@@ -98,7 +99,11 @@ fun CalendarDayScreen(
                 items(posts.size) { index ->
                     PostItem(
                         post = posts[index],
-                        navigateToPostDetail = navigateToPostDetail
+                        navigateToPostDetail = navigateToPostDetail,
+                        viewModel = hiltViewModel(),
+                        loves = 0,
+                        navigateToEditPost = {},
+                        reloadPosts = { viewModel.getPostsByDay() }
                     )
                 }
             }

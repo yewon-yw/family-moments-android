@@ -2,7 +2,6 @@ package io.familymoments.app.feature.postdetail.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -29,11 +28,12 @@ import androidx.compose.ui.window.Dialog
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.util.noRippleClickable
 
 @Composable
-fun PostDetailExecutePopUp(
+fun DeletePopUp(
     content: String,
-    execute: () -> Unit = {},
+    delete: () -> Unit = {},
     onDismissRequest: () -> Unit = {},
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
@@ -44,7 +44,7 @@ fun PostDetailExecutePopUp(
         ) {
             Image(
                 modifier = Modifier
-                    .clickable { onDismissRequest() }
+                    .noRippleClickable { onDismissRequest() }
                     .align(Alignment.TopEnd)
                     .padding(top = 14.dp, end = 14.dp),
                 imageVector = ImageVector.vectorResource(id = R.drawable.ic_album_popup_close),
@@ -75,7 +75,7 @@ fun PostDetailExecutePopUp(
                             .weight(1f),
                         colors = ButtonDefaults.buttonColors(containerColor = AppColors.pink1),
                         shape = RoundedCornerShape(60.dp),
-                        onClick = execute,
+                        onClick = delete,
                         contentPadding = PaddingValues(top = 17.dp, bottom = 16.dp)
                     ) {
                         Text(
@@ -108,5 +108,5 @@ fun PostDetailExecutePopUp(
 @Preview(showBackground = true)
 @Composable
 fun PostDetailExecutePopUpPreview() {
-    PostDetailExecutePopUp("댓글을\n삭제하시겠습니까?")
+    DeletePopUp("댓글을\n삭제하시겠습니까?")
 }
