@@ -42,6 +42,19 @@ class PostItemViewModel @Inject constructor(
     )
     val popupUiState: StateFlow<PopupUiState> = _popupUiState.asStateFlow()
 
+    fun getPostLoves(index: Long) {
+        async(
+            operation = { postRepository.getPostLoves(index) },
+            onSuccess = {
+                _postItemUiState.value = _postItemUiState.value.copy(
+                    loves = it.results.size
+                )
+            },
+            onFailure = {
+            }
+        )
+    }
+
     fun postPostLoves(index: Long) {
         async(
             operation = { postRepository.postPostLoves(index) },

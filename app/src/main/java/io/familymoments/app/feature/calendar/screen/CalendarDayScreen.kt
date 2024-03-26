@@ -101,7 +101,6 @@ fun CalendarDayScreen(
                         post = posts[index],
                         navigateToPostDetail = navigateToPostDetail,
                         viewModel = hiltViewModel(),
-                        loves = 0,
                         navigateToEditPost = {},
                         reloadPosts = { viewModel.getPostsByDay() }
                     )

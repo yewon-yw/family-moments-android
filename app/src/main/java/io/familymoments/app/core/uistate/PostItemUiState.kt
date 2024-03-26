@@ -1,6 +1,7 @@
 package io.familymoments.app.core.uistate
 
 data class PostItemUiState(
+    val loves:Int = 0,
     val postPostLovesUiState: PostPostLovesUiState = PostPostLovesUiState(),
     val deletePostLovesUiState: DeletePostLovesUiState = DeletePostLovesUiState(),
     val deletePostUiState: DeletePostUiState = DeletePostUiState(),
