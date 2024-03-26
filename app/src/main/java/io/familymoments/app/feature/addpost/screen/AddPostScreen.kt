@@ -1,6 +1,7 @@
 package io.familymoments.app.feature.addpost.screen
 
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
@@ -31,6 +32,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -71,15 +73,19 @@ fun AddPostScreen(
     popBackStack: () -> Unit
 ) {
     val addPostUiState = viewModel.uiState.collectAsStateWithLifecycle().value
-    if (addPostUiState.isSuccess == true) {
-        popBackStack()
-    }
     var content by remember { mutableStateOf(addPostUiState.existPostUiState.editContent) }
     val context = LocalContext.current
     val isKeyboardOpen by keyboardAsState()
     val scope = rememberCoroutineScope()
     val focusManager = LocalFocusManager.current
     val modeEnum = addPostUiState.mode
+    LaunchedEffect(addPostUiState.isSuccess) {
+        if (addPostUiState.isSuccess == true) {
+            popBackStack()
+        } else if (addPostUiState.isSuccess == false) {
+            Toast.makeText(context, context.getString(R.string.add_post_fail), Toast.LENGTH_SHORT).show()
+        }
+    }
 
     val uriList = remember {
         mutableStateListOf<Uri>(*addPostUiState.existPostUiState.editImages.map { Uri.parse(it) }.toTypedArray())

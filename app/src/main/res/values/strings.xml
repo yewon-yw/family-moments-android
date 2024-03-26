@@ -159,6 +159,7 @@
     <string name="add_post_write_content">글 작성</string>
     <string name="add_post_write_content_hint">| 사진과 어울리는 내용을 작성하세요.</string>
     <string name="add_post_btn">순간을 가족에게 공유하기</string>
+    <string name="add_post_fail">새 글 업로드에 실패하였습니다. 잠시 후 다시 시도해주세요.</string>
 
     <string name="logout_content">로그아웃 하시겠습니까?</string>
     <string name="logout_btn">로그아웃</string>
