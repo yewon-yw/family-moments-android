@@ -77,16 +77,6 @@ fun PostItem(
                 }
             )
         }
-
-    }
-    if (postItemUiState.deletePostUiState.isSuccess == true && popupUiState.completePopupUiState.show) {
-        CompletePopUp(
-            content = stringResource(R.string.post_detail_delete_complete_pop_label),
-            onDismissRequest = {
-                reloadPosts()
-                popupUiState.popupStatusLogics.showCompletePopup(false)
-            }
-        )
     }
 
     if (popupUiState.deletePopupUiState.show) {
