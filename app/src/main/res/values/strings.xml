@@ -185,4 +185,5 @@
     <string name="edit_post_btn">수정완료</string>
     <string name="copy_invitation_link_message">링크가 복사되었습니다.</string>
     <string name="join_family_success_message">가족 참여 성공!</string>
+    <string name="create_family_success_message">가족 생성 완료!</string>
 </resources>

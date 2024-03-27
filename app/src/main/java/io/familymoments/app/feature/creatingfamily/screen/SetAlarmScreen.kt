@@ -1,5 +1,6 @@
 package io.familymoments.app.feature.creatingfamily.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -22,6 +23,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -44,6 +46,7 @@ fun SetAlarmScreen(
     navigate: (String) -> Unit = {}
 ) {
     val familyInfo = viewModel.familyProfile.collectAsStateWithLifecycle().value
+    val context = LocalContext.current
     var isExpanded by remember {
         mutableStateOf(false)
     }
@@ -54,8 +57,10 @@ fun SetAlarmScreen(
         mutableStateOf(UploadCycle.NONE)
     }
     val createFamilyResultUiState = viewModel.createFamilyResultUiState.collectAsStateWithLifecycle()
+    val createFamilySuccessMessage = stringResource(id = R.string.create_family_success_message)
     if (createFamilyResultUiState.value.isSuccess == true) {
         navigate(createFamilyResultUiState.value.result.inviteCode)
+        Toast.makeText(context, createFamilySuccessMessage, Toast.LENGTH_SHORT).show()
     }
     LoadingIndicator(isLoading = createFamilyResultUiState.value.isLoading ?: false)
     ChoosingFamilyHeaderButtonLayout(
