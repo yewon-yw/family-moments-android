@@ -32,6 +32,7 @@ import androidx.compose.ui.window.PopupProperties
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.util.noRippleClickable
 import kotlin.math.roundToInt
 
 @Composable
@@ -52,7 +53,7 @@ fun FMDropdownMenu(
                 color = AppColors.purple2,
                 modifier = Modifier
                     .align(Alignment.Center)
-                    .clickableWithoutRipple { expanded = true }
+                    .noRippleClickable { expanded = true }
             )
         }
         if (expanded) {
