@@ -3,6 +3,7 @@ package io.familymoments.app.core.network.api
 import io.familymoments.app.feature.creatingfamily.model.CreateFamilyRequest
 import io.familymoments.app.feature.creatingfamily.model.CreateFamilyResponse
 import io.familymoments.app.feature.home.model.GetNicknameDdayResponse
+import io.familymoments.app.feature.joiningfamily.model.JoinFamilyResponse
 import io.familymoments.app.feature.joiningfamily.model.SearchFamilyByInviteLinkRequest
 import io.familymoments.app.feature.joiningfamily.model.SearchFamilyByInviteLinkResponse
 import okhttp3.MultipartBody
@@ -30,4 +31,7 @@ interface FamilyService {
     suspend fun searchFamilyByInviteLink(
         @Body searchFamilyByInviteLinkRequest: SearchFamilyByInviteLinkRequest
     ): Response<SearchFamilyByInviteLinkResponse>
+
+    @POST("/families/{familyId}/join")
+    suspend fun joinFamily( @Path("familyId") familyId: Long ):Response<JoinFamilyResponse>
 }

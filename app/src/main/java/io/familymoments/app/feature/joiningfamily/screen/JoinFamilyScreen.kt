@@ -1,5 +1,6 @@
 package io.familymoments.app.feature.joiningfamily.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -20,6 +22,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -45,13 +48,35 @@ fun JoinFamilyScreen(
     var inviteLinkTextFieldValue by remember {
         mutableStateOf(TextFieldValue())
     }
-    viewModel.searchFamilyByInviteLink(inviteLinkTextFieldValue.text)
-    val searchFamilyByInviteLinkUiState = viewModel.searchFamilyByInviteLinkUiState.collectAsStateWithLifecycle().value
+    var selectedFamilyId by remember {
+        mutableStateOf<Long?>(null)
+    }
+    val joinFamilyUiState = viewModel.joinFamilyUiState.collectAsStateWithLifecycle().value
+    val searchFamilyByInviteLinkUiState = joinFamilyUiState.searchFamilyByInviteLinkUiState
+    val joinFamilyExecuteUiState = joinFamilyUiState.joinFamilyExecuteUiState
+    val context = LocalContext.current
+    val joinFamilySuccessMessage = stringResource(R.string.join_family_success_message)
+
+    LaunchedEffect(inviteLinkTextFieldValue) {
+        viewModel.searchFamilyByInviteLink(inviteLinkTextFieldValue.text)
+    }
+    LaunchedEffect(joinFamilyExecuteUiState.isSuccess) {
+        if (joinFamilyExecuteUiState.isSuccess == true) {
+            Toast.makeText(context, joinFamilySuccessMessage, Toast.LENGTH_SHORT).show()
+            navigate()
+        } else if (joinFamilyExecuteUiState.isSuccess == false) {
+            Toast.makeText(context, joinFamilyExecuteUiState.errorMessage, Toast.LENGTH_SHORT).show()
+            viewModel.resetJoinFamilyExecuteSuccess()
+        }
+    }
     ChoosingFamilyHeaderButtonLayout(
         headerBottomPadding = 18.dp,
         header = stringResource(R.string.header_join_family),
         button = stringResource(R.string.button_family_join_now),
-        onClick = navigate
+        buttonEnabled = selectedFamilyId != null,
+        onClick = {
+            viewModel.joinFamily(familyId = selectedFamilyId ?: throw IllegalStateException())
+        }
     ) {
         Column {
             SearchTextField(
@@ -62,7 +87,9 @@ fun JoinFamilyScreen(
             if (searchFamilyByInviteLinkUiState.isSuccess == true) {
                 if (searchFamilyByInviteLinkUiState.result != null)
                     Box(modifier = Modifier.background(color = AppColors.grey6)) {
-                        FamilyProfile(searchFamilyByInviteLinkUiState.result)
+                        FamilyProfile(
+                            searchFamilyByInviteLinkUiState.result
+                        ) { selectedFamilyId = it }
                     }
             }
 
@@ -72,7 +99,18 @@ fun JoinFamilyScreen(
 }
 
 @Composable
-private fun FamilyProfile(searchFamilyByInviteLinkResult: SearchFamilyByInviteLinkResult) {
+private fun FamilyProfile(
+    searchFamilyByInviteLinkResult: SearchFamilyByInviteLinkResult,
+    setSelectedFamilyId: (Long?) -> Unit
+) {
+    var checked by remember {
+        mutableStateOf(false)
+    }
+    if (checked) {
+        setSelectedFamilyId(searchFamilyByInviteLinkResult.familyId)
+    } else {
+        setSelectedFamilyId(null)
+    }
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
@@ -91,7 +129,8 @@ private fun FamilyProfile(searchFamilyByInviteLinkResult: SearchFamilyByInviteLi
         MemberCheckBox(
             modifier = Modifier
                 .weight(1f)
-                .size(28.dp)
+                .size(28.dp),
+            onCheckChanged = { checked = it }
         )
     }
 }

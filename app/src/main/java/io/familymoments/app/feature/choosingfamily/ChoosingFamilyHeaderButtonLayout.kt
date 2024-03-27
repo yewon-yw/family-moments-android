@@ -21,6 +21,7 @@ fun ChoosingFamilyHeaderButtonLayout(
     headerBottomPadding: Dp,
     header: String = "",
     button: String = "",
+    buttonEnabled:Boolean = true,
     onClick: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
@@ -31,7 +32,7 @@ fun ChoosingFamilyHeaderButtonLayout(
             content()
 
         }
-        NextButton(button, onClick)
+        NextButton(button, onClick, buttonEnabled)
     }
 
 }
@@ -47,7 +48,7 @@ private fun Header(headerBottomPadding: Dp, header: String) {
 }
 
 @Composable
-private fun NextButton(button: String, onClick: () -> Unit) {
+private fun NextButton(button: String, onClick: () -> Unit, buttonEnabled:Boolean) {
     Button(
         modifier = Modifier
             .fillMaxWidth()
@@ -58,7 +59,8 @@ private fun NextButton(button: String, onClick: () -> Unit) {
         ),
         shape = RoundedCornerShape(60.dp),
         contentPadding = PaddingValues(vertical = 18.dp),
-        onClick = onClick
+        onClick = onClick,
+        enabled = buttonEnabled
     ) {
         Text(text = button, style = AppTypography.BTN4_18, color = AppColors.grey6)
     }
