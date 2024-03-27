@@ -1,6 +1,5 @@
 package io.familymoments.app.feature.signup.viewmodel
 
-import android.graphics.Bitmap
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.repository.SignInRepository
@@ -15,8 +14,6 @@ import kotlinx.coroutines.flow.update
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
-import java.io.File
-import java.io.FileOutputStream
 import javax.inject.Inject
 
 @HiltViewModel
@@ -123,9 +120,10 @@ class SignUpViewModel @Inject constructor(
     }
 
     fun executeSignUp(signUpInfoUiState: SignUpInfoUiState) {
-        val imageFile = bitmapToFile(signUpInfoUiState.bitmap)
-        val imageRequestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
-        val profileImgPart = MultipartBody.Part.createFormData("profileImg", imageFile.name, imageRequestBody)
+        check(signUpInfoUiState.imgFile != null) { throw NullPointerException() }
+        val imageRequestBody = signUpInfoUiState.imgFile.asRequestBody("image/*".toMediaTypeOrNull())
+        val profileImgPart =
+            MultipartBody.Part.createFormData("profileImg", signUpInfoUiState.imgFile.name, imageRequestBody)
         async(
             operation = { signInRepository.executeSignUp(profileImgPart, signUpInfoUiState.toRequest()) },
             onSuccess = {
@@ -143,14 +141,5 @@ class SignUpViewModel @Inject constructor(
                 }
             }
         )
-    }
-
-    private fun bitmapToFile(bitmap: Bitmap): File {
-        val file = File.createTempFile("profile_image", ".jpg") // 임시 파일 생성
-        val outputStream = FileOutputStream(file)
-        bitmap.compress(Bitmap.CompressFormat.JPEG, 90, outputStream)
-        outputStream.flush()
-        outputStream.close()
-        return file
     }
 }
