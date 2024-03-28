@@ -1,4 +1,4 @@
-package io.familymoments.app.feature.postdetail.component
+package io.familymoments.app.core.component.popup
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -30,7 +30,7 @@ import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.noRippleClickable
 
 @Composable
-fun PostDetailCompletePopUp(
+fun CompletePopUp(
     content: String,
     onDismissRequest: () -> Unit = {}
 ) {
@@ -90,5 +90,5 @@ fun PostDetailCompletePopUp(
 @Preview(showBackground = true)
 @Composable
 fun PostDetailCompletePopUpPopUpPreview() {
-    PostDetailCompletePopUp("삭제가 완료되었습니다.")
+    CompletePopUp("삭제가 완료되었습니다.")
 }

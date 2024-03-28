@@ -33,6 +33,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.PostItem
@@ -118,7 +119,14 @@ fun HomeScreen(
                     HomeScreenTitle(hasNoPost = false, nickname = nickname, dday = dday)
                 }
                 items(posts) { post ->
-                    PostItem(post = post, navigateToPostDetail = navigateToPostDetail)
+                    PostItem(
+                        post = post,
+                        navigateToPostDetail = navigateToPostDetail,
+                        navigateToEditPost = {},
+                        viewModel = hiltViewModel(),
+                        reloadPosts = { viewModel.getPosts() },
+                        loves = 0
+                    )
                 }
             }
         }

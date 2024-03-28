@@ -31,7 +31,7 @@ class CalendarDayViewModel @Inject constructor(
         getPostsByDay()
     }
 
-    private fun getPostsByDay() {
+    fun getPostsByDay() {
         Timber.d("getPostsByDay")
         val selectedDate = _calendarDayUiState.value.selectedDate
         val year = selectedDate.year

@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
 import okhttp3.MultipartBody
+import timber.log.Timber
 import javax.inject.Inject
 
 class PostRepositoryImpl @Inject constructor(
@@ -222,8 +223,8 @@ class PostRepositoryImpl @Inject constructor(
             emit(Resource.Loading)
             val response = postService.getPostLoves(index)
             val responseBody = response.body() ?: GetPostLovesResponse()
-
             if (responseBody.isSuccess) {
+                Timber.tag("hkhk").d("좋아요 목록: $index")
                 emit(Resource.Success(responseBody))
             } else {
                 emit(Resource.Fail(Throwable(responseBody.message)))
