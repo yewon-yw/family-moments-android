@@ -33,11 +33,12 @@ import androidx.compose.ui.unit.dp
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.util.FileUtil.convertUriToBitmap
+import io.familymoments.app.core.util.defaultBitmap
 
 @Composable
 fun GalleryOrDefaultImageSelectButton(
     context: Context,
-    getImageBitmap: (Bitmap?) -> Unit
+    getImageBitmap: (Bitmap) -> Unit
 ) {
 
     val defaultImageBitmap =
@@ -46,7 +47,7 @@ fun GalleryOrDefaultImageSelectButton(
             R.drawable.default_profile
         )
     var bitmap by remember {
-        mutableStateOf<Bitmap?>(null)
+        mutableStateOf(defaultBitmap)
     }
     getImageBitmap(bitmap)
     //갤러리에서 사진 선택 후 bitmap 으로 변환

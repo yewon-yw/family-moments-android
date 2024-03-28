@@ -29,6 +29,8 @@ import io.familymoments.app.R
 import io.familymoments.app.core.component.GalleryOrDefaultImageSelectButton
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.util.FileUtil.convertBitmapToFile
+import io.familymoments.app.core.util.defaultBitmap
 import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
 import io.familymoments.app.feature.creatingfamily.model.FamilyProfile
 import io.familymoments.app.feature.creatingfamily.viewmodel.CreatingFamilyViewModel
@@ -43,7 +45,7 @@ fun SetProfileScreen(
         mutableStateOf("")
     }
     var familyImg by remember {
-        mutableStateOf<Bitmap?>(null)
+        mutableStateOf(defaultBitmap)
     }
     Column {
         ChoosingFamilyHeaderButtonLayout(
@@ -51,7 +53,8 @@ fun SetProfileScreen(
             header = stringResource(id = R.string.select_create_family_header),
             button = stringResource(id = R.string.next_btn_two_third),
             onClick = {
-                viewModel.saveFamilyProfile(FamilyProfile(familyName, familyImg))
+                val familyImgFile = convertBitmapToFile(familyImg, context)
+                viewModel.saveFamilyProfile(FamilyProfile(familyName, familyImgFile))
                 navigate()
             }
         ) {
@@ -109,7 +112,7 @@ fun SetUpFamilyName(
 }
 
 @Composable
-fun SetUpFamilyPicture(context: Context, onBitmapChanged: (Bitmap?) -> Unit) {
+fun SetUpFamilyPicture(context: Context, onBitmapChanged: (Bitmap) -> Unit) {
 
     Text(
         text = stringResource(R.string.select_family_image),

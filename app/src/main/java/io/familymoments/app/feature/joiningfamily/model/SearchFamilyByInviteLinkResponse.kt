@@ -8,6 +8,7 @@ data class SearchFamilyByInviteLinkResponse(
 )
 
 data class SearchFamilyByInviteLinkResult(
+    val familyId: Long = 0,
     val owner: String = "",
     val familyName: String = "",
     val uploadCycle: Int? = null,

@@ -62,7 +62,9 @@ import io.familymoments.app.core.network.repository.impl.SignInRepositoryImpl
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
+import io.familymoments.app.core.util.FileUtil.convertBitmapToFile
 import io.familymoments.app.core.util.FileUtil.convertUriToBitmap
+import io.familymoments.app.core.util.defaultBitmap
 import io.familymoments.app.feature.signup.model.request.CheckEmailRequest
 import io.familymoments.app.feature.signup.model.request.CheckIdRequest
 import io.familymoments.app.feature.signup.model.request.SignUpRequest
@@ -73,6 +75,7 @@ import io.familymoments.app.feature.signup.model.uistate.SignUpInfoUiState
 import io.familymoments.app.feature.signup.model.uistate.SignUpTermUiState
 import io.familymoments.app.feature.signup.viewmodel.SignUpViewModel
 import okhttp3.MultipartBody
+import java.io.File
 
 @Composable
 fun SignUpScreen(viewModel: SignUpViewModel) {
@@ -92,7 +95,7 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
     }
     var signUpInfoUiState: SignUpInfoUiState by remember {
         mutableStateOf(
-            SignUpInfoUiState(bitmap = defaultProfileImageBitmap)
+            SignUpInfoUiState()
         )
     }
 
@@ -166,8 +169,8 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
                 nicknameFormatValidated = uiState.value.signUpValidatedUiState.nicknameValidated,
                 checkNicknameFormat = viewModel::checkNicknameFormat,
             ) { signUpInfoUiState = signUpInfoUiState.copy(nickname = it) }
-            ProfileImageField(defaultProfileImageBitmap) {
-                signUpInfoUiState = signUpInfoUiState.copy(bitmap = it)
+            ProfileImageField(defaultProfileImageBitmap, context) {
+                signUpInfoUiState = signUpInfoUiState.copy(imgFile = it)
             }
             Spacer(modifier = Modifier.height(53.dp))
             TermsField { allEssentialTermsAgree = it }
@@ -414,11 +417,11 @@ fun ProfileImageSelectDropDownMenu(
     isMenuExpanded: Boolean,
     isMenuExpandedChanged: (Boolean) -> Unit,
     defaultProfileImageBitmap: Bitmap,
-    getBitmap: (Bitmap?) -> Unit,
+    getBitmap: (Bitmap) -> Unit,
 ) {
     val context = LocalContext.current
     var bitmap by remember {
-        mutableStateOf<Bitmap?>(null)
+        mutableStateOf(defaultBitmap)
     }
 
     //갤러리에서 사진 선택 후 bitmap 으로 변환
@@ -464,9 +467,9 @@ fun MenuItemDefaultImage(getDefaultProfileImageBitmap: () -> Unit, isMenuExpande
 }
 
 @Composable
-fun ProfileImageField(defaultProfileImageBitmap: Bitmap, onBitmapChange: (Bitmap) -> Unit) {
+fun ProfileImageField(defaultProfileImageBitmap: Bitmap, context: Context, onFileChange: (File) -> Unit) {
     var isMenuExpanded: Boolean by remember { mutableStateOf(false) }
-    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+    var bitmap by remember { mutableStateOf(defaultBitmap) }
     Text(
         text = stringResource(R.string.sign_up_select_profile_image_title),
         color = Color(0xFF5B6380),
@@ -484,14 +487,12 @@ fun ProfileImageField(defaultProfileImageBitmap: Bitmap, onBitmapChange: (Bitmap
         ProfileImageSelectDropDownMenu(isMenuExpanded, { isMenuExpanded = it }, defaultProfileImageBitmap) {
             bitmap = it
         }
-        bitmap?.let {
-            onBitmapChange(it)
-            Image(
-                bitmap = it.asImageBitmap(),
-                contentDescription = null,
-                modifier = Modifier.size(400.dp)
-            )
-        }
+        onFileChange(convertBitmapToFile(bitmap, context))
+        Image(
+            bitmap = bitmap.asImageBitmap(),
+            contentDescription = null,
+            modifier = Modifier.size(400.dp)
+        )
 
         Column(
             modifier = Modifier

@@ -41,10 +41,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -167,7 +170,8 @@ fun PostDetailScreen(
                             viewModel::postComment,
                             commentUiState.postCommentUiState,
                             postUiState.getPostLovesUiState,
-                            context
+                            context,
+                            viewModel::resetPostCommentUiStateSuccess
                         )
                         Spacer(modifier = Modifier.height(18.dp))
                         if (commentUiState.getCommentsUiState.isSuccess == true) {
@@ -374,7 +378,8 @@ fun CommentTextField(
     postComment: (Long, String) -> Unit,
     postCommentUiState: PostCommentUiState,
     getPostLovesUiState: GetPostLovesUiState,
-    context: Context
+    context: Context,
+    resetPostCommentUiStateSuccess: () -> Unit
 ) {
     var showLoveListPopUp by remember {
         mutableStateOf(false)
@@ -423,6 +428,9 @@ fun CommentTextField(
                     shape = RoundedCornerShape(size = 8.dp)
                 )
         ) {
+            val focusRequester = remember { FocusRequester() }
+            val focusManager = LocalFocusManager.current
+
             Row(modifier = Modifier.fillMaxHeight()) {
                 BasicTextField(
                     value = comments,
@@ -433,6 +441,7 @@ fun CommentTextField(
                     modifier = Modifier
                         .weight(1f)
                         .padding(11.dp)
+                        .focusRequester(focusRequester)
                 ) { innerTextField ->
                     if (comments.text.isEmpty()) {
                         Text(
@@ -446,6 +455,8 @@ fun CommentTextField(
 
                 if (postCommentUiState.isSuccess == true) {
                     comments = TextFieldValue()
+                    resetPostCommentUiStateSuccess()
+                    focusManager.clearFocus()
                 } else if (postCommentUiState.isSuccess == false) {
                     showToastMessage(context, postCommentUiState.message ?: "댓글 전송에 실패했습니다.")
                 }
