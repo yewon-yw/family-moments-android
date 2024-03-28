@@ -376,7 +376,7 @@ class PostDetailViewModel @Inject constructor(
         val now = LocalDateTime.now()
         val durationSeconds = Duration.between(date, now).seconds
         return when {
-            durationSeconds < 60 -> "${durationSeconds}초 전"
+            durationSeconds < 60 -> "방금"
             durationSeconds < 3600 -> "${durationSeconds / 60}분 전"
             durationSeconds < 86400 -> "${durationSeconds / 3600}시간 전"
             durationSeconds < 604800 -> "${durationSeconds / 86400}일 전"
