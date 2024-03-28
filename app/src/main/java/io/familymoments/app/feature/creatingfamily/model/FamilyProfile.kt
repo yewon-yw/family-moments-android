@@ -1,9 +1,9 @@
 package io.familymoments.app.feature.creatingfamily.model
 
-import android.graphics.Bitmap
+import java.io.File
 
 data class FamilyProfile(
     val name: String = "",
-    val img: Bitmap? = null,
+    val imgFile: File? = null,
     val uploadCycle: Int? = null
 )

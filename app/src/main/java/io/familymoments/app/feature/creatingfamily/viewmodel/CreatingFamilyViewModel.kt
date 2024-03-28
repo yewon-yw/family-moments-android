@@ -6,7 +6,6 @@ import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.repository.UserRepository
-import io.familymoments.app.core.util.convertBitmapToFile
 import io.familymoments.app.feature.creatingfamily.model.CreateFamilyRequest
 import io.familymoments.app.feature.creatingfamily.model.FamilyProfile
 import io.familymoments.app.feature.creatingfamily.model.uistate.CreateFamilyResultUiState
@@ -61,9 +60,11 @@ class CreatingFamilyViewModel @Inject constructor(
     }
 
     fun createFamily(familyProfile: FamilyProfile) {
-        val imageFile = convertBitmapToFile(familyProfile.img)
-        val imageRequestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
-        val profileImgPart = MultipartBody.Part.createFormData("representImg", imageFile.name, imageRequestBody)
+        check(familyProfile.imgFile != null){
+            throw NullPointerException()
+        }
+        val imageRequestBody = familyProfile.imgFile.asRequestBody("image/*".toMediaTypeOrNull())
+        val profileImgPart = MultipartBody.Part.createFormData("representImg", familyProfile.imgFile.name, imageRequestBody)
         val createFamilyRequest = CreateFamilyRequest(
             familyName = familyProfile.name,
             uploadCycle = familyProfile.uploadCycle

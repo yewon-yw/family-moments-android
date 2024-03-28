@@ -1,7 +1,7 @@
 package io.familymoments.app.feature.signup.model.uistate
 
-import android.graphics.Bitmap
 import io.familymoments.app.core.component.CheckedStatus
+import java.io.File
 
 data class SignUpUiState(
     val signUpInfoUiState: SignUpInfoUiState = SignUpInfoUiState(),
@@ -17,7 +17,7 @@ data class SignUpInfoUiState(
     val email: String = "",
     val birthDay: String = "",
     val nickname: String = "",
-    val bitmap: Bitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888)
+    val imgFile: File? = null
 )
 
 data class SignUpValidatedUiState(

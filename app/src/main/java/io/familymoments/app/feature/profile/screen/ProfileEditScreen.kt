@@ -50,9 +50,9 @@ import io.familymoments.app.core.component.FMDropdownMenu
 import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.util.FileUtil.convertBitmapToFile
 import io.familymoments.app.core.util.FileUtil.convertUriToBitmap
-import io.familymoments.app.core.util.convertBitmapToFile
-import io.familymoments.app.core.util.convertUrlToBitmap
+import io.familymoments.app.core.util.FileUtil.convertUrlToBitmap
 import io.familymoments.app.feature.profile.model.uistate.ProfileImage
 import io.familymoments.app.feature.profile.viewmodel.ProfileEditViewModel
 

@@ -163,7 +163,7 @@ fun AddPostScreen(
                                 .clickable {
                                     focusManager.clearFocus()
                                     scope.launch {
-                                        val imageFiles = FileUtil.bitmapResize(context, uriList.toList())
+                                        val imageFiles = FileUtil.imageFilesResize(context, uriList.toList())
                                         when (modeEnum) {
                                             ADD -> viewModel.addPost(content, imageFiles)
                                             EDIT -> {
