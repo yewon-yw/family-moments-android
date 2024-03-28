@@ -1,5 +1,6 @@
 package io.familymoments.app.core.component
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
@@ -9,6 +10,8 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
@@ -48,4 +51,26 @@ fun PostDropdownMenu(
             )
         }
     }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun PostDropdownMenuPreview() {
+    val context = LocalContext.current
+    val items = listOf(
+        Pair("아이템1") {
+            Toast.makeText(context, "아이템1 클릭", Toast.LENGTH_SHORT).show()
+        },
+        Pair("아이템2") {
+            Toast.makeText(context, "아이템2 클릭", Toast.LENGTH_SHORT).show()
+        },
+        Pair("아이템3") {
+            Toast.makeText(context, "아이템3 클릭", Toast.LENGTH_SHORT).show()
+        }
+    )
+    PostDropdownMenu(
+        items = items,
+        expanded = true,
+        onExpandedChange = {}
+    )
 }
