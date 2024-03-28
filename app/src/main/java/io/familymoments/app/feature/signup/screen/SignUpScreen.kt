@@ -469,7 +469,7 @@ fun MenuItemDefaultImage(getDefaultProfileImageBitmap: () -> Unit, isMenuExpande
 @Composable
 fun ProfileImageField(defaultProfileImageBitmap: Bitmap, context: Context, onFileChange: (File) -> Unit) {
     var isMenuExpanded: Boolean by remember { mutableStateOf(false) }
-    var bitmap by remember { mutableStateOf(defaultBitmap) }
+    var bitmap: Bitmap? by remember { mutableStateOf(null) }
     Text(
         text = stringResource(R.string.sign_up_select_profile_image_title),
         color = Color(0xFF5B6380),
@@ -485,29 +485,32 @@ fun ProfileImageField(defaultProfileImageBitmap: Bitmap, context: Context, onFil
         elevation = ButtonDefaults.elevation(defaultElevation = 0.dp, pressedElevation = 0.dp),
     ) {
         ProfileImageSelectDropDownMenu(isMenuExpanded, { isMenuExpanded = it }, defaultProfileImageBitmap) {
+            onFileChange(convertBitmapToFile(it, context))
             bitmap = it
         }
-        onFileChange(convertBitmapToFile(bitmap, context))
-        Image(
-            bitmap = bitmap.asImageBitmap(),
-            contentDescription = null,
-            modifier = Modifier.size(400.dp)
-        )
-
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(115.dp),
-            verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
-        ) {
+        if (bitmap == null) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(115.dp),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally,
+            ) {
+                Image(
+                    modifier = Modifier.padding(bottom = 2.dp),
+                    painter = painterResource(id = R.drawable.ic_select_pic),
+                    contentDescription = null,
+                )
+                Text(text = stringResource(R.string.sign_up_select_profile_image_btn), color = Color(0xFFBFBFBF))
+            }
+        } else {
             Image(
-                modifier = Modifier.padding(bottom = 2.dp),
-                painter = painterResource(id = R.drawable.ic_select_pic),
+                bitmap = bitmap!!.asImageBitmap(),
                 contentDescription = null,
+                modifier = Modifier.size(400.dp)
             )
-            Text(text = stringResource(R.string.sign_up_select_profile_image_btn), color = Color(0xFFBFBFBF))
         }
+
     }
     Spacer(modifier = Modifier.height(8.dp))
     Text(
