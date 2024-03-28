@@ -54,7 +54,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
+import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -64,6 +66,7 @@ import io.familymoments.app.core.component.AppBarScreen
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
+import io.familymoments.app.core.util.FMVisualTransformation
 import io.familymoments.app.feature.bottomnav.activity.MainActivity
 import io.familymoments.app.feature.login.model.uistate.LoginUiState
 import io.familymoments.app.feature.login.viewmodel.LoginViewModel
@@ -192,7 +195,8 @@ fun LoginForm(
                 login(id.text, password.text)
                 focusManager.clearFocus()
             }),
-            requester = requester
+            requester = requester,
+            showText = false
         )
         if (loginUiState.isSuccess == false) {
             Text(
@@ -238,7 +242,8 @@ fun LoginFormRoundedCornerTextField(
     onValueChanged: (TextFieldValue) -> Unit,
     keyboardOptions: KeyboardOptions,
     keyboardActions: KeyboardActions,
-    requester: BringIntoViewRequester
+    requester: BringIntoViewRequester,
+    showText: Boolean = true,
 ) {
     var value by remember { mutableStateOf(TextFieldValue()) }
     val scope = rememberCoroutineScope()
@@ -257,7 +262,8 @@ fun LoginFormRoundedCornerTextField(
                 value = it
                 onValueChanged(value)
             },
-            keyboardOptions = keyboardOptions,
+            visualTransformation = if (showText) VisualTransformation.None else FMVisualTransformation(),
+            keyboardOptions = if (showText) keyboardOptions else keyboardOptions.copy(keyboardType = KeyboardType.Password),
             keyboardActions = keyboardActions,
             singleLine = true,
             label = { Text(label, color = AppColors.grey3, style = AppTypography.B1_16) },

@@ -1,6 +1,7 @@
 package io.familymoments.app.feature.modifypassword.screen
 
 import android.content.Intent
+import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -61,6 +62,7 @@ fun ModifyPasswordScreen(
 
     LaunchedEffect(modifyPasswordValidUiState.value.isSuccess) {
         if (modifyPasswordValidUiState.value.isSuccess) {
+            Toast.makeText(context, context.getString(R.string.modify_password_request_success), Toast.LENGTH_SHORT).show()
             val intent = Intent(context, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             context.startActivity(intent)
