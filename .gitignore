@@ -91,3 +91,4 @@ test/
 tmp/
 temp/
 obj/
+key.properties

@@ -1,3 +1,5 @@
+import java.util.Properties
+
 @Suppress("DSL_SCOPE_VIOLATION") // TODO: Remove once KTIJ-19369 is fixed
 plugins {
     alias(libs.plugins.com.android.application)
@@ -28,6 +30,19 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            val properties = Properties()
+            properties.load(project.rootProject.file("key.properties").inputStream())
+
+            keyAlias = properties.getProperty("keyAlias")
+            keyPassword = properties.getProperty("keyPassword")
+            storeFile = file("${rootProject.projectDir}/${properties.getProperty("storeFile")}")
+            storePassword = properties.getProperty("storePassword")
+        }
+    }
+
+
     buildTypes {
         debug {
             buildConfigField("String", "BASE_URL", "\"https://familymoments-be.site/\"")
@@ -39,6 +54,7 @@ android {
                 "proguard-rules.pro",
             )
             buildConfigField("String", "BASE_URL", "\"https://familymoments-be.site/\"")
+            signingConfig = signingConfigs.getByName("release")
         }
         create("stage") {
             buildConfigField("String", "BASE_URL", "\"https://familymoments-be.site/\"")
