@@ -271,7 +271,8 @@ fun FirstPasswordField(
         showWarningText = true,
         warningText = stringResource(id = R.string.sign_up_password_validation_warning),
         validated = passwordFormatValidated,
-        isFocused = isFocused
+        isFocused = isFocused,
+        showText = false
     )
     Spacer(modifier = Modifier.height(20.dp))
 }
@@ -302,7 +303,8 @@ fun SecondPasswordField(
             showWarningText = true,
             warningText = stringResource(id = R.string.sign_up_password_check_validation_warning),
             validated = isPasswordSame,
-            isFocused = isFocused
+            isFocused = isFocused,
+            showText = false
         )
     }
     Spacer(modifier = Modifier.height(20.dp))

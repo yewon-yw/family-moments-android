@@ -42,7 +42,8 @@ fun SignUpTextFieldArea(
     validated: Boolean = true,
     showWarningText: Boolean = false,
     warningText: String = "",
-    isFocused: Boolean
+    isFocused: Boolean,
+    showText: Boolean = true
 ) {
     var textFieldValue by remember {
         mutableStateOf(TextFieldValue())
@@ -62,7 +63,7 @@ fun SignUpTextFieldArea(
     }
     if (textFieldValue.text.isNotEmpty() && !validated) {
         textFieldBorderColor = AppColors.red1
-        textColor = AppColors.red1
+        textColor = if (showText) AppColors.red1 else AppColors.black1
     }
     Column {
         Text(
@@ -90,7 +91,8 @@ fun SignUpTextFieldArea(
                 hint = hint,
                 showDeleteButton = showDeleteButton,
                 borderColor = textFieldBorderColor,
-                textColor = textColor
+                textColor = textColor,
+                showText = showText
             )
             if (showCheckButton) {
                 CheckButton(checkButtonAvailable, textFieldValue, onCheckButtonClick)
