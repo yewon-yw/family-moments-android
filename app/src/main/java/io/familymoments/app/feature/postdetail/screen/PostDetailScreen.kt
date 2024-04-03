@@ -614,15 +614,11 @@ fun CommentItem(
 @Preview(showBackground = true)
 @Composable
 fun PostDetailPreview() {
-    FamilyMomentsTheme {
-        PostDetailScreen(hiltViewModel(), 0, modifier = Modifier, {}) {}
-    }
+    PostDetailScreen(hiltViewModel(), 0, modifier = Modifier, {}) {}
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PostDetailDropdownMenuPreview() {
-    FamilyMomentsTheme {
-        PostDropdownMenu(items = listOf(), modifier = Modifier, true) {}
-    }
+    PostDropdownMenu(items = listOf(), modifier = Modifier, true) {}
 }
