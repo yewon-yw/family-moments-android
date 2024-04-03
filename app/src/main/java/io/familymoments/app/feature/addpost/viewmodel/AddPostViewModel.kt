@@ -66,4 +66,10 @@ class AddPostViewModel @Inject constructor(
             }
         )
     }
+
+    fun initSuccessState() {
+        _uiState.value = _uiState.value.copy(
+            isSuccess = null,
+        )
+    }
 }

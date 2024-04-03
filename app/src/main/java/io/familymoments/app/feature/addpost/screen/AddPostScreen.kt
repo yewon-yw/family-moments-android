@@ -58,7 +58,6 @@ import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.FileUtil
 import io.familymoments.app.core.util.keyboardAsState
 import io.familymoments.app.feature.addpost.model.AddPostMode.ADD
@@ -84,6 +83,7 @@ fun AddPostScreen(
             popBackStack()
         } else if (addPostUiState.isSuccess == false) {
             Toast.makeText(context, context.getString(R.string.add_post_fail), Toast.LENGTH_SHORT).show()
+            viewModel.initSuccessState()
         }
     }
 
