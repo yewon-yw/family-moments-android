@@ -138,7 +138,8 @@ fun MyPageGroupItem(
         modifier = Modifier
             .fillMaxWidth()
             .height(68.dp)
-            .padding(end = 4.dp),
+            .padding(end = 4.dp)
+            .clickable { onItemClick(item) },
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Box(
@@ -162,7 +163,6 @@ fun MyPageGroupItem(
         Box(
             modifier = Modifier
                 .size(32.dp)
-                .clickable { onItemClick(item) }
         ) {
             Icon(
                 painter = painterResource(id = R.drawable.ic_my_page_right_arrow),
