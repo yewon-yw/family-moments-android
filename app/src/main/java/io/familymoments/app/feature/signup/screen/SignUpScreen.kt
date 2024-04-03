@@ -73,6 +73,7 @@ import io.familymoments.app.feature.signup.model.response.CheckIdResponse
 import io.familymoments.app.feature.signup.model.response.SignUpResponse
 import io.familymoments.app.feature.signup.model.uistate.SignUpInfoUiState
 import io.familymoments.app.feature.signup.model.uistate.SignUpTermUiState
+import io.familymoments.app.feature.signup.model.uistate.SignUpValidatedUiState
 import io.familymoments.app.feature.signup.viewmodel.SignUpViewModel
 import okhttp3.MultipartBody
 import java.io.File
@@ -81,8 +82,6 @@ import java.io.File
 fun SignUpScreen(viewModel: SignUpViewModel) {
     val context = LocalContext.current
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-    val userIdDuplicated = uiState.value.signUpValidatedUiState.userIdDuplicated
-    val emailDuplicated = uiState.value.signUpValidatedUiState.emailDuplicated
     val defaultProfileImageBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.default_profile)
 
     var password: String by remember { mutableStateOf("") }
@@ -99,11 +98,11 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
         )
     }
 
-    LaunchedEffect(userIdDuplicated) {
-        showUserIdDuplicationCheckResult(userIdDuplicated, context)
+    LaunchedEffect(uiState.value.signUpValidatedUiState.userIdDuplicated) {
+        showUserIdDuplicationCheckResult(uiState.value.signUpValidatedUiState.userIdDuplicated, context)
     }
-    LaunchedEffect(emailDuplicated) {
-        showEmailDuplicationCheckResult(emailDuplicated, context)
+    LaunchedEffect(uiState.value.signUpValidatedUiState.emailDuplicated) {
+        showEmailDuplicationCheckResult(uiState.value.signUpValidatedUiState.emailDuplicated, context)
     }
 
     LaunchedEffect(uiState.value.signUpSuccess) {
@@ -164,7 +163,12 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
                 checkEmailDuplication = viewModel::checkEmailDuplication,
                 emailFormatValidated = uiState.value.signUpValidatedUiState.emailValidated,
             ) { signUpInfoUiState = signUpInfoUiState.copy(email = it) }
-            BirthDayField { signUpInfoUiState = signUpInfoUiState.copy(birthDay = it) }
+            BirthDayField(
+                checkBirthDayFormat = viewModel::checkBirthDayFormat,
+                birthDayFormatValidated = uiState.value.signUpValidatedUiState.birthDayValidated
+            ) {
+                signUpInfoUiState = signUpInfoUiState.copy(birthDay = it)
+            }
             NicknameField(
                 nicknameFormatValidated = uiState.value.signUpValidatedUiState.nicknameValidated,
                 checkNicknameFormat = viewModel::checkNicknameFormat,
@@ -177,10 +181,9 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
             StartButtonField(
                 viewModel::executeSignUp,
                 signUpInfoUiState,
-                userIdDuplicated ?: false,
                 passwordSameCheck,
-                emailDuplicated ?: false,
-                allEssentialTermsAgree
+                allEssentialTermsAgree,
+                uiState.value.signUpValidatedUiState
             )
             Spacer(modifier = Modifier.height(40.dp))
         }
@@ -354,7 +357,7 @@ fun EmailField(
             },
             isFocused = isFocused,
             showWarningText = true,
-            warningText = stringResource(id = R.string.sign_up_password_check_validation_warning),
+            warningText = stringResource(id = R.string.sign_up_email_validation_warning),
             validated = emailFormatValidated
         )
     }
@@ -362,7 +365,11 @@ fun EmailField(
 }
 
 @Composable
-fun BirthDayField(onTextFieldChange: (String) -> Unit) {
+fun BirthDayField(
+    checkBirthDayFormat: (String) -> Unit,
+    birthDayFormatValidated: Boolean,
+    onTextFieldChange: (String) -> Unit
+) {
     var isFocused by remember {
         mutableStateOf(false)
     }
@@ -372,8 +379,14 @@ fun BirthDayField(onTextFieldChange: (String) -> Unit) {
         },
         title = stringResource(id = R.string.sign_up_birthday_field_title),
         hint = stringResource(R.string.sign_up_birthday_field_hint),
-        onValueChange = { onTextFieldChange(it.text) },
-        isFocused = isFocused
+        onValueChange = {
+            checkBirthDayFormat(it.text)
+            onTextFieldChange(it.text)
+        },
+        isFocused = isFocused,
+        validated = birthDayFormatValidated,
+        showWarningText = true,
+        warningText = stringResource(R.string.sign_up_birthday_check_validation_warning)
     )
 
     Spacer(modifier = Modifier.height(20.dp))
@@ -529,15 +542,23 @@ fun ProfileImageField(defaultProfileImageBitmap: Bitmap, context: Context, onFil
 fun StartButtonField(
     onClick: (SignUpInfoUiState) -> Unit,
     signUpInfoUiState: SignUpInfoUiState,
-    idDuplicationCheck: Boolean,
     passwordSameCheck: Boolean,
-    emailDuplicationCheck: Boolean,
-    allEssentialTermsAgree: Boolean
+    allEssentialTermsAgree: Boolean,
+    signUpValidatedUiState: SignUpValidatedUiState
 ) {
     var signUpEnable by remember {
         mutableStateOf(false)
     }
-    signUpEnable = idDuplicationCheck && passwordSameCheck && emailDuplicationCheck && allEssentialTermsAgree
+    val signUpValidated = with(signUpValidatedUiState) {
+        birthDayValidated
+            && emailValidated
+            && nicknameValidated
+            && passwordValidated
+            && userIdValidated
+            && emailDuplicated == true
+            && userIdDuplicated == true
+    }
+    signUpEnable = passwordSameCheck && allEssentialTermsAgree && signUpValidated
     FMButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = { onClick(signUpInfoUiState) },

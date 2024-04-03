@@ -72,6 +72,18 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
+    fun checkBirthDayFormat(birthDay: String) {
+        _uiState.update {
+            it.copy(
+                signUpValidatedUiState = it.signUpValidatedUiState.copy(
+                    birthDayValidated = UserInfoFormatChecker.checkBirthDay(
+                        birthDay
+                    )
+                )
+            )
+        }
+    }
+
     fun checkIdDuplication(id: String) {
         async(
             operation = { signInRepository.checkId(id) },
