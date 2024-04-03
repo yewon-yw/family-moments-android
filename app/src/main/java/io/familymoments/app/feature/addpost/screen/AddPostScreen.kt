@@ -157,7 +157,7 @@ fun AddPostScreen(
                     .heightIn(min = 59.dp)
                     .clip(RoundedCornerShape(60.dp))
                     .then(
-                        if (content.isNotEmpty() && uriList.isNotEmpty()) {
+                        if (content.trim().isNotEmpty() && uriList.isNotEmpty()) {
                             Modifier
                                 .background(color = AppColors.deepPurple1)
                                 .clickable {
