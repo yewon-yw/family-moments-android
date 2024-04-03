@@ -44,7 +44,7 @@
     <string name="next_btn_two_third">다음(2/3)</string>
     <string name="join_select_profile_image_btn">사진 선택</string>
     <string name="select_family_name">가족 이름 정하기</string>
-    <string name="family_name_text_field_hint">| 가족의 이름을 만들어주세요! (20자 이내)</string>
+    <string name="family_name_text_field_hint">가족의 이름을 만들어주세요! (20자 이내)</string>
     <string name="select_family_image">가족 이미지 선택</string>
     <string name="drop_down_menu_item_gallery_select">갤러리에서 선택</string>
     <string name="drop_down_menu_item_default_image">기본 이미지로 하기</string>
@@ -158,7 +158,7 @@
 
     <string name="add_post_title">새 글 업로드</string>
     <string name="add_post_write_content">글 작성</string>
-    <string name="add_post_write_content_hint">| 사진과 어울리는 내용을 작성하세요.</string>
+    <string name="add_post_write_content_hint">사진과 어울리는 내용을 작성하세요.</string>
     <string name="add_post_btn">순간을 가족에게 공유하기</string>
     <string name="add_post_fail">새 글 업로드에 실패하였습니다. 잠시 후 다시 시도해주세요.</string>
 
