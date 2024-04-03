@@ -296,16 +296,17 @@ private fun AddPostScreenPreview() {
         Row(
             modifier = Modifier
                 .padding(vertical = 30.dp)
-                .padding(start = 16.dp),
+                .padding(start = 16.dp)
         ) {
             Box(
                 modifier = Modifier
                     .size(63.dp)
                     .border(width = 1.dp, color = AppColors.deepPurple3, shape = RoundedCornerShape(size = 6.dp))
                     .clickable {}
-                    .padding(start = 17.5.dp, top = 13.dp, end = 17.5.dp, bottom = 7.dp)
+                    .padding(top = 13.dp, bottom = 7.dp)
             ) {
                 Column(
+                    modifier = Modifier.fillMaxSize(),
                     horizontalAlignment = Alignment.CenterHorizontally,
                 ) {
                     Icon(
