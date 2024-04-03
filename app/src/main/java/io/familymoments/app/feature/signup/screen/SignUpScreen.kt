@@ -558,7 +558,7 @@ fun StartButtonField(
             && emailDuplicated == true
             && userIdDuplicated == true
     }
-    signUpEnable = passwordSameCheck && allEssentialTermsAgree && signUpValidated
+    signUpEnable = passwordSameCheck && allEssentialTermsAgree && signUpValidated && signUpInfoUiState.imgFile != null
     FMButton(
         modifier = Modifier.fillMaxWidth(),
         onClick = { onClick(signUpInfoUiState) },
