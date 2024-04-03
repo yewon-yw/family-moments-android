@@ -45,6 +45,7 @@ android {
 
     buildTypes {
         debug {
+            applicationIdSuffix = ".debug"
             buildConfigField("String", "BASE_URL", "\"https://familymoments-be.site/\"")
         }
         release {
