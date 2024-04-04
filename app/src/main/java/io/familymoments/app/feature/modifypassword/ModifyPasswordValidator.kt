@@ -1,32 +1,35 @@
 package io.familymoments.app.feature.modifypassword
 
-import androidx.annotation.StringRes
 import io.familymoments.app.feature.modifypassword.model.WarningType
 
 fun validateCurrentPassword(password: String): Boolean {
     return password.isNotEmpty()
 }
 
-fun validateNewPassword(newPassword: String, newPasswordCheck: String): Pair<Boolean, Int?> {
+fun validateNewPasswordFormat(password: String): Pair<Boolean, Int?> {
     var validation = false
-    @StringRes var warningResId: Int? = null
-    if (newPassword.isEmpty() && newPasswordCheck.isEmpty()) {
-        warningResId = null
-    } else if (!checkPasswordFormat(newPassword)) {
-        warningResId = WarningType.InvalidPasswordFormat.stringResId
-    } else if (newPasswordCheck.isEmpty()) {
-        warningResId = null
-    } else if (newPassword != newPasswordCheck) {
-        warningResId = WarningType.NewPasswordsMismatch.stringResId
-    } else {
-        validation = true
-        warningResId = null
+    var warningResId: Int? = null
+    if (password.isNotEmpty()) {
+        if (password.matches(ModifyPasswordCheck.passwordRegex)) {
+            validation = true
+        } else {
+            warningResId = WarningType.InvalidPasswordFormat.stringResId
+        }
     }
     return validation to warningResId
 }
 
-private fun checkPasswordFormat(password: String): Boolean {
-    return password.matches(ModifyPasswordCheck.passwordRegex)
+fun validateNewPasswordEqual(newPassword: String, newPasswordCheck: String): Pair<Boolean, Int?> {
+    var validation = false
+    var warningResId: Int? = null
+    if (newPasswordCheck.isNotEmpty()) {
+        if (newPassword == newPasswordCheck) {
+            validation = true
+        } else {
+            warningResId = WarningType.NewPasswordsMismatch.stringResId
+        }
+    }
+    return validation to warningResId
 }
 
 private object ModifyPasswordCheck {
