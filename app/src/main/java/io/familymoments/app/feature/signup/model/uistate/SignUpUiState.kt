@@ -26,7 +26,8 @@ data class SignUpValidatedUiState(
     val passwordValidated: Boolean = false,
     val emailValidated: Boolean = false,
     val emailDuplicated: Boolean? = null,
-    val nicknameValidated: Boolean = false
+    val nicknameValidated: Boolean = false,
+    val birthDayValidated:Boolean = false
 )
 
 data class SignUpTermUiState(
