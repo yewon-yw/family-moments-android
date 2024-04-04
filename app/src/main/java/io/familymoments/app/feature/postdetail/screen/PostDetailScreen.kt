@@ -248,24 +248,26 @@ fun PostPhotos(imgs: List<String>, pagerState: PagerState) {
                 contentScale = ContentScale.Crop
             )
         }
-        Row(
-            modifier = Modifier
-                .wrapContentHeight()
-                .fillMaxWidth()
-                .align(Alignment.BottomCenter)
-                .padding(bottom = 6.dp),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            repeat(pagerState.pageCount) { iteration ->
-                val color =
-                    if (pagerState.currentPage == iteration) AppColors.purple2 else AppColors.grey6
-                Box(
-                    modifier = Modifier
-                        .padding(horizontal = (3.5).dp)
-                        .clip(CircleShape)
-                        .background(color)
-                        .size(7.dp)
-                )
+        if (imgs.size > 1) {
+            Row(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 6.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                repeat(pagerState.pageCount) { iteration ->
+                    val color =
+                        if (pagerState.currentPage == iteration) AppColors.purple2 else AppColors.grey6
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = (3.5).dp)
+                            .clip(CircleShape)
+                            .background(color)
+                            .size(7.dp)
+                    )
+                }
             }
         }
     }
@@ -614,15 +616,11 @@ fun CommentItem(
 @Preview(showBackground = true)
 @Composable
 fun PostDetailPreview() {
-    FamilyMomentsTheme {
-        PostDetailScreen(hiltViewModel(), 0, modifier = Modifier, {}) {}
-    }
+    PostDetailScreen(hiltViewModel(), 0, modifier = Modifier, {}) {}
 }
 
 @Preview(showBackground = true)
 @Composable
 fun PostDetailDropdownMenuPreview() {
-    FamilyMomentsTheme {
-        PostDropdownMenu(items = listOf(), modifier = Modifier, true) {}
-    }
+    PostDropdownMenu(items = listOf(), modifier = Modifier, true) {}
 }
