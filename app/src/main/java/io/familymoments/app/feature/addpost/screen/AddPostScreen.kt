@@ -206,7 +206,8 @@ private fun ImageRow(
     ) {
         Box(
             modifier = Modifier
-                .size(63.dp)
+                .width(63.dp)
+                .heightIn(min = 63.dp)
                 .border(width = 1.dp, color = AppColors.deepPurple3, shape = RoundedCornerShape(size = 6.dp))
                 .clickable {
                     focusManager.clearFocus()
@@ -214,9 +215,10 @@ private fun ImageRow(
                         PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
                     )
                 }
-                .padding(start = 17.5.dp, top = 13.dp, end = 17.5.dp, bottom = 7.dp)
+                .padding(top = 13.dp, bottom = 7.dp)
         ) {
             Column(
+                modifier = Modifier.fillMaxSize(),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 Icon(
@@ -300,7 +302,8 @@ private fun AddPostScreenPreview() {
         ) {
             Box(
                 modifier = Modifier
-                    .size(63.dp)
+                    .width(63.dp)
+                    .heightIn(min = 63.dp)
                     .border(width = 1.dp, color = AppColors.deepPurple3, shape = RoundedCornerShape(size = 6.dp))
                     .clickable {}
                     .padding(top = 13.dp, bottom = 7.dp)
