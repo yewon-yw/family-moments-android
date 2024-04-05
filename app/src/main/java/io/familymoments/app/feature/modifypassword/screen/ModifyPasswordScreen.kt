@@ -19,11 +19,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -41,6 +40,7 @@ import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.login.activity.LoginActivity
+import io.familymoments.app.feature.modifypassword.model.WarningType
 import io.familymoments.app.feature.modifypassword.model.uistate.CurrentPasswordUiState
 import io.familymoments.app.feature.modifypassword.model.uistate.NewPasswordCheckUiState
 import io.familymoments.app.feature.modifypassword.model.uistate.NewPasswordUiState
@@ -54,6 +54,9 @@ fun ModifyPasswordScreen(
     modifier: Modifier = Modifier,
     viewModel: ModifyPasswordViewModel
 ) {
+    val currentPassword = remember { mutableStateOf(TextFieldValue()) }
+    val newPassword = remember { mutableStateOf(TextFieldValue()) }
+    val newPasswordCheck = remember { mutableStateOf(TextFieldValue()) }
     val requester = remember { BringIntoViewRequester() }
     val context = LocalContext.current
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
@@ -80,17 +83,18 @@ fun ModifyPasswordScreen(
         ModifyPasswordInfo()
         Spacer(modifier = Modifier.height(26.dp))
         CurrentPasswordField(
+            currentPassword = currentPassword,
             currentPasswordUiState = uiState.value.currentPasswordUiState,
             checkCurrentPassword = viewModel::checkCurrentPassword,
-            updatePasswordUiState = viewModel::updateCurrentPassword,
             onClearCurrentPassword = viewModel::onClearCurrentPassword,
         )
         NewPasswordField(
+            newPassword = newPassword,
+            newPasswordCheck = newPasswordCheck,
             newPasswordUiState = uiState.value.newPasswordUiState,
             newPasswordCheckUiState = uiState.value.newPasswordCheckUiState,
             checkPasswordFormat = viewModel::checkPasswordFormat,
             checkPasswordEqual = viewModel::checkPasswordEqual,
-            updateNewPasswordsUiState = viewModel::updateNewPasswordsUiState,
             onClearNewPasswords = viewModel::onClearNewPasswords,
             requester = requester,
         )
@@ -98,7 +102,14 @@ fun ModifyPasswordScreen(
             currentPasswordValid = uiState.value.currentPasswordUiState.isValidated,
             newPasswordValid = isNewPasswordValidated,
             requester = requester,
-            onClick = viewModel::requestModifyPassword,
+            onClick = {
+                viewModel.updatePasswordUiState(
+                    currentPassword.value.text,
+                    newPassword.value.text,
+                    newPasswordCheck.value.text
+                )
+                viewModel.requestModifyPassword()
+            }
         )
         Spacer(modifier = Modifier.height(20.dp))
     }
@@ -137,26 +148,23 @@ fun ModifyPasswordInfo() {
 
 @Composable
 private fun CurrentPasswordField(
+    currentPassword: MutableState<TextFieldValue>,
     currentPasswordUiState: CurrentPasswordUiState,
     checkCurrentPassword: (String) -> Unit,
-    updatePasswordUiState: (String) -> Unit,
     onClearCurrentPassword: () -> Unit
 ) {
-    var currentPassword by remember { mutableStateOf(TextFieldValue()) }
-
     LaunchedEffect(currentPasswordUiState.isReset) {
         if (currentPasswordUiState.isReset) {
-            currentPassword = TextFieldValue()
+            currentPassword.value = TextFieldValue()
             onClearCurrentPassword()
         }
     }
     ModifyPasswordTextField(
         onValueChange = {
-            currentPassword = it
+            currentPassword.value = it
             checkCurrentPassword(it.text)
-            updatePasswordUiState(it.text)
         },
-        value = currentPassword,
+        value = currentPassword.value,
         hintResId = R.string.modify_password_current_password,
         showWarning = currentPasswordUiState.warningResId != null
     )
@@ -170,17 +178,16 @@ private fun CurrentPasswordField(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun NewPasswordField(
+    newPassword: MutableState<TextFieldValue>,
+    newPasswordCheck: MutableState<TextFieldValue>,
     newPasswordUiState: NewPasswordUiState,
     newPasswordCheckUiState: NewPasswordCheckUiState,
     checkPasswordFormat: (String) -> Unit,
     checkPasswordEqual: (String, String) -> Unit,
-    updateNewPasswordsUiState: (String, String) -> Unit,
     onClearNewPasswords: () -> Unit,
     requester: BringIntoViewRequester,
 ) {
     val scope = rememberCoroutineScope()
-    var newPassword by remember { mutableStateOf(TextFieldValue()) }
-    var newPasswordCheck by remember { mutableStateOf(TextFieldValue()) }
     val onFocusChange: (Boolean) -> Unit = { isFocused ->
         scope.launch {
             if (isFocused) {
@@ -191,19 +198,18 @@ private fun NewPasswordField(
     }
     LaunchedEffect(newPasswordUiState.isReset, newPasswordCheckUiState.isReset) {
         if (newPasswordUiState.isReset && newPasswordCheckUiState.isReset) {
-            newPassword = TextFieldValue()
-            newPasswordCheck = TextFieldValue()
+            newPassword.value = TextFieldValue()
+            newPasswordCheck.value = TextFieldValue()
             onClearNewPasswords()
         }
     }
     ModifyPasswordTextField(
         onValueChange = {
-            newPassword = it
+            newPassword.value = it
             checkPasswordFormat(it.text)
-            checkPasswordEqual(it.text, newPasswordCheck.text)
-            updateNewPasswordsUiState(it.text, newPasswordCheck.text)
+            checkPasswordEqual(it.text, newPasswordCheck.value.text)
         },
-        value = newPassword,
+        value = newPassword.value,
         hintResId = R.string.modify_password_new_password,
         showWarning = newPasswordUiState.showWarningBorder,
         onFocusChange = onFocusChange,
@@ -211,12 +217,11 @@ private fun NewPasswordField(
     Spacer(modifier = Modifier.padding(top = 18.dp))
     ModifyPasswordTextField(
         onValueChange = {
-            newPasswordCheck = it
-            checkPasswordFormat(newPassword.text)
-            checkPasswordEqual(newPassword.text, it.text)
-            updateNewPasswordsUiState(it.text, newPasswordCheck.text)
+            newPasswordCheck.value = it
+            checkPasswordFormat(newPassword.value.text)
+            checkPasswordEqual(newPassword.value.text, it.text)
         },
-        value = newPasswordCheck,
+        value = newPasswordCheck.value,
         hintResId = R.string.modify_password_new_password_check,
         showWarning = newPasswordCheckUiState.showWarningBorder,
         onFocusChange = onFocusChange

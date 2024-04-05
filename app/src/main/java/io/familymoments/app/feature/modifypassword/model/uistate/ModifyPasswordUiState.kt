@@ -15,7 +15,7 @@ data class ModifyPasswordUiState(
 
 @Immutable
 data class CurrentPasswordUiState(
-    val password: String = "",
+    val currentPassword: String = "",
     val isValidated: Boolean = false,
     @StringRes val warningResId: Int? = null,
     val isReset: Boolean = false

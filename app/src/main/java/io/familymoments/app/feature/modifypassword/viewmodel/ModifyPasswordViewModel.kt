@@ -101,17 +101,10 @@ class ModifyPasswordViewModel @Inject constructor(
         )
     }
 
-    fun updateCurrentPassword(password: String) {
+    fun updatePasswordUiState(currentPassword: String, newPassword: String, newPasswordCheck: String) {
         _uiState.update {
             it.copy(
-                currentPasswordUiState = it.currentPasswordUiState.copy(password = password)
-            )
-        }
-    }
-
-    fun updateNewPasswordsUiState(newPassword: String, newPasswordCheck: String) {
-        _uiState.update {
-            it.copy(
+                currentPasswordUiState = it.currentPasswordUiState.copy(currentPassword = currentPassword),
                 newPasswordUiState = it.newPasswordUiState.copy(newPassword = newPassword),
                 newPasswordCheckUiState = it.newPasswordCheckUiState.copy(newPasswordCheck = newPasswordCheck)
             )
