@@ -2,6 +2,7 @@ package io.familymoments.app.feature.creatingfamily.screen
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,7 +31,6 @@ import io.familymoments.app.core.component.GalleryOrDefaultImageSelectButton
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.FileUtil.convertBitmapToFile
-import io.familymoments.app.core.util.defaultBitmap
 import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
 import io.familymoments.app.feature.creatingfamily.model.FamilyProfile
 import io.familymoments.app.feature.creatingfamily.viewmodel.CreatingFamilyViewModel
@@ -44,8 +44,8 @@ fun SetProfileScreen(
     var familyName by remember {
         mutableStateOf("")
     }
-    var familyImg by remember {
-        mutableStateOf(defaultBitmap)
+    var familyImg: Bitmap? by remember {
+        mutableStateOf(null)
     }
     Column {
         ChoosingFamilyHeaderButtonLayout(
@@ -53,9 +53,23 @@ fun SetProfileScreen(
             header = stringResource(id = R.string.select_create_family_header),
             button = stringResource(id = R.string.next_btn_two_third),
             onClick = {
-                val familyImgFile = convertBitmapToFile(familyImg, context)
-                viewModel.saveFamilyProfile(FamilyProfile(familyName, familyImgFile))
-                navigate()
+                kotlin.runCatching {
+                    familyName.ifEmpty {
+                        throw Throwable(
+                            context.getString(R.string.set_family_profile_name_empty_error)
+                        )
+                    }
+                    val familyProfileBitmap = familyImg ?: throw Throwable(
+                        context.getString(R.string.set_family_profile_image_unsellect_error)
+                    )
+                    convertBitmapToFile(familyProfileBitmap, context)
+                }.onSuccess { file ->
+                    viewModel.saveFamilyProfile(FamilyProfile(familyName, file))
+                    navigate()
+                }.onFailure {
+                    Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
+                }
+
             }
         ) {
             Column(
@@ -112,8 +126,7 @@ fun SetUpFamilyName(
 }
 
 @Composable
-fun SetUpFamilyPicture(context: Context, onBitmapChanged: (Bitmap) -> Unit) {
-
+fun SetUpFamilyPicture(context: Context, onBitmapChanged: (Bitmap?) -> Unit) {
     Text(
         text = stringResource(R.string.select_family_image),
         style = AppTypography.B1_16,

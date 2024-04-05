@@ -38,7 +38,7 @@ import io.familymoments.app.core.util.defaultBitmap
 @Composable
 fun GalleryOrDefaultImageSelectButton(
     context: Context,
-    getImageBitmap: (Bitmap) -> Unit
+    getImageBitmap: (Bitmap?) -> Unit
 ) {
 
     val defaultImageBitmap =
@@ -46,17 +46,17 @@ fun GalleryOrDefaultImageSelectButton(
             context.resources,
             R.drawable.default_profile
         )
-    var bitmap by remember {
-        mutableStateOf(defaultBitmap)
+    var bitmap: Bitmap? by remember {
+        mutableStateOf(null)
     }
     getImageBitmap(bitmap)
-    //갤러리에서 사진 선택 후 bitmap 으로 변환
+
     val launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?> = rememberLauncherForActivityResult(
         contract =
         ActivityResultContracts.PickVisualMedia()
     ) {
         if (it == null) return@rememberLauncherForActivityResult
-        bitmap = convertUriToBitmap(it, context) ?: defaultImageBitmap
+        bitmap = convertUriToBitmap(it, context)
     }
 
     var isMenuExpanded: Boolean by remember { mutableStateOf(false) }
