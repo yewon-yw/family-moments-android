@@ -142,7 +142,9 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
             IdField(
                 userIdFormatValidated = uiState.value.signUpValidatedUiState.userIdValidated,
                 checkIdFormat = viewModel::checkIdFormat,
-                checkIdDuplication = viewModel::checkIdDuplication
+                checkIdDuplication = viewModel::checkIdDuplication,
+                resetUserIdDuplicated = viewModel::resetUserIdDuplicated,
+                userIdDuplicated = uiState.value.signUpValidatedUiState.userIdDuplicated ?: false
             ) {
                 signUpInfoUiState = signUpInfoUiState.copy(id = it)
             }
@@ -162,6 +164,8 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
                 checkEmailFormat = viewModel::checkEmailFormat,
                 checkEmailDuplication = viewModel::checkEmailDuplication,
                 emailFormatValidated = uiState.value.signUpValidatedUiState.emailValidated,
+                resetEmailDuplicated = viewModel::resetEmailDuplicated,
+                emailDuplicated = uiState.value.signUpValidatedUiState.emailDuplicated ?: false
             ) { signUpInfoUiState = signUpInfoUiState.copy(email = it) }
             BirthDayField(
                 checkBirthDayFormat = viewModel::checkBirthDayFormat,
@@ -219,8 +223,10 @@ private fun showEmailDuplicationCheckResult(emailDuplicated: Boolean?, context: 
 @Composable
 fun IdField(
     userIdFormatValidated: Boolean,
+    userIdDuplicated: Boolean,
     checkIdFormat: (String) -> Unit,
     checkIdDuplication: (String) -> Unit,
+    resetUserIdDuplicated: () -> Unit,
     onValueChange: (String) -> Unit
 ) {
     var isFocused by remember {
@@ -236,15 +242,17 @@ fun IdField(
             onValueChange = {
                 onValueChange(it.text)
                 checkIdFormat(it.text)
+                resetUserIdDuplicated()
             },
             showCheckButton = true,
             checkButtonAvailable = userIdFormatValidated,
             onCheckButtonClick = {
                 checkIdDuplication(it.text)
             },
-            validated = userIdFormatValidated,
+            validated = if (userIdFormatValidated) userIdDuplicated else false,
             showWarningText = true,
-            warningText = stringResource(id = R.string.sign_up_id_validation_warning),
+            warningText = if (userIdFormatValidated) stringResource(id = R.string.sign_up_need_duplication_check_warning)
+            else stringResource(id = R.string.sign_up_id_validation_warning),
             isFocused = isFocused
         )
     }
@@ -336,6 +344,8 @@ fun EmailField(
     checkEmailFormat: (String) -> Unit,
     checkEmailDuplication: (String) -> Unit,
     emailFormatValidated: Boolean,
+    resetEmailDuplicated: () -> Unit,
+    emailDuplicated: Boolean,
     onValueChange: (String) -> Unit
 ) {
     var isFocused by remember {
@@ -351,6 +361,7 @@ fun EmailField(
             onValueChange = {
                 onValueChange(it.text)
                 checkEmailFormat(it.text)
+                resetEmailDuplicated()
             },
             showCheckButton = true,
             checkButtonAvailable = emailFormatValidated,
@@ -359,8 +370,9 @@ fun EmailField(
             },
             isFocused = isFocused,
             showWarningText = true,
-            warningText = stringResource(id = R.string.sign_up_email_validation_warning),
-            validated = emailFormatValidated
+            warningText = if (emailFormatValidated) stringResource(id = R.string.sign_up_need_duplication_check_warning)
+            else stringResource(id = R.string.sign_up_email_validation_warning),
+            validated = if (emailFormatValidated) emailDuplicated else false
         )
     }
     Spacer(modifier = Modifier.height(20.dp))

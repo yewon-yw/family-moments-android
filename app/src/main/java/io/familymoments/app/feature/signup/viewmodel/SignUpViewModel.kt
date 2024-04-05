@@ -131,6 +131,26 @@ class SignUpViewModel @Inject constructor(
         )
     }
 
+    fun resetUserIdDuplicated(){
+        _uiState.update {
+            it.copy(
+                signUpValidatedUiState = it.signUpValidatedUiState.copy(
+                    userIdDuplicated = null
+                )
+            )
+        }
+    }
+
+    fun resetEmailDuplicated(){
+        _uiState.update {
+            it.copy(
+                signUpValidatedUiState = it.signUpValidatedUiState.copy(
+                    emailDuplicated = null
+                )
+            )
+        }
+    }
+
     fun executeSignUp(signUpInfoUiState: SignUpInfoUiState) {
         check(signUpInfoUiState.imgFile != null) { throw NullPointerException() }
         val imageRequestBody = signUpInfoUiState.imgFile.asRequestBody("image/*".toMediaTypeOrNull())
