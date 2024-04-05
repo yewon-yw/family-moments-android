@@ -71,8 +71,8 @@ class ModifyPasswordViewModel @Inject constructor(
 
                 _uiState.update {
                     it.copy(
-                        isSuccess = it.isSuccess,
-                        code = it.code,
+                        isSuccess = response.isSuccess,
+                        code = response.code,
                         currentPasswordUiState = it.currentPasswordUiState.copy(
                             warningResId = if (incorrectCurrentPassword) WarningType.IncorrectCurrentPassword.stringResId else null,
                             isReset = incorrectCurrentPassword
