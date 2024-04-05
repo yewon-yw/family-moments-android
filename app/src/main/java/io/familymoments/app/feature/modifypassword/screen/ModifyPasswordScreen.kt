@@ -42,7 +42,6 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.login.activity.LoginActivity
 import io.familymoments.app.feature.modifypassword.model.uistate.CurrentPasswordUiState
-import io.familymoments.app.feature.modifypassword.model.uistate.ModifyPasswordUiState
 import io.familymoments.app.feature.modifypassword.model.uistate.NewPasswordCheckUiState
 import io.familymoments.app.feature.modifypassword.model.uistate.NewPasswordUiState
 import io.familymoments.app.feature.modifypassword.viewmodel.ModifyPasswordViewModel
@@ -91,7 +90,7 @@ fun ModifyPasswordScreen(
             newPasswordCheckUiState = uiState.value.newPasswordCheckUiState,
             checkPasswordFormat = viewModel::checkPasswordFormat,
             checkPasswordEqual = viewModel::checkPasswordEqual,
-            updatePasswordUiState = viewModel::updateNewPassword,
+            updateNewPasswordsUiState = viewModel::updateNewPasswordsUiState,
             onClearNewPasswords = viewModel::onClearNewPasswords,
             requester = requester,
         )
@@ -99,10 +98,7 @@ fun ModifyPasswordScreen(
             currentPasswordValid = uiState.value.currentPasswordUiState.isValidated,
             newPasswordValid = isNewPasswordValidated,
             requester = requester,
-            onClick = { modifyPasswordUiState ->
-                viewModel.requestModifyPassword(modifyPasswordUiState)
-            },
-            uiState = uiState.value
+            onClick = viewModel::requestModifyPassword,
         )
         Spacer(modifier = Modifier.height(20.dp))
     }
@@ -178,7 +174,7 @@ private fun NewPasswordField(
     newPasswordCheckUiState: NewPasswordCheckUiState,
     checkPasswordFormat: (String) -> Unit,
     checkPasswordEqual: (String, String) -> Unit,
-    updatePasswordUiState: (String, String) -> Unit,
+    updateNewPasswordsUiState: (String, String) -> Unit,
     onClearNewPasswords: () -> Unit,
     requester: BringIntoViewRequester,
 ) {
@@ -205,7 +201,7 @@ private fun NewPasswordField(
             newPassword = it
             checkPasswordFormat(it.text)
             checkPasswordEqual(it.text, newPasswordCheck.text)
-            updatePasswordUiState(it.text, newPasswordCheck.text)
+            updateNewPasswordsUiState(it.text, newPasswordCheck.text)
         },
         value = newPassword,
         hintResId = R.string.modify_password_new_password,
@@ -218,7 +214,7 @@ private fun NewPasswordField(
             newPasswordCheck = it
             checkPasswordFormat(newPassword.text)
             checkPasswordEqual(newPassword.text, it.text)
-            updatePasswordUiState(it.text, newPasswordCheck.text)
+            updateNewPasswordsUiState(it.text, newPasswordCheck.text)
         },
         value = newPasswordCheck,
         hintResId = R.string.modify_password_new_password_check,
@@ -291,15 +287,14 @@ fun ModifyPasswordButton(
     currentPasswordValid: Boolean,
     newPasswordValid: Boolean,
     requester: BringIntoViewRequester,
-    onClick: (ModifyPasswordUiState) -> Unit,
-    uiState: ModifyPasswordUiState
+    onClick: () -> Unit,
 ) {
     FMButton(
         modifier = Modifier
             .fillMaxWidth()
             .height(59.dp)
             .bringIntoViewRequester(requester),
-        onClick = { onClick(uiState) },
+        onClick = onClick,
         text = stringResource(id = R.string.modify_password_btn),
         enabled = currentPasswordValid && newPasswordValid
     )

@@ -62,9 +62,9 @@ class ModifyPasswordViewModel @Inject constructor(
         }
     }
 
-    fun requestModifyPassword(passwordUiState: ModifyPasswordUiState) {
+    fun requestModifyPassword() {
         async(
-            operation = { userRepository.modifyPassword(passwordUiState.toRequest()) },
+            operation = { userRepository.modifyPassword(_uiState.value.toRequest()) },
             onSuccess = { response ->
                 val incorrectCurrentPassword = response.code == INCORRECT_CURRENT_PASSWORD
                 val newPasswordSameAsCurrent = response.code == NEW_PASSWORD_SAME_AS_CURRENT
@@ -109,7 +109,7 @@ class ModifyPasswordViewModel @Inject constructor(
         }
     }
 
-    fun updateNewPassword(newPassword: String, newPasswordCheck: String) {
+    fun updateNewPasswordsUiState(newPassword: String, newPasswordCheck: String) {
         _uiState.update {
             it.copy(
                 newPasswordUiState = it.newPasswordUiState.copy(newPassword = newPassword),
