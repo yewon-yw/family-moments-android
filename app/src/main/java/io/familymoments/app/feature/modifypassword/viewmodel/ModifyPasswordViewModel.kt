@@ -118,7 +118,8 @@ class ModifyPasswordViewModel @Inject constructor(
         }
     }
 
-    fun resetCurrentPasswordField() {
+    fun onClearCurrentPassword() {
+        // 현재 비밀번호 입력필드 clear 할 때 isReset = false로 초기화
         _uiState.update {
             it.copy(
                 currentPasswordUiState = it.currentPasswordUiState.copy(isReset = false)
@@ -126,7 +127,8 @@ class ModifyPasswordViewModel @Inject constructor(
         }
     }
 
-    fun resetNewPasswordField() {
+    fun onClearNewPasswords() {
+        // 새 비밀번호 입력필드, 새 비밀번호 확인 입력필드 clear 할 때 isReset = false로 초기화
         _uiState.update {
             it.copy(
                 newPasswordUiState = it.newPasswordUiState.copy(isReset = false),

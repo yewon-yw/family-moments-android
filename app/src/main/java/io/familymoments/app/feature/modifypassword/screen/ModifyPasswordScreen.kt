@@ -84,7 +84,7 @@ fun ModifyPasswordScreen(
             currentPasswordUiState = uiState.value.currentPasswordUiState,
             checkCurrentPassword = viewModel::checkCurrentPassword,
             updatePasswordUiState = viewModel::updateCurrentPassword,
-            resetClearTextFieldVariable = viewModel::resetCurrentPasswordField,
+            onClearCurrentPassword = viewModel::onClearCurrentPassword,
         )
         NewPasswordField(
             newPasswordUiState = uiState.value.newPasswordUiState,
@@ -92,7 +92,7 @@ fun ModifyPasswordScreen(
             checkPasswordFormat = viewModel::checkPasswordFormat,
             checkPasswordEqual = viewModel::checkPasswordEqual,
             updatePasswordUiState = viewModel::updateNewPassword,
-            resetClearTextFieldVariable = viewModel::resetNewPasswordField,
+            onClearNewPasswords = viewModel::onClearNewPasswords,
             requester = requester,
         )
         ModifyPasswordButton(
@@ -144,14 +144,14 @@ private fun CurrentPasswordField(
     currentPasswordUiState: CurrentPasswordUiState,
     checkCurrentPassword: (String) -> Unit,
     updatePasswordUiState: (String) -> Unit,
-    resetClearTextFieldVariable: () -> Unit
+    onClearCurrentPassword: () -> Unit
 ) {
     var currentPassword by remember { mutableStateOf(TextFieldValue()) }
 
     LaunchedEffect(currentPasswordUiState.isReset) {
         if (currentPasswordUiState.isReset) {
             currentPassword = TextFieldValue()
-            resetClearTextFieldVariable()
+            onClearCurrentPassword()
         }
     }
     ModifyPasswordTextField(
@@ -179,7 +179,7 @@ private fun NewPasswordField(
     checkPasswordFormat: (String) -> Unit,
     checkPasswordEqual: (String, String) -> Unit,
     updatePasswordUiState: (String, String) -> Unit,
-    resetClearTextFieldVariable: () -> Unit,
+    onClearNewPasswords: () -> Unit,
     requester: BringIntoViewRequester,
 ) {
     val scope = rememberCoroutineScope()
@@ -197,7 +197,7 @@ private fun NewPasswordField(
         if (newPasswordUiState.isReset && newPasswordCheckUiState.isReset) {
             newPassword = TextFieldValue()
             newPasswordCheck = TextFieldValue()
-            resetClearTextFieldVariable()
+            onClearNewPasswords()
         }
     }
     ModifyPasswordTextField(
