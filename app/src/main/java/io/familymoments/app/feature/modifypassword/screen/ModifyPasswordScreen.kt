@@ -167,7 +167,7 @@ private fun CurrentPasswordField(
     ModifyPasswordWarning(
         warningResId = currentPasswordUiState.warningResId,
         bottomPadding = 70.dp,
-        hideText = currentPasswordUiState.warningResId == null
+        showWarning = currentPasswordUiState.warningResId != null
     )
 }
 
@@ -226,9 +226,9 @@ private fun NewPasswordField(
         onFocusChange = onFocusChange
     )
     ModifyPasswordWarning(
-        warningResId = newPasswordUiState.warningResId,
+        warningResId = newPasswordUiState.warningResId ?: newPasswordCheckUiState.warningResId,
         bottomPadding = 67.dp,
-        hideText = newPasswordUiState.warningResId == null
+        showWarning = newPasswordUiState.warningResId != null || newPasswordCheckUiState.warningResId != null
     )
 }
 
@@ -236,11 +236,9 @@ private fun NewPasswordField(
 fun ModifyPasswordWarning(
     @StringRes warningResId: Int?,
     bottomPadding: Dp = 0.dp,
-    hideText: Boolean = true
+    showWarning: Boolean = false,
 ) {
-    if (hideText) {
-        Spacer(modifier = Modifier.padding(top = bottomPadding))
-    } else {
+    if (showWarning) {
         Box(
             modifier = Modifier
                 .padding(top = 9.dp, bottom = bottomPadding - 25.dp)
@@ -254,6 +252,8 @@ fun ModifyPasswordWarning(
                 )
             }
         }
+    } else {
+        Spacer(modifier = Modifier.padding(top = bottomPadding))
     }
 }
 
