@@ -5,7 +5,7 @@ import io.familymoments.app.feature.modifypassword.model.uistate.ModifyPasswordU
 
 fun ModifyPasswordUiState.toRequest() =
     ModifyPasswordRequest(
-        password = password,
-        newPassword_first = newPassword,
-        newPassword = newPasswordCheck
+        password = currentPasswordUiState.password,
+        newPassword_first = newPasswordUiState.newPassword,
+        newPassword = newPasswordCheckUiState.newPasswordCheck
     )

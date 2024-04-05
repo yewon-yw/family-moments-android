@@ -43,9 +43,9 @@ import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.login.activity.LoginActivity
 import io.familymoments.app.feature.modifypassword.model.uistate.CurrentPasswordUiState
 import io.familymoments.app.feature.modifypassword.model.uistate.ModifyPasswordUiState
+import io.familymoments.app.feature.modifypassword.model.uistate.NewPasswordCheckUiState
 import io.familymoments.app.feature.modifypassword.model.uistate.NewPasswordUiState
 import io.familymoments.app.feature.modifypassword.viewmodel.ModifyPasswordViewModel
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -55,17 +55,16 @@ fun ModifyPasswordScreen(
     modifier: Modifier = Modifier,
     viewModel: ModifyPasswordViewModel
 ) {
-    val scope = rememberCoroutineScope()
-    val requester = BringIntoViewRequester()
+    val requester = remember { BringIntoViewRequester() }
     val context = LocalContext.current
-    val modifyPasswordValidUiState = viewModel.modifyPasswordValidUiState.collectAsStateWithLifecycle()
-    val modifyPasswordUiState = viewModel.modifyPasswordUiState.collectAsStateWithLifecycle()
-    val newPasswordValid = modifyPasswordValidUiState.value.newPasswordUiState.newPasswordValid.valid &&
-        modifyPasswordValidUiState.value.newPasswordUiState.newPasswordCheckValid.valid
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    val isNewPasswordValidated =
+        uiState.value.newPasswordUiState.isValidated && uiState.value.newPasswordCheckUiState.isValidated
 
-    LaunchedEffect(modifyPasswordValidUiState.value.isSuccess) {
-        if (modifyPasswordValidUiState.value.isSuccess) {
-            Toast.makeText(context, context.getString(R.string.modify_password_request_success), Toast.LENGTH_SHORT).show()
+    LaunchedEffect(uiState.value.isSuccess) {
+        if (uiState.value.isSuccess) {
+            Toast.makeText(context, context.getString(R.string.modify_password_request_success), Toast.LENGTH_SHORT)
+                .show()
             val intent = Intent(context, LoginActivity::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
             context.startActivity(intent)
@@ -82,28 +81,28 @@ fun ModifyPasswordScreen(
         ModifyPasswordInfo()
         Spacer(modifier = Modifier.height(26.dp))
         CurrentPasswordField(
-            currentPasswordUiState = modifyPasswordValidUiState.value.currentPasswordUiState,
+            currentPasswordUiState = uiState.value.currentPasswordUiState,
             checkCurrentPassword = viewModel::checkCurrentPassword,
             updatePasswordUiState = viewModel::updateCurrentPassword,
             resetClearTextFieldVariable = viewModel::resetCurrentPasswordField,
         )
         NewPasswordField(
-            newPasswordUiState = modifyPasswordValidUiState.value.newPasswordUiState,
+            newPasswordUiState = uiState.value.newPasswordUiState,
+            newPasswordCheckUiState = uiState.value.newPasswordCheckUiState,
             checkPasswordFormat = viewModel::checkPasswordFormat,
             checkPasswordEqual = viewModel::checkPasswordEqual,
             updatePasswordUiState = viewModel::updateNewPassword,
             resetClearTextFieldVariable = viewModel::resetNewPasswordField,
-            scope = scope,
             requester = requester,
         )
         ModifyPasswordButton(
-            currentPasswordValid = modifyPasswordValidUiState.value.currentPasswordUiState.valid,
-            newPasswordValid = newPasswordValid,
+            currentPasswordValid = uiState.value.currentPasswordUiState.isValidated,
+            newPasswordValid = isNewPasswordValidated,
             requester = requester,
             onClick = { modifyPasswordUiState ->
                 viewModel.requestModifyPassword(modifyPasswordUiState)
             },
-            uiState = modifyPasswordUiState.value
+            uiState = uiState.value
         )
         Spacer(modifier = Modifier.height(20.dp))
     }
@@ -149,8 +148,8 @@ private fun CurrentPasswordField(
 ) {
     var currentPassword by remember { mutableStateOf(TextFieldValue()) }
 
-    LaunchedEffect(currentPasswordUiState.reset) {
-        if (currentPasswordUiState.reset) {
+    LaunchedEffect(currentPasswordUiState.isReset) {
+        if (currentPasswordUiState.isReset) {
             currentPassword = TextFieldValue()
             resetClearTextFieldVariable()
         }
@@ -163,7 +162,7 @@ private fun CurrentPasswordField(
         },
         value = currentPassword,
         hintResId = R.string.modify_password_current_password,
-        hideWarning = currentPasswordUiState.warningResId == null
+        showWarning = currentPasswordUiState.warningResId != null
     )
     ModifyPasswordWarning(
         warningResId = currentPasswordUiState.warningResId,
@@ -176,13 +175,14 @@ private fun CurrentPasswordField(
 @Composable
 private fun NewPasswordField(
     newPasswordUiState: NewPasswordUiState,
+    newPasswordCheckUiState: NewPasswordCheckUiState,
     checkPasswordFormat: (String) -> Unit,
     checkPasswordEqual: (String, String) -> Unit,
     updatePasswordUiState: (String, String) -> Unit,
     resetClearTextFieldVariable: () -> Unit,
-    scope: CoroutineScope,
     requester: BringIntoViewRequester,
 ) {
+    val scope = rememberCoroutineScope()
     var newPassword by remember { mutableStateOf(TextFieldValue()) }
     var newPasswordCheck by remember { mutableStateOf(TextFieldValue()) }
     val onFocusChange: (Boolean) -> Unit = { isFocused ->
@@ -193,8 +193,8 @@ private fun NewPasswordField(
             }
         }
     }
-    LaunchedEffect(newPasswordUiState.reset) {
-        if (newPasswordUiState.reset) {
+    LaunchedEffect(newPasswordUiState.isReset, newPasswordCheckUiState.isReset) {
+        if (newPasswordUiState.isReset && newPasswordCheckUiState.isReset) {
             newPassword = TextFieldValue()
             newPasswordCheck = TextFieldValue()
             resetClearTextFieldVariable()
@@ -209,7 +209,7 @@ private fun NewPasswordField(
         },
         value = newPassword,
         hintResId = R.string.modify_password_new_password,
-        hideWarning = newPasswordUiState.newPasswordValid.hideWarningBorder,
+        showWarning = newPasswordUiState.showWarningBorder,
         onFocusChange = onFocusChange,
     )
     Spacer(modifier = Modifier.padding(top = 18.dp))
@@ -222,7 +222,7 @@ private fun NewPasswordField(
         },
         value = newPasswordCheck,
         hintResId = R.string.modify_password_new_password_check,
-        hideWarning = newPasswordUiState.newPasswordCheckValid.hideWarningBorder,
+        showWarning = newPasswordCheckUiState.showWarningBorder,
         onFocusChange = onFocusChange
     )
     ModifyPasswordWarning(
@@ -263,7 +263,7 @@ fun ModifyPasswordTextField(
     onValueChange: (TextFieldValue) -> Unit,
     value: TextFieldValue,
     @StringRes hintResId: Int,
-    hideWarning: Boolean,
+    showWarning: Boolean,
     onFocusChange: (Boolean) -> Unit = {}
 ) {
     val focusManager = LocalFocusManager.current
@@ -277,7 +277,7 @@ fun ModifyPasswordTextField(
         onValueChange = onValueChange,
         value = value,
         hint = stringResource(id = hintResId),
-        borderColor = if (hideWarning) AppColors.grey2 else AppColors.red2,
+        borderColor = if (showWarning) AppColors.red2 else AppColors.grey2,
         showDeleteButton = false,
         showText = false,
         onFocusChanged = onFocusChange,
