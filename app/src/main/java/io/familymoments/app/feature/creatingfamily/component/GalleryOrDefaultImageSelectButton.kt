@@ -1,4 +1,4 @@
-package io.familymoments.app.core.component
+package io.familymoments.app.feature.creatingfamily.component
 
 import android.content.Context
 import android.graphics.Bitmap

@@ -1,4 +1,4 @@
-package io.familymoments.app.core.component
+package io.familymoments.app.feature.creatingfamily.component
 
 import android.net.Uri
 import androidx.activity.compose.ManagedActivityResultLauncher
