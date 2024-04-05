@@ -50,12 +50,12 @@ class ModifyPasswordViewModel @Inject constructor(
     }
 
     fun checkPasswordEqual(newPassword: String, newPasswordCheck: String) {
-        val (valid, warningResId) = validateNewPasswordEqual(newPassword, newPasswordCheck)
+        val (isValidated, warningResId) = validateNewPasswordEqual(newPassword, newPasswordCheck)
         _uiState.update {
             it.copy(
                 newPasswordCheckUiState = it.newPasswordCheckUiState.copy(
-                    isValidated = valid,
-                    showWarningBorder = !valid && newPasswordCheck.isNotEmpty(),
+                    isValidated = isValidated,
+                    showWarningBorder = !isValidated && newPasswordCheck.isNotEmpty(),
                     warningResId = warningResId
                 )
             )
