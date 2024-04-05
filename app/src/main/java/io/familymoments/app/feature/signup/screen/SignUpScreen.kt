@@ -229,6 +229,9 @@ fun IdField(
     resetUserIdDuplicated: () -> Unit,
     onValueChange: (String) -> Unit
 ) {
+    var previousId by remember {
+        mutableStateOf(TextFieldValue())
+    }
     var isFocused by remember {
         mutableStateOf(false)
     }
@@ -240,9 +243,12 @@ fun IdField(
             title = stringResource(R.string.sign_up_id_field_title),
             hint = stringResource(R.string.sign_up_id_field_hint),
             onValueChange = {
-                onValueChange(it.text)
-                checkIdFormat(it.text)
-                resetUserIdDuplicated()
+                if (previousId.text != it.text) {
+                    onValueChange(it.text)
+                    checkIdFormat(it.text)
+                    resetUserIdDuplicated()
+                    previousId = it
+                }
             },
             showCheckButton = true,
             checkButtonAvailable = userIdFormatValidated,
@@ -348,6 +354,9 @@ fun EmailField(
     emailDuplicated: Boolean,
     onValueChange: (String) -> Unit
 ) {
+    var previousEmail by remember {
+        mutableStateOf(TextFieldValue())
+    }
     var isFocused by remember {
         mutableStateOf(false)
     }
@@ -359,9 +368,12 @@ fun EmailField(
             title = stringResource(R.string.sign_up_email_field_title),
             hint = stringResource(id = R.string.sign_up_email_field_hint),
             onValueChange = {
-                onValueChange(it.text)
-                checkEmailFormat(it.text)
-                resetEmailDuplicated()
+                if (it.text != previousEmail.text) {
+                    onValueChange(it.text)
+                    checkEmailFormat(it.text)
+                    resetEmailDuplicated()
+                    previousEmail = it
+                }
             },
             showCheckButton = true,
             checkButtonAvailable = emailFormatValidated,
