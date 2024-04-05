@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.util.FileUtil.convertUriToBitmap
-import io.familymoments.app.core.util.defaultBitmap
+import kotlin.math.roundToInt
 
 @Composable
 fun GalleryOrDefaultImageSelectButton(
@@ -68,26 +68,33 @@ fun GalleryOrDefaultImageSelectButton(
         ),
         elevation = ButtonDefaults.elevation(defaultElevation = 0.dp, pressedElevation = 0.dp),
     ) {
-
+        val imageHeight = 192
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(192.dp),
+                .height(imageHeight.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            bitmap?.let {
+            if (bitmap != null) {
+                val aspectRatio = bitmap!!.width.toFloat() / bitmap!!.height.toFloat()
+                val density = context.resources.displayMetrics.density
+                val desiredHeightPx = (imageHeight.toFloat() * density).roundToInt()
+                val scaledWidthPx = (desiredHeightPx * aspectRatio).roundToInt()
                 Image(
-                    bitmap = it.asImageBitmap(),
+                    bitmap = Bitmap.createScaledBitmap(
+                        bitmap!!, scaledWidthPx, desiredHeightPx, true
+                    ).asImageBitmap(),
                     contentDescription = null
                 )
+            } else {
+                Image(
+                    modifier = Modifier.padding(bottom = 2.dp),
+                    painter = painterResource(id = R.drawable.ic_select_pic),
+                    contentDescription = null,
+                )
+                Text(text = stringResource(R.string.join_select_profile_image_btn), color = AppColors.grey3)
             }
-            Image(
-                modifier = Modifier.padding(bottom = 2.dp),
-                painter = painterResource(id = R.drawable.ic_select_pic),
-                contentDescription = null,
-            )
-            Text(text = stringResource(R.string.join_select_profile_image_btn), color = AppColors.grey3)
             GalleryOrDefaultImageSelectDropDownMenu(
                 launcher = launcher,
                 getDefaultImageBitmap = { bitmap = defaultImageBitmap },
