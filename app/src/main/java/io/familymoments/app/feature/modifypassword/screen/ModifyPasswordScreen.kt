@@ -306,5 +306,54 @@ fun ModifyPasswordButton(
 @Preview(showBackground = true)
 @Composable
 fun ModifyPasswordScreenPreview() {
-    ModifyPasswordScreen(viewModel = hiltViewModel())
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        ModifyPasswordTitle()
+        Spacer(modifier = Modifier.height(40.dp))
+        ModifyPasswordInfo()
+        Spacer(modifier = Modifier.height(26.dp))
+        ModifyPasswordTextField(
+            onValueChange = {},
+            value = TextFieldValue("test1234"),
+            hintResId = R.string.modify_password_current_password,
+            showWarning = false
+        )
+        ModifyPasswordWarning(
+            warningResId = null,
+            bottomPadding = 70.dp,
+            showWarning = false
+        )
+        ModifyPasswordTextField(
+            onValueChange = {},
+            value = TextFieldValue("test1111"),
+            hintResId = R.string.modify_password_new_password,
+            showWarning = false,
+            onFocusChange = {},
+        )
+        Spacer(modifier = Modifier.padding(top = 18.dp))
+        ModifyPasswordTextField(
+            onValueChange = {},
+            value = TextFieldValue("test11"),
+            hintResId = R.string.modify_password_new_password_check,
+            showWarning = true,
+            onFocusChange = {}
+        )
+        ModifyPasswordWarning(
+            warningResId = R.string.modify_password_new_passwords_mismatch_warning,
+            bottomPadding = 67.dp,
+            showWarning = true
+        )
+        Spacer(modifier = Modifier.height(20.dp))
+        FMButton(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(59.dp),
+            onClick = {},
+            text = stringResource(id = R.string.modify_password_btn),
+            enabled = false
+        )
+    }
 }
