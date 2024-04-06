@@ -4,13 +4,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.repository.CommentRepository
 import io.familymoments.app.core.network.repository.PostRepository
+import io.familymoments.app.core.uistate.CompletePopupUiState
+import io.familymoments.app.core.uistate.DeletePopupUiState
 import io.familymoments.app.core.uistate.PopupStatusLogics
 import io.familymoments.app.core.uistate.PopupUiState
 import io.familymoments.app.core.uistate.ReportPopupUiState
-import io.familymoments.app.core.uistate.CompletePopupUiState
 import io.familymoments.app.feature.postdetail.model.uistate.CommentLogics
 import io.familymoments.app.feature.postdetail.model.uistate.CommentUiState
-import io.familymoments.app.core.uistate.DeletePopupUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostLogics
 import io.familymoments.app.feature.postdetail.model.uistate.PostUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +21,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -372,9 +373,11 @@ class PostDetailViewModel @Inject constructor(
     }
 
     fun formatCommentCreatedDate(createdAt: String): String {
-        val date = LocalDateTime.parse(createdAt)
-        val now = LocalDateTime.now()
-        val durationSeconds = Duration.between(date, now).seconds
+        val createdAtWithoutMillie = createdAt.split(".")[0]
+        val dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        val dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat, Locale.KOREA)
+        val localDateTime = LocalDateTime.parse(createdAtWithoutMillie, dateTimeFormatter)
+        val durationSeconds = Duration.between(localDateTime, LocalDateTime.now()).seconds
         return when {
             durationSeconds < 60 -> "방금"
             durationSeconds < 3600 -> "${durationSeconds / 60}분 전"
