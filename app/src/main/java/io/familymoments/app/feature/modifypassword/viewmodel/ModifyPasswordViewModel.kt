@@ -8,87 +8,125 @@ import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.feature.modifypassword.model.WarningType
 import io.familymoments.app.feature.modifypassword.model.mapper.toRequest
 import io.familymoments.app.feature.modifypassword.model.uistate.ModifyPasswordUiState
-import io.familymoments.app.feature.modifypassword.model.uistate.ModifyPasswordValidUiState
 import io.familymoments.app.feature.modifypassword.validateCurrentPassword
-import io.familymoments.app.feature.modifypassword.validateNewPassword
+import io.familymoments.app.feature.modifypassword.validateNewPasswordEqual
+import io.familymoments.app.feature.modifypassword.validateNewPasswordFormat
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class ModifyPasswordViewModel @Inject constructor(private val userRepository: UserRepository) : BaseViewModel() {
-    private val _modifyPasswordValidUiState: MutableStateFlow<ModifyPasswordValidUiState> =
-        MutableStateFlow(ModifyPasswordValidUiState())
-    val modifyPasswordValidUiState: StateFlow<ModifyPasswordValidUiState> = _modifyPasswordValidUiState.asStateFlow()
+class ModifyPasswordViewModel @Inject constructor(
+    private val userRepository: UserRepository
+) : BaseViewModel() {
 
-    private val _modifyPasswordUiState: MutableStateFlow<ModifyPasswordUiState> =
-        MutableStateFlow(ModifyPasswordUiState())
-    val modifyPasswordUiState: StateFlow<ModifyPasswordUiState> = _modifyPasswordUiState.asStateFlow()
+    private val _uiState: MutableStateFlow<ModifyPasswordUiState> = MutableStateFlow(ModifyPasswordUiState())
+    val uiState: StateFlow<ModifyPasswordUiState> = _uiState.asStateFlow()
 
     fun checkCurrentPassword(password: String) {
-        _modifyPasswordValidUiState.value = _modifyPasswordValidUiState.value.copy(
-            currentPasswordValid = _modifyPasswordValidUiState.value.currentPasswordValid.copy(
-                valid = validateCurrentPassword(password),
-                warningResId = null
+        _uiState.update {
+            it.copy(
+                currentPasswordUiState = it.currentPasswordUiState.copy(
+                    isValidated = validateCurrentPassword(password),
+                    warningResId = null
+                )
             )
-        )
+        }
     }
 
-    fun checkNewPassword(newPassword: String, newPasswordCheck: String) {
-        val (newPasswordValid, newPasswordWarningResId) = validateNewPassword(newPassword, newPasswordCheck)
-        _modifyPasswordValidUiState.value = _modifyPasswordValidUiState.value.copy(
-            newPasswordValid = _modifyPasswordValidUiState.value.newPasswordValid.copy(
-                valid = newPasswordValid,
-                warningResId = newPasswordWarningResId
-            ),
-        )
+    fun checkPasswordFormat(newPassword: String) {
+        val (isValidated, warningResId) = validateNewPasswordFormat(newPassword)
+        _uiState.update {
+            it.copy(
+                newPasswordUiState = it.newPasswordUiState.copy(
+                    isValidated = isValidated,
+                    showWarningBorder = !isValidated && newPassword.isNotEmpty(),
+                    warningResId = warningResId
+                )
+            )
+        }
     }
 
-    fun requestModifyPassword(passwordUiState: ModifyPasswordUiState) {
+    fun checkPasswordEqual(newPassword: String, newPasswordCheck: String) {
+        val (isValidated, warningResId) = validateNewPasswordEqual(newPassword, newPasswordCheck)
+        _uiState.update {
+            it.copy(
+                newPasswordCheckUiState = it.newPasswordCheckUiState.copy(
+                    isValidated = isValidated,
+                    showWarningBorder = !isValidated && newPasswordCheck.isNotEmpty(),
+                    warningResId = warningResId
+                )
+            )
+        }
+    }
+
+    fun requestModifyPassword() {
         async(
-            operation = { userRepository.modifyPassword(passwordUiState.toRequest()) },
-            onSuccess = {
-                _modifyPasswordValidUiState.value = _modifyPasswordValidUiState.value.copy(
-                    isSuccess = it.isSuccess,
-                    code = it.code,
-                    currentPasswordValid = _modifyPasswordValidUiState.value.currentPasswordValid.copy(
-                        warningResId = if (it.code == INCORRECT_CURRENT_PASSWORD) WarningType.IncorrectCurrentPassword.stringResId else null,
-                        reset = it.code == INCORRECT_CURRENT_PASSWORD
-                    ),
-                    newPasswordValid = _modifyPasswordValidUiState.value.newPasswordValid.copy(
-                        warningResId = if (it.code == NEW_PASSWORD_SAME_AS_CURRENT) WarningType.NewPasswordSameAsCurrent.stringResId else null,
-                        reset = it.code == NEW_PASSWORD_SAME_AS_CURRENT
-                    ),
-                )
+            operation = { userRepository.modifyPassword(_uiState.value.toRequest()) },
+            onSuccess = { response ->
+                val incorrectCurrentPassword = response.code == INCORRECT_CURRENT_PASSWORD
+                val newPasswordSameAsCurrent = response.code == NEW_PASSWORD_SAME_AS_CURRENT
+
+                _uiState.update {
+                    it.copy(
+                        isSuccess = response.isSuccess,
+                        code = response.code,
+                        currentPasswordUiState = it.currentPasswordUiState.copy(
+                            warningResId = if (incorrectCurrentPassword) WarningType.IncorrectCurrentPassword.stringResId else null,
+                            isReset = incorrectCurrentPassword
+                        ),
+                        newPasswordUiState = it.newPasswordUiState.copy(
+                            warningResId = if (newPasswordSameAsCurrent) WarningType.NewPasswordSameAsCurrent.stringResId else null,
+                            isReset = newPasswordSameAsCurrent,
+                            showWarningBorder = newPasswordSameAsCurrent,
+                        ),
+                        newPasswordCheckUiState = it.newPasswordCheckUiState.copy(
+                            warningResId = if (newPasswordSameAsCurrent) WarningType.NewPasswordSameAsCurrent.stringResId else null,
+                            isReset = newPasswordSameAsCurrent,
+                            showWarningBorder = newPasswordSameAsCurrent
+                        )
+                    )
+                }
             },
-            onFailure = {
-                _modifyPasswordValidUiState.value = _modifyPasswordValidUiState.value.copy(
-                    isSuccess = false,
-                    errorMessage = it.message,
-                )
+            onFailure = { t ->
+                _uiState.update {
+                    it.copy(
+                        isSuccess = false,
+                        errorMessage = t.message
+                    )
+                }
             }
         )
     }
 
-    fun updateCurrentPassword(password: String) {
-        _modifyPasswordUiState.value = _modifyPasswordUiState.value.copy(password = password)
+    fun updatePasswordUiState(currentPassword: String, newPassword: String, newPasswordCheck: String) {
+        _uiState.update {
+            it.copy(
+                currentPasswordUiState = it.currentPasswordUiState.copy(currentPassword = currentPassword),
+                newPasswordUiState = it.newPasswordUiState.copy(newPassword = newPassword),
+                newPasswordCheckUiState = it.newPasswordCheckUiState.copy(newPasswordCheck = newPasswordCheck)
+            )
+        }
     }
 
-    fun updateNewPassword(newPassword: String, newPasswordCheck: String) {
-        _modifyPasswordUiState.value =
-            _modifyPasswordUiState.value.copy(newPassword = newPassword, newPasswordCheck = newPasswordCheck)
+    fun onClearCurrentPassword() {
+        // 현재 비밀번호 입력필드 clear 할 때 isReset = false로 초기화
+        _uiState.update {
+            it.copy(
+                currentPasswordUiState = it.currentPasswordUiState.copy(isReset = false)
+            )
+        }
     }
 
-    fun resetCurrentPasswordField() {
-        _modifyPasswordValidUiState.value = _modifyPasswordValidUiState.value.copy(
-            currentPasswordValid = _modifyPasswordValidUiState.value.currentPasswordValid.copy(reset = false)
-        )
-    }
-
-    fun resetNewPasswordField() {
-        _modifyPasswordValidUiState.value = _modifyPasswordValidUiState.value.copy(
-            newPasswordValid = _modifyPasswordValidUiState.value.newPasswordValid.copy(reset = false)
-        )
+    fun onClearNewPasswords() {
+        // 새 비밀번호 입력필드, 새 비밀번호 확인 입력필드 clear 할 때 isReset = false로 초기화
+        _uiState.update {
+            it.copy(
+                newPasswordUiState = it.newPasswordUiState.copy(isReset = false),
+                newPasswordCheckUiState = it.newPasswordCheckUiState.copy(isReset = false)
+            )
+        }
     }
 }
