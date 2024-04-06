@@ -16,6 +16,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -47,9 +48,12 @@ fun SearchMemberScreen(
 ) {
     val context = LocalContext.current
     val searchMemberUiState = viewModel.searchMemberUiState.collectAsStateWithLifecycle()
-    if (searchMemberUiState.value.isSuccess == false) {
-        showErrorMessage(context, searchMemberUiState.value.errorMessage)
-    }
+
+    LaunchedEffect(key1 = searchMemberUiState.value.isSuccess, block = {
+        if (searchMemberUiState.value.isSuccess == false) {
+            showErrorMessage(context, searchMemberUiState.value.errorMessage)
+        }
+    })
     SearchMemberScreen(
         navigate = navigate,
         searchMember = viewModel::searchMember,
