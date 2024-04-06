@@ -48,6 +48,7 @@ fun SearchTextField(
                 tint = AppColors.grey2
             )
             BasicTextField(
+                modifier = Modifier.weight(1f),
                 onValueChange = {
                     textFieldValue = it
                     onValueChange(textFieldValue)
@@ -71,7 +72,7 @@ fun SearchTextField(
     }
 }
 
-@Preview
+@Preview(showBackground = true)
 @Composable
 fun SearchTextFieldPreview() {
     SearchTextField(hint = "", onValueChange = {})

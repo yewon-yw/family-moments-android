@@ -34,7 +34,6 @@ import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
 import io.familymoments.app.feature.choosingfamily.MemberCheckBox
 import io.familymoments.app.feature.choosingfamily.SearchTextField
@@ -178,21 +177,17 @@ private fun MemberItem(
 @Preview(showBackground = true)
 @Composable
 fun SearchMemberScreenPreview() {
-    FamilyMomentsTheme {
-        SearchMemberScreen(searchMember = {}, members = listOf())
-    }
+    SearchMemberScreen(searchMember = {}, members = listOf())
 }
 
 @Preview(showBackground = true)
 @Composable
 fun MemberListPreview() {
-    FamilyMomentsTheme {
-        MemberList(
-            members = listOf(
-                Member("a", "", 1),
-                Member("b", "", 0),
-                Member("c", "", 1)
-            )
+    MemberList(
+        members = listOf(
+            Member("a", "", 1),
+            Member("b", "", 0),
+            Member("c", "", 1)
         )
-    }
+    )
 }

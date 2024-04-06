@@ -94,6 +94,7 @@ fun SetUpFamilyName(
             .padding(vertical = 12.dp, horizontal = 11.dp),
     ) {
         BasicTextField(
+            modifier = Modifier.fillMaxWidth(),
             value = familyName,
             onValueChange = { familyName = it },
             textStyle = AppTypography.LB1_13.copy(color = AppColors.black1)
