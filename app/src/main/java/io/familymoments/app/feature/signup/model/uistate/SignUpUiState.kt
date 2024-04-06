@@ -22,10 +22,10 @@ data class SignUpInfoUiState(
 
 data class SignUpValidatedUiState(
     val userIdValidated: Boolean = false,
-    val userIdDuplicated: Boolean? = null,
+    val userIdDuplicated: UserIdDuplicated = UserIdDuplicated(),
     val passwordValidated: Boolean = false,
     val emailValidated: Boolean = false,
-    val emailDuplicated: Boolean? = null,
+    val emailDuplicated: EmailDuplicated = EmailDuplicated(),
     val nicknameValidated: Boolean = false,
     val birthDayValidated:Boolean = false
 )
@@ -36,3 +36,12 @@ data class SignUpTermUiState(
     val checkedStatus: CheckedStatus = CheckedStatus.UNCHECKED
 )
 
+data class EmailDuplicated(
+    val isSuccess:Boolean? = null,
+    val duplicatedPass:Boolean = false
+)
+
+data class UserIdDuplicated(
+    val isSuccess:Boolean? = null,
+    val duplicatedPass:Boolean = false
+)

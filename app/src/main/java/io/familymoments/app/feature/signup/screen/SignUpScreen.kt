@@ -99,10 +99,12 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
     }
 
     LaunchedEffect(uiState.value.signUpValidatedUiState.userIdDuplicated) {
-        showUserIdDuplicationCheckResult(uiState.value.signUpValidatedUiState.userIdDuplicated, context)
+        showUserIdDuplicationCheckResult(uiState.value.signUpValidatedUiState.userIdDuplicated.isSuccess, context)
+        viewModel.resetUserIdDuplicatedSuccess()
     }
     LaunchedEffect(uiState.value.signUpValidatedUiState.emailDuplicated) {
-        showEmailDuplicationCheckResult(uiState.value.signUpValidatedUiState.emailDuplicated, context)
+        showEmailDuplicationCheckResult(uiState.value.signUpValidatedUiState.emailDuplicated.isSuccess, context)
+        viewModel.resetEmailDuplicatedSuccess()
     }
 
     LaunchedEffect(uiState.value.signUpSuccess) {
@@ -143,8 +145,8 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
                 userIdFormatValidated = uiState.value.signUpValidatedUiState.userIdValidated,
                 checkIdFormat = viewModel::checkIdFormat,
                 checkIdDuplication = viewModel::checkIdDuplication,
-                resetUserIdDuplicated = viewModel::resetUserIdDuplicated,
-                userIdDuplicated = uiState.value.signUpValidatedUiState.userIdDuplicated ?: false
+                resetUserIdDuplicatedPass = viewModel::resetUserIdDuplicatedPass,
+                userIdDuplicated = uiState.value.signUpValidatedUiState.userIdDuplicated.duplicatedPass
             ) {
                 signUpInfoUiState = signUpInfoUiState.copy(id = it)
             }
@@ -164,8 +166,8 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
                 checkEmailFormat = viewModel::checkEmailFormat,
                 checkEmailDuplication = viewModel::checkEmailDuplication,
                 emailFormatValidated = uiState.value.signUpValidatedUiState.emailValidated,
-                resetEmailDuplicated = viewModel::resetEmailDuplicated,
-                emailDuplicated = uiState.value.signUpValidatedUiState.emailDuplicated ?: false
+                resetEmailDuplicatedPass = viewModel::resetEmailDuplicatedPass,
+                emailDuplicated = uiState.value.signUpValidatedUiState.emailDuplicated.duplicatedPass
             ) { signUpInfoUiState = signUpInfoUiState.copy(email = it) }
             BirthDayField(
                 checkBirthDayFormat = viewModel::checkBirthDayFormat,
@@ -226,7 +228,7 @@ fun IdField(
     userIdDuplicated: Boolean,
     checkIdFormat: (String) -> Unit,
     checkIdDuplication: (String) -> Unit,
-    resetUserIdDuplicated: () -> Unit,
+    resetUserIdDuplicatedPass: () -> Unit,
     onValueChange: (String) -> Unit
 ) {
     var previousId by remember {
@@ -246,7 +248,7 @@ fun IdField(
                 if (previousId.text != it.text) {
                     onValueChange(it.text)
                     checkIdFormat(it.text)
-                    resetUserIdDuplicated()
+                    resetUserIdDuplicatedPass()
                     previousId = it
                 }
             },
@@ -350,7 +352,7 @@ fun EmailField(
     checkEmailFormat: (String) -> Unit,
     checkEmailDuplication: (String) -> Unit,
     emailFormatValidated: Boolean,
-    resetEmailDuplicated: () -> Unit,
+    resetEmailDuplicatedPass: () -> Unit,
     emailDuplicated: Boolean,
     onValueChange: (String) -> Unit
 ) {
@@ -371,7 +373,7 @@ fun EmailField(
                 if (it.text != previousEmail.text) {
                     onValueChange(it.text)
                     checkEmailFormat(it.text)
-                    resetEmailDuplicated()
+                    resetEmailDuplicatedPass()
                     previousEmail = it
                 }
             },
@@ -581,8 +583,8 @@ fun StartButtonField(
             && nicknameValidated
             && passwordValidated
             && userIdValidated
-            && emailDuplicated == true
-            && userIdDuplicated == true
+            && emailDuplicated.duplicatedPass
+            && userIdDuplicated.duplicatedPass
     }
     signUpEnable = passwordSameCheck && allEssentialTermsAgree && signUpValidated && signUpInfoUiState.imgFile != null
     FMButton(
