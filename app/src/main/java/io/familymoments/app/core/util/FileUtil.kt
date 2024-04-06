@@ -17,6 +17,7 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
+import kotlin.math.roundToInt
 
 object FileUtil {
     private const val COMPRESS_QUALITY = 50
@@ -103,5 +104,12 @@ object FileUtil {
             bitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESS_QUALITY, outputStream)
         }
         return file
+    }
+
+    fun resizeBitmap(bitmap: Bitmap, density: Float, height: Int): Bitmap {
+        val aspectRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
+        val desiredHeightPx = (height.toFloat() * density).roundToInt()
+        val scaledWidthPx = (desiredHeightPx * aspectRatio).roundToInt()
+        return Bitmap.createScaledBitmap(bitmap, scaledWidthPx, desiredHeightPx, true)
     }
 }
