@@ -95,7 +95,9 @@ fun SetUpFamilyName(
     ) {
         BasicTextField(
             value = familyName,
-            onValueChange = { familyName = it },
+            onValueChange = {
+                if (it.text.length <= 20) familyName = it
+            },
             textStyle = AppTypography.LB1_13.copy(color = AppColors.black1)
         ) { innerTextField ->
             if (familyName.text.isEmpty()) {
