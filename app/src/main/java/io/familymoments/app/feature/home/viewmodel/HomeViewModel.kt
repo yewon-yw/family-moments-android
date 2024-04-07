@@ -100,16 +100,16 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-    fun postPostLoves(index: Long) {
+    fun postPostLoves(postId: Long) {
         Timber.d("postPostLoves")
         async(
-            operation = { postRepository.postPostLoves(index) },
+            operation = { postRepository.postPostLoves(postId) },
             onSuccess = { response ->
                 Timber.d("postPostLoves onSuccess: $response")
                 _homeUiState.update {
                     it.copy(
                         posts = it.posts.map { post ->
-                            if (post.postId == index) {
+                            if (post.postId == postId) {
                                 post.copy(loved = true)
                             } else {
                                 post
@@ -121,22 +121,24 @@ class HomeViewModel @Inject constructor(
             onFailure = { t ->
                 Timber.d("postPostLoves onFailure: ${t.message}")
                 _homeUiState.update {
-                    it.copy(popup = PostPopupType.POST_LOVES_FAILURE)
+                    it.copy(
+                        popup = PostPopupType.PostLovesFailure
+                    )
                 }
             }
         )
     }
 
-    fun deletePostLoves(index: Long) {
+    fun deletePostLoves(postId: Long) {
         Timber.d("deletePostLoves")
         async(
-            operation = { postRepository.deletePostLoves(index) },
+            operation = { postRepository.deletePostLoves(postId) },
             onSuccess = { response ->
                 Timber.d("deletePostLoves onSuccess: $response")
                 _homeUiState.update {
                     it.copy(
                         posts = it.posts.map { post ->
-                            if (post.postId == index) {
+                            if (post.postId == postId) {
                                 post.copy(loved = false)
                             } else {
                                 post
@@ -148,33 +150,48 @@ class HomeViewModel @Inject constructor(
             onFailure = { t ->
                 Timber.d("deletePostLoves onFailure: ${t.message}")
                 _homeUiState.update {
-                    it.copy(popup = PostPopupType.DELETE_LOVES_FAILURE)
+                    it.copy(
+                        popup = PostPopupType.DeleteLovesFailure
+                    )
                 }
             }
         )
     }
 
-    fun deletePost(index: Long) {
+    fun showDeletePostPopup(postId: Long) {
+        Timber.d("showDeletePostPopup")
+        _homeUiState.update {
+            it.copy(popup = PostPopupType.DeletePost(postId))
+        }
+    }
+
+    fun deletePost(postId: Long) {
         Timber.d("deletePost")
         async(
-            operation = { postRepository.deletePost(index) },
+            operation = { postRepository.deletePost(postId) },
             onSuccess = { response ->
                 Timber.d("deletePost onSuccess: $response")
                 _homeUiState.update {
-                    it.copy(popup = PostPopupType.DELETE_POST)
+                    it.copy(
+                        posts = it.posts.filter { post -> post.postId != postId },
+                        popup = PostPopupType.DeletePostSuccess
+                    )
                 }
-//                _homeUiState.update {
-//                    it.copy(
-//                        posts = it.posts.filter { post -> post.postId != index }
-//                    )
-//                }
             },
             onFailure = { t ->
                 Timber.d("deletePost onFailure: ${t.message}")
                 _homeUiState.update {
-                    it.copy(popup = PostPopupType.DELETE_POST_FAILURE)
+                    it.copy(
+                        popup = PostPopupType.DeletePostFailure
+                    )
                 }
             }
         )
+    }
+
+    fun initPopup() {
+        _homeUiState.update {
+            it.copy(popup = null)
+        }
     }
 }

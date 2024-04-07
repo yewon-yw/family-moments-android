@@ -9,7 +9,6 @@ import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.familymoments.app.core.theme.AppColors
@@ -19,10 +18,9 @@ import io.familymoments.app.core.theme.AppTypography
 @Composable
 fun PostDropdownMenu2(
     modifier: Modifier = Modifier,
-    items: List<String>,
+    items: List<Pair<String, () -> Unit>>,
     expanded: Boolean,
-    onDismissRequest: () -> Unit,
-    onItemClick: () -> Unit
+    onDismissRequest: () -> Unit
 ) {
     DropdownMenu(
         expanded = expanded,
@@ -38,12 +36,12 @@ fun PostDropdownMenu2(
             DropdownMenuItem(
                 text = {
                     Text(
-                        text = it,
+                        text = it.first,
                         style = AppTypography.LB2_11,
                         color = AppColors.grey6
                     )
                 },
-                onClick = onItemClick,
+                onClick = it.second,
                 modifier = Modifier.height(35.dp)
             )
         }
@@ -54,9 +52,8 @@ fun PostDropdownMenu2(
 @Composable
 fun PostDropdownMenu2Preview() {
     PostDropdownMenu2(
-        items = listOf("아이템1", "아이템2", "아이템3"),
+        items = listOf(Pair("아이템1") {}, Pair("아이템2") {}),
         expanded = true,
         onDismissRequest = {},
-        onItemClick = {}
     )
 }

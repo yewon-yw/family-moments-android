@@ -51,7 +51,8 @@ fun PostItem2(
     post: Post,
     navigateToPostDetail: (Int) -> Unit,
     navigateToEditPost: (Long) -> Unit,
-    onClickPostLoves: () -> Unit
+    onClickPostLoves: () -> Unit,
+    showDeletePostPopup: () -> Unit
 ) {
     Column {
         Spacer(modifier = Modifier.height(10.dp))
@@ -62,7 +63,8 @@ fun PostItem2(
                 post = post,
                 navigateToPostDetail = navigateToPostDetail,
                 navigateToEditPost = navigateToEditPost,
-                onClickPostLoves = onClickPostLoves
+                onClickPostLoves = onClickPostLoves,
+                showDeletePostPopup = showDeletePostPopup
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
@@ -103,7 +105,8 @@ private fun PostItemContent(
     post: Post,
     navigateToPostDetail: (Int) -> Unit,
     navigateToEditPost: (Long) -> Unit,
-    onClickPostLoves: () -> Unit
+    onClickPostLoves: () -> Unit,
+    showDeletePostPopup: () -> Unit
 ) {
     val menuExpanded = remember { mutableStateOf(false) }
 
@@ -188,13 +191,15 @@ private fun PostItemContent(
                     if (menuExpanded.value) {
                         PostDropdownMenu2(
                             items = listOf(
-                                stringResource(id = R.string.post_detail_screen_drop_down_menu_modify),
-                                stringResource(id = R.string.post_detail_screen_drop_down_menu_report),
-                                stringResource(id = R.string.post_detail_screen_drop_down_menu_delete)
+                                Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify)) {},
+                                Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {},
+                                Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_delete)) {
+                                    showDeletePostPopup()
+                                    menuExpanded.value = false
+                                },
                             ),
                             expanded = menuExpanded.value,
-                            onDismissRequest = { menuExpanded.value = false },
-                            onItemClick = {}
+                            onDismissRequest = { menuExpanded.value = false }
                         )
                     }
                 }

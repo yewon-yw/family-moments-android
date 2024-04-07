@@ -1,7 +1,9 @@
 package io.familymoments.app.feature.home.model
 
+import androidx.compose.runtime.Immutable
 import io.familymoments.app.core.network.HttpResponseMessage.NO_POST_404
 
+@Immutable
 data class HomeUiState(
     val isSuccess: Boolean? = null,
     val isLoading: Boolean? = null,
@@ -14,13 +16,13 @@ data class HomeUiState(
     val hasNoPost = isSuccess == false && isLoading == false && errorMessage == NO_POST_404 && posts.isEmpty()
 }
 
-enum class PostPopupType {
-    POST_LOVES_FAILURE,
-    DELETE_LOVES_FAILURE,
-    DELETE_POST,
-    DELETE_POST_SUCCESS,
-    DELETE_POST_FAILURE,
-    REPORT_POST,
-    REPORT_POST_SUCCESS,
-    REPORT_POST_FAILURE
+sealed interface PostPopupType {
+    data object PostLovesFailure : PostPopupType
+    data object DeleteLovesFailure : PostPopupType
+    data class DeletePost(val postId: Long) : PostPopupType
+    data object DeletePostSuccess : PostPopupType
+    data object DeletePostFailure : PostPopupType
+    data object ReportPost : PostPopupType
+    data object ReportPostSuccess : PostPopupType
+    data object ReportPostFailure : PostPopupType
 }

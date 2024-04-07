@@ -63,6 +63,7 @@ fun HomeScreen(
     val hasNoPost = homeUiState.value.hasNoPost
     val nickname = homeUiState.value.nickname
     val dday = homeUiState.value.dday
+    val popup = homeUiState.value.popup
 
     val showPopup = remember { mutableStateOf(false) }
 
@@ -76,9 +77,25 @@ fun HomeScreen(
         }
     }
 
-    LaunchedEffect(viewModel.homeUiState.value.popup) {
-        if (viewModel.homeUiState.value.popup != null) {
-            showPopup.value = true
+    LaunchedEffect(popup) {
+        // popup이 null이 아닐 때만 show popup
+        showPopup.value = popup != null
+    }
+
+    if (showPopup.value) {
+        when (popup) {
+            is PostPopupType.DeletePost -> {
+                DeletePopUp(
+                    content = stringResource(id = R.string.post_delete_pop_up_content),
+                    delete = {
+                        viewModel.deletePost(popup.postId)
+                    },
+                    onDismissRequest = viewModel::initPopup
+                )
+            }
+            else -> {
+
+            }
         }
     }
 
@@ -142,37 +159,10 @@ fun HomeScreen(
                                 viewModel.postPostLoves(post.postId)
                             }
                         },
-//                        onClickDeletePost = {
-//                            view
-//                        }
-                    )
-                }
-            }
-        }
-
-        if (showPopup.value) {
-            when (viewModel.homeUiState.value.popup) {
-                PostPopupType.POST_LOVES_FAILURE -> {
-
-                }
-
-                PostPopupType.DELETE_LOVES_FAILURE -> {
-
-                }
-
-                PostPopupType.DELETE_POST -> {
-                    DeletePopUp(content = stringResource(id = R.string.post_delete_pop_up_content),
-                        delete = {
-                            viewModel.deletePost(viewModel.homeUiState.value.posts[0].postId)
-                        },
-                        onDismissRequest = {
-                            showPopup.value = false
+                        showDeletePostPopup = {
+                            viewModel.showDeletePostPopup(post.postId)
                         }
                     )
-                }
-
-                else -> {
-
                 }
             }
         }
