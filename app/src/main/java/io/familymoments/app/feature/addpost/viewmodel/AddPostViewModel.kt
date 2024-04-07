@@ -22,10 +22,10 @@ class AddPostViewModel @Inject constructor(
     private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
 ) : BaseViewModel() {
 
-    private val mode: Int = savedStateHandle[Route.AddPost.modeArg] ?: AddPostMode.ADD.mode
-    private val editPostId: Int = savedStateHandle[Route.AddPost.editPostIdArg] ?: 0
-    private val editImages: Array<String> = savedStateHandle[Route.AddPost.editImagesArg] ?: arrayOf()
-    private val editContent: String = savedStateHandle[Route.AddPost.editContentArg] ?: ""
+    private val mode: Int = savedStateHandle[Route.EditPost.modeArg] ?: AddPostMode.ADD.mode
+    private val editPostId: Int = savedStateHandle[Route.EditPost.editPostIdArg] ?: 0
+    private val editImages: Array<String> = savedStateHandle[Route.EditPost.editImagesArg] ?: arrayOf()
+    private val editContent: String = savedStateHandle[Route.EditPost.editContentArg] ?: ""
 
     private val _uiState = MutableStateFlow(
         AddPostUiState(

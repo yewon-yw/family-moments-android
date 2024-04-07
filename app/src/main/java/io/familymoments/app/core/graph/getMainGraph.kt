@@ -9,6 +9,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.addpost.model.AddPostMode
+import io.familymoments.app.feature.addpost.screen.AddPostScreen
 import io.familymoments.app.feature.bottomnav.graph.bottomNavGraph
 import io.familymoments.app.feature.calendar.screen.CalendarDayScreen
 import io.familymoments.app.feature.mypage.graph.myPageGraph
@@ -40,7 +41,7 @@ fun getMainGraph(
             }
         ) { post ->
             navController.navigate(
-                Route.AddPost.getRoute(
+                Route.EditPost.getRoute(
                     mode = AddPostMode.EDIT.mode,
                     editPostId = post.postId,
                     editImages = post.imgs.toTypedArray(),
@@ -48,6 +49,17 @@ fun getMainGraph(
                 )
             )
         }
+    }
+
+    composable(
+        route = Route.EditPost.routeWithArgs,
+        arguments = Route.EditPost.arguments
+    ) {
+        AddPostScreen(
+            modifier = Modifier.scaffoldState(hasShadow = true, hasBackButton = true),
+            viewModel = hiltViewModel(),
+            popBackStack = navController::popBackStack
+        )
     }
 
     composable(
