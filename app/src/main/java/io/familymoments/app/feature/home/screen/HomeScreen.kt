@@ -33,13 +33,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
-import io.familymoments.app.core.component.PostItem
+import io.familymoments.app.core.component.PostItem2
 import io.familymoments.app.core.component.PostItemPreview
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.feature.home.model.PostPopupType
 import io.familymoments.app.feature.home.viewmodel.HomeViewModel
 
 @Composable
@@ -72,6 +72,17 @@ fun HomeScreen(
             viewModel.loadMorePosts()
         }
     }
+
+    //TODO: Implement popup
+//    LaunchedEffect(viewModel.homeUiState.value.popup) {
+//        when (viewModel.homeUiState.value.popup) {
+//            PostPopupType.POST_LOVES_FAILURE -> {
+//
+//            }
+//            PostPopupType.DELETE_LOVES_FAILURE -> {
+//
+//            }
+//    }
 
     if (isLoading != false) {
         Box(
@@ -118,14 +129,21 @@ fun HomeScreen(
                 item {
                     HomeScreenTitle(hasNoPost = false, nickname = nickname, dday = dday)
                 }
-                items(posts) { post ->
-                    PostItem(
+                items(
+                    items = posts,
+                    key = { it.postId }
+                ) { post ->
+                    PostItem2(
                         post = post,
                         navigateToPostDetail = navigateToPostDetail,
                         navigateToEditPost = {},
-                        viewModel = hiltViewModel(),
-                        reloadPosts = { viewModel.getPosts() },
-                        loves = 0
+                        onClickPostLoves = {
+                            if (post.loved) {
+                                viewModel.deletePostLoves(post.postId)
+                            } else {
+                                viewModel.postPostLoves(post.postId)
+                            }
+                        },
                     )
                 }
             }

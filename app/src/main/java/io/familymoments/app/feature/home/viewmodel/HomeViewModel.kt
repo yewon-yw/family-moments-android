@@ -6,8 +6,10 @@ import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourc
 import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.feature.home.model.HomeUiState
+import io.familymoments.app.feature.home.model.PostPopupType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -94,6 +96,60 @@ class HomeViewModel @Inject constructor(
                     isLoading = isLoading.value,
                     errorMessage = it.message
                 )
+            }
+        )
+    }
+
+    fun postPostLoves(index: Long) {
+        Timber.d("postPostLoves")
+        async(
+            operation = { postRepository.postPostLoves(index) },
+            onSuccess = { response ->
+                Timber.d("postPostLoves onSuccess: $response")
+                _homeUiState.update {
+                    it.copy(
+                        posts = it.posts.map { post ->
+                            if (post.postId == index) {
+                                post.copy(loved = true)
+                            } else {
+                                post
+                            }
+                        },
+                    )
+                }
+            },
+            onFailure = { t ->
+                Timber.d("postPostLoves onFailure: ${t.message}")
+                _homeUiState.update {
+                    it.copy(popup = PostPopupType.POST_LOVES_FAILURE)
+                }
+            }
+        )
+    }
+
+    fun deletePostLoves(index: Long) {
+        Timber.d("deletePostLoves")
+        async(
+            operation = { postRepository.deletePostLoves(index) },
+            onSuccess = { response ->
+                Timber.d("deletePostLoves onSuccess: $response")
+                _homeUiState.update {
+                    it.copy(
+                        posts = it.posts.map { post ->
+                            if (post.postId == index) {
+                                post.copy(loved = false)
+                            } else {
+                                post
+                            }
+                        },
+                    )
+                }
+            },
+            onFailure = { t ->
+                Timber.d("deletePostLoves onFailure: ${t.message}")
+                _homeUiState.update {
+                    it.copy(popup = PostPopupType.DELETE_LOVES_FAILURE)
+                }
             }
         )
     }
