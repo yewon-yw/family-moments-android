@@ -173,10 +173,10 @@ class HomeViewModel @Inject constructor(
                 Timber.d("deletePost onSuccess: $response")
                 _homeUiState.update {
                     it.copy(
-                        posts = it.posts.filter { post -> post.postId != postId },
                         popup = PostPopupType.DeletePostSuccess
                     )
                 }
+                getPosts()
             },
             onFailure = { t ->
                 Timber.d("deletePost onFailure: ${t.message}")
@@ -189,7 +189,10 @@ class HomeViewModel @Inject constructor(
         )
     }
 
-    fun initPopup() {
+    /**
+     * popup을 null로 초기화 해주면서 화면에서 팝업을 안 보이도록 처리
+     */
+    fun dismissPopup() {
         _homeUiState.update {
             it.copy(popup = null)
         }

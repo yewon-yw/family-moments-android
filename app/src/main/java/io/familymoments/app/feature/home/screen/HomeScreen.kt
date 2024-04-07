@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.PostItem2
 import io.familymoments.app.core.component.PostItemPreview
+import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.component.popup.DeletePopUp
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
@@ -84,15 +85,35 @@ fun HomeScreen(
 
     if (showPopup.value) {
         when (popup) {
+            PostPopupType.PostLovesFailure -> {
+
+            }
+
+            PostPopupType.DeleteLovesFailure -> {
+
+            }
+
             is PostPopupType.DeletePost -> {
                 DeletePopUp(
                     content = stringResource(id = R.string.post_delete_pop_up_content),
                     delete = {
                         viewModel.deletePost(popup.postId)
                     },
-                    onDismissRequest = viewModel::initPopup
+                    onDismissRequest = viewModel::dismissPopup
                 )
             }
+
+            PostPopupType.DeletePostSuccess -> {
+                CompletePopUp(
+                    content = stringResource(R.string.post_detail_delete_complete_pop_label),
+                    onDismissRequest = viewModel::dismissPopup
+                )
+            }
+
+            PostPopupType.DeletePostFailure -> {
+
+            }
+
             else -> {
 
             }
