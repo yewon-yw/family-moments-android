@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.PostItem2
 import io.familymoments.app.core.component.PostItemPreview
+import io.familymoments.app.core.component.popup.DeletePopUp
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.home.model.PostPopupType
@@ -63,6 +64,8 @@ fun HomeScreen(
     val nickname = homeUiState.value.nickname
     val dday = homeUiState.value.dday
 
+    val showPopup = remember { mutableStateOf(false) }
+
     LaunchedEffect(Unit) {
         viewModel.getNicknameDday()
         viewModel.getPosts()
@@ -73,16 +76,11 @@ fun HomeScreen(
         }
     }
 
-    //TODO: Implement popup
-//    LaunchedEffect(viewModel.homeUiState.value.popup) {
-//        when (viewModel.homeUiState.value.popup) {
-//            PostPopupType.POST_LOVES_FAILURE -> {
-//
-//            }
-//            PostPopupType.DELETE_LOVES_FAILURE -> {
-//
-//            }
-//    }
+    LaunchedEffect(viewModel.homeUiState.value.popup) {
+        if (viewModel.homeUiState.value.popup != null) {
+            showPopup.value = true
+        }
+    }
 
     if (isLoading != false) {
         Box(
@@ -144,7 +142,37 @@ fun HomeScreen(
                                 viewModel.postPostLoves(post.postId)
                             }
                         },
+//                        onClickDeletePost = {
+//                            view
+//                        }
                     )
+                }
+            }
+        }
+
+        if (showPopup.value) {
+            when (viewModel.homeUiState.value.popup) {
+                PostPopupType.POST_LOVES_FAILURE -> {
+
+                }
+
+                PostPopupType.DELETE_LOVES_FAILURE -> {
+
+                }
+
+                PostPopupType.DELETE_POST -> {
+                    DeletePopUp(content = stringResource(id = R.string.post_delete_pop_up_content),
+                        delete = {
+                            viewModel.deletePost(viewModel.homeUiState.value.posts[0].postId)
+                        },
+                        onDismissRequest = {
+                            showPopup.value = false
+                        }
+                    )
+                }
+
+                else -> {
+
                 }
             }
         }

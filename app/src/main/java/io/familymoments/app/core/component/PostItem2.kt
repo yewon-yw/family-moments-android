@@ -23,10 +23,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -107,6 +105,8 @@ private fun PostItemContent(
     navigateToEditPost: (Long) -> Unit,
     onClickPostLoves: () -> Unit
 ) {
+    val menuExpanded = remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .padding(horizontal = 11.dp)
@@ -176,40 +176,27 @@ private fun PostItemContent(
                 modifier = Modifier.padding(top = 5.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-                var menuExpanded by remember {
-                    mutableStateOf(false)
-                }
                 Box {
                     Icon(
                         imageVector = ImageVector.vectorResource(R.drawable.ic_three_dots_row),
                         tint = AppColors.deepPurple1,
                         contentDescription = null,
                         modifier = Modifier.noRippleClickable {
-                            menuExpanded = true
+                            menuExpanded.value = true
                         }
                     )
-                    val deletePostPopupLabel = stringResource(R.string.post_detail_delete_post_pop_up_label)
-//                    PostDropdownMenu(
-//                        items = listOf(
-//                            Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify)) {
-//                                navigateToEditPost(post.postId)
-//                            },
-//                            Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {
-//                                popupUiState.popupStatusLogics.showReportPopup(true) {
-//                                    popupUiState.popupStatusLogics.showReportPopup(false, {})
-//                                }
-//                            },
-//                            Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_delete)) {
-//                                popupUiState.popupStatusLogics.showDeletePopup(true, deletePostPopupLabel) {
-//                                    postItemUiState.logics.deletePost(post.postId)
-//                                    popupUiState.popupStatusLogics.showCompletePopup(true)
-//                                    popupUiState.popupStatusLogics.showDeletePopup(false, "") {}
-//                                }
-//                            },
-//                        ),
-//                        expanded = menuExpanded
-//                    ) { menuExpanded = it }
+                    if (menuExpanded.value) {
+                        PostDropdownMenu2(
+                            items = listOf(
+                                stringResource(id = R.string.post_detail_screen_drop_down_menu_modify),
+                                stringResource(id = R.string.post_detail_screen_drop_down_menu_report),
+                                stringResource(id = R.string.post_detail_screen_drop_down_menu_delete)
+                            ),
+                            expanded = menuExpanded.value,
+                            onDismissRequest = { menuExpanded.value = false },
+                            onItemClick = {}
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(6.dp))

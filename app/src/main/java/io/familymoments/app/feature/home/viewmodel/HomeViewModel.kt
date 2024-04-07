@@ -153,4 +153,28 @@ class HomeViewModel @Inject constructor(
             }
         )
     }
+
+    fun deletePost(index: Long) {
+        Timber.d("deletePost")
+        async(
+            operation = { postRepository.deletePost(index) },
+            onSuccess = { response ->
+                Timber.d("deletePost onSuccess: $response")
+                _homeUiState.update {
+                    it.copy(popup = PostPopupType.DELETE_POST)
+                }
+//                _homeUiState.update {
+//                    it.copy(
+//                        posts = it.posts.filter { post -> post.postId != index }
+//                    )
+//                }
+            },
+            onFailure = { t ->
+                Timber.d("deletePost onFailure: ${t.message}")
+                _homeUiState.update {
+                    it.copy(popup = PostPopupType.DELETE_POST_FAILURE)
+                }
+            }
+        )
+    }
 }
