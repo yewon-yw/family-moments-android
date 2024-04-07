@@ -87,11 +87,11 @@ fun HomeScreen(
     if (showPopup.value) {
         when (popup) {
             PostPopupType.PostLovesFailure -> {
-
+                //TODO: 좋아요 생성 실패 팝업
             }
 
             PostPopupType.DeleteLovesFailure -> {
-
+                //TODO: 좋아요 삭제 실패 팝업
             }
 
             is PostPopupType.DeletePost -> {
@@ -112,7 +112,7 @@ fun HomeScreen(
             }
 
             PostPopupType.DeletePostFailure -> {
-
+                // TODO: 게시물 삭제 실패 팝업
             }
 
             is PostPopupType.ReportPost -> {
@@ -123,6 +123,14 @@ fun HomeScreen(
                         // viewModel.reportPost(popup.postId)
                     }
                 )
+            }
+
+            PostPopupType.ReportPostSuccess -> {
+                // TODO: 신고가 완료되었습니다 팝업
+            }
+
+            PostPopupType.ReportPostFailure -> {
+
             }
 
             else -> {
