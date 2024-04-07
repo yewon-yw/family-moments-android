@@ -248,7 +248,6 @@ fun IdField(
             isFocused = isFocused
         )
     }
-    Spacer(modifier = Modifier.height(20.dp))
 }
 
 @Composable
@@ -277,7 +276,6 @@ fun FirstPasswordField(
         isFocused = isFocused,
         showText = false
     )
-    Spacer(modifier = Modifier.height(20.dp))
 }
 
 @Composable
@@ -310,7 +308,6 @@ fun SecondPasswordField(
             showText = false
         )
     }
-    Spacer(modifier = Modifier.height(20.dp))
 }
 
 @Composable
@@ -363,7 +360,6 @@ fun EmailField(
             validated = emailFormatValidated
         )
     }
-    Spacer(modifier = Modifier.height(20.dp))
 }
 
 @Composable
@@ -390,8 +386,6 @@ fun BirthDayField(
         showWarningText = true,
         warningText = stringResource(R.string.sign_up_birthday_check_validation_warning)
     )
-
-    Spacer(modifier = Modifier.height(20.dp))
 }
 
 @Composable
@@ -424,7 +418,6 @@ fun NicknameField(
             validated = nicknameFormatValidated
         )
     }
-    Spacer(modifier = Modifier.height(20.dp))
 }
 
 @Composable

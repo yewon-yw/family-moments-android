@@ -151,6 +151,9 @@ fun ShowWarningText(
     if (textFieldValue.text.isNotEmpty() && !validation) {
         colorChange(AppColors.red1)
         Text(
+            modifier = Modifier
+                .padding(top = 3.dp, bottom = 4.dp)
+                .height(13.dp),
             text = text,
             color = AppColors.red2,
             style = AppTypography.LB2_11
@@ -158,6 +161,7 @@ fun ShowWarningText(
     }
     if (textFieldValue.text.isEmpty() || validation) {
         colorChange(AppColors.black1)
+        Spacer(modifier = Modifier.height(20.dp))
     }
 }
 
