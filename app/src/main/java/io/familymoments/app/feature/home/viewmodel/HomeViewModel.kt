@@ -189,6 +189,13 @@ class HomeViewModel @Inject constructor(
         )
     }
 
+    fun showReportPostPopup(postId: Long) {
+        Timber.d("showReportPostPopup")
+        _homeUiState.update {
+            it.copy(popup = PostPopupType.ReportPost(postId))
+        }
+    }
+
     /**
      * popup을 null로 초기화 해주면서 화면에서 팝업을 안 보이도록 처리
      */

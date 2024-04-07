@@ -22,7 +22,7 @@ sealed interface PostPopupType {
     data class DeletePost(val postId: Long) : PostPopupType
     data object DeletePostSuccess : PostPopupType
     data object DeletePostFailure : PostPopupType
-    data object ReportPost : PostPopupType
+    data class ReportPost(val postId: Long) : PostPopupType
     data object ReportPostSuccess : PostPopupType
     data object ReportPostFailure : PostPopupType
 }

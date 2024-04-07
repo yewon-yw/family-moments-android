@@ -52,7 +52,8 @@ fun PostItem2(
     navigateToPostDetail: (Int) -> Unit,
     navigateToEditPost: (Long) -> Unit,
     onClickPostLoves: () -> Unit,
-    showDeletePostPopup: () -> Unit
+    showDeletePostPopup: () -> Unit,
+    showReportPostPopup: () -> Unit
 ) {
     Column {
         Spacer(modifier = Modifier.height(10.dp))
@@ -64,7 +65,8 @@ fun PostItem2(
                 navigateToPostDetail = navigateToPostDetail,
                 navigateToEditPost = navigateToEditPost,
                 onClickPostLoves = onClickPostLoves,
-                showDeletePostPopup = showDeletePostPopup
+                showDeletePostPopup = showDeletePostPopup,
+                showReportPostPopup = showReportPostPopup
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
@@ -106,7 +108,8 @@ private fun PostItemContent(
     navigateToPostDetail: (Int) -> Unit,
     navigateToEditPost: (Long) -> Unit,
     onClickPostLoves: () -> Unit,
-    showDeletePostPopup: () -> Unit
+    showDeletePostPopup: () -> Unit,
+    showReportPostPopup: () -> Unit
 ) {
     val menuExpanded = remember { mutableStateOf(false) }
 
@@ -192,7 +195,10 @@ private fun PostItemContent(
                         PostDropdownMenu2(
                             items = listOf(
                                 Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify)) {},
-                                Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {},
+                                Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {
+                                    showReportPostPopup()
+                                    menuExpanded.value = false
+                                },
                                 Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_delete)) {
                                     showDeletePostPopup()
                                     menuExpanded.value = false

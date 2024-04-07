@@ -39,6 +39,7 @@ import io.familymoments.app.core.component.PostItem2
 import io.familymoments.app.core.component.PostItemPreview
 import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.component.popup.DeletePopUp
+import io.familymoments.app.core.component.popup.ReportPopUp
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.home.model.PostPopupType
@@ -114,8 +115,18 @@ fun HomeScreen(
 
             }
 
-            else -> {
+            is PostPopupType.ReportPost -> {
+                ReportPopUp(
+                    onDismissRequest = viewModel::dismissPopup,
+                    onReportRequest = {
+                        // TODO: 신고하기 기능 구현
+                        // viewModel.reportPost(popup.postId)
+                    }
+                )
+            }
 
+            else -> {
+                // null
             }
         }
     }
@@ -182,6 +193,9 @@ fun HomeScreen(
                         },
                         showDeletePostPopup = {
                             viewModel.showDeletePostPopup(post.postId)
+                        },
+                        showReportPostPopup = {
+                            viewModel.showReportPostPopup(post.postId)
                         }
                     )
                 }
