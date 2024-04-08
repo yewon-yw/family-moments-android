@@ -378,14 +378,23 @@ class PostDetailViewModel @Inject constructor(
         val dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat, Locale.KOREA)
         val localDateTime = LocalDateTime.parse(createdAtWithoutMillie, dateTimeFormatter)
         val durationSeconds = Duration.between(localDateTime, LocalDateTime.now()).seconds
+
+        // 초 단위
+        val oneMinute = 60
+        val oneHour = oneMinute * 60
+        val oneDay = oneHour * 24
+        val oneWeek = oneDay * 7
+        val oneMonth = oneDay * 30
+        val oneYear = oneDay * 365
+
         return when {
-            durationSeconds < 60 -> "방금"
-            durationSeconds < 3600 -> "${durationSeconds / 60}분 전"
-            durationSeconds < 86400 -> "${durationSeconds / 3600}시간 전"
-            durationSeconds < 604800 -> "${durationSeconds / 86400}일 전"
-            durationSeconds < 2592000 -> "${durationSeconds / 604800}주 전"
-            durationSeconds < 31536000 -> "${durationSeconds / 2592000}달 전"
-            else -> "${durationSeconds / 31536000}년 전"
+            durationSeconds < oneMinute -> "방금"
+            durationSeconds < oneHour -> "${durationSeconds / oneMinute}분 전"
+            durationSeconds < oneDay -> "${durationSeconds / oneHour}시간 전"
+            durationSeconds < oneWeek -> "${durationSeconds / oneDay}일 전"
+            durationSeconds < oneMonth -> "${durationSeconds / oneWeek}주 전"
+            durationSeconds < oneYear -> "${durationSeconds / oneMonth}달 전"
+            else -> "${durationSeconds / oneYear}년 전"
         }
     }
 }
