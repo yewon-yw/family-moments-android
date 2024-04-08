@@ -30,6 +30,7 @@ import io.familymoments.app.R
 import io.familymoments.app.feature.creatingfamily.component.GalleryOrDefaultImageSelectButton
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.util.FAMILY_NAME_MAX_LENGTH
 import io.familymoments.app.core.util.FileUtil.convertBitmapToFile
 import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
 import io.familymoments.app.feature.creatingfamily.model.FamilyProfile
@@ -110,7 +111,9 @@ fun SetUpFamilyName(
         BasicTextField(
             modifier = Modifier.fillMaxWidth(),
             value = familyName,
-            onValueChange = { familyName = it },
+            onValueChange = {
+                if (it.text.length <= FAMILY_NAME_MAX_LENGTH) familyName = it
+            },
             textStyle = AppTypography.LB1_13.copy(color = AppColors.black1)
         ) { innerTextField ->
             if (familyName.text.isEmpty()) {
