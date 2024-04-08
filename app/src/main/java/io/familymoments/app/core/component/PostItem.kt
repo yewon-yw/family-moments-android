@@ -32,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -43,14 +42,14 @@ import io.familymoments.app.R
 import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.component.popup.DeletePopUp
 import io.familymoments.app.core.component.popup.ReportPopUp
-import io.familymoments.app.core.viewmodel.PostItemViewModel
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.uistate.PopupUiState
+import io.familymoments.app.core.uistate.PostItemUiState
 import io.familymoments.app.core.util.noRippleClickable
+import io.familymoments.app.core.viewmodel.PostItemViewModel
 import io.familymoments.app.feature.home.component.postItemContentShadow
 import io.familymoments.app.feature.home.model.Post
-import io.familymoments.app.core.uistate.PostItemUiState
-import io.familymoments.app.core.uistate.PopupUiState
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -179,8 +178,7 @@ private fun PostItemContent(
                         .fillMaxSize()
                         .align(Alignment.Center),
                     model = post.imgs[index],
-                    contentScale = ContentScale.Crop,
-                    contentDescription = null,
+                    contentDescription = null
                 )
             }
             if (post.imgs.size > 1) {
