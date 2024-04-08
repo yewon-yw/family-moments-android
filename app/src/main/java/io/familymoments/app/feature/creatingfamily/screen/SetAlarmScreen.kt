@@ -4,6 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -78,65 +79,80 @@ fun SetAlarmScreen(
             viewModel.createFamily(familyInfo.copy(uploadCycle = uploadCycle.number))
         }
     ) {
-        ExposedDropdownMenuBox(
-            expanded = isExpanded,
-            onExpandedChange = {
-                isExpanded = !isExpanded
-            }) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .then(
-                        if (isExpanded) {
-                            Modifier.border(width = 1.5.dp, color = AppColors.purple2, shape = RoundedCornerShape(8.dp))
-                        } else {
-                            Modifier
-                        }
-                    )
-                    .background(AppColors.grey6, shape = RoundedCornerShape(8.dp))
-                    .padding(vertical = 12.dp, horizontal = 11.dp),
-            ) {
-                BasicTextField(
-                    value = uploadCycleTextFieldValue,
-                    onValueChange = { uploadCycleTextFieldValue = it },
-                    textStyle = AppTypography.LB1_13.copy(AppColors.black1),
-                    readOnly = true
-                ) { innerTextField ->
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        if (uploadCycleTextFieldValue.text.isEmpty()) {
-                            Text(
-                                text = stringResource(R.string.alarm_cycle_text_field_hint),
-                                style = AppTypography.LB1_13,
-                                color = AppColors.grey2
-                            )
-                        }
-                        innerTextField()
-                        Box(
-                            modifier = Modifier
-                                .weight(1f)
-                                .padding(end = 5.dp),
-                            contentAlignment = Alignment.CenterEnd
-                        ) {
-                            TextFieldExpandedIcon(isExpanded)
-                        }
-                    }
-                }
-            }
-            ExposedDropdownMenu(
-                modifier = Modifier.fillMaxWidth(),
-                expanded = isExpanded,
-                onDismissRequest = { isExpanded = false }) {
-                UploadCycle.entries.forEach {
-                    DropdownMenuItem(onClick = {
+        Column {
+            Box(modifier = Modifier.weight(1f)) {
+                ExposedDropdownMenuBox(
+                    expanded = isExpanded,
+                    onExpandedChange = {
                         isExpanded = !isExpanded
-                        uploadCycleTextFieldValue = TextFieldValue(it.value)
-                        uploadCycle = it
                     }) {
-                        Text(text = it.value)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .then(
+                                if (isExpanded) {
+                                    Modifier.border(
+                                        width = 1.5.dp,
+                                        color = AppColors.purple2,
+                                        shape = RoundedCornerShape(8.dp)
+                                    )
+                                } else {
+                                    Modifier
+                                }
+                            )
+                            .background(AppColors.grey6, shape = RoundedCornerShape(8.dp))
+                            .padding(vertical = 12.dp, horizontal = 11.dp),
+                    ) {
+                        BasicTextField(
+                            value = uploadCycleTextFieldValue,
+                            onValueChange = { uploadCycleTextFieldValue = it },
+                            textStyle = AppTypography.LB1_13.copy(AppColors.black1),
+                            readOnly = true
+                        ) { innerTextField ->
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                if (uploadCycleTextFieldValue.text.isEmpty()) {
+                                    Text(
+                                        text = stringResource(R.string.alarm_cycle_text_field_hint),
+                                        style = AppTypography.LB1_13,
+                                        color = AppColors.grey2
+                                    )
+                                }
+                                innerTextField()
+                                Box(
+                                    modifier = Modifier
+                                        .weight(1f)
+                                        .padding(end = 5.dp),
+                                    contentAlignment = Alignment.CenterEnd
+                                ) {
+                                    TextFieldExpandedIcon(isExpanded)
+                                }
+                            }
+                        }
+                    }
+                    ExposedDropdownMenu(
+                        modifier = Modifier.fillMaxWidth(),
+                        expanded = isExpanded,
+                        onDismissRequest = { isExpanded = false }) {
+                        UploadCycle.entries.forEach {
+                            DropdownMenuItem(onClick = {
+                                isExpanded = !isExpanded
+                                uploadCycleTextFieldValue = TextFieldValue(it.value)
+                                uploadCycle = it
+                            }) {
+                                Text(text = it.value)
+                            }
+                        }
                     }
                 }
             }
-
+            Text(
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally)
+                    .padding(bottom = 14.dp),
+                text = stringResource(id = R.string.default_alarm_cycle_guide),
+                style = AppTypography.LB1_13,
+                color = AppColors.grey1
+            )
         }
     }
 }

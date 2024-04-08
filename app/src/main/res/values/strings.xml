@@ -49,6 +49,7 @@
     <string name="drop_down_menu_item_gallery_select">갤러리에서 선택</string>
     <string name="drop_down_menu_item_default_image">기본 이미지로 하기</string>
     <string name="alarm_cycle_text_field_hint">알람 주기 선택</string>
+    <string name="default_alarm_cycle_guide">※ 알림 주기 미설정 시 1일로 자동 선택됩니다.</string>
     <string name="create_family_btn">가족 생성하기</string>
     <string name="family_invitation_link_header">가족 초대 링크</string>
     <string name="copy_invitation_link_btn">초대 링크 복사</string>
