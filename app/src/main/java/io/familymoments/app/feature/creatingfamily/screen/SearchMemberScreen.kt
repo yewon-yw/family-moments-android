@@ -49,11 +49,12 @@ fun SearchMemberScreen(
     val context = LocalContext.current
     val searchMemberUiState = viewModel.searchMemberUiState.collectAsStateWithLifecycle()
 
-    LaunchedEffect(key1 = searchMemberUiState.value.isSuccess, block = {
+    LaunchedEffect(searchMemberUiState.value.isSuccess) {
         if (searchMemberUiState.value.isSuccess == false) {
             showErrorMessage(context, searchMemberUiState.value.errorMessage)
         }
-    })
+    }
+
     SearchMemberScreen(
         navigate = navigate,
         searchMember = viewModel::searchMember,

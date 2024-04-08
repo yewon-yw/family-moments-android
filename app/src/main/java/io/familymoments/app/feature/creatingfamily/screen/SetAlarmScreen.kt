@@ -59,14 +59,15 @@ fun SetAlarmScreen(
     }
     val createFamilyResultUiState = viewModel.createFamilyResultUiState.collectAsStateWithLifecycle()
     val createFamilySuccessMessage = stringResource(id = R.string.create_family_success_message)
-    LaunchedEffect(key1 = createFamilyResultUiState.value.isSuccess, block = {
+
+    LaunchedEffect(createFamilyResultUiState.value.isSuccess) {
         if (createFamilyResultUiState.value.isSuccess == true) {
             navigate(createFamilyResultUiState.value.result.inviteCode)
             Toast.makeText(context, createFamilySuccessMessage, Toast.LENGTH_SHORT).show()
         } else if (createFamilyResultUiState.value.isSuccess == false) {
             Toast.makeText(context, createFamilyResultUiState.value.errorMessage, Toast.LENGTH_SHORT).show()
         }
-    })
+    }
 
     LoadingIndicator(isLoading = createFamilyResultUiState.value.isLoading ?: false)
     ChoosingFamilyHeaderButtonLayout(
