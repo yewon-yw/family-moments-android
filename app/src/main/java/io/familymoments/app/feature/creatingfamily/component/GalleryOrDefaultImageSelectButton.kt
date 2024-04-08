@@ -1,4 +1,4 @@
-package io.familymoments.app.core.component
+package io.familymoments.app.feature.creatingfamily.component
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -33,12 +33,12 @@ import androidx.compose.ui.unit.dp
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.util.FileUtil.convertUriToBitmap
-import io.familymoments.app.core.util.defaultBitmap
+import io.familymoments.app.core.util.FileUtil.resizeBitmap
 
 @Composable
 fun GalleryOrDefaultImageSelectButton(
     context: Context,
-    getImageBitmap: (Bitmap) -> Unit
+    getImageBitmap: (Bitmap?) -> Unit
 ) {
 
     val defaultImageBitmap =
@@ -46,17 +46,17 @@ fun GalleryOrDefaultImageSelectButton(
             context.resources,
             R.drawable.default_profile
         )
-    var bitmap by remember {
-        mutableStateOf(defaultBitmap)
+    var bitmap: Bitmap? by remember {
+        mutableStateOf(null)
     }
     getImageBitmap(bitmap)
-    //갤러리에서 사진 선택 후 bitmap 으로 변환
+
     val launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?> = rememberLauncherForActivityResult(
         contract =
         ActivityResultContracts.PickVisualMedia()
     ) {
         if (it == null) return@rememberLauncherForActivityResult
-        bitmap = convertUriToBitmap(it, context) ?: defaultImageBitmap
+        bitmap = convertUriToBitmap(it, context)
     }
 
     var isMenuExpanded: Boolean by remember { mutableStateOf(false) }
@@ -68,26 +68,28 @@ fun GalleryOrDefaultImageSelectButton(
         ),
         elevation = ButtonDefaults.elevation(defaultElevation = 0.dp, pressedElevation = 0.dp),
     ) {
-
+        val imageHeight = 192
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(192.dp),
+                .height(imageHeight.dp),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            bitmap?.let {
+            if (bitmap != null) {
+                val density = context.resources.displayMetrics.density
                 Image(
-                    bitmap = it.asImageBitmap(),
+                    bitmap = resizeBitmap(bitmap!!, density, imageHeight).asImageBitmap(),
                     contentDescription = null
                 )
+            } else {
+                Image(
+                    modifier = Modifier.padding(bottom = 2.dp),
+                    painter = painterResource(id = R.drawable.ic_select_pic),
+                    contentDescription = null,
+                )
+                Text(text = stringResource(R.string.join_select_profile_image_btn), color = AppColors.grey3)
             }
-            Image(
-                modifier = Modifier.padding(bottom = 2.dp),
-                painter = painterResource(id = R.drawable.ic_select_pic),
-                contentDescription = null,
-            )
-            Text(text = stringResource(R.string.join_select_profile_image_btn), color = AppColors.grey3)
             GalleryOrDefaultImageSelectDropDownMenu(
                 launcher = launcher,
                 getDefaultImageBitmap = { bitmap = defaultImageBitmap },
