@@ -1,6 +1,6 @@
 package io.familymoments.app.feature.creatingfamily.model
 
-enum class UploadCycle(val value: String, val number: Int?) {
+enum class UploadCycle(val value: String, val number: Int) {
     ONE_DAY("1일", 1),
     THREE_DAY("3일", 3),
     FIVE_DAY("5일", 5),
