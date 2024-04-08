@@ -75,6 +75,7 @@
     <string name="sign_up_id_field_hint">아이디를 입력하세요</string>
     <string name="sign_up_check_duplication_btn">중복확인</string>
     <string name="sign_up_id_validation_warning">영문과 숫자만 사용하여, 6~12글자의 아이디를 입력해주세요</string>
+    <string name="sign_up_need_duplication_check_warning">중복확인을 완료해주세요</string>
     <string name="sign_up_email_validation_warning">이메일 형식이 맞지 않습니다.</string>
     <string name="sign_up_password_field_title">비밀번호</string>
     <string name="sign_up_password_field_hint">비밀번호를 입력하세요</string>

@@ -98,20 +98,29 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
         )
     }
 
-    LaunchedEffect(uiState.value.signUpValidatedUiState.userIdDuplicated) {
-        showUserIdDuplicationCheckResult(uiState.value.signUpValidatedUiState.userIdDuplicated, context)
+    LaunchedEffect(uiState.value.signUpValidatedUiState.userIdDuplicatedUiState) {
+        showUserIdDuplicationCheckResult(
+            uiState.value.signUpValidatedUiState.userIdDuplicatedUiState.isSuccess,
+            context
+        )
+        viewModel.resetUserIdDuplicatedSuccess()
     }
-    LaunchedEffect(uiState.value.signUpValidatedUiState.emailDuplicated) {
-        showEmailDuplicationCheckResult(uiState.value.signUpValidatedUiState.emailDuplicated, context)
+    LaunchedEffect(uiState.value.signUpValidatedUiState.emailDuplicatedUiState) {
+        showEmailDuplicationCheckResult(uiState.value.signUpValidatedUiState.emailDuplicatedUiState.isSuccess, context)
+        viewModel.resetEmailDuplicatedSuccess()
     }
 
-    LaunchedEffect(uiState.value.signUpSuccess) {
-        if (uiState.value.signUpSuccess == true) {
+    LaunchedEffect(uiState.value.signUpResultUiState.isSuccess) {
+        if (uiState.value.signUpResultUiState.isSuccess == true) {
             Toast.makeText(context, context.getString(R.string.sign_up_success), Toast.LENGTH_SHORT).show()
             (context as Activity).finish()
-        } else if (uiState.value.signUpSuccess == false) {
-            Toast.makeText(context, context.getString(R.string.sign_up_fail), Toast.LENGTH_SHORT).show()
+        } else if (uiState.value.signUpResultUiState.isSuccess == false) {
+            val errorMessage = uiState.value.signUpResultUiState.message.ifEmpty {
+                context.getString(R.string.sign_up_fail)
+            }
+            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
         }
+        viewModel.resetSignUpResultSuccess()
     }
 
     AppBarScreen(
@@ -140,14 +149,16 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
         ) {
             Spacer(modifier = Modifier.height(43.dp))
             IdField(
-                userIdFormatValidated = uiState.value.signUpValidatedUiState.userIdValidated,
+                userIdFormatValidated = uiState.value.signUpValidatedUiState.userIdFormValidated,
                 checkIdFormat = viewModel::checkIdFormat,
-                checkIdDuplication = viewModel::checkIdDuplication
+                checkIdDuplication = viewModel::checkIdDuplication,
+                resetUserIdDuplicatedPass = viewModel::resetUserIdDuplicatedPass,
+                userIdDuplicated = uiState.value.signUpValidatedUiState.userIdDuplicatedUiState.duplicatedPass
             ) {
                 signUpInfoUiState = signUpInfoUiState.copy(id = it)
             }
             FirstPasswordField(
-                passwordFormatValidated = uiState.value.signUpValidatedUiState.passwordValidated,
+                passwordFormatValidated = uiState.value.signUpValidatedUiState.passwordFormValidated,
                 checkPasswordFormat = viewModel::checkPasswordFormat
             ) {
                 password = it
@@ -161,16 +172,18 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
             EmailField(
                 checkEmailFormat = viewModel::checkEmailFormat,
                 checkEmailDuplication = viewModel::checkEmailDuplication,
-                emailFormatValidated = uiState.value.signUpValidatedUiState.emailValidated,
+                emailFormatValidated = uiState.value.signUpValidatedUiState.emailFormValidated,
+                resetEmailDuplicatedPass = viewModel::resetEmailDuplicatedPass,
+                emailDuplicated = uiState.value.signUpValidatedUiState.emailDuplicatedUiState.duplicatedPass
             ) { signUpInfoUiState = signUpInfoUiState.copy(email = it) }
             BirthDayField(
                 checkBirthDayFormat = viewModel::checkBirthDayFormat,
-                birthDayFormatValidated = uiState.value.signUpValidatedUiState.birthDayValidated
+                birthDayFormatValidated = uiState.value.signUpValidatedUiState.birthDayFormValidated
             ) {
                 signUpInfoUiState = signUpInfoUiState.copy(birthDay = it)
             }
             NicknameField(
-                nicknameFormatValidated = uiState.value.signUpValidatedUiState.nicknameValidated,
+                nicknameFormatValidated = uiState.value.signUpValidatedUiState.nicknameFormValidated,
                 checkNicknameFormat = viewModel::checkNicknameFormat,
             ) { signUpInfoUiState = signUpInfoUiState.copy(nickname = it) }
             ProfileImageField(defaultProfileImageBitmap, context) {
@@ -219,10 +232,15 @@ private fun showEmailDuplicationCheckResult(emailDuplicated: Boolean?, context: 
 @Composable
 fun IdField(
     userIdFormatValidated: Boolean,
+    userIdDuplicated: Boolean,
     checkIdFormat: (String) -> Unit,
     checkIdDuplication: (String) -> Unit,
+    resetUserIdDuplicatedPass: () -> Unit,
     onValueChange: (String) -> Unit
 ) {
+    var previousId by remember {
+        mutableStateOf(TextFieldValue())
+    }
     var isFocused by remember {
         mutableStateOf(false)
     }
@@ -234,17 +252,22 @@ fun IdField(
             title = stringResource(R.string.sign_up_id_field_title),
             hint = stringResource(R.string.sign_up_id_field_hint),
             onValueChange = {
-                onValueChange(it.text)
-                checkIdFormat(it.text)
+                if (previousId.text != it.text) {
+                    onValueChange(it.text)
+                    checkIdFormat(it.text)
+                    resetUserIdDuplicatedPass()
+                    previousId = it
+                }
             },
             showCheckButton = true,
             checkButtonAvailable = userIdFormatValidated,
             onCheckButtonClick = {
                 checkIdDuplication(it.text)
             },
-            validated = userIdFormatValidated,
+            validated = if (userIdFormatValidated) userIdDuplicated else false,
             showWarningText = true,
-            warningText = stringResource(id = R.string.sign_up_id_validation_warning),
+            warningText = if (userIdFormatValidated) stringResource(id = R.string.sign_up_need_duplication_check_warning)
+            else stringResource(id = R.string.sign_up_id_validation_warning),
             isFocused = isFocused
         )
     }
@@ -336,8 +359,13 @@ fun EmailField(
     checkEmailFormat: (String) -> Unit,
     checkEmailDuplication: (String) -> Unit,
     emailFormatValidated: Boolean,
+    resetEmailDuplicatedPass: () -> Unit,
+    emailDuplicated: Boolean,
     onValueChange: (String) -> Unit
 ) {
+    var previousEmail by remember {
+        mutableStateOf(TextFieldValue())
+    }
     var isFocused by remember {
         mutableStateOf(false)
     }
@@ -349,8 +377,12 @@ fun EmailField(
             title = stringResource(R.string.sign_up_email_field_title),
             hint = stringResource(id = R.string.sign_up_email_field_hint),
             onValueChange = {
-                onValueChange(it.text)
-                checkEmailFormat(it.text)
+                if (it.text != previousEmail.text) {
+                    onValueChange(it.text)
+                    checkEmailFormat(it.text)
+                    resetEmailDuplicatedPass()
+                    previousEmail = it
+                }
             },
             showCheckButton = true,
             checkButtonAvailable = emailFormatValidated,
@@ -359,8 +391,9 @@ fun EmailField(
             },
             isFocused = isFocused,
             showWarningText = true,
-            warningText = stringResource(id = R.string.sign_up_email_validation_warning),
-            validated = emailFormatValidated
+            warningText = if (emailFormatValidated) stringResource(id = R.string.sign_up_need_duplication_check_warning)
+            else stringResource(id = R.string.sign_up_email_validation_warning),
+            validated = if (emailFormatValidated) emailDuplicated else false
         )
     }
     Spacer(modifier = Modifier.height(20.dp))
@@ -552,13 +585,13 @@ fun StartButtonField(
         mutableStateOf(false)
     }
     val signUpValidated = with(signUpValidatedUiState) {
-        birthDayValidated
-            && emailValidated
-            && nicknameValidated
-            && passwordValidated
-            && userIdValidated
-            && emailDuplicated == true
-            && userIdDuplicated == true
+        birthDayFormValidated
+            && emailFormValidated
+            && nicknameFormValidated
+            && passwordFormValidated
+            && userIdFormValidated
+            && emailDuplicatedUiState.duplicatedPass
+            && userIdDuplicatedUiState.duplicatedPass
     }
     signUpEnable = passwordSameCheck && allEssentialTermsAgree && signUpValidated && signUpInfoUiState.imgFile != null
     FMButton(
