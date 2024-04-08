@@ -4,13 +4,13 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.repository.CommentRepository
 import io.familymoments.app.core.network.repository.PostRepository
+import io.familymoments.app.core.uistate.CompletePopupUiState
+import io.familymoments.app.core.uistate.DeletePopupUiState
 import io.familymoments.app.core.uistate.PopupStatusLogics
 import io.familymoments.app.core.uistate.PopupUiState
 import io.familymoments.app.core.uistate.ReportPopupUiState
-import io.familymoments.app.core.uistate.CompletePopupUiState
 import io.familymoments.app.feature.postdetail.model.uistate.CommentLogics
 import io.familymoments.app.feature.postdetail.model.uistate.CommentUiState
-import io.familymoments.app.core.uistate.DeletePopupUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostLogics
 import io.familymoments.app.feature.postdetail.model.uistate.PostUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,6 +21,7 @@ import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -372,17 +373,28 @@ class PostDetailViewModel @Inject constructor(
     }
 
     fun formatCommentCreatedDate(createdAt: String): String {
-        val date = LocalDateTime.parse(createdAt)
-        val now = LocalDateTime.now()
-        val durationSeconds = Duration.between(date, now).seconds
+        val createdAtWithoutMillie = createdAt.split(".")[0]
+        val dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss"
+        val dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat, Locale.KOREA)
+        val localDateTime = LocalDateTime.parse(createdAtWithoutMillie, dateTimeFormatter)
+        val durationSeconds = Duration.between(localDateTime, LocalDateTime.now()).seconds
+
+        // 초 단위
+        val oneMinute = 60
+        val oneHour = oneMinute * 60
+        val oneDay = oneHour * 24
+        val oneWeek = oneDay * 7
+        val oneMonth = oneDay * 30
+        val oneYear = oneDay * 365
+
         return when {
-            durationSeconds < 60 -> "방금"
-            durationSeconds < 3600 -> "${durationSeconds / 60}분 전"
-            durationSeconds < 86400 -> "${durationSeconds / 3600}시간 전"
-            durationSeconds < 604800 -> "${durationSeconds / 86400}일 전"
-            durationSeconds < 2592000 -> "${durationSeconds / 604800}주 전"
-            durationSeconds < 31536000 -> "${durationSeconds / 2592000}달 전"
-            else -> "${durationSeconds / 31536000}년 전"
+            durationSeconds < oneMinute -> "방금"
+            durationSeconds < oneHour -> "${durationSeconds / oneMinute}분 전"
+            durationSeconds < oneDay -> "${durationSeconds / oneHour}시간 전"
+            durationSeconds < oneWeek -> "${durationSeconds / oneDay}일 전"
+            durationSeconds < oneMonth -> "${durationSeconds / oneWeek}주 전"
+            durationSeconds < oneYear -> "${durationSeconds / oneMonth}달 전"
+            else -> "${durationSeconds / oneYear}년 전"
         }
     }
 }
