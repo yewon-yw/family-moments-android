@@ -89,6 +89,7 @@ fun SetUpFamilyName(
     Spacer(modifier = Modifier.height(4.dp))
     Box(
         modifier = Modifier
+            .height(41.dp)
             .fillMaxWidth()
             .background(AppColors.grey5, shape = RoundedCornerShape(7.dp))
             .padding(vertical = 12.dp, horizontal = 11.dp),
