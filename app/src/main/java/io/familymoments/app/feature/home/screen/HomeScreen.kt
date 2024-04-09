@@ -33,13 +33,16 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
-import io.familymoments.app.core.component.PostItem
+import io.familymoments.app.core.component.PostItem2
 import io.familymoments.app.core.component.PostItemPreview
+import io.familymoments.app.core.component.popup.CompletePopUp
+import io.familymoments.app.core.component.popup.DeletePopUp
+import io.familymoments.app.core.component.popup.ReportPopUp
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.feature.home.model.PostPopupType
 import io.familymoments.app.feature.home.viewmodel.HomeViewModel
 
 @Composable
@@ -62,6 +65,9 @@ fun HomeScreen(
     val hasNoPost = homeUiState.value.hasNoPost
     val nickname = homeUiState.value.nickname
     val dday = homeUiState.value.dday
+    val popup = homeUiState.value.popup
+
+    val showPopup = remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         viewModel.getNicknameDday()
@@ -70,6 +76,66 @@ fun HomeScreen(
     LaunchedEffect(isScrolledToLast) {
         if (isScrolledToLast) {
             viewModel.loadMorePosts()
+        }
+    }
+
+    LaunchedEffect(popup) {
+        // popup이 null이 아닐 때만 show popup
+        showPopup.value = popup != null
+    }
+
+    if (showPopup.value) {
+        when (popup) {
+            PostPopupType.PostLovesFailure -> {
+                //TODO: 좋아요 생성 실패 팝업
+            }
+
+            PostPopupType.DeleteLovesFailure -> {
+                //TODO: 좋아요 삭제 실패 팝업
+            }
+
+            is PostPopupType.DeletePost -> {
+                DeletePopUp(
+                    content = stringResource(id = R.string.post_delete_pop_up_content),
+                    delete = {
+                        viewModel.deletePost(popup.postId)
+                    },
+                    onDismissRequest = viewModel::dismissPopup
+                )
+            }
+
+            PostPopupType.DeletePostSuccess -> {
+                CompletePopUp(
+                    content = stringResource(R.string.post_detail_delete_complete_pop_label),
+                    onDismissRequest = viewModel::dismissPopup
+                )
+            }
+
+            PostPopupType.DeletePostFailure -> {
+                // TODO: 게시물 삭제 실패 팝업
+            }
+
+            is PostPopupType.ReportPost -> {
+                ReportPopUp(
+                    onDismissRequest = viewModel::dismissPopup,
+                    onReportRequest = {
+                        // TODO: 신고하기 기능 구현
+                        // viewModel.reportPost(popup.postId)
+                    }
+                )
+            }
+
+            PostPopupType.ReportPostSuccess -> {
+                // TODO: 신고가 완료되었습니다 팝업
+            }
+
+            PostPopupType.ReportPostFailure -> {
+
+            }
+
+            else -> {
+                // null
+            }
         }
     }
 
@@ -118,14 +184,27 @@ fun HomeScreen(
                 item {
                     HomeScreenTitle(hasNoPost = false, nickname = nickname, dday = dday)
                 }
-                items(posts) { post ->
-                    PostItem(
+                items(
+                    items = posts,
+                    key = { it.postId }
+                ) { post ->
+                    PostItem2(
                         post = post,
                         navigateToPostDetail = navigateToPostDetail,
                         navigateToEditPost = {},
-                        viewModel = hiltViewModel(),
-                        reloadPosts = { viewModel.getPosts() },
-                        loves = 0
+                        onClickPostLoves = {
+                            if (post.loved) {
+                                viewModel.deletePostLoves(post.postId)
+                            } else {
+                                viewModel.postPostLoves(post.postId)
+                            }
+                        },
+                        showDeletePostPopup = {
+                            viewModel.showDeletePostPopup(post.postId)
+                        },
+                        showReportPostPopup = {
+                            viewModel.showReportPostPopup(post.postId)
+                        }
                     )
                 }
             }

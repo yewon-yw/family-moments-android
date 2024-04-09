@@ -45,7 +45,6 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
@@ -59,19 +58,18 @@ import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.component.PostDropdownMenu
 import io.familymoments.app.core.component.popup.CompletePopUp
+import io.familymoments.app.core.component.popup.DeletePopUp
+import io.familymoments.app.core.component.popup.LoveListPopUp
+import io.familymoments.app.core.component.popup.ReportPopUp
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.core.theme.FamilyMomentsTheme
+import io.familymoments.app.core.uistate.PopupUiState
 import io.familymoments.app.core.util.noRippleClickable
-import io.familymoments.app.core.component.popup.LoveListPopUp
-import io.familymoments.app.core.component.popup.DeletePopUp
-import io.familymoments.app.core.component.popup.ReportPopUp
 import io.familymoments.app.feature.postdetail.model.component.postDetailContentShadow
 import io.familymoments.app.feature.postdetail.model.response.GetCommentsResult
 import io.familymoments.app.feature.postdetail.model.response.GetPostDetailResult
 import io.familymoments.app.feature.postdetail.model.uistate.CommentLogics
 import io.familymoments.app.feature.postdetail.model.uistate.GetPostLovesUiState
-import io.familymoments.app.core.uistate.PopupUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostCommentUiState
 import io.familymoments.app.feature.postdetail.model.uistate.PostLogics
 import io.familymoments.app.feature.postdetail.viewmodel.PostDetailViewModel
@@ -240,12 +238,11 @@ fun PostPhotos(imgs: List<String>, pagerState: PagerState) {
             modifier = Modifier.fillMaxSize(),
         ) { page ->
             AsyncImage(
-                model = imgs[page],
-                contentDescription = null,
                 modifier = Modifier
-                    .height(180.dp)
+                    .fillMaxSize()
                     .align(Alignment.Center),
-                contentScale = ContentScale.Crop
+                model = imgs[page],
+                contentDescription = null
             )
         }
         if (imgs.size > 1) {

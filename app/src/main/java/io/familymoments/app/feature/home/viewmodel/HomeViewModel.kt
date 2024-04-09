@@ -6,8 +6,10 @@ import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourc
 import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.feature.home.model.HomeUiState
+import io.familymoments.app.feature.home.model.PostPopupType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import timber.log.Timber
 import javax.inject.Inject
 
@@ -96,5 +98,110 @@ class HomeViewModel @Inject constructor(
                 )
             }
         )
+    }
+
+    fun postPostLoves(postId: Long) {
+        Timber.d("postPostLoves")
+        async(
+            operation = { postRepository.postPostLoves(postId) },
+            onSuccess = { response ->
+                Timber.d("postPostLoves onSuccess: $response")
+                _homeUiState.update {
+                    it.copy(
+                        posts = it.posts.map { post ->
+                            if (post.postId == postId) {
+                                post.copy(loved = true)
+                            } else {
+                                post
+                            }
+                        },
+                    )
+                }
+            },
+            onFailure = { t ->
+                Timber.d("postPostLoves onFailure: ${t.message}")
+                _homeUiState.update {
+                    it.copy(
+                        popup = PostPopupType.PostLovesFailure
+                    )
+                }
+            }
+        )
+    }
+
+    fun deletePostLoves(postId: Long) {
+        Timber.d("deletePostLoves")
+        async(
+            operation = { postRepository.deletePostLoves(postId) },
+            onSuccess = { response ->
+                Timber.d("deletePostLoves onSuccess: $response")
+                _homeUiState.update {
+                    it.copy(
+                        posts = it.posts.map { post ->
+                            if (post.postId == postId) {
+                                post.copy(loved = false)
+                            } else {
+                                post
+                            }
+                        },
+                    )
+                }
+            },
+            onFailure = { t ->
+                Timber.d("deletePostLoves onFailure: ${t.message}")
+                _homeUiState.update {
+                    it.copy(
+                        popup = PostPopupType.DeleteLovesFailure
+                    )
+                }
+            }
+        )
+    }
+
+    fun showDeletePostPopup(postId: Long) {
+        Timber.d("showDeletePostPopup")
+        _homeUiState.update {
+            it.copy(popup = PostPopupType.DeletePost(postId))
+        }
+    }
+
+    fun deletePost(postId: Long) {
+        Timber.d("deletePost")
+        async(
+            operation = { postRepository.deletePost(postId) },
+            onSuccess = { response ->
+                Timber.d("deletePost onSuccess: $response")
+                _homeUiState.update {
+                    it.copy(
+                        popup = PostPopupType.DeletePostSuccess
+                    )
+                }
+                getPosts()
+            },
+            onFailure = { t ->
+                Timber.d("deletePost onFailure: ${t.message}")
+                _homeUiState.update {
+                    it.copy(
+                        popup = PostPopupType.DeletePostFailure
+                    )
+                }
+            }
+        )
+    }
+
+    fun showReportPostPopup(postId: Long) {
+        Timber.d("showReportPostPopup")
+        _homeUiState.update {
+            it.copy(popup = PostPopupType.ReportPost(postId))
+        }
+    }
+
+    /**
+     * popup을 null로 초기화 해주면서 화면에서 팝업을 안 보이도록 처리
+     */
+    fun dismissPopup() {
+        _homeUiState.update {
+            it.copy(popup = null)
+        }
     }
 }
