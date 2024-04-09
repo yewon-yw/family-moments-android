@@ -2,6 +2,7 @@ package io.familymoments.app.feature.home.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
+import io.familymoments.app.core.network.HttpResponseMessage.NO_POST_404
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.repository.PostRepository
@@ -58,6 +59,7 @@ class HomeViewModel @Inject constructor(
                 postRepository.getPosts(familyId)
             },
             onSuccess = {
+                Timber.d("getPosts onSuccess: ${it.result}")
                 _homeUiState.value = _homeUiState.value.copy(
                     isSuccess = true,
                     isLoading = isLoading.value,
@@ -66,10 +68,12 @@ class HomeViewModel @Inject constructor(
                 minPostId = it.result.minOf { post -> post.postId }
             },
             onFailure = {
+                Timber.d("getPosts onFailure: ${it.message}")
                 _homeUiState.value = _homeUiState.value.copy(
                     isSuccess = false,
                     isLoading = isLoading.value,
-                    errorMessage = it.message
+                    errorMessage = it.message,
+                    posts = if (it.message == NO_POST_404) emptyList() else _homeUiState.value.posts
                 )
             }
         )
