@@ -45,7 +45,7 @@ sealed interface Route {
         const val editImagesArg = "editImages"
         const val editContentArg = "editContent"
         val routeWithArgs =
-            "$route?$modeArg={$modeArg}&$editPostIdArg={$editPostIdArg}?$editImagesArg={$editImagesArg}$editContentArg={$editContentArg}"
+            "$route?$modeArg={$modeArg}&$editPostIdArg={$editPostIdArg}&$editImagesArg={$editImagesArg}&$editContentArg={$editContentArg}"
         val arguments = listOf(
             navArgument(modeArg) {
                 nullable = false
@@ -69,7 +69,7 @@ sealed interface Route {
             val endcodedImageUrls: Array<String> =
                 editImages.map { URLEncoder.encode(it, StandardCharsets.UTF_8.toString()) }.toTypedArray()
 
-            return "$route?$modeArg=$mode&$editPostIdArg=$editPostId?$editImagesArg=$endcodedImageUrls$editContentArg=$editContent"
+            return "$route?$modeArg=$mode&$editPostIdArg=$editPostId&$editImagesArg=$endcodedImageUrls&$editContentArg=$editContent"
         }
     }
 }

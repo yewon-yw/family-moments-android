@@ -228,10 +228,10 @@ private fun PostItemContent(
 }
 
 private fun String.formattedDate(): String {
-    val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+    val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
     val date = inputFormat.parse(this)
 
-    val outputFormat = SimpleDateFormat("yyyy.MM.dd(EEE)", Locale.getDefault())
+    val outputFormat = SimpleDateFormat("yyyy.MM.dd(EEE)", Locale.KOREA)
     return outputFormat.format(date ?: Date())
 }
 
