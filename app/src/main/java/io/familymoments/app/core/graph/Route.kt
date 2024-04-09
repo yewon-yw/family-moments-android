@@ -38,21 +38,21 @@ sealed interface Route {
         }
     }
 
-    data object AddPost : Route {
-        override val route: String = "AddPost"
+    data object EditPost : Route {
+        override val route: String = "EditPost"
         const val modeArg = "mode"
         const val editPostIdArg = "editPostId"
         const val editImagesArg = "editImages"
         const val editContentArg = "editContent"
         val routeWithArgs =
-            "$route?$modeArg={$modeArg}&$editPostIdArg={$editPostIdArg}?$editImagesArg={$editImagesArg}$editContentArg={$editContentArg}"
+            "$route?$modeArg={$modeArg}&$editPostIdArg={$editPostIdArg}&$editImagesArg={$editImagesArg}&$editContentArg={$editContentArg}"
         val arguments = listOf(
             navArgument(modeArg) {
-                nullable = true
+                nullable = false
                 type = NavType.IntType
             },
             navArgument(editPostIdArg) {
-                nullable = true
+                nullable = false
                 type = NavType.IntType
             },
             navArgument(editImagesArg) {
@@ -69,7 +69,7 @@ sealed interface Route {
             val endcodedImageUrls: Array<String> =
                 editImages.map { URLEncoder.encode(it, StandardCharsets.UTF_8.toString()) }.toTypedArray()
 
-            return "$route/$mode/$editPostId/$endcodedImageUrls/$editContent"
+            return "$route?$modeArg=$mode&$editPostIdArg=$editPostId&$editImagesArg=$endcodedImageUrls&$editContentArg=$editContent"
         }
     }
 }
