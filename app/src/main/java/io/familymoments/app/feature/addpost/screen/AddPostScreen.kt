@@ -59,6 +59,7 @@ import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.FileUtil
+import io.familymoments.app.core.util.POST_PHOTO_MAX_SIZE
 import io.familymoments.app.core.util.keyboardAsState
 import io.familymoments.app.feature.addpost.model.AddPostMode.ADD
 import io.familymoments.app.feature.addpost.model.AddPostMode.EDIT
@@ -90,13 +91,12 @@ fun AddPostScreen(
     val uriList = remember {
         mutableStateListOf<Uri>(*addPostUiState.existPostUiState.editImages.map { Uri.parse(it) }.toTypedArray())
     }
-    val launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?> = rememberLauncherForActivityResult(
+    val launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, List<Uri>> = rememberLauncherForActivityResult(
         contract =
-        ActivityResultContracts.PickVisualMedia()
-    ) { uri ->
-        if (uri == null) return@rememberLauncherForActivityResult
-        if (uriList.size < 10) {
-            uriList.add(uri)
+        ActivityResultContracts.PickMultipleVisualMedia(POST_PHOTO_MAX_SIZE)
+    ) { uris ->
+        if (uriList.size < POST_PHOTO_MAX_SIZE) {
+            uriList.addAll(uris)
         }
     }
     Column(
@@ -157,7 +157,10 @@ fun AddPostScreen(
                     .heightIn(min = 59.dp)
                     .clip(RoundedCornerShape(60.dp))
                     .then(
-                        if (content.trim().isNotEmpty() && uriList.isNotEmpty()) {
+                        if (content
+                                .trim()
+                                .isNotEmpty() && uriList.isNotEmpty()
+                        ) {
                             Modifier
                                 .background(color = AppColors.deepPurple1)
                                 .clickable {
@@ -195,7 +198,7 @@ fun AddPostScreen(
 
 @Composable
 private fun ImageRow(
-    launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, Uri?>,
+    launcher: ManagedActivityResultLauncher<PickVisualMediaRequest, List<Uri>>,
     imageUriList: MutableList<Uri>,
 ) {
     val focusManager = LocalFocusManager.current
@@ -236,7 +239,7 @@ private fun ImageRow(
                             append(imageUriList.size.toString())
                         }
                         withStyle(style = AppTypography.BTN6_13.toSpanStyle().copy(color = AppColors.grey2)) {
-                            append("/10")
+                            append("/$POST_PHOTO_MAX_SIZE")
                         }
                     }
                 )
