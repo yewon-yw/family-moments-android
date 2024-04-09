@@ -63,6 +63,7 @@ class HomeViewModel @Inject constructor(
                 _homeUiState.value = _homeUiState.value.copy(
                     isSuccess = true,
                     isLoading = isLoading.value,
+                    errorMessage = null,
                     posts = it.result
                 )
                 minPostId = it.result.minOf { post -> post.postId }
