@@ -5,6 +5,7 @@ import io.familymoments.app.core.network.api.PostService
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.core.network.util.createPostInfoRequestBody
 import io.familymoments.app.feature.addpost.model.AddPostResponse
+import io.familymoments.app.feature.addpost.model.EditPostResponse
 import io.familymoments.app.feature.album.model.GetAlbumDetailResponse
 import io.familymoments.app.feature.album.model.GetAlbumResponse
 import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
@@ -271,6 +272,27 @@ class PostRepositoryImpl @Inject constructor(
             emit(Resource.Loading)
             val response = postService.deletePost(index)
             val responseBody = response.body() ?: DeletePostResponse()
+
+            if (responseBody.isSuccess) {
+                emit(Resource.Success(responseBody))
+            } else {
+                emit(Resource.Fail(Throwable(responseBody.message)))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun editPost(
+        index: Long,
+        content: String,
+        imageFiles: List<MultipartBody.Part>?
+        ): Flow<Resource<EditPostResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val postInfo = createPostInfoRequestBody(content)
+            val response = postService.editPost(index, postInfo, imageFiles)
+            val responseBody = response.body() ?: EditPostResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))

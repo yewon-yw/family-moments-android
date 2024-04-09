@@ -24,7 +24,7 @@ class AddPostViewModel @Inject constructor(
 ) : BaseViewModel() {
 
     private val mode: Int = savedStateHandle[Route.EditPost.modeArg] ?: AddPostMode.ADD.mode
-    private val editPostId: Int = savedStateHandle[Route.EditPost.editPostIdArg] ?: 0
+    private val editPostId: Long = savedStateHandle[Route.EditPost.editPostIdArg] ?: 0
     private val editImages: Array<String> = savedStateHandle[Route.EditPost.editImagesArg] ?: arrayOf()
     private val editContent: String = savedStateHandle[Route.EditPost.editContentArg] ?: ""
 
@@ -60,6 +60,30 @@ class AddPostViewModel @Inject constructor(
             operation = {
                 val familyId = userInfoPreferencesDataSource.loadFamilyId()
                 postRepository.addPost(familyId, content, imagesMultipart)
+            },
+            onSuccess = {
+                _uiState.value = _uiState.value.copy(
+                    isSuccess = true,
+                    isLoading = isLoading.value
+                )
+            },
+            onFailure = {
+                _uiState.value = _uiState.value.copy(
+                    isSuccess = false,
+                    isLoading = isLoading.value,
+                    errorMessage = it.message
+                )
+            }
+        )
+    }
+
+    fun editPost(index:Long, content: String,files: List<File> ){
+        async(
+            operation = {
+                val imagesMultipart = files.mapIndexed { index, file ->
+                    createImageMultiPart(file, "img${index + 1}")
+                }
+                postRepository.editPost(index, content, imagesMultipart)
             },
             onSuccess = {
                 _uiState.value = _uiState.value.copy(

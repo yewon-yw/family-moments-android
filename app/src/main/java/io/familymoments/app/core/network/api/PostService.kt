@@ -1,6 +1,7 @@
 package io.familymoments.app.core.network.api
 
 import io.familymoments.app.feature.addpost.model.AddPostResponse
+import io.familymoments.app.feature.addpost.model.EditPostResponse
 import io.familymoments.app.feature.album.model.GetAlbumDetailResponse
 import io.familymoments.app.feature.album.model.GetAlbumResponse
 import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
@@ -92,4 +93,11 @@ interface PostService {
 
     @DELETE("/posts/{index}")
     suspend fun deletePost(@Path("index") index: Long): Response<DeletePostResponse>
+
+    @POST("/posts/{index}/edit")
+    suspend fun editPost(
+        @Path("index") index:Long,
+        @Part("postInfo") postInfo: RequestBody,
+        @Part images: List<MultipartBody.Part>?
+    ):Response<EditPostResponse>
 }

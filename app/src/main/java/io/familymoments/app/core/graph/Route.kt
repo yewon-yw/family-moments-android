@@ -53,7 +53,7 @@ sealed interface Route {
             },
             navArgument(editPostIdArg) {
                 nullable = false
-                type = NavType.IntType
+                type = NavType.LongType
             },
             navArgument(editImagesArg) {
                 nullable = true

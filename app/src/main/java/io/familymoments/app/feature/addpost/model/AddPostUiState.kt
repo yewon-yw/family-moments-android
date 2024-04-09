@@ -12,7 +12,7 @@ data class AddPostUiState(
 )
 
 data class ExistPostUiState(
-    val editPostId: Int = 0,
+    val editPostId: Long = 0,
     val editImages: List<String> = listOf(),
     val editContent: String = ""
 )

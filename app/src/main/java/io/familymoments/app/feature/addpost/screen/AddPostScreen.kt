@@ -166,9 +166,11 @@ fun AddPostScreen(
                                         val imageFiles = FileUtil.imageFilesResize(context, uriList.toList())
                                         when (modeEnum) {
                                             ADD -> viewModel.addPost(content, imageFiles)
-                                            EDIT -> {
-                                                //todo 수정 로직으로 변경
-                                            }
+                                            EDIT -> viewModel.editPost(
+                                                addPostUiState.existPostUiState.editPostId,
+                                                content,
+                                                imageFiles
+                                            )
                                         }
                                     }
                                 }
