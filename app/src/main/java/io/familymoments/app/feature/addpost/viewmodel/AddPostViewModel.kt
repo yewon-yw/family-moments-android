@@ -12,6 +12,7 @@ import io.familymoments.app.feature.addpost.model.AddPostUiState
 import io.familymoments.app.feature.addpost.model.ExistPostUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import java.io.File
 import javax.inject.Inject
 
@@ -41,6 +42,15 @@ class AddPostViewModel @Inject constructor(
         )
     )
     val uiState = _uiState.asStateFlow()
+
+    init {
+        // 문자열에서 공백, 대괄호 제거
+        val regex = Regex("[\\[\\] ]")
+        val editImages = this.editImages.getOrNull(0)?.replace(regex, "")?.split(",") ?: listOf()
+        _uiState.update {
+            it.copy(existPostUiState = it.existPostUiState.copy(editImages = editImages))
+        }
+    }
 
     suspend fun addPost(content: String, files: List<File>) {
         val imagesMultipart = files.mapIndexed { index, file ->
