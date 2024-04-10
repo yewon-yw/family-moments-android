@@ -93,6 +93,7 @@ interface PostService {
     @DELETE("/posts/{index}")
     suspend fun deletePost(@Path("index") index: Long): Response<DeletePostResponse>
 
+    @Multipart
     @POST("/posts/{index}/edit")
     suspend fun editPost(
         @Path("index") index:Long,
