@@ -56,7 +56,7 @@ fun SetAlarmScreen(
         mutableStateOf(TextFieldValue())
     }
     var uploadCycle by remember {
-        mutableStateOf(UploadCycle.NONE)
+        mutableStateOf(UploadCycle.ONE_DAY)
     }
     val createFamilyResultUiState = viewModel.createFamilyResultUiState.collectAsStateWithLifecycle()
     val createFamilySuccessMessage = stringResource(id = R.string.create_family_success_message)
