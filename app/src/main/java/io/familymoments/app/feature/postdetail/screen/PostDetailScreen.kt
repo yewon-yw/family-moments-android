@@ -463,6 +463,7 @@ fun CommentTextField(
                     onClick = {
                         postComment(postId, comments.text)
                     },
+                    enabled = comments.text.trim().isNotEmpty(),
                     modifier = Modifier
                         .padding(end = 6.dp)
                         .clip(RoundedCornerShape(10.dp))
