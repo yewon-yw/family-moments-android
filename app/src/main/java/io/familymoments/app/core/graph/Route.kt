@@ -56,11 +56,11 @@ sealed interface Route {
                 type = NavType.LongType
             },
             navArgument(editImagesArg) {
-                nullable = true
+                nullable = false
                 type = NavType.StringArrayType
             },
             navArgument(editContentArg) {
-                nullable = true
+                nullable = false
                 type = NavType.StringType
             }
         )
