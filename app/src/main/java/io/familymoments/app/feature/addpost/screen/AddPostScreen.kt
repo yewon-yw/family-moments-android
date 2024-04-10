@@ -95,9 +95,8 @@ fun AddPostScreen(
         contract =
         ActivityResultContracts.PickMultipleVisualMedia(POST_PHOTO_MAX_SIZE)
     ) { uris ->
-        if (uriList.size < POST_PHOTO_MAX_SIZE) {
-            uriList.addAll(uris)
-        }
+        uriList.clear()
+        uriList.addAll(uris)
     }
     Column(
         modifier = modifier
