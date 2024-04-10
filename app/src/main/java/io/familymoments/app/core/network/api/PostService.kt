@@ -1,7 +1,7 @@
 package io.familymoments.app.core.network.api
 
-import io.familymoments.app.feature.addpost.model.AddPostResponse
-import io.familymoments.app.feature.addpost.model.EditPostResponse
+import io.familymoments.app.feature.addpost.model.request.AddPostRequest
+import io.familymoments.app.feature.addpost.model.response.AddPostResponse
 import io.familymoments.app.feature.album.model.GetAlbumDetailResponse
 import io.familymoments.app.feature.album.model.GetAlbumResponse
 import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
@@ -13,7 +13,6 @@ import io.familymoments.app.feature.postdetail.model.response.GetPostDetailRespo
 import io.familymoments.app.feature.postdetail.model.response.GetPostLovesResponse
 import io.familymoments.app.feature.postdetail.model.response.PostPostLovesResponse
 import okhttp3.MultipartBody
-import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -75,7 +74,7 @@ interface PostService {
     @POST("/posts")
     suspend fun addPost(
         @Query("familyId") familyId: Long,
-        @Part("postInfo") postInfo: RequestBody,
+        @Part("postInfo") postInfo: AddPostRequest,
         @Part images: List<MultipartBody.Part>?
     ): Response<AddPostResponse>
 
@@ -97,7 +96,7 @@ interface PostService {
     @POST("/posts/{index}/edit")
     suspend fun editPost(
         @Path("index") index:Long,
-        @Part("postInfo") postInfo: RequestBody,
+        @Part("postInfo") postInfo: AddPostRequest,
         @Part images: List<MultipartBody.Part>?
-    ):Response<EditPostResponse>
+    ):Response<AddPostResponse>
 }

@@ -3,9 +3,8 @@ package io.familymoments.app.core.network.repository.impl
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.PostService
 import io.familymoments.app.core.network.repository.PostRepository
-import io.familymoments.app.core.network.util.createPostInfoRequestBody
-import io.familymoments.app.feature.addpost.model.AddPostResponse
-import io.familymoments.app.feature.addpost.model.EditPostResponse
+import io.familymoments.app.feature.addpost.model.request.AddPostRequest
+import io.familymoments.app.feature.addpost.model.response.AddPostResponse
 import io.familymoments.app.feature.album.model.GetAlbumDetailResponse
 import io.familymoments.app.feature.album.model.GetAlbumResponse
 import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
@@ -188,9 +187,7 @@ class PostRepositoryImpl @Inject constructor(
     ): Flow<Resource<AddPostResponse>> {
         return flow {
             emit(Resource.Loading)
-            val postInfo = createPostInfoRequestBody(content)
-
-            val response = postService.addPost(familyId, postInfo, imageFiles)
+            val response = postService.addPost(familyId, AddPostRequest(content), imageFiles)
             val responseBody = response.body() ?: AddPostResponse()
 
             if (responseBody.isSuccess) {
@@ -287,12 +284,11 @@ class PostRepositoryImpl @Inject constructor(
         index: Long,
         content: String,
         imageFiles: List<MultipartBody.Part>?
-        ): Flow<Resource<EditPostResponse>> {
+        ): Flow<Resource<AddPostResponse>> {
         return flow {
             emit(Resource.Loading)
-            val postInfo = createPostInfoRequestBody(content)
-            val response = postService.editPost(index, postInfo, imageFiles)
-            val responseBody = response.body() ?: EditPostResponse()
+            val response = postService.editPost(index, AddPostRequest(content), imageFiles)
+            val responseBody = response.body() ?: AddPostResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))

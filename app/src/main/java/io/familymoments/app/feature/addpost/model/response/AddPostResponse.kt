@@ -1,4 +1,4 @@
-package io.familymoments.app.feature.addpost.model
+package io.familymoments.app.feature.addpost.model.response
 
 import androidx.compose.runtime.Immutable
 

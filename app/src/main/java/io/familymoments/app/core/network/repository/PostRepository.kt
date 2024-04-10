@@ -1,8 +1,7 @@
 package io.familymoments.app.core.network.repository
 
 import io.familymoments.app.core.network.Resource
-import io.familymoments.app.feature.addpost.model.AddPostResponse
-import io.familymoments.app.feature.addpost.model.EditPostResponse
+import io.familymoments.app.feature.addpost.model.response.AddPostResponse
 import io.familymoments.app.feature.album.model.GetAlbumDetailResponse
 import io.familymoments.app.feature.album.model.GetAlbumResponse
 import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
@@ -48,5 +47,5 @@ interface PostRepository {
         index: Long,
         content: String,
         imageFiles: List<MultipartBody.Part>?
-    ):Flow<Resource<EditPostResponse>>
+    ):Flow<Resource<AddPostResponse>>
 }
