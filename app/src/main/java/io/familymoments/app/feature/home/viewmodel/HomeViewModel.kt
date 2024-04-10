@@ -59,7 +59,6 @@ class HomeViewModel @Inject constructor(
                 postRepository.getPosts(familyId)
             },
             onSuccess = {
-                Timber.d("getPosts onSuccess: ${it.result}")
                 _homeUiState.value = _homeUiState.value.copy(
                     isSuccess = true,
                     isLoading = isLoading.value,
@@ -69,7 +68,6 @@ class HomeViewModel @Inject constructor(
                 minPostId = it.result.minOf { post -> post.postId }
             },
             onFailure = {
-                Timber.d("getPosts onFailure: ${it.message}")
                 _homeUiState.value = _homeUiState.value.copy(
                     isSuccess = false,
                     isLoading = isLoading.value,
