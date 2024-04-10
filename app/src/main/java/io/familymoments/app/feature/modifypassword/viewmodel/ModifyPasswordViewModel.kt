@@ -62,7 +62,14 @@ class ModifyPasswordViewModel @Inject constructor(
         }
     }
 
-    fun requestModifyPassword() {
+    fun requestModifyPassword(currentPassword: String, newPassword: String, newPasswordCheck: String) {
+        _uiState.update {
+            it.copy(
+                currentPasswordUiState = it.currentPasswordUiState.copy(currentPassword = currentPassword),
+                newPasswordUiState = it.newPasswordUiState.copy(newPassword = newPassword),
+                newPasswordCheckUiState = it.newPasswordCheckUiState.copy(newPasswordCheck = newPasswordCheck)
+            )
+        }
         async(
             operation = { userRepository.modifyPassword(_uiState.value.toRequest()) },
             onSuccess = { response ->
@@ -99,16 +106,6 @@ class ModifyPasswordViewModel @Inject constructor(
                 }
             }
         )
-    }
-
-    fun updatePasswordUiState(currentPassword: String, newPassword: String, newPasswordCheck: String) {
-        _uiState.update {
-            it.copy(
-                currentPasswordUiState = it.currentPasswordUiState.copy(currentPassword = currentPassword),
-                newPasswordUiState = it.newPasswordUiState.copy(newPassword = newPassword),
-                newPasswordCheckUiState = it.newPasswordCheckUiState.copy(newPasswordCheck = newPasswordCheck)
-            )
-        }
     }
 
     fun onClearCurrentPassword() {
