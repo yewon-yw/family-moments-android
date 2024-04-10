@@ -6,7 +6,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.network.AuthErrorManager
 import io.familymoments.app.core.network.HttpResponseMessage
 import io.familymoments.app.core.network.Resource
-import io.familymoments.app.core.network.model.AuthErrorResponse
+import io.familymoments.app.core.network.AuthErrorResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

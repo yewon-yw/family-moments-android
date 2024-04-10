@@ -68,7 +68,7 @@ import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.FMVisualTransformation
 import io.familymoments.app.feature.bottomnav.activity.MainActivity
-import io.familymoments.app.feature.login.model.uistate.LoginUiState
+import io.familymoments.app.feature.login.uistate.LoginUiState
 import io.familymoments.app.feature.login.viewmodel.LoginViewModel
 import io.familymoments.app.feature.signup.activity.SignUpActivity
 import kotlinx.coroutines.delay

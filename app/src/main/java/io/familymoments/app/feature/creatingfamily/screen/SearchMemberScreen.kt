@@ -35,10 +35,10 @@ import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
-import io.familymoments.app.feature.choosingfamily.MemberCheckBox
-import io.familymoments.app.feature.choosingfamily.SearchTextField
-import io.familymoments.app.feature.creatingfamily.model.response.Member
+import io.familymoments.app.feature.choosingfamily.component.ChoosingFamilyHeaderButtonLayout
+import io.familymoments.app.feature.choosingfamily.component.MemberCheckBox
+import io.familymoments.app.feature.choosingfamily.component.SearchTextField
+import io.familymoments.app.core.network.dto.response.Member
 import io.familymoments.app.feature.creatingfamily.viewmodel.CreatingFamilyViewModel
 
 @Composable
@@ -74,7 +74,7 @@ fun showErrorMessage(context: Context, errorMessage: String?) {
 fun SearchMemberScreen(
     navigate: () -> Unit = {},
     searchMember: (String) -> Unit,
-    members: List<Member>
+    members: List<io.familymoments.app.core.network.dto.response.Member>
 ) {
 
     ChoosingFamilyHeaderButtonLayout(
@@ -112,8 +112,8 @@ private fun SearchMemberTextField(
 }
 
 @Composable
-private fun MemberList(members: List<Member>) {
-    var selectedMembers: List<Member> by remember {
+private fun MemberList(members: List<io.familymoments.app.core.network.dto.response.Member>) {
+    var selectedMembers: List<io.familymoments.app.core.network.dto.response.Member> by remember {
         mutableStateOf(listOf())
     }
     LazyColumn {
@@ -190,9 +190,9 @@ fun SearchMemberScreenPreview() {
 fun MemberListPreview() {
     MemberList(
         members = listOf(
-            Member("a", "", 1),
-            Member("b", "", 0),
-            Member("c", "", 1)
+            io.familymoments.app.core.network.dto.response.Member("a", "", 1),
+            io.familymoments.app.core.network.dto.response.Member("b", "", 0),
+            io.familymoments.app.core.network.dto.response.Member("c", "", 1)
         )
     )
 }

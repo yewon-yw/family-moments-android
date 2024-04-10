@@ -41,14 +41,14 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.home.component.postItemContentShadow
-import io.familymoments.app.feature.home.model.Post
+import io.familymoments.app.core.network.dto.response.Post
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun PostItem2(
-    post: Post,
+    post: io.familymoments.app.core.network.dto.response.Post,
     navigateToPostDetail: (Int) -> Unit,
     navigateToEditPost: (Long) -> Unit,
     onClickPostLoves: () -> Unit,
@@ -74,7 +74,7 @@ fun PostItem2(
 }
 
 @Composable
-private fun PostItemHeader(post: Post) {
+private fun PostItemHeader(post: io.familymoments.app.core.network.dto.response.Post) {
     Row(
         modifier = Modifier.padding(start = 20.dp, end = 17.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -104,7 +104,7 @@ private fun PostItemHeader(post: Post) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PostItemContent(
-    post: Post,
+    post: io.familymoments.app.core.network.dto.response.Post,
     navigateToPostDetail: (Int) -> Unit,
     navigateToEditPost: (Long) -> Unit,
     onClickPostLoves: () -> Unit,

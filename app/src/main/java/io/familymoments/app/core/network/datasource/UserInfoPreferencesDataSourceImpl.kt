@@ -1,10 +1,10 @@
 package io.familymoments.app.core.network.datasource
 
 import android.content.SharedPreferences
-import io.familymoments.app.core.network.model.UserProfile
+import io.familymoments.app.core.network.dto.response.UserProfile
 import io.familymoments.app.core.util.DEFAULT_FAMILY_ID_VALUE
 import io.familymoments.app.core.util.DEFAULT_TOKEN_VALUE
-import io.familymoments.app.feature.profile.model.response.ProfileEditResult
+import io.familymoments.app.core.network.dto.response.ProfileEditResult
 import javax.inject.Inject
 
 class UserInfoPreferencesDataSourceImpl @Inject constructor(
@@ -40,7 +40,7 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
         )
     }
 
-    override suspend fun saveUserProfile(userProfile: UserProfile) {
+    override suspend fun saveUserProfile(userProfile: io.familymoments.app.core.network.dto.response.UserProfile) {
         with(sharedPreferences.edit()) {
             putString(USER_NAME_KEY, userProfile.name)
             putString(USER_BIRTH_DATE_KEY, userProfile.birthDate)
@@ -53,7 +53,7 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
         }
     }
 
-    override suspend fun loadUserProfile(): UserProfile {
+    override suspend fun loadUserProfile(): io.familymoments.app.core.network.dto.response.UserProfile {
         val userName =
             sharedPreferences.getString(USER_NAME_KEY, DEFAULT_STRING_USER_INFO_VALUE) ?: throw IllegalStateException(
                 USER_INFO_KEY_NOT_EXIST_ERROR
@@ -79,7 +79,7 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
         if ((userTotalUpload == DEFAULT_INT_USER_INFO_VALUE) or (userDuration == DEFAULT_INT_USER_INFO_VALUE)) throw IllegalStateException(
             USER_INFO_KEY_NOT_EXIST_ERROR
         )
-        return UserProfile(
+        return io.familymoments.app.core.network.dto.response.UserProfile(
             userName,
             userBirthDate,
             userProfileImg,
@@ -99,7 +99,7 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
         sharedPreferences.edit().clear().commit()
     }
 
-    override suspend fun updateUserProfile(profileEditResult: ProfileEditResult) {
+    override suspend fun updateUserProfile(profileEditResult: io.familymoments.app.core.network.dto.response.ProfileEditResult) {
         with(sharedPreferences.edit()) {
             putString(USER_NAME_KEY, profileEditResult.name)
             putString(USER_NICKNAME_KEY, profileEditResult.nickname)

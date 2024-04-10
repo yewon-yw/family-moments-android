@@ -1,7 +1,5 @@
 package io.familymoments.app.feature.modifypassword
 
-import io.familymoments.app.feature.modifypassword.model.WarningType
-
 fun validateCurrentPassword(password: String): Boolean {
     return password.isNotEmpty()
 }

@@ -6,7 +6,7 @@ import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.graph.Route
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.PostRepository
-import io.familymoments.app.feature.calendar.model.CalendarDayUiState
+import io.familymoments.app.feature.calendar.uistate.CalendarDayUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import timber.log.Timber

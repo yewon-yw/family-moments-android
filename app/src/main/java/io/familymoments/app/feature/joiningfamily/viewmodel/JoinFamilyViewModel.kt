@@ -3,7 +3,7 @@ package io.familymoments.app.feature.joiningfamily.viewmodel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.repository.FamilyRepository
-import io.familymoments.app.feature.joiningfamily.model.JoinFamilyUiState
+import io.familymoments.app.feature.joiningfamily.uistate.JoinFamilyUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

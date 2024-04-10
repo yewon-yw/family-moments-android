@@ -4,7 +4,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.PostRepository
-import io.familymoments.app.feature.calendar.model.CalendarUiState
+import io.familymoments.app.feature.calendar.uistate.CalendarUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.time.DayOfWeek

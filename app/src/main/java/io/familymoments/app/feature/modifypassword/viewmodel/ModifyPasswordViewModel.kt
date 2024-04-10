@@ -5,9 +5,9 @@ import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.HttpResponse.INCORRECT_CURRENT_PASSWORD
 import io.familymoments.app.core.network.HttpResponse.NEW_PASSWORD_SAME_AS_CURRENT
 import io.familymoments.app.core.network.repository.UserRepository
-import io.familymoments.app.feature.modifypassword.model.WarningType
-import io.familymoments.app.feature.modifypassword.model.mapper.toRequest
-import io.familymoments.app.feature.modifypassword.model.uistate.ModifyPasswordUiState
+import io.familymoments.app.feature.modifypassword.WarningType
+import io.familymoments.app.feature.modifypassword.mapper.toRequest
+import io.familymoments.app.feature.modifypassword.uistate.ModifyPasswordUiState
 import io.familymoments.app.feature.modifypassword.validateCurrentPassword
 import io.familymoments.app.feature.modifypassword.validateNewPasswordEqual
 import io.familymoments.app.feature.modifypassword.validateNewPasswordFormat

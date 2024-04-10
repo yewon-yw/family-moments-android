@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
+import io.familymoments.app.feature.choosingfamily.component.ChoosingFamilyHeaderButtonLayout
 
 @Composable
 fun CopyInvitationLinkScreen(inviteLink: String, navigate: () -> Unit = {}) {

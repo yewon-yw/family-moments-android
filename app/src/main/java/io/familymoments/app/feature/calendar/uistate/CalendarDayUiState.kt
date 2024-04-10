@@ -1,0 +1,20 @@
+package io.familymoments.app.feature.calendar.uistate
+
+import androidx.compose.runtime.Immutable
+import io.familymoments.app.core.network.dto.response.Post
+import java.time.LocalDate
+
+@Immutable
+data class CalendarDayUiState(
+    val isSuccess: Boolean? = null,
+    val isLoading: Boolean? = null,
+    val errorMessage: String? = null,
+    val selectedDate: LocalDate = LocalDate.now(),
+    val posts: List<io.familymoments.app.core.network.dto.response.Post> = emptyList()
+) {
+    val hasNoPost = isSuccess == false && isLoading == false && errorMessage == NO_POST && posts.isEmpty()
+
+    companion object {
+        private const val NO_POST = "post가 존재하지 않습니다."
+    }
+}

@@ -3,10 +3,10 @@ package io.familymoments.app.feature.signup.viewmodel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.repository.SignInRepository
-import io.familymoments.app.feature.signup.model.UserInfoFormatChecker
-import io.familymoments.app.feature.signup.model.mapper.toRequest
-import io.familymoments.app.feature.signup.model.uistate.SignUpInfoUiState
-import io.familymoments.app.feature.signup.model.uistate.SignUpUiState
+import io.familymoments.app.feature.signup.UserInfoFormatChecker
+import io.familymoments.app.feature.signup.mapper.toRequest
+import io.familymoments.app.feature.signup.uistate.SignUpInfoUiState
+import io.familymoments.app.feature.signup.uistate.SignUpUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

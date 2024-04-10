@@ -9,10 +9,10 @@ import io.familymoments.app.core.uistate.DeletePopupUiState
 import io.familymoments.app.core.uistate.PopupStatusLogics
 import io.familymoments.app.core.uistate.PopupUiState
 import io.familymoments.app.core.uistate.ReportPopupUiState
-import io.familymoments.app.feature.postdetail.model.uistate.CommentLogics
-import io.familymoments.app.feature.postdetail.model.uistate.CommentUiState
-import io.familymoments.app.feature.postdetail.model.uistate.PostLogics
-import io.familymoments.app.feature.postdetail.model.uistate.PostUiState
+import io.familymoments.app.feature.postdetail.uistate.CommentLogics
+import io.familymoments.app.feature.postdetail.uistate.CommentUiState
+import io.familymoments.app.feature.postdetail.uistate.PostLogics
+import io.familymoments.app.feature.postdetail.uistate.PostUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

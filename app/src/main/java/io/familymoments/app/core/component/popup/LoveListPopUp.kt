@@ -31,11 +31,11 @@ import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.noRippleClickable
-import io.familymoments.app.feature.postdetail.model.response.GetPostLovesResult
+import io.familymoments.app.core.network.dto.response.GetPostLovesResult
 
 @Composable
 fun LoveListPopUp(
-    postLoves: List<GetPostLovesResult>,
+    postLoves: List<io.familymoments.app.core.network.dto.response.GetPostLovesResult>,
     onDismissRequest: () -> Unit = {}
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
@@ -81,7 +81,7 @@ fun LoveListPopUp(
 }
 
 @Composable
-fun LoveListItem(member: GetPostLovesResult) {
+fun LoveListItem(member: io.familymoments.app.core.network.dto.response.GetPostLovesResult) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(horizontal = 13.dp, vertical = 6.dp)

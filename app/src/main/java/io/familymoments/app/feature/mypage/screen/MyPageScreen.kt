@@ -31,7 +31,7 @@ import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.mypage.component.LogoutPopup
-import io.familymoments.app.feature.mypage.model.MyPageItem
+import io.familymoments.app.feature.mypage.MyPageItem
 
 @Composable
 fun MyPageScreen(

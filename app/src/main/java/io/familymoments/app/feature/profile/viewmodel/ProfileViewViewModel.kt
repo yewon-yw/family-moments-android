@@ -4,7 +4,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.UserRepository
-import io.familymoments.app.feature.profile.model.uistate.ProfileViewUiState
+import io.familymoments.app.feature.profile.uistate.ProfileViewUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,7 +15,9 @@ class ProfileViewViewModel @Inject constructor(
     private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource,
     private val userRepository: UserRepository
 ) : BaseViewModel() {
-    private val _profileViewUiState: MutableStateFlow<ProfileViewUiState> = MutableStateFlow(ProfileViewUiState())
+    private val _profileViewUiState: MutableStateFlow<ProfileViewUiState> = MutableStateFlow(
+        ProfileViewUiState()
+    )
     val profileViewUiState: StateFlow<ProfileViewUiState> = _profileViewUiState.asStateFlow()
 
     fun loadUserProfile() {

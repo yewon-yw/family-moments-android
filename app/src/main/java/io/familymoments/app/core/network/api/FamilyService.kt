@@ -1,11 +1,11 @@
 package io.familymoments.app.core.network.api
 
-import io.familymoments.app.feature.creatingfamily.model.CreateFamilyRequest
-import io.familymoments.app.feature.creatingfamily.model.CreateFamilyResponse
-import io.familymoments.app.feature.home.model.GetNicknameDdayResponse
-import io.familymoments.app.feature.joiningfamily.model.JoinFamilyResponse
-import io.familymoments.app.feature.joiningfamily.model.SearchFamilyByInviteLinkRequest
-import io.familymoments.app.feature.joiningfamily.model.SearchFamilyByInviteLinkResponse
+import io.familymoments.app.core.network.dto.request.CreateFamilyRequest
+import io.familymoments.app.core.network.dto.response.CreateFamilyResponse
+import io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse
+import io.familymoments.app.core.network.dto.response.JoinFamilyResponse
+import io.familymoments.app.core.network.dto.request.SearchFamilyByInviteLinkRequest
+import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -18,20 +18,20 @@ import retrofit2.http.Path
 interface FamilyService {
 
     @GET("/families/{familyId}/created")
-    suspend fun getNicknameDday(@Path("familyId") familyId: Long): Response<GetNicknameDdayResponse>
+    suspend fun getNicknameDday(@Path("familyId") familyId: Long): Response<io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse>
 
     @Multipart
     @POST("/families/family")
     suspend fun createFamily(
         @Part representImg: MultipartBody.Part,
-        @Part("postFamilyReq") createFamilyRequest: CreateFamilyRequest
-    ): Response<CreateFamilyResponse>
+        @Part("postFamilyReq") createFamilyRequest: io.familymoments.app.core.network.dto.request.CreateFamilyRequest
+    ): Response<io.familymoments.app.core.network.dto.response.CreateFamilyResponse>
 
     @POST("/families/inviteCode")
     suspend fun searchFamilyByInviteLink(
-        @Body searchFamilyByInviteLinkRequest: SearchFamilyByInviteLinkRequest
-    ): Response<SearchFamilyByInviteLinkResponse>
+        @Body searchFamilyByInviteLinkRequest: io.familymoments.app.core.network.dto.request.SearchFamilyByInviteLinkRequest
+    ): Response<io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse>
 
     @POST("/families/{familyId}/join")
-    suspend fun joinFamily( @Path("familyId") familyId: Long ):Response<JoinFamilyResponse>
+    suspend fun joinFamily( @Path("familyId") familyId: Long ):Response<io.familymoments.app.core.network.dto.response.JoinFamilyResponse>
 }
