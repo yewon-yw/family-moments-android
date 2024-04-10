@@ -1,12 +1,12 @@
 package io.familymoments.app.core.network.api
 
-import io.familymoments.app.feature.postdetail.model.request.CommentLovesRequest
-import io.familymoments.app.feature.postdetail.model.request.PostCommentRequest
-import io.familymoments.app.feature.postdetail.model.response.DeleteCommentLovesResponse
-import io.familymoments.app.feature.postdetail.model.response.DeleteCommentResponse
-import io.familymoments.app.feature.postdetail.model.response.GetCommentsIndexResponse
-import io.familymoments.app.feature.postdetail.model.response.PostCommentLovesResponse
-import io.familymoments.app.feature.postdetail.model.response.PostCommentResponse
+import io.familymoments.app.core.network.dto.request.CommentLovesRequest
+import io.familymoments.app.core.network.dto.request.PostCommentRequest
+import io.familymoments.app.core.network.dto.response.DeleteCommentLovesResponse
+import io.familymoments.app.core.network.dto.response.DeleteCommentResponse
+import io.familymoments.app.core.network.dto.response.GetCommentsIndexResponse
+import io.familymoments.app.core.network.dto.response.PostCommentLovesResponse
+import io.familymoments.app.core.network.dto.response.PostCommentResponse
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE

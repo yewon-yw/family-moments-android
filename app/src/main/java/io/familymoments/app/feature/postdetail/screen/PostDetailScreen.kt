@@ -61,17 +61,17 @@ import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.component.popup.DeletePopUp
 import io.familymoments.app.core.component.popup.LoveListPopUp
 import io.familymoments.app.core.component.popup.ReportPopUp
+import io.familymoments.app.core.network.dto.response.GetCommentsResult
+import io.familymoments.app.core.network.dto.response.GetPostDetailResult
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.uistate.PopupUiState
 import io.familymoments.app.core.util.noRippleClickable
-import io.familymoments.app.feature.postdetail.model.component.postDetailContentShadow
-import io.familymoments.app.feature.postdetail.model.response.GetCommentsResult
-import io.familymoments.app.feature.postdetail.model.response.GetPostDetailResult
-import io.familymoments.app.feature.postdetail.model.uistate.CommentLogics
-import io.familymoments.app.feature.postdetail.model.uistate.GetPostLovesUiState
-import io.familymoments.app.feature.postdetail.model.uistate.PostCommentUiState
-import io.familymoments.app.feature.postdetail.model.uistate.PostLogics
+import io.familymoments.app.feature.postdetail.component.postDetailContentShadow
+import io.familymoments.app.feature.postdetail.uistate.CommentLogics
+import io.familymoments.app.feature.postdetail.uistate.GetPostLovesUiState
+import io.familymoments.app.feature.postdetail.uistate.PostCommentUiState
+import io.familymoments.app.feature.postdetail.uistate.PostLogics
 import io.familymoments.app.feature.postdetail.viewmodel.PostDetailViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -198,7 +198,10 @@ fun showToastMessage(context: Context, message: String?) {
 }
 
 @Composable
-fun WriterInfo(postInfo: GetPostDetailResult, formatPostCreatedDate: (String) -> String) {
+fun WriterInfo(
+    postInfo: GetPostDetailResult,
+    formatPostCreatedDate: (String) -> String
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically

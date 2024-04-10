@@ -1,7 +1,7 @@
 package io.familymoments.app.core.network.datasource
 
-import io.familymoments.app.core.network.model.UserProfile
-import io.familymoments.app.feature.profile.model.response.ProfileEditResult
+import io.familymoments.app.core.network.dto.response.ProfileEditResult
+import io.familymoments.app.core.network.dto.response.UserProfile
 
 interface UserInfoPreferencesDataSource {
     suspend fun saveAccessToken(token: String)

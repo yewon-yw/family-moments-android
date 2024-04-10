@@ -72,9 +72,4 @@
 
 
 ##### 여기서부터는 ClassCastException 발생하는 model class keep #####
--keep class io.familymoments.app.feature.home.model.** { *; }
--keep class io.familymoments.app.feature.album.model.** { *; }
--keep class io.familymoments.app.feature.creatingfamily.model.** { *; }
--keep class io.familymoments.app.feature.login.model.** { *; }
--keep class io.familymoments.app.feature.mypage.model.** { *; }
-
+-keep class io.familymoments.app.core.network.dto.** { *; }

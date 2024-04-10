@@ -53,7 +53,7 @@ import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.FileUtil.convertBitmapToFile
 import io.familymoments.app.core.util.FileUtil.convertUriToBitmap
 import io.familymoments.app.core.util.FileUtil.convertUrlToBitmap
-import io.familymoments.app.feature.profile.model.uistate.ProfileImage
+import io.familymoments.app.feature.profile.uistate.ProfileImage
 import io.familymoments.app.feature.profile.viewmodel.ProfileEditViewModel
 
 @Composable

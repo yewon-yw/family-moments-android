@@ -7,9 +7,9 @@ import io.familymoments.app.core.graph.Route
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.core.network.util.createImageMultiPart
-import io.familymoments.app.feature.addpost.model.AddPostMode
-import io.familymoments.app.feature.addpost.model.AddPostUiState
-import io.familymoments.app.feature.addpost.model.ExistPostUiState
+import io.familymoments.app.feature.addpost.AddPostMode
+import io.familymoments.app.feature.addpost.uistate.AddPostUiState
+import io.familymoments.app.feature.addpost.uistate.ExistPostUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import java.io.File

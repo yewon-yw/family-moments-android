@@ -1,14 +1,14 @@
 package io.familymoments.app.core.network.api
 
-import io.familymoments.app.core.network.model.UserProfileResponse
-import io.familymoments.app.feature.creatingfamily.model.response.SearchMemberResponse
-import io.familymoments.app.feature.login.model.request.LoginRequest
-import io.familymoments.app.feature.login.model.response.LoginResponse
-import io.familymoments.app.feature.modifypassword.model.request.ModifyPasswordRequest
-import io.familymoments.app.feature.modifypassword.model.response.ModifyPasswordResponse
-import io.familymoments.app.feature.mypage.model.response.LogoutResponse
-import io.familymoments.app.feature.profile.model.request.ProfileEditRequest
-import io.familymoments.app.feature.profile.model.response.ProfileEditResponse
+import io.familymoments.app.core.network.dto.request.LoginRequest
+import io.familymoments.app.core.network.dto.request.ModifyPasswordRequest
+import io.familymoments.app.core.network.dto.request.ProfileEditRequest
+import io.familymoments.app.core.network.dto.response.LoginResponse
+import io.familymoments.app.core.network.dto.response.LogoutResponse
+import io.familymoments.app.core.network.dto.response.ModifyPasswordResponse
+import io.familymoments.app.core.network.dto.response.ProfileEditResponse
+import io.familymoments.app.core.network.dto.response.SearchMemberResponse
+import io.familymoments.app.core.network.dto.response.UserProfileResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body

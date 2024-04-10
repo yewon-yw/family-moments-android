@@ -1,16 +1,16 @@
 package io.familymoments.app.core.network.api
 
-import io.familymoments.app.feature.addpost.model.AddPostResponse
-import io.familymoments.app.feature.album.model.GetAlbumDetailResponse
-import io.familymoments.app.feature.album.model.GetAlbumResponse
-import io.familymoments.app.feature.calendar.model.GetPostsByMonthResponse
-import io.familymoments.app.feature.home.model.GetPostsResponse
-import io.familymoments.app.feature.postdetail.model.request.PostLovesRequest
-import io.familymoments.app.feature.postdetail.model.response.DeletePostLovesResponse
-import io.familymoments.app.feature.postdetail.model.response.DeletePostResponse
-import io.familymoments.app.feature.postdetail.model.response.GetPostDetailResponse
-import io.familymoments.app.feature.postdetail.model.response.GetPostLovesResponse
-import io.familymoments.app.feature.postdetail.model.response.PostPostLovesResponse
+import io.familymoments.app.core.network.dto.request.PostLovesRequest
+import io.familymoments.app.core.network.dto.response.AddPostResponse
+import io.familymoments.app.core.network.dto.response.DeletePostLovesResponse
+import io.familymoments.app.core.network.dto.response.DeletePostResponse
+import io.familymoments.app.core.network.dto.response.GetAlbumDetailResponse
+import io.familymoments.app.core.network.dto.response.GetAlbumResponse
+import io.familymoments.app.core.network.dto.response.GetPostDetailResponse
+import io.familymoments.app.core.network.dto.response.GetPostLovesResponse
+import io.familymoments.app.core.network.dto.response.GetPostsByMonthResponse
+import io.familymoments.app.core.network.dto.response.GetPostsResponse
+import io.familymoments.app.core.network.dto.response.PostPostLovesResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.Response

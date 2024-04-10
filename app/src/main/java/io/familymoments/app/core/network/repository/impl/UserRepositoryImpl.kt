@@ -1,22 +1,22 @@
 package io.familymoments.app.core.network.repository.impl
 
 import io.familymoments.app.core.network.AuthErrorManager
+import io.familymoments.app.core.network.AuthErrorResponse
 import io.familymoments.app.core.network.HttpResponse
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.UserService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
-import io.familymoments.app.core.network.model.AuthErrorResponse
-import io.familymoments.app.core.network.model.UserProfileResponse
+import io.familymoments.app.core.network.dto.request.LoginRequest
+import io.familymoments.app.core.network.dto.request.ModifyPasswordRequest
+import io.familymoments.app.core.network.dto.request.ProfileEditRequest
+import io.familymoments.app.core.network.dto.response.LoginResponse
+import io.familymoments.app.core.network.dto.response.LogoutResponse
+import io.familymoments.app.core.network.dto.response.ModifyPasswordResponse
+import io.familymoments.app.core.network.dto.response.ProfileEditResponse
+import io.familymoments.app.core.network.dto.response.SearchMemberResponse
+import io.familymoments.app.core.network.dto.response.UserProfileResponse
 import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.core.util.DEFAULT_FAMILY_ID_VALUE
-import io.familymoments.app.feature.creatingfamily.model.response.SearchMemberResponse
-import io.familymoments.app.feature.login.model.request.LoginRequest
-import io.familymoments.app.feature.login.model.response.LoginResponse
-import io.familymoments.app.feature.modifypassword.model.request.ModifyPasswordRequest
-import io.familymoments.app.feature.modifypassword.model.response.ModifyPasswordResponse
-import io.familymoments.app.feature.mypage.model.response.LogoutResponse
-import io.familymoments.app.feature.profile.model.request.ProfileEditRequest
-import io.familymoments.app.feature.profile.model.response.ProfileEditResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -35,7 +35,12 @@ class UserRepositoryImpl @Inject constructor(
     ): Flow<Resource<LoginResponse>> {
         return flow {
             emit(Resource.Loading)
-            val response = userService.loginUser(LoginRequest(username, password))
+            val response = userService.loginUser(
+                LoginRequest(
+                    username,
+                    password
+                )
+            )
             val responseBody = response.body() ?: LoginResponse()
 
             if (responseBody.isSuccess) {
@@ -116,7 +121,8 @@ class UserRepositoryImpl @Inject constructor(
         return flow {
             emit(Resource.Loading)
             val response = userService.modifyPassword(modifyPasswordRequest)
-            val responseBody = response.body() ?: ModifyPasswordResponse()
+            val responseBody =
+                response.body() ?: ModifyPasswordResponse()
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
             } else if (responseBody.code == HttpResponse.INCORRECT_CURRENT_PASSWORD || responseBody.code == HttpResponse.NEW_PASSWORD_SAME_AS_CURRENT) {
@@ -129,7 +135,10 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun searchMember(keyword: String, newFamily: Boolean): Flow<Resource<SearchMemberResponse>> {
+    override suspend fun searchMember(
+        keyword: String,
+        newFamily: Boolean
+    ): Flow<Resource<SearchMemberResponse>> {
         return flow {
             emit(Resource.Loading)
             val familyId = if (newFamily) null else userInfoPreferencesDataSource.loadFamilyId()

@@ -50,8 +50,8 @@ import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.AppTypography.LB2_11
 import io.familymoments.app.core.util.LocalScaffoldState
 import io.familymoments.app.core.util.keyboardAsState
+import io.familymoments.app.feature.bottomnav.BottomNavItem
 import io.familymoments.app.feature.bottomnav.component.bottomNavShadow
-import io.familymoments.app.feature.bottomnav.model.BottomNavItem
 import io.familymoments.app.feature.bottomnav.viewmodel.MainViewModel
 import io.familymoments.app.feature.choosingfamily.activity.ChoosingFamilyActivity
 import io.familymoments.app.feature.home.screen.HomeScreenPreview

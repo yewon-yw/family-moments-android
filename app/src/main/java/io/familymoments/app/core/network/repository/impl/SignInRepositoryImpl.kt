@@ -2,13 +2,13 @@ package io.familymoments.app.core.network.repository.impl
 
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.SignInService
+import io.familymoments.app.core.network.dto.request.CheckEmailRequest
+import io.familymoments.app.core.network.dto.request.CheckIdRequest
+import io.familymoments.app.core.network.dto.request.SignUpRequest
+import io.familymoments.app.core.network.dto.response.CheckEmailResponse
+import io.familymoments.app.core.network.dto.response.CheckIdResponse
+import io.familymoments.app.core.network.dto.response.SignUpResponse
 import io.familymoments.app.core.network.repository.SignInRepository
-import io.familymoments.app.feature.signup.model.request.CheckEmailRequest
-import io.familymoments.app.feature.signup.model.request.CheckIdRequest
-import io.familymoments.app.feature.signup.model.request.SignUpRequest
-import io.familymoments.app.feature.signup.model.response.CheckEmailResponse
-import io.familymoments.app.feature.signup.model.response.CheckIdResponse
-import io.familymoments.app.feature.signup.model.response.SignUpResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -37,7 +37,8 @@ class SignInRepositoryImpl @Inject constructor(
         return flow {
             emit(Resource.Loading)
 
-            val result = signInService.checkEmail(CheckEmailRequest(email))
+            val result =
+                signInService.checkEmail(CheckEmailRequest(email))
 
             if (result.isSuccess) {
                 emit(Resource.Success(result))

@@ -39,9 +39,9 @@ import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.login.activity.LoginActivity
-import io.familymoments.app.feature.modifypassword.model.uistate.CurrentPasswordUiState
-import io.familymoments.app.feature.modifypassword.model.uistate.NewPasswordCheckUiState
-import io.familymoments.app.feature.modifypassword.model.uistate.NewPasswordUiState
+import io.familymoments.app.feature.modifypassword.uistate.CurrentPasswordUiState
+import io.familymoments.app.feature.modifypassword.uistate.NewPasswordCheckUiState
+import io.familymoments.app.feature.modifypassword.uistate.NewPasswordUiState
 import io.familymoments.app.feature.modifypassword.viewmodel.ModifyPasswordViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

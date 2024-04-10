@@ -37,8 +37,8 @@ import io.familymoments.app.R
 import io.familymoments.app.core.component.LoadingIndicator
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
-import io.familymoments.app.feature.creatingfamily.model.UploadCycle
+import io.familymoments.app.feature.choosingfamily.component.ChoosingFamilyHeaderButtonLayout
+import io.familymoments.app.feature.creatingfamily.UploadCycle
 import io.familymoments.app.feature.creatingfamily.viewmodel.CreatingFamilyViewModel
 
 @OptIn(ExperimentalMaterialApi::class)
