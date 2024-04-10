@@ -4,7 +4,7 @@ import io.familymoments.app.core.network.dto.request.SignUpRequest
 import io.familymoments.app.feature.signup.uistate.SignUpInfoUiState
 
 fun SignUpInfoUiState.toRequest() =
-    io.familymoments.app.core.network.dto.request.SignUpRequest(
+    SignUpRequest(
         id = id,
         password = password,
         name = name,

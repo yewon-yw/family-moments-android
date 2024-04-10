@@ -41,7 +41,6 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.home.component.postItemContentShadow
-import io.familymoments.app.core.network.dto.response.Post
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

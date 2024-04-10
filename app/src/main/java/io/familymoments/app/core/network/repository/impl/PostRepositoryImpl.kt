@@ -2,19 +2,18 @@ package io.familymoments.app.core.network.repository.impl
 
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.PostService
-import io.familymoments.app.core.network.repository.PostRepository
-import io.familymoments.app.core.network.util.createPostInfoRequestBody
 import io.familymoments.app.core.network.dto.response.AddPostResponse
-import io.familymoments.app.core.network.dto.response.GetAlbumDetailResponse
-import io.familymoments.app.core.network.dto.response.GetAlbumResponse
-import io.familymoments.app.core.network.dto.response.GetPostsByMonthResponse
-import io.familymoments.app.core.network.dto.response.GetPostsResponse
-import io.familymoments.app.core.network.dto.request.PostLovesRequest
 import io.familymoments.app.core.network.dto.response.DeletePostLovesResponse
 import io.familymoments.app.core.network.dto.response.DeletePostResponse
+import io.familymoments.app.core.network.dto.response.GetAlbumDetailResponse
+import io.familymoments.app.core.network.dto.response.GetAlbumResponse
 import io.familymoments.app.core.network.dto.response.GetPostDetailResponse
 import io.familymoments.app.core.network.dto.response.GetPostLovesResponse
+import io.familymoments.app.core.network.dto.response.GetPostsByMonthResponse
+import io.familymoments.app.core.network.dto.response.GetPostsResponse
 import io.familymoments.app.core.network.dto.response.PostPostLovesResponse
+import io.familymoments.app.core.network.repository.PostRepository
+import io.familymoments.app.core.network.util.createPostInfoRequestBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -25,11 +24,11 @@ import javax.inject.Inject
 class PostRepositoryImpl @Inject constructor(
     private val postService: PostService
 ) : PostRepository {
-    override suspend fun getPosts(familyId: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.GetPostsResponse>> {
+    override suspend fun getPosts(familyId: Long): Flow<Resource<GetPostsResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = postService.getPosts(familyId)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.GetPostsResponse()
+            val responseBody = response.body() ?: GetPostsResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -41,11 +40,14 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun loadMorePosts(familyId: Long, postId: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.GetPostsResponse>> {
+    override suspend fun loadMorePosts(
+        familyId: Long,
+        postId: Long
+    ): Flow<Resource<GetPostsResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = postService.loadMorePosts(familyId, postId)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.GetPostsResponse()
+            val responseBody = response.body() ?: GetPostsResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -61,11 +63,11 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAlbum(familyId: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.GetAlbumResponse>> {
+    override suspend fun getAlbum(familyId: Long): Flow<Resource<GetAlbumResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = postService.getAlbum(familyId)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.GetAlbumResponse()
+            val responseBody = response.body() ?: GetAlbumResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -77,11 +79,14 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun loadMoreAlbum(familyId: Long, postId: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.GetAlbumResponse>> {
+    override suspend fun loadMoreAlbum(
+        familyId: Long,
+        postId: Long
+    ): Flow<Resource<GetAlbumResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = postService.loadMoreAlbum(familyId, postId)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.GetAlbumResponse()
+            val responseBody = response.body() ?: GetAlbumResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -97,11 +102,12 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getAlbumDetail(postId: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.GetAlbumDetailResponse>> {
+    override suspend fun getAlbumDetail(postId: Long): Flow<Resource<GetAlbumDetailResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = postService.getAlbumDetail(postId)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.GetAlbumDetailResponse()
+            val responseBody =
+                response.body() ?: GetAlbumDetailResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -117,11 +123,12 @@ class PostRepositoryImpl @Inject constructor(
         familyId: Long,
         year: Int,
         month: Int
-    ): Flow<Resource<io.familymoments.app.core.network.dto.response.GetPostsByMonthResponse>> {
+    ): Flow<Resource<GetPostsByMonthResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = postService.getPostsByMonth(familyId, year, month)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.GetPostsByMonthResponse()
+            val responseBody =
+                response.body() ?: GetPostsByMonthResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -138,11 +145,11 @@ class PostRepositoryImpl @Inject constructor(
         year: Int,
         month: Int,
         day: Int
-    ): Flow<Resource<io.familymoments.app.core.network.dto.response.GetPostsResponse>> {
+    ): Flow<Resource<GetPostsResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = postService.getPostsByDay(familyId, year, month, day)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.GetPostsResponse()
+            val responseBody = response.body() ?: GetPostsResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -160,11 +167,11 @@ class PostRepositoryImpl @Inject constructor(
         month: Int,
         day: Int,
         postId: Long
-    ): Flow<Resource<io.familymoments.app.core.network.dto.response.GetPostsResponse>> {
+    ): Flow<Resource<GetPostsResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = postService.loadMorePostsByDay(familyId, year, month, day, postId)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.GetPostsResponse()
+            val responseBody = response.body() ?: GetPostsResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -184,13 +191,13 @@ class PostRepositoryImpl @Inject constructor(
         familyId: Long,
         content: String,
         imageFiles: List<MultipartBody.Part>?
-    ): Flow<Resource<io.familymoments.app.core.network.dto.response.AddPostResponse>> {
+    ): Flow<Resource<AddPostResponse>> {
         return flow {
             emit(Resource.Loading)
             val postInfo = createPostInfoRequestBody(content)
 
             val response = postService.addPost(familyId, postInfo, imageFiles)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.AddPostResponse()
+            val responseBody = response.body() ?: AddPostResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -202,11 +209,11 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getPostDetail(index: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.GetPostDetailResponse>> {
+    override suspend fun getPostDetail(index: Long): Flow<Resource<GetPostDetailResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = postService.getPostDetail(index)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.GetPostDetailResponse()
+            val responseBody = response.body() ?: GetPostDetailResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -218,11 +225,11 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getPostLoves(index: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.GetPostLovesResponse>> {
+    override suspend fun getPostLoves(index: Long): Flow<Resource<GetPostLovesResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = postService.getPostLoves(index)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.GetPostLovesResponse()
+            val responseBody = response.body() ?: GetPostLovesResponse()
             if (responseBody.isSuccess) {
                 Timber.tag("hkhk").d("좋아요 목록: $index")
                 emit(Resource.Success(responseBody))
@@ -234,7 +241,7 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun postPostLoves(postId: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.PostPostLovesResponse>> {
+    override suspend fun postPostLoves(postId: Long): Flow<Resource<PostPostLovesResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = postService.postPostloves(
@@ -242,7 +249,7 @@ class PostRepositoryImpl @Inject constructor(
                     postId
                 )
             )
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.PostPostLovesResponse()
+            val responseBody = response.body() ?: PostPostLovesResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -254,7 +261,7 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deletePostLoves(postId: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.DeletePostLovesResponse>> {
+    override suspend fun deletePostLoves(postId: Long): Flow<Resource<DeletePostLovesResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = postService.deletePostloves(
@@ -262,7 +269,8 @@ class PostRepositoryImpl @Inject constructor(
                     postId
                 )
             )
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.DeletePostLovesResponse()
+            val responseBody =
+                response.body() ?: DeletePostLovesResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -274,11 +282,11 @@ class PostRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deletePost(index: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.DeletePostResponse>> {
+    override suspend fun deletePost(index: Long): Flow<Resource<DeletePostResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = postService.deletePost(index)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.DeletePostResponse()
+            val responseBody = response.body() ?: DeletePostResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))

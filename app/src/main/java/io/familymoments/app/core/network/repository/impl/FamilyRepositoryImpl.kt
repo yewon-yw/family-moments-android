@@ -3,13 +3,13 @@ package io.familymoments.app.core.network.repository.impl
 import io.familymoments.app.core.network.HttpResponse
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.FamilyService
-import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.dto.request.CreateFamilyRequest
+import io.familymoments.app.core.network.dto.request.SearchFamilyByInviteLinkRequest
 import io.familymoments.app.core.network.dto.response.CreateFamilyResponse
 import io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse
 import io.familymoments.app.core.network.dto.response.JoinFamilyResponse
-import io.familymoments.app.core.network.dto.request.SearchFamilyByInviteLinkRequest
 import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse
+import io.familymoments.app.core.network.repository.FamilyRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -19,11 +19,12 @@ import javax.inject.Inject
 class FamilyRepositoryImpl @Inject constructor(
     private val familyService: FamilyService
 ) : FamilyRepository {
-    override suspend fun getNicknameDday(familyId: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse>> {
+    override suspend fun getNicknameDday(familyId: Long): Flow<Resource<GetNicknameDdayResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = familyService.getNicknameDday(familyId)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse()
+            val responseBody =
+                response.body() ?: GetNicknameDdayResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -37,12 +38,12 @@ class FamilyRepositoryImpl @Inject constructor(
 
     override suspend fun createFamily(
         representImg: MultipartBody.Part,
-        createFamilyRequest: io.familymoments.app.core.network.dto.request.CreateFamilyRequest
-    ): Flow<Resource<io.familymoments.app.core.network.dto.response.CreateFamilyResponse>> {
+        createFamilyRequest: CreateFamilyRequest
+    ): Flow<Resource<CreateFamilyResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = familyService.createFamily(representImg, createFamilyRequest)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.CreateFamilyResponse()
+            val responseBody = response.body() ?: CreateFamilyResponse()
 
             if (response.code() == HttpResponse.SUCCESS) {
                 if (responseBody.isSuccess) {
@@ -56,15 +57,16 @@ class FamilyRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun searchFamilyByInviteLink(inviteLink: String): Flow<Resource<io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse>> {
+    override suspend fun searchFamilyByInviteLink(inviteLink: String): Flow<Resource<SearchFamilyByInviteLinkResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = familyService.searchFamilyByInviteLink(
-                io.familymoments.app.core.network.dto.request.SearchFamilyByInviteLinkRequest(
+                SearchFamilyByInviteLinkRequest(
                     inviteLink
                 )
             )
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse()
+            val responseBody =
+                response.body() ?: SearchFamilyByInviteLinkResponse()
 
             if (response.code() == HttpResponse.SUCCESS) {
                 if (responseBody.isSuccess) {
@@ -78,11 +80,11 @@ class FamilyRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun joinFamily(familyId: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.JoinFamilyResponse>> {
+    override suspend fun joinFamily(familyId: Long): Flow<Resource<JoinFamilyResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = familyService.joinFamily(familyId)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.JoinFamilyResponse()
+            val responseBody = response.body() ?: JoinFamilyResponse()
 
             if (response.code() == HttpResponse.SUCCESS) {
                 if (responseBody.isSuccess) {

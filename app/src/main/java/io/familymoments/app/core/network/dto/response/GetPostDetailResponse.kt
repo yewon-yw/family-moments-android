@@ -7,7 +7,7 @@ data class GetPostDetailResponse(
     val isSuccess: Boolean = false,
     val code: Int = 0,
     val message: String = "",
-    val result: io.familymoments.app.core.network.dto.response.GetPostDetailResult = io.familymoments.app.core.network.dto.response.GetPostDetailResult()
+    val result: GetPostDetailResult = GetPostDetailResult()
 )
 
 @Immutable

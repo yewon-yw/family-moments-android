@@ -6,8 +6,6 @@ import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.repository.UserRepository
-import io.familymoments.app.core.network.dto.request.CreateFamilyRequest
-import io.familymoments.app.core.network.dto.request.FamilyProfile
 import io.familymoments.app.feature.creatingfamily.uistate.CreateFamilyResultUiState
 import io.familymoments.app.feature.creatingfamily.uistate.SearchMemberUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,10 +24,12 @@ class CreatingFamilyViewModel @Inject constructor(
     private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
 ) : BaseViewModel() {
 
-    private val _familyProfile: MutableStateFlow<io.familymoments.app.core.network.dto.request.FamilyProfile> = MutableStateFlow(
-        io.familymoments.app.core.network.dto.request.FamilyProfile()
-    )
-    val familyProfile: StateFlow<io.familymoments.app.core.network.dto.request.FamilyProfile> = _familyProfile.asStateFlow()
+    private val _familyProfile: MutableStateFlow<io.familymoments.app.core.network.dto.request.FamilyProfile> =
+        MutableStateFlow(
+            io.familymoments.app.core.network.dto.request.FamilyProfile()
+        )
+    val familyProfile: StateFlow<io.familymoments.app.core.network.dto.request.FamilyProfile> =
+        _familyProfile.asStateFlow()
 
     private val _searchMemberUiState: MutableStateFlow<SearchMemberUiState> = MutableStateFlow(
         SearchMemberUiState()
@@ -64,11 +64,12 @@ class CreatingFamilyViewModel @Inject constructor(
     }
 
     fun createFamily(familyProfile: io.familymoments.app.core.network.dto.request.FamilyProfile) {
-        check(familyProfile.imgFile != null){
+        check(familyProfile.imgFile != null) {
             throw NullPointerException()
         }
         val imageRequestBody = familyProfile.imgFile.asRequestBody("image/*".toMediaTypeOrNull())
-        val profileImgPart = MultipartBody.Part.createFormData("representImg", familyProfile.imgFile.name, imageRequestBody)
+        val profileImgPart =
+            MultipartBody.Part.createFormData("representImg", familyProfile.imgFile.name, imageRequestBody)
         val createFamilyRequest = io.familymoments.app.core.network.dto.request.CreateFamilyRequest(
             familyName = familyProfile.name,
             uploadCycle = familyProfile.uploadCycle

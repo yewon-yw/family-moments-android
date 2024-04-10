@@ -73,7 +73,7 @@ class JoinFamilyViewModel @Inject constructor(
         )
     }
 
-    fun resetJoinFamilyExecuteSuccess(){
+    fun resetJoinFamilyExecuteSuccess() {
         val newJoinFamilyExecuteUiState = _joinFamilyUiState.value.joinFamilyExecuteUiState.copy(
             isSuccess = null
         )

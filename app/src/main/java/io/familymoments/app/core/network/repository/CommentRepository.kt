@@ -9,9 +9,13 @@ import io.familymoments.app.core.network.dto.response.PostCommentResponse
 import kotlinx.coroutines.flow.Flow
 
 interface CommentRepository {
-    suspend fun getPostComments(index: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.GetCommentsIndexResponse>>
-    suspend fun postComment(comment: String, index: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.PostCommentResponse>>
-    suspend fun deleteComment(index: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.DeleteCommentResponse>>
-    suspend fun postCommentLoves(commentId: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.PostCommentLovesResponse>>
-    suspend fun deleteCommentLoves(commentId: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.DeleteCommentLovesResponse>>
+    suspend fun getPostComments(index: Long): Flow<Resource<GetCommentsIndexResponse>>
+    suspend fun postComment(
+        comment: String,
+        index: Long
+    ): Flow<Resource<PostCommentResponse>>
+
+    suspend fun deleteComment(index: Long): Flow<Resource<DeleteCommentResponse>>
+    suspend fun postCommentLoves(commentId: Long): Flow<Resource<PostCommentLovesResponse>>
+    suspend fun deleteCommentLoves(commentId: Long): Flow<Resource<DeleteCommentLovesResponse>>
 }

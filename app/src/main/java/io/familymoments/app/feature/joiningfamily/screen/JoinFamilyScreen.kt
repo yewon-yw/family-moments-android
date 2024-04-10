@@ -36,7 +36,6 @@ import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.choosingfamily.component.ChoosingFamilyHeaderButtonLayout
 import io.familymoments.app.feature.choosingfamily.component.MemberCheckBox
 import io.familymoments.app.feature.choosingfamily.component.SearchTextField
-import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResult
 import io.familymoments.app.feature.joiningfamily.viewmodel.JoinFamilyViewModel
 
 

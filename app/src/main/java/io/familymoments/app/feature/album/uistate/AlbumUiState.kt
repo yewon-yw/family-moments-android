@@ -1,7 +1,6 @@
 package io.familymoments.app.feature.album.uistate
 
 import androidx.compose.runtime.Immutable
-import io.familymoments.app.core.network.dto.response.Album
 import io.familymoments.app.core.network.HttpResponseMessage.NO_POST_404
 
 @Immutable

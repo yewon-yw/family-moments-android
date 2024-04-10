@@ -28,14 +28,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import coil.compose.AsyncImage
 import io.familymoments.app.R
+import io.familymoments.app.core.network.dto.response.GetPostLovesResult
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.noRippleClickable
-import io.familymoments.app.core.network.dto.response.GetPostLovesResult
 
 @Composable
 fun LoveListPopUp(
-    postLoves: List<io.familymoments.app.core.network.dto.response.GetPostLovesResult>,
+    postLoves: List<GetPostLovesResult>,
     onDismissRequest: () -> Unit = {}
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
@@ -81,7 +81,7 @@ fun LoveListPopUp(
 }
 
 @Composable
-fun LoveListItem(member: io.familymoments.app.core.network.dto.response.GetPostLovesResult) {
+fun LoveListItem(member: GetPostLovesResult) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.padding(horizontal = 13.dp, vertical = 6.dp)

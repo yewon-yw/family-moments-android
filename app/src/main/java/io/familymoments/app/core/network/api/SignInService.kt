@@ -14,15 +14,15 @@ import retrofit2.http.Part
 
 interface SignInService {
     @POST("/users/check-id")
-    suspend fun checkId(@Body checkIdRequest: io.familymoments.app.core.network.dto.request.CheckIdRequest): io.familymoments.app.core.network.dto.response.CheckIdResponse
+    suspend fun checkId(@Body checkIdRequest: CheckIdRequest): CheckIdResponse
 
     @POST("/users/check-email")
-    suspend fun checkEmail(@Body checkEmailRequest: io.familymoments.app.core.network.dto.request.CheckEmailRequest): io.familymoments.app.core.network.dto.response.CheckEmailResponse
+    suspend fun checkEmail(@Body checkEmailRequest: CheckEmailRequest): CheckEmailResponse
 
     @Multipart
     @POST("/users/sign-up")
     suspend fun executeSignUp(
         @Part profileImg: MultipartBody.Part,
-        @Part("newUser") signUpRequest: io.familymoments.app.core.network.dto.request.SignUpRequest
-    ): io.familymoments.app.core.network.dto.response.SignUpResponse
+        @Part("newUser") signUpRequest: SignUpRequest
+    ): SignUpResponse
 }

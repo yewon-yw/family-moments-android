@@ -21,7 +21,7 @@ fun ChoosingFamilyHeaderButtonLayout(
     headerBottomPadding: Dp,
     header: String = "",
     button: String = "",
-    buttonEnabled:Boolean = true,
+    buttonEnabled: Boolean = true,
     onClick: () -> Unit = {},
     content: @Composable () -> Unit
 ) {
@@ -48,7 +48,7 @@ private fun Header(headerBottomPadding: Dp, header: String) {
 }
 
 @Composable
-private fun NextButton(button: String, onClick: () -> Unit, buttonEnabled:Boolean) {
+private fun NextButton(button: String, onClick: () -> Unit, buttonEnabled: Boolean) {
     Button(
         modifier = Modifier
             .fillMaxWidth()

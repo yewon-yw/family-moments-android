@@ -1,7 +1,6 @@
 package io.familymoments.app.feature.joiningfamily.uistate
 
 import androidx.compose.runtime.Immutable
-import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResult
 
 @Immutable
 data class JoinFamilyUiState(

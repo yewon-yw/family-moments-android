@@ -10,10 +10,10 @@ import okhttp3.MultipartBody
 
 // User API 중 토큰이 필요없는 API 들
 interface SignInRepository {
-    suspend fun checkId(id: String): Flow<Resource<io.familymoments.app.core.network.dto.response.CheckIdResponse>>
-    suspend fun checkEmail(email: String): Flow<Resource<io.familymoments.app.core.network.dto.response.CheckEmailResponse>>
+    suspend fun checkId(id: String): Flow<Resource<CheckIdResponse>>
+    suspend fun checkEmail(email: String): Flow<Resource<CheckEmailResponse>>
     suspend fun executeSignUp(
         profileImg: MultipartBody.Part,
-        signUpRequest: io.familymoments.app.core.network.dto.request.SignUpRequest
-    ): Flow<Resource<io.familymoments.app.core.network.dto.response.SignUpResponse>>
+        signUpRequest: SignUpRequest
+    ): Flow<Resource<SignUpResponse>>
 }

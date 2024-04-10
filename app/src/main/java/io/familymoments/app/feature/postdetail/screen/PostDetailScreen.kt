@@ -61,13 +61,13 @@ import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.component.popup.DeletePopUp
 import io.familymoments.app.core.component.popup.LoveListPopUp
 import io.familymoments.app.core.component.popup.ReportPopUp
+import io.familymoments.app.core.network.dto.response.GetCommentsResult
+import io.familymoments.app.core.network.dto.response.GetPostDetailResult
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.uistate.PopupUiState
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.postdetail.component.postDetailContentShadow
-import io.familymoments.app.core.network.dto.response.GetCommentsResult
-import io.familymoments.app.core.network.dto.response.GetPostDetailResult
 import io.familymoments.app.feature.postdetail.uistate.CommentLogics
 import io.familymoments.app.feature.postdetail.uistate.GetPostLovesUiState
 import io.familymoments.app.feature.postdetail.uistate.PostCommentUiState
@@ -81,7 +81,7 @@ fun PostDetailScreen(
     index: Long,
     modifier: Modifier,
     navigateToBack: () -> Unit,
-    navigateToModify: (io.familymoments.app.core.network.dto.response.GetPostDetailResult) -> Unit,
+    navigateToModify: (GetPostDetailResult) -> Unit,
 ) {
     LaunchedEffect(Unit) {
         viewModel.getPostDetail(index)
@@ -198,7 +198,10 @@ fun showToastMessage(context: Context, message: String?) {
 }
 
 @Composable
-fun WriterInfo(postInfo: io.familymoments.app.core.network.dto.response.GetPostDetailResult, formatPostCreatedDate: (String) -> String) {
+fun WriterInfo(
+    postInfo: GetPostDetailResult,
+    formatPostCreatedDate: (String) -> String
+) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
@@ -272,7 +275,7 @@ fun PostPhotos(imgs: List<String>, pagerState: PagerState) {
 
 @Composable
 fun PostContent(
-    postInfo: io.familymoments.app.core.network.dto.response.GetPostDetailResult,
+    postInfo: GetPostDetailResult,
     logics: PostLogics,
     popupUiState: PopupUiState,
     navigateToModify: () -> Unit,
@@ -486,7 +489,7 @@ fun CommentTextField(
 
 @Composable
 fun CommentItems(
-    comments: List<io.familymoments.app.core.network.dto.response.GetCommentsResult>,
+    comments: List<GetCommentsResult>,
     logics: CommentLogics,
     formatCommentCreatedDate: (String) -> String,
     popupUiState: PopupUiState
@@ -506,7 +509,7 @@ fun CommentItems(
 
 @Composable
 fun CommentItem(
-    comment: io.familymoments.app.core.network.dto.response.GetCommentsResult,
+    comment: GetCommentsResult,
     logics: CommentLogics,
     formatCommentCreatedDate: (String) -> String,
     popupUiState: PopupUiState

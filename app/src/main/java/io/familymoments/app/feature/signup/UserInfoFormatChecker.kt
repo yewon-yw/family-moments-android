@@ -1,7 +1,6 @@
 package io.familymoments.app.feature.signup
 
 import android.util.Patterns
-import java.lang.Exception
 import java.text.SimpleDateFormat
 import java.util.Locale
 

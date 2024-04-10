@@ -7,7 +7,7 @@ data class GetAlbumResponse(
     val isSuccess: Boolean = false,
     val code: Int = 0,
     val message: String = "",
-    val result: List<io.familymoments.app.core.network.dto.response.Album> = emptyList()
+    val result: List<Album> = emptyList()
 )
 
 data class Album(

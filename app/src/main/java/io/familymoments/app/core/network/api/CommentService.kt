@@ -22,27 +22,27 @@ interface CommentService {
     @GET("/comments")
     suspend fun getPostComments(
         @Query("postId") postId: Long
-    ): Response<io.familymoments.app.core.network.dto.response.GetCommentsIndexResponse>
+    ): Response<GetCommentsIndexResponse>
 
     @Multipart
     @POST("/comments")
     suspend fun postComment(
         @Query("postId") postId: Long,
-        @Part("postCommentReq") postCommentReq: io.familymoments.app.core.network.dto.request.PostCommentRequest
-    ): Response<io.familymoments.app.core.network.dto.response.PostCommentResponse>
+        @Part("postCommentReq") postCommentReq: PostCommentRequest
+    ): Response<PostCommentResponse>
 
     @DELETE("/comments/{index}")
     suspend fun deleteComment(
         @Path("index") index: Long
-    ): Response<io.familymoments.app.core.network.dto.response.DeleteCommentResponse>
+    ): Response<DeleteCommentResponse>
 
     @POST("/commentloves")
     suspend fun postCommentLoves(
-        @Body commentLovesRequest: io.familymoments.app.core.network.dto.request.CommentLovesRequest
-    ): Response<io.familymoments.app.core.network.dto.response.PostCommentLovesResponse>
+        @Body commentLovesRequest: CommentLovesRequest
+    ): Response<PostCommentLovesResponse>
 
     @HTTP(method = "DELETE", hasBody = true, path = "/commentloves")
     suspend fun deleteCommentLoves(
-        @Body commentLovesRequest: io.familymoments.app.core.network.dto.request.CommentLovesRequest
-    ): Response<io.familymoments.app.core.network.dto.response.DeleteCommentLovesResponse>
+        @Body commentLovesRequest: CommentLovesRequest
+    ): Response<DeleteCommentLovesResponse>
 }

@@ -1,22 +1,22 @@
 package io.familymoments.app.core.network.repository.impl
 
 import io.familymoments.app.core.network.AuthErrorManager
+import io.familymoments.app.core.network.AuthErrorResponse
 import io.familymoments.app.core.network.HttpResponse
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.UserService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
-import io.familymoments.app.core.network.AuthErrorResponse
+import io.familymoments.app.core.network.dto.request.LoginRequest
+import io.familymoments.app.core.network.dto.request.ModifyPasswordRequest
+import io.familymoments.app.core.network.dto.request.ProfileEditRequest
+import io.familymoments.app.core.network.dto.response.LoginResponse
+import io.familymoments.app.core.network.dto.response.LogoutResponse
+import io.familymoments.app.core.network.dto.response.ModifyPasswordResponse
+import io.familymoments.app.core.network.dto.response.ProfileEditResponse
+import io.familymoments.app.core.network.dto.response.SearchMemberResponse
 import io.familymoments.app.core.network.dto.response.UserProfileResponse
 import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.core.util.DEFAULT_FAMILY_ID_VALUE
-import io.familymoments.app.core.network.dto.response.SearchMemberResponse
-import io.familymoments.app.core.network.dto.request.LoginRequest
-import io.familymoments.app.core.network.dto.response.LoginResponse
-import io.familymoments.app.core.network.dto.request.ModifyPasswordRequest
-import io.familymoments.app.core.network.dto.response.ModifyPasswordResponse
-import io.familymoments.app.core.network.dto.response.LogoutResponse
-import io.familymoments.app.core.network.dto.request.ProfileEditRequest
-import io.familymoments.app.core.network.dto.response.ProfileEditResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -32,16 +32,16 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun loginUser(
         username: String,
         password: String
-    ): Flow<Resource<io.familymoments.app.core.network.dto.response.LoginResponse>> {
+    ): Flow<Resource<LoginResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = userService.loginUser(
-                io.familymoments.app.core.network.dto.request.LoginRequest(
+                LoginRequest(
                     username,
                     password
                 )
             )
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.LoginResponse()
+            val responseBody = response.body() ?: LoginResponse()
 
             if (responseBody.isSuccess) {
                 saveAccessToken(response.headers())
@@ -100,11 +100,11 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun loadUserProfile(familyId: Long?): Flow<Resource<io.familymoments.app.core.network.dto.response.UserProfileResponse>> {
+    override suspend fun loadUserProfile(familyId: Long?): Flow<Resource<UserProfileResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = userService.loadUserProfile(familyId)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.UserProfileResponse()
+            val responseBody = response.body() ?: UserProfileResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -117,11 +117,12 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun modifyPassword(modifyPasswordRequest: io.familymoments.app.core.network.dto.request.ModifyPasswordRequest): Flow<Resource<io.familymoments.app.core.network.dto.response.ModifyPasswordResponse>> {
+    override suspend fun modifyPassword(modifyPasswordRequest: ModifyPasswordRequest): Flow<Resource<ModifyPasswordResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = userService.modifyPassword(modifyPasswordRequest)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.ModifyPasswordResponse()
+            val responseBody =
+                response.body() ?: ModifyPasswordResponse()
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
             } else if (responseBody.code == HttpResponse.INCORRECT_CURRENT_PASSWORD || responseBody.code == HttpResponse.NEW_PASSWORD_SAME_AS_CURRENT) {
@@ -134,12 +135,15 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun searchMember(keyword: String, newFamily: Boolean): Flow<Resource<io.familymoments.app.core.network.dto.response.SearchMemberResponse>> {
+    override suspend fun searchMember(
+        keyword: String,
+        newFamily: Boolean
+    ): Flow<Resource<SearchMemberResponse>> {
         return flow {
             emit(Resource.Loading)
             val familyId = if (newFamily) null else userInfoPreferencesDataSource.loadFamilyId()
             val response = userService.searchMember(keyword, familyId)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.SearchMemberResponse()
+            val responseBody = response.body() ?: SearchMemberResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -152,13 +156,13 @@ class UserRepositoryImpl @Inject constructor(
     }
 
     override suspend fun editUserProfile(
-        profileEditRequest: io.familymoments.app.core.network.dto.request.ProfileEditRequest,
+        profileEditRequest: ProfileEditRequest,
         profileImg: MultipartBody.Part
-    ): Flow<Resource<io.familymoments.app.core.network.dto.response.ProfileEditResponse>> {
+    ): Flow<Resource<ProfileEditResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = userService.editUserProfile(profileEditRequest, profileImg)
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.ProfileEditResponse()
+            val responseBody = response.body() ?: ProfileEditResponse()
             if (responseBody.isSuccess) {
                 userInfoPreferencesDataSource.updateUserProfile(responseBody.result)
                 emit(Resource.Success(responseBody))
@@ -170,11 +174,11 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun logoutUser(): Flow<Resource<io.familymoments.app.core.network.dto.response.LogoutResponse>> {
+    override suspend fun logoutUser(): Flow<Resource<LogoutResponse>> {
         return flow {
             emit(Resource.Loading)
             val response = userService.logoutUser()
-            val responseBody = response.body() ?: io.familymoments.app.core.network.dto.response.LogoutResponse()
+            val responseBody = response.body() ?: LogoutResponse()
             if (responseBody.isSuccess) {
                 userInfoPreferencesDataSource.resetPreferencesData()
                 emit(Resource.Success(responseBody))

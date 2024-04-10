@@ -40,8 +40,8 @@
         <activity
             android:name=".feature.signup.activity.SignUpActivity"
             android:exported="false"
-            android:screenOrientation="portrait"
             android:label="@string/title_activity_join"
+            android:screenOrientation="portrait"
             android:theme="@style/Theme.FamilyMoments"
             android:windowSoftInputMode="adjustResize" />
         <activity

@@ -10,16 +10,16 @@ import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 
 interface FamilyRepository {
-    suspend fun getNicknameDday(familyId: Long): Flow<Resource<io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse>>
+    suspend fun getNicknameDday(familyId: Long): Flow<Resource<GetNicknameDdayResponse>>
 
     suspend fun createFamily(
         representImg: MultipartBody.Part,
-        createFamilyRequest: io.familymoments.app.core.network.dto.request.CreateFamilyRequest
-    ): Flow<Resource<io.familymoments.app.core.network.dto.response.CreateFamilyResponse>>
+        createFamilyRequest: CreateFamilyRequest
+    ): Flow<Resource<CreateFamilyResponse>>
 
     suspend fun searchFamilyByInviteLink(
         inviteLink: String
-    ): Flow<Resource<io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse>>
+    ): Flow<Resource<SearchFamilyByInviteLinkResponse>>
 
-    suspend fun joinFamily(familyId: Long):Flow<Resource<io.familymoments.app.core.network.dto.response.JoinFamilyResponse>>
+    suspend fun joinFamily(familyId: Long): Flow<Resource<JoinFamilyResponse>>
 }

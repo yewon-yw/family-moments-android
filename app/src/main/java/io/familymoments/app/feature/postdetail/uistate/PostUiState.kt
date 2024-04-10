@@ -1,8 +1,6 @@
 package io.familymoments.app.feature.postdetail.uistate
 
 import androidx.compose.runtime.Immutable
-import io.familymoments.app.core.network.dto.response.GetPostDetailResult
-import io.familymoments.app.core.network.dto.response.GetPostLovesResult
 
 @Immutable
 data class PostUiState(

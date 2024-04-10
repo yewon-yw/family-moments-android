@@ -1,6 +1,5 @@
 package io.familymoments.app.feature.modifypassword.mapper
 
-import io.familymoments.app.core.network.dto.request.ModifyPasswordRequest
 import io.familymoments.app.feature.modifypassword.uistate.ModifyPasswordUiState
 
 fun ModifyPasswordUiState.toRequest() =

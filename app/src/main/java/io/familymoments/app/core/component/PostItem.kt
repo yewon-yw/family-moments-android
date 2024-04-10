@@ -42,6 +42,7 @@ import io.familymoments.app.R
 import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.component.popup.DeletePopUp
 import io.familymoments.app.core.component.popup.ReportPopUp
+import io.familymoments.app.core.network.dto.response.Post
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.uistate.PopupUiState
@@ -49,14 +50,13 @@ import io.familymoments.app.core.uistate.PostItemUiState
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.core.viewmodel.PostItemViewModel
 import io.familymoments.app.feature.home.component.postItemContentShadow
-import io.familymoments.app.core.network.dto.response.Post
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
 @Composable
 fun PostItem(
-    post: io.familymoments.app.core.network.dto.response.Post,
+    post: Post,
     loves: Int,
     navigateToPostDetail: (Int) -> Unit,
     navigateToEditPost: (Long) -> Unit,
@@ -117,7 +117,7 @@ fun PostItem(
 }
 
 @Composable
-private fun PostItemHeader(post: io.familymoments.app.core.network.dto.response.Post) {
+private fun PostItemHeader(post: Post) {
     Row(
         modifier = Modifier.padding(start = 20.dp, end = 17.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -147,7 +147,7 @@ private fun PostItemHeader(post: io.familymoments.app.core.network.dto.response.
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PostItemContent(
-    post: io.familymoments.app.core.network.dto.response.Post,
+    post: Post,
     loves: Int = 0,
     navigateToPostDetail: (Int) -> Unit,
     navigateToEditPost: (Long) -> Unit,

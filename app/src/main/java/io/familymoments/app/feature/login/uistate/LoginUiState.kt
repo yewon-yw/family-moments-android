@@ -8,5 +8,5 @@ data class LoginUiState(
     val isLoading: Boolean? = null,
     val isSuccess: Boolean? = null,
     val errorMessage: String? = null,
-    val loginResult: io.familymoments.app.core.network.dto.response.LoginResult? = null,
+    val loginResult: LoginResult? = null,
 )
