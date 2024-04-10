@@ -1,6 +1,7 @@
 package io.familymoments.app.feature.calendar.uistate
 
 import androidx.compose.runtime.Immutable
+import io.familymoments.app.core.network.dto.response.Post
 import java.time.LocalDate
 
 @Immutable
@@ -9,7 +10,7 @@ data class CalendarDayUiState(
     val isLoading: Boolean? = null,
     val errorMessage: String? = null,
     val selectedDate: LocalDate = LocalDate.now(),
-    val posts: List<io.familymoments.app.core.network.dto.response.Post> = emptyList()
+    val posts: List<Post> = emptyList()
 ) {
     val hasNoPost = isSuccess == false && isLoading == false && errorMessage == NO_POST && posts.isEmpty()
 

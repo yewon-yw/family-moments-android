@@ -1,6 +1,8 @@
 package io.familymoments.app.feature.postdetail.uistate
 
 import androidx.compose.runtime.Immutable
+import io.familymoments.app.core.network.dto.response.GetPostDetailResult
+import io.familymoments.app.core.network.dto.response.GetPostLovesResult
 
 @Immutable
 data class PostUiState(
@@ -26,7 +28,7 @@ data class GetPostDetailUiState(
     val isSuccess: Boolean? = null,
     val isLoading: Boolean? = null,
     val message: String? = null,
-    val result: io.familymoments.app.core.network.dto.response.GetPostDetailResult = io.familymoments.app.core.network.dto.response.GetPostDetailResult(),
+    val result: GetPostDetailResult = GetPostDetailResult(),
 )
 
 @Immutable
@@ -34,7 +36,7 @@ data class GetPostLovesUiState(
     val isSuccess: Boolean? = null,
     val isLoading: Boolean? = null,
     val message: String? = null,
-    val result: List<io.familymoments.app.core.network.dto.response.GetPostLovesResult> = listOf(),
+    val result: List<GetPostLovesResult> = listOf(),
 )
 
 @Immutable

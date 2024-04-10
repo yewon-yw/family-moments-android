@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import io.familymoments.app.R
+import io.familymoments.app.core.network.dto.response.Member
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.choosingfamily.component.ChoosingFamilyHeaderButtonLayout
@@ -73,7 +74,7 @@ fun showErrorMessage(context: Context, errorMessage: String?) {
 fun SearchMemberScreen(
     navigate: () -> Unit = {},
     searchMember: (String) -> Unit,
-    members: List<io.familymoments.app.core.network.dto.response.Member>
+    members: List<Member>
 ) {
 
     ChoosingFamilyHeaderButtonLayout(
@@ -111,8 +112,8 @@ private fun SearchMemberTextField(
 }
 
 @Composable
-private fun MemberList(members: List<io.familymoments.app.core.network.dto.response.Member>) {
-    var selectedMembers: List<io.familymoments.app.core.network.dto.response.Member> by remember {
+private fun MemberList(members: List<Member>) {
+    var selectedMembers: List<Member> by remember {
         mutableStateOf(listOf())
     }
     LazyColumn {
@@ -189,9 +190,9 @@ fun SearchMemberScreenPreview() {
 fun MemberListPreview() {
     MemberList(
         members = listOf(
-            io.familymoments.app.core.network.dto.response.Member("a", "", 1),
-            io.familymoments.app.core.network.dto.response.Member("b", "", 0),
-            io.familymoments.app.core.network.dto.response.Member("c", "", 1)
+            Member("a", "", 1),
+            Member("b", "", 0),
+            Member("c", "", 1)
         )
     )
 }

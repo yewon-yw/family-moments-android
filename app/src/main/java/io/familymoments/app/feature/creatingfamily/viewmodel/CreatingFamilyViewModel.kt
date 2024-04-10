@@ -4,6 +4,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
+import io.familymoments.app.core.network.dto.request.CreateFamilyRequest
+import io.familymoments.app.core.network.dto.request.FamilyProfile
 import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.feature.creatingfamily.uistate.CreateFamilyResultUiState
@@ -24,11 +26,11 @@ class CreatingFamilyViewModel @Inject constructor(
     private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
 ) : BaseViewModel() {
 
-    private val _familyProfile: MutableStateFlow<io.familymoments.app.core.network.dto.request.FamilyProfile> =
+    private val _familyProfile: MutableStateFlow<FamilyProfile> =
         MutableStateFlow(
-            io.familymoments.app.core.network.dto.request.FamilyProfile()
+            FamilyProfile()
         )
-    val familyProfile: StateFlow<io.familymoments.app.core.network.dto.request.FamilyProfile> =
+    val familyProfile: StateFlow<FamilyProfile> =
         _familyProfile.asStateFlow()
 
     private val _searchMemberUiState: MutableStateFlow<SearchMemberUiState> = MutableStateFlow(
@@ -41,7 +43,7 @@ class CreatingFamilyViewModel @Inject constructor(
     )
     val createFamilyResultUiState: StateFlow<CreateFamilyResultUiState> = _createFamilyResultUiState.asStateFlow()
 
-    fun saveFamilyProfile(familyProfile: io.familymoments.app.core.network.dto.request.FamilyProfile) {
+    fun saveFamilyProfile(familyProfile: FamilyProfile) {
         _familyProfile.value = familyProfile
     }
 
@@ -63,14 +65,14 @@ class CreatingFamilyViewModel @Inject constructor(
         )
     }
 
-    fun createFamily(familyProfile: io.familymoments.app.core.network.dto.request.FamilyProfile) {
+    fun createFamily(familyProfile: FamilyProfile) {
         check(familyProfile.imgFile != null) {
             throw NullPointerException()
         }
         val imageRequestBody = familyProfile.imgFile.asRequestBody("image/*".toMediaTypeOrNull())
         val profileImgPart =
             MultipartBody.Part.createFormData("representImg", familyProfile.imgFile.name, imageRequestBody)
-        val createFamilyRequest = io.familymoments.app.core.network.dto.request.CreateFamilyRequest(
+        val createFamilyRequest = CreateFamilyRequest(
             familyName = familyProfile.name,
             uploadCycle = familyProfile.uploadCycle
         )

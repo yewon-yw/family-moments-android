@@ -7,7 +7,7 @@ data class GetCommentsIndexResponse(
     val isSuccess: Boolean = false,
     val code: Int = -1,
     val message: String = "",
-    val result: List<io.familymoments.app.core.network.dto.response.GetCommentsResult> = listOf()
+    val result: List<GetCommentsResult> = listOf()
 )
 
 data class GetCommentsResult(

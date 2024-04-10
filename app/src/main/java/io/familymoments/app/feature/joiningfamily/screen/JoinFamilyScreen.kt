@@ -31,6 +31,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import io.familymoments.app.R
+import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResult
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.choosingfamily.component.ChoosingFamilyHeaderButtonLayout
@@ -99,7 +100,7 @@ fun JoinFamilyScreen(
 
 @Composable
 private fun FamilyProfile(
-    searchFamilyByInviteLinkResult: io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResult,
+    searchFamilyByInviteLinkResult: SearchFamilyByInviteLinkResult,
     setSelectedFamilyId: (Long?) -> Unit
 ) {
     var checked by remember {

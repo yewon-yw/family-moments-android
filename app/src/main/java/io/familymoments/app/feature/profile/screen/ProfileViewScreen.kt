@@ -32,13 +32,14 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import io.familymoments.app.R
+import io.familymoments.app.core.network.dto.response.UserProfile
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.profile.viewmodel.ProfileViewViewModel
 
 @Composable
 fun ProfileViewScreen(
-    navigateToProfileEdit: (io.familymoments.app.core.network.dto.response.UserProfile) -> Unit,
+    navigateToProfileEdit: (UserProfile) -> Unit,
     viewModel: ProfileViewViewModel
 ) {
     val profileViewUiState = viewModel.profileViewUiState.collectAsStateWithLifecycle()
@@ -84,8 +85,8 @@ fun ProfileViewScreen(
 
 @Composable
 private fun UserProfileInfo(
-    userProfile: io.familymoments.app.core.network.dto.response.UserProfile,
-    navigateToProfileEdit: (io.familymoments.app.core.network.dto.response.UserProfile) -> Unit
+    userProfile: UserProfile,
+    navigateToProfileEdit: (UserProfile) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -231,7 +232,7 @@ fun ProfileViewScreenPreview() {
             modifier = Modifier.padding(vertical = 18.dp)
         )
         UserProfileInfo(
-            userProfile = io.familymoments.app.core.network.dto.response.UserProfile(
+            userProfile = UserProfile(
                 profileImg = "",
                 name = "홍길동",
                 nickName = "아부지",

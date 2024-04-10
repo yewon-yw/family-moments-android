@@ -1,6 +1,7 @@
 package io.familymoments.app.feature.joiningfamily.uistate
 
 import androidx.compose.runtime.Immutable
+import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResult
 
 @Immutable
 data class JoinFamilyUiState(
@@ -13,7 +14,7 @@ data class SearchFamilyByInviteLinkUiState(
     val isSuccess: Boolean? = null,
     val isLoading: Boolean? = null,
     val errorMessage: String? = "",
-    val result: io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResult? = null
+    val result: SearchFamilyByInviteLinkResult? = null
 )
 
 @Immutable

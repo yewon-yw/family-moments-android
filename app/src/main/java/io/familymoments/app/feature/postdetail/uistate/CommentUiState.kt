@@ -1,6 +1,7 @@
 package io.familymoments.app.feature.postdetail.uistate
 
 import androidx.compose.runtime.Immutable
+import io.familymoments.app.core.network.dto.response.GetCommentsResult
 
 @Immutable
 data class CommentUiState(
@@ -26,7 +27,7 @@ data class GetCommentsUiState(
     val isSuccess: Boolean? = null,
     val isLoading: Boolean? = null,
     val message: String? = null,
-    val result: List<io.familymoments.app.core.network.dto.response.GetCommentsResult> = listOf()
+    val result: List<GetCommentsResult> = listOf()
 )
 
 @Immutable

@@ -58,6 +58,12 @@ import io.familymoments.app.core.component.FMButton
 import io.familymoments.app.core.component.FMCheckBox
 import io.familymoments.app.core.component.SignUpTextFieldArea
 import io.familymoments.app.core.network.api.SignInService
+import io.familymoments.app.core.network.dto.request.CheckEmailRequest
+import io.familymoments.app.core.network.dto.request.CheckIdRequest
+import io.familymoments.app.core.network.dto.request.SignUpRequest
+import io.familymoments.app.core.network.dto.response.CheckEmailResponse
+import io.familymoments.app.core.network.dto.response.CheckIdResponse
+import io.familymoments.app.core.network.dto.response.SignUpResponse
 import io.familymoments.app.core.network.repository.impl.SignInRepositoryImpl
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
@@ -665,18 +671,18 @@ fun SignUpScreenPreview() {
         SignUpScreen(
             SignUpViewModel(
                 SignInRepositoryImpl(object : SignInService {
-                    override suspend fun checkId(checkIdRequest: io.familymoments.app.core.network.dto.request.CheckIdRequest): io.familymoments.app.core.network.dto.response.CheckIdResponse {
-                        return io.familymoments.app.core.network.dto.response.CheckIdResponse(true, 200, "", "")
+                    override suspend fun checkId(checkIdRequest: CheckIdRequest): CheckIdResponse {
+                        return CheckIdResponse(true, 200, "", "")
                     }
 
-                    override suspend fun checkEmail(checkEmailRequest: io.familymoments.app.core.network.dto.request.CheckEmailRequest): io.familymoments.app.core.network.dto.response.CheckEmailResponse {
-                        return io.familymoments.app.core.network.dto.response.CheckEmailResponse(true, 200, "", "")
+                    override suspend fun checkEmail(checkEmailRequest: CheckEmailRequest): CheckEmailResponse {
+                        return CheckEmailResponse(true, 200, "", "")
                     }
 
                     override suspend fun executeSignUp(
                         profileImg: MultipartBody.Part,
-                        signUpRequest: io.familymoments.app.core.network.dto.request.SignUpRequest
-                    ): io.familymoments.app.core.network.dto.response.SignUpResponse {
+                        signUpRequest: SignUpRequest
+                    ): SignUpResponse {
                         TODO("Not yet implemented")
                     }
                 })
