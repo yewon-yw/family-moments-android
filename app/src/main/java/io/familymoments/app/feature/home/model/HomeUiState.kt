@@ -13,7 +13,7 @@ data class HomeUiState(
     val posts: List<Post> = emptyList(),
     val popup: PostPopupType? = null
 ) {
-    val hasNoPost = isSuccess == false && isLoading == false && errorMessage == NO_POST_404 && posts.isEmpty()
+    val hasNoPost = errorMessage == NO_POST_404
 }
 
 sealed interface PostPopupType {
