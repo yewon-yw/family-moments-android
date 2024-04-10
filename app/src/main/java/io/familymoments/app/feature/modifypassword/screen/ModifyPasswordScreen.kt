@@ -32,7 +32,6 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.FMButton
@@ -127,12 +126,11 @@ fun ModifyPasswordScreen(
             newPasswordValid = isNewPasswordValidated,
             requester = requester,
             onClick = {
-                viewModel.updatePasswordUiState(
+                viewModel.requestModifyPassword(
                     currentPassword.value.text,
                     newPassword.value.text,
                     newPasswordCheck.value.text
                 )
-                viewModel.requestModifyPassword()
             }
         )
         Spacer(modifier = Modifier.height(20.dp))
