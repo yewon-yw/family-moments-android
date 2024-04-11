@@ -35,7 +35,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
-import io.familymoments.app.core.component.PostItem2
+import io.familymoments.app.core.component.PostItem
 import io.familymoments.app.core.component.PostItemPreview
 import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.component.popup.DeletePopUp
@@ -188,7 +188,7 @@ fun HomeScreen(
                     items = posts,
                     key = { it.postId }
                 ) { post ->
-                    PostItem2(
+                    PostItem(
                         post = post,
                         navigateToPostDetail = navigateToPostDetail,
                         navigateToEditPost = {},

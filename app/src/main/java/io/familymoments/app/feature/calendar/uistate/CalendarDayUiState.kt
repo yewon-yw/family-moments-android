@@ -2,6 +2,7 @@ package io.familymoments.app.feature.calendar.uistate
 
 import androidx.compose.runtime.Immutable
 import io.familymoments.app.core.network.dto.response.Post
+import io.familymoments.app.feature.home.uistate.PostPopupType
 import java.time.LocalDate
 
 @Immutable
@@ -10,7 +11,8 @@ data class CalendarDayUiState(
     val isLoading: Boolean? = null,
     val errorMessage: String? = null,
     val selectedDate: LocalDate = LocalDate.now(),
-    val posts: List<Post> = emptyList()
+    val posts: List<Post> = emptyList(),
+    val popup:PostPopupType? = null
 ) {
     val hasNoPost = isSuccess == false && isLoading == false && errorMessage == NO_POST && posts.isEmpty()
 
