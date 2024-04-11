@@ -37,11 +37,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import io.familymoments.app.R
+import io.familymoments.app.core.network.dto.response.Post
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.home.component.postItemContentShadow
-import io.familymoments.app.feature.home.model.Post
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale

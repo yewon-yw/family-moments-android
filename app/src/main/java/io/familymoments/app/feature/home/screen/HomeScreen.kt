@@ -40,10 +40,10 @@ import io.familymoments.app.core.component.PostItemPreview
 import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.component.popup.DeletePopUp
 import io.familymoments.app.core.component.popup.ReportPopUp
+import io.familymoments.app.core.network.dto.response.Post
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.feature.home.model.Post
-import io.familymoments.app.feature.home.model.PostPopupType
+import io.familymoments.app.feature.home.uistate.PostPopupType
 import io.familymoments.app.feature.home.viewmodel.HomeViewModel
 
 @Composable

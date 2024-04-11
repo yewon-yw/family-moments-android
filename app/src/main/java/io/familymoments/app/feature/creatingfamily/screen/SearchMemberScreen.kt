@@ -33,12 +33,12 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import io.familymoments.app.R
+import io.familymoments.app.core.network.dto.response.Member
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
-import io.familymoments.app.feature.choosingfamily.MemberCheckBox
-import io.familymoments.app.feature.choosingfamily.SearchTextField
-import io.familymoments.app.feature.creatingfamily.model.response.Member
+import io.familymoments.app.feature.choosingfamily.component.ChoosingFamilyHeaderButtonLayout
+import io.familymoments.app.feature.choosingfamily.component.MemberCheckBox
+import io.familymoments.app.feature.choosingfamily.component.SearchTextField
 import io.familymoments.app.feature.creatingfamily.viewmodel.CreatingFamilyViewModel
 
 @Composable

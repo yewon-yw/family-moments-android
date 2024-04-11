@@ -27,13 +27,13 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import io.familymoments.app.R
-import io.familymoments.app.feature.creatingfamily.component.GalleryOrDefaultImageSelectButton
+import io.familymoments.app.core.network.dto.request.FamilyProfile
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.FAMILY_NAME_MAX_LENGTH
 import io.familymoments.app.core.util.FileUtil.convertBitmapToFile
-import io.familymoments.app.feature.choosingfamily.ChoosingFamilyHeaderButtonLayout
-import io.familymoments.app.feature.creatingfamily.model.FamilyProfile
+import io.familymoments.app.feature.choosingfamily.component.ChoosingFamilyHeaderButtonLayout
+import io.familymoments.app.feature.creatingfamily.component.GalleryOrDefaultImageSelectButton
 import io.familymoments.app.feature.creatingfamily.viewmodel.CreatingFamilyViewModel
 
 @Composable
@@ -65,7 +65,12 @@ fun SetProfileScreen(
                     )
                     convertBitmapToFile(familyProfileBitmap, context)
                 }.onSuccess { file ->
-                    viewModel.saveFamilyProfile(FamilyProfile(familyName, file))
+                    viewModel.saveFamilyProfile(
+                        FamilyProfile(
+                            familyName,
+                            file
+                        )
+                    )
                     navigate()
                 }.onFailure {
                     Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()

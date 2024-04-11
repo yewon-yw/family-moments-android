@@ -92,3 +92,4 @@ tmp/
 temp/
 obj/
 key.properties
+app/release/output-metadata.json

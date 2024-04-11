@@ -8,7 +8,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import io.familymoments.app.core.util.scaffoldState
-import io.familymoments.app.feature.addpost.model.AddPostMode
+import io.familymoments.app.feature.addpost.AddPostMode
 import io.familymoments.app.feature.addpost.screen.AddPostScreen
 import io.familymoments.app.feature.bottomnav.graph.bottomNavGraph
 import io.familymoments.app.feature.calendar.screen.CalendarDayScreen

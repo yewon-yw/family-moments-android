@@ -1,10 +1,10 @@
 package io.familymoments.app.core.network.datasource
 
 import android.content.SharedPreferences
-import io.familymoments.app.core.network.model.UserProfile
+import io.familymoments.app.core.network.dto.response.ProfileEditResult
+import io.familymoments.app.core.network.dto.response.UserProfile
 import io.familymoments.app.core.util.DEFAULT_FAMILY_ID_VALUE
 import io.familymoments.app.core.util.DEFAULT_TOKEN_VALUE
-import io.familymoments.app.feature.profile.model.response.ProfileEditResult
 import javax.inject.Inject
 
 class UserInfoPreferencesDataSourceImpl @Inject constructor(

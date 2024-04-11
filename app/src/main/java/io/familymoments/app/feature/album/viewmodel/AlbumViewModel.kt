@@ -4,8 +4,8 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.PostRepository
-import io.familymoments.app.feature.album.model.AlbumDetailUiState
-import io.familymoments.app.feature.album.model.AlbumUiState
+import io.familymoments.app.feature.album.uistate.AlbumDetailUiState
+import io.familymoments.app.feature.album.uistate.AlbumUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import timber.log.Timber
 import javax.inject.Inject

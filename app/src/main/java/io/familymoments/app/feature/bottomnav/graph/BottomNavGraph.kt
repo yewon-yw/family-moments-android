@@ -8,10 +8,10 @@ import androidx.navigation.compose.composable
 import io.familymoments.app.core.graph.CommonRoute
 import io.familymoments.app.core.graph.Route
 import io.familymoments.app.core.util.scaffoldState
-import io.familymoments.app.feature.addpost.model.AddPostMode
+import io.familymoments.app.feature.addpost.AddPostMode
 import io.familymoments.app.feature.addpost.screen.AddPostScreen
 import io.familymoments.app.feature.album.screen.AlbumScreen
-import io.familymoments.app.feature.bottomnav.model.BottomNavItem
+import io.familymoments.app.feature.bottomnav.BottomNavItem
 import io.familymoments.app.feature.calendar.screen.CalendarScreen
 import io.familymoments.app.feature.home.screen.HomeScreen
 import io.familymoments.app.feature.mypage.screen.MyPageScreen

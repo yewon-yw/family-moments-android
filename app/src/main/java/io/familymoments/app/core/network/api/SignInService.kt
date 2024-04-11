@@ -1,11 +1,11 @@
 package io.familymoments.app.core.network.api
 
-import io.familymoments.app.feature.signup.model.request.CheckEmailRequest
-import io.familymoments.app.feature.signup.model.request.CheckIdRequest
-import io.familymoments.app.feature.signup.model.request.SignUpRequest
-import io.familymoments.app.feature.signup.model.response.CheckEmailResponse
-import io.familymoments.app.feature.signup.model.response.CheckIdResponse
-import io.familymoments.app.feature.signup.model.response.SignUpResponse
+import io.familymoments.app.core.network.dto.request.CheckEmailRequest
+import io.familymoments.app.core.network.dto.request.CheckIdRequest
+import io.familymoments.app.core.network.dto.request.SignUpRequest
+import io.familymoments.app.core.network.dto.response.CheckEmailResponse
+import io.familymoments.app.core.network.dto.response.CheckIdResponse
+import io.familymoments.app.core.network.dto.response.SignUpResponse
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.Multipart

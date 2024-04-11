@@ -6,10 +6,10 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.graph.Route
 import io.familymoments.app.core.network.repository.UserRepository
-import io.familymoments.app.feature.profile.model.mapper.toRequest
-import io.familymoments.app.feature.profile.model.uistate.ProfileEditInfoUiState
-import io.familymoments.app.feature.profile.model.uistate.ProfileEditUiState
-import io.familymoments.app.feature.profile.model.uistate.ProfileImage
+import io.familymoments.app.feature.profile.mapper.toRequest
+import io.familymoments.app.feature.profile.uistate.ProfileEditInfoUiState
+import io.familymoments.app.feature.profile.uistate.ProfileEditUiState
+import io.familymoments.app.feature.profile.uistate.ProfileImage
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

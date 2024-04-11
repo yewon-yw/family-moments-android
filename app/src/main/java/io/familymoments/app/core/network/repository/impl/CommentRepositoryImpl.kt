@@ -2,14 +2,14 @@ package io.familymoments.app.core.network.repository.impl
 
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.CommentService
+import io.familymoments.app.core.network.dto.request.CommentLovesRequest
+import io.familymoments.app.core.network.dto.request.PostCommentRequest
+import io.familymoments.app.core.network.dto.response.DeleteCommentLovesResponse
+import io.familymoments.app.core.network.dto.response.DeleteCommentResponse
+import io.familymoments.app.core.network.dto.response.GetCommentsIndexResponse
+import io.familymoments.app.core.network.dto.response.PostCommentLovesResponse
+import io.familymoments.app.core.network.dto.response.PostCommentResponse
 import io.familymoments.app.core.network.repository.CommentRepository
-import io.familymoments.app.feature.postdetail.model.request.CommentLovesRequest
-import io.familymoments.app.feature.postdetail.model.request.PostCommentRequest
-import io.familymoments.app.feature.postdetail.model.response.DeleteCommentLovesResponse
-import io.familymoments.app.feature.postdetail.model.response.DeleteCommentResponse
-import io.familymoments.app.feature.postdetail.model.response.GetCommentsIndexResponse
-import io.familymoments.app.feature.postdetail.model.response.PostCommentLovesResponse
-import io.familymoments.app.feature.postdetail.model.response.PostCommentResponse
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -23,7 +23,8 @@ class CommentRepositoryImpl @Inject constructor(
         return flow {
             emit(Resource.Loading)
             val response = commentService.getPostComments(index)
-            val responseBody = response.body() ?: GetCommentsIndexResponse()
+            val responseBody =
+                response.body() ?: GetCommentsIndexResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -35,10 +36,16 @@ class CommentRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun postComment(comment: String, index: Long): Flow<Resource<PostCommentResponse>> {
+    override suspend fun postComment(
+        comment: String,
+        index: Long
+    ): Flow<Resource<PostCommentResponse>> {
         return flow {
             emit(Resource.Loading)
-            val response = commentService.postComment(index, PostCommentRequest(comment))
+            val response = commentService.postComment(
+                index,
+                PostCommentRequest(comment)
+            )
             val responseBody = response.body() ?: PostCommentResponse()
 
             if (responseBody.isSuccess) {
@@ -70,8 +77,13 @@ class CommentRepositoryImpl @Inject constructor(
     override suspend fun postCommentLoves(commentId: Long): Flow<Resource<PostCommentLovesResponse>> {
         return flow {
             emit(Resource.Loading)
-            val response = commentService.postCommentLoves(CommentLovesRequest(commentId))
-            val responseBody = response.body() ?: PostCommentLovesResponse()
+            val response = commentService.postCommentLoves(
+                CommentLovesRequest(
+                    commentId
+                )
+            )
+            val responseBody =
+                response.body() ?: PostCommentLovesResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))
@@ -87,8 +99,13 @@ class CommentRepositoryImpl @Inject constructor(
         return flow {
             emit(Resource.Loading)
             Timber.tag("hkhk").d("삭제 수행")
-            val response = commentService.deleteCommentLoves(CommentLovesRequest(commentId))
-            val responseBody = response.body() ?: DeleteCommentLovesResponse()
+            val response = commentService.deleteCommentLoves(
+                CommentLovesRequest(
+                    commentId
+                )
+            )
+            val responseBody =
+                response.body() ?: DeleteCommentLovesResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))

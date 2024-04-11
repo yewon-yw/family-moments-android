@@ -6,8 +6,8 @@ import io.familymoments.app.core.network.HttpResponseMessage.NO_POST_404
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.repository.PostRepository
-import io.familymoments.app.feature.home.model.HomeUiState
-import io.familymoments.app.feature.home.model.PostPopupType
+import io.familymoments.app.feature.home.uistate.HomeUiState
+import io.familymoments.app.feature.home.uistate.PostPopupType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update

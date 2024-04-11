@@ -8,8 +8,8 @@ import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourc
 import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.core.util.DEFAULT_FAMILY_ID_VALUE
 import io.familymoments.app.core.util.DEFAULT_TOKEN_VALUE
-import io.familymoments.app.feature.bottomnav.model.AppBarUiState
-import io.familymoments.app.feature.bottomnav.model.uistate.MainUiState
+import io.familymoments.app.feature.bottomnav.uistate.AppBarUiState
+import io.familymoments.app.feature.bottomnav.uistate.MainUiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
