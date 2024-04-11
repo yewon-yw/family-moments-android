@@ -42,6 +42,7 @@ import io.familymoments.app.core.component.popup.DeletePopUp
 import io.familymoments.app.core.component.popup.ReportPopUp
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.feature.home.model.Post
 import io.familymoments.app.feature.home.model.PostPopupType
 import io.familymoments.app.feature.home.viewmodel.HomeViewModel
 
@@ -49,7 +50,8 @@ import io.familymoments.app.feature.home.viewmodel.HomeViewModel
 fun HomeScreen(
     modifier: Modifier,
     viewModel: HomeViewModel,
-    navigateToPostDetail: (Int) -> Unit
+    navigateToPostDetail: (Int) -> Unit,
+    navigateToPostEdit:(Post) -> Unit
 ) {
     val homeUiState = viewModel.homeUiState.collectAsStateWithLifecycle()
     val posts = homeUiState.value.posts
@@ -191,7 +193,7 @@ fun HomeScreen(
                     PostItem2(
                         post = post,
                         navigateToPostDetail = navigateToPostDetail,
-                        navigateToEditPost = {},
+                        navigateToEditPost = navigateToPostEdit,
                         onClickPostLoves = {
                             if (post.loved) {
                                 viewModel.deletePostLoves(post.postId)

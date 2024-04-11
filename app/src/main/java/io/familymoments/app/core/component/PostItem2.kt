@@ -50,7 +50,7 @@ import java.util.Locale
 fun PostItem2(
     post: Post,
     navigateToPostDetail: (Int) -> Unit,
-    navigateToEditPost: (Long) -> Unit,
+    navigateToEditPost: (Post) -> Unit,
     onClickPostLoves: () -> Unit,
     showDeletePostPopup: () -> Unit,
     showReportPostPopup: () -> Unit
@@ -106,7 +106,7 @@ private fun PostItemHeader(post: Post) {
 private fun PostItemContent(
     post: Post,
     navigateToPostDetail: (Int) -> Unit,
-    navigateToEditPost: (Long) -> Unit,
+    navigateToEditPost: (Post) -> Unit,
     onClickPostLoves: () -> Unit,
     showDeletePostPopup: () -> Unit,
     showReportPostPopup: () -> Unit
@@ -194,7 +194,9 @@ private fun PostItemContent(
                     if (menuExpanded.value) {
                         PostDropdownMenu2(
                             items = listOf(
-                                Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify)) {},
+                                Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify)) {
+                                    navigateToEditPost(post)
+                                },
                                 Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {
                                     showReportPostPopup()
                                     menuExpanded.value = false

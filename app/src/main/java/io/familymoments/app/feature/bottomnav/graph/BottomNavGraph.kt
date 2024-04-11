@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import io.familymoments.app.core.graph.CommonRoute
 import io.familymoments.app.core.graph.Route
 import io.familymoments.app.core.util.scaffoldState
+import io.familymoments.app.feature.addpost.model.AddPostMode
 import io.familymoments.app.feature.addpost.screen.AddPostScreen
 import io.familymoments.app.feature.album.screen.AlbumScreen
 import io.familymoments.app.feature.bottomnav.model.BottomNavItem
@@ -26,6 +27,16 @@ fun NavGraphBuilder.bottomNavGraph(navController: NavController) {
             viewModel = hiltViewModel(),
             navigateToPostDetail = {
                 navController.navigate(CommonRoute.POST_DETAIL.name + "/${it}")
+            },
+            navigateToPostEdit = {post->
+                navController.navigate(
+                    Route.EditPost.getRoute(
+                        mode = AddPostMode.EDIT.mode,
+                        editPostId = post.postId,
+                        editImages = post.imgs,
+                        editContent = post.content
+                    )
+                )
             }
         )
     }
