@@ -21,8 +21,8 @@ object UserInfoFormatChecker {
     }
 
     fun checkNickname(nickname: String): Boolean {
-        val regex = Regex("[a-zA-Z0-9가-힣]+")
-        return nickname.matches(regex)
+        val regex = "^[a-zA-Z0-9가-힣]{3,8}$"
+        return nickname.matches(Regex(regex))
     }
 
     fun checkBirthDay(birthDay: String): Boolean {
