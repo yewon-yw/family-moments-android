@@ -2,6 +2,7 @@ package io.familymoments.app.core.network.repository.impl
 
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.PostService
+import io.familymoments.app.core.network.dto.request.AddPostRequest
 import io.familymoments.app.core.network.dto.response.AddPostResponse
 import io.familymoments.app.core.network.dto.response.DeletePostLovesResponse
 import io.familymoments.app.core.network.dto.response.DeletePostResponse
@@ -13,7 +14,6 @@ import io.familymoments.app.core.network.dto.response.GetPostsByMonthResponse
 import io.familymoments.app.core.network.dto.response.GetPostsResponse
 import io.familymoments.app.core.network.dto.response.PostPostLovesResponse
 import io.familymoments.app.core.network.repository.PostRepository
-import io.familymoments.app.core.network.util.createPostInfoRequestBody
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -194,9 +194,7 @@ class PostRepositoryImpl @Inject constructor(
     ): Flow<Resource<AddPostResponse>> {
         return flow {
             emit(Resource.Loading)
-            val postInfo = createPostInfoRequestBody(content)
-
-            val response = postService.addPost(familyId, postInfo, imageFiles)
+            val response = postService.addPost(familyId, AddPostRequest(content), imageFiles)
             val responseBody = response.body() ?: AddPostResponse()
 
             if (responseBody.isSuccess) {
@@ -287,6 +285,26 @@ class PostRepositoryImpl @Inject constructor(
             emit(Resource.Loading)
             val response = postService.deletePost(index)
             val responseBody = response.body() ?: DeletePostResponse()
+
+            if (responseBody.isSuccess) {
+                emit(Resource.Success(responseBody))
+            } else {
+                emit(Resource.Fail(Throwable(responseBody.message)))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun editPost(
+        index: Long,
+        content: String,
+        imageFiles: List<MultipartBody.Part>?
+        ): Flow<Resource<AddPostResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = postService.editPost(index, AddPostRequest(content), imageFiles)
+            val responseBody = response.body() ?: AddPostResponse()
 
             if (responseBody.isSuccess) {
                 emit(Resource.Success(responseBody))

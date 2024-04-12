@@ -44,7 +44,7 @@ fun getMainGraph(
                 Route.EditPost.getRoute(
                     mode = AddPostMode.EDIT.mode,
                     editPostId = post.postId,
-                    editImages = post.imgs.toTypedArray(),
+                    editImages = post.imgs,
                     editContent = post.content
                 )
             )

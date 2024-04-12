@@ -37,6 +37,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import io.familymoments.app.R
+import io.familymoments.app.core.network.dto.response.Post
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.noRippleClickable
@@ -47,9 +48,9 @@ import java.util.Locale
 
 @Composable
 fun PostItem2(
-    post: io.familymoments.app.core.network.dto.response.Post,
+    post: Post,
     navigateToPostDetail: (Int) -> Unit,
-    navigateToEditPost: (Long) -> Unit,
+    navigateToEditPost: (Post) -> Unit,
     onClickPostLoves: () -> Unit,
     showDeletePostPopup: () -> Unit,
     showReportPostPopup: () -> Unit
@@ -73,7 +74,7 @@ fun PostItem2(
 }
 
 @Composable
-private fun PostItemHeader(post: io.familymoments.app.core.network.dto.response.Post) {
+private fun PostItemHeader(post: Post) {
     Row(
         modifier = Modifier.padding(start = 20.dp, end = 17.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -103,9 +104,9 @@ private fun PostItemHeader(post: io.familymoments.app.core.network.dto.response.
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PostItemContent(
-    post: io.familymoments.app.core.network.dto.response.Post,
+    post: Post,
     navigateToPostDetail: (Int) -> Unit,
-    navigateToEditPost: (Long) -> Unit,
+    navigateToEditPost: (Post) -> Unit,
     onClickPostLoves: () -> Unit,
     showDeletePostPopup: () -> Unit,
     showReportPostPopup: () -> Unit
@@ -193,7 +194,9 @@ private fun PostItemContent(
                     if (menuExpanded.value) {
                         PostDropdownMenu2(
                             items = listOf(
-                                Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify)) {},
+                                Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify)) {
+                                    navigateToEditPost(post)
+                                },
                                 Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {
                                     showReportPostPopup()
                                     menuExpanded.value = false

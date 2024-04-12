@@ -53,23 +53,24 @@ sealed interface Route {
             },
             navArgument(editPostIdArg) {
                 nullable = false
-                type = NavType.IntType
+                type = NavType.LongType
             },
             navArgument(editImagesArg) {
-                nullable = true
+                nullable = false
                 type = NavType.StringArrayType
             },
             navArgument(editContentArg) {
-                nullable = true
+                nullable = false
                 type = NavType.StringType
             }
         )
 
-        fun getRoute(mode: Int, editPostId: Long, editImages: Array<String>, editContent: String): String {
-            val endcodedImageUrls: Array<String> =
-                editImages.map { URLEncoder.encode(it, StandardCharsets.UTF_8.toString()) }.toTypedArray()
+        fun getRoute(mode: Int, editPostId: Long, editImages: List<String>, editContent: String): String {
+            val encodedImageUrls: List<String> =
+                editImages.map { URLEncoder.encode(it, StandardCharsets.UTF_8.toString()) }
 
-            return "$route?$modeArg=$mode&$editPostIdArg=$editPostId&$editImagesArg=$endcodedImageUrls&$editContentArg=$editContent"
+
+            return "$route?$modeArg=$mode&$editPostIdArg=$editPostId&$editImagesArg=$encodedImageUrls&$editContentArg=$editContent"
         }
     }
 }

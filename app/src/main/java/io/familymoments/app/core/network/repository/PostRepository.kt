@@ -53,7 +53,7 @@ interface PostRepository {
     suspend fun addPost(
         familyId: Long,
         content: String,
-        uriList: List<MultipartBody.Part>?
+        imageFiles: List<MultipartBody.Part>?
     ): Flow<Resource<AddPostResponse>>
 
     suspend fun getPostDetail(index: Long): Flow<Resource<GetPostDetailResponse>>
@@ -61,4 +61,9 @@ interface PostRepository {
     suspend fun postPostLoves(postId: Long): Flow<Resource<PostPostLovesResponse>>
     suspend fun deletePostLoves(postId: Long): Flow<Resource<DeletePostLovesResponse>>
     suspend fun deletePost(index: Long): Flow<Resource<DeletePostResponse>>
+    suspend fun editPost(
+        index: Long,
+        content: String,
+        imageFiles: List<MultipartBody.Part>?
+    ):Flow<Resource<AddPostResponse>>
 }
