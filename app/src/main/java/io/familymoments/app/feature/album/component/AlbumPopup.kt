@@ -79,7 +79,6 @@ fun AlbumPopup(
                                 .fillMaxSize()
                                 .align(Alignment.Center),
                             model = imgs[index],
-                            contentScale = ContentScale.Crop,
                             contentDescription = null,
                         )
                     }
@@ -88,7 +87,7 @@ fun AlbumPopup(
                             modifier = Modifier
                                 .wrapContentHeight()
                                 .align(Alignment.BottomCenter)
-                                .padding(bottom = 38.dp),
+                                .padding(bottom = 12.dp),
                             horizontalArrangement = Arrangement.spacedBy(7.dp)
                         ) {
                             repeat(pagerState.pageCount) { iteration ->
