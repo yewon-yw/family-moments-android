@@ -137,7 +137,6 @@ private fun PostItemContent(
                         .fillMaxSize()
                         .align(Alignment.Center),
                     model = post.imgs[index],
-                    contentScale = ContentScale.Crop,
                     contentDescription = null,
                 )
             }
