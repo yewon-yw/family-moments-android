@@ -10,6 +10,8 @@ import io.familymoments.app.feature.profile.mapper.toRequest
 import io.familymoments.app.feature.profile.uistate.ProfileEditInfoUiState
 import io.familymoments.app.feature.profile.uistate.ProfileEditUiState
 import io.familymoments.app.feature.profile.uistate.ProfileImage
+import io.familymoments.app.feature.signup.UserInfoFormatChecker.checkBirthDay
+import io.familymoments.app.feature.signup.UserInfoFormatChecker.checkNickname
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,36 +31,39 @@ class ProfileEditViewModel @Inject constructor(
     private val birthdate: String = checkNotNull(savedStateHandle[Route.ProfileEdit.birthdateArg])
     private val profileImg: String = checkNotNull(savedStateHandle[Route.ProfileEdit.profileImgArg])
 
-    private val _profileEditUiState: MutableStateFlow<ProfileEditUiState> = MutableStateFlow(
+    private val _uiState: MutableStateFlow<ProfileEditUiState> = MutableStateFlow(
         ProfileEditUiState(
             profileEditInfoUiState = ProfileEditInfoUiState(name, nickname, birthdate),
             profileImage = ProfileImage.Url(profileImg)
         )
     )
-    val profileEditUiState: StateFlow<ProfileEditUiState> = _profileEditUiState.asStateFlow()
+    val uiState: StateFlow<ProfileEditUiState> = _uiState.asStateFlow()
 
     fun imageChanged(bitmap: Bitmap?) {
         if (bitmap == null) return
-        _profileEditUiState.value = _profileEditUiState.value.copy(
+        _uiState.value = _uiState.value.copy(
             profileImage = ProfileImage.Bitmap(bitmap)
         )
     }
 
     fun nameChanged(name: String) {
-        _profileEditUiState.value = _profileEditUiState.value.copy(
-            profileEditInfoUiState = profileEditUiState.value.profileEditInfoUiState.copy(name = name)
+        _uiState.value = _uiState.value.copy(
+            profileEditInfoUiState = _uiState.value.profileEditInfoUiState.copy(name = name),
+            profileEditValidated = _uiState.value.profileEditValidated.copy(nameValidated = name.isNotEmpty())
         )
     }
 
     fun nicknameChanged(nickname: String) {
-        _profileEditUiState.value = _profileEditUiState.value.copy(
-            profileEditInfoUiState = profileEditUiState.value.profileEditInfoUiState.copy(nickname = nickname)
+        _uiState.value = _uiState.value.copy(
+            profileEditInfoUiState = _uiState.value.profileEditInfoUiState.copy(nickname = nickname),
+            profileEditValidated = _uiState.value.profileEditValidated.copy(nicknameValidated = checkNickname(nickname))
         )
     }
 
     fun birthdateChanged(birthdate: String) {
-        _profileEditUiState.value = _profileEditUiState.value.copy(
-            profileEditInfoUiState = profileEditUiState.value.profileEditInfoUiState.copy(birthdate = birthdate)
+        _uiState.value = _uiState.value.copy(
+            profileEditInfoUiState = _uiState.value.profileEditInfoUiState.copy(birthdate = birthdate),
+            profileEditValidated = _uiState.value.profileEditValidated.copy(birthdateValidated = checkBirthDay(birthdate))
         )
     }
 
@@ -68,15 +73,15 @@ class ProfileEditViewModel @Inject constructor(
         async(
             operation = {
                 userRepository.editUserProfile(
-                    profileEditRequest = _profileEditUiState.value.profileEditInfoUiState.toRequest(),
+                    profileEditRequest = _uiState.value.profileEditInfoUiState.toRequest(),
                     profileImg = profileImgPart
                 )
             },
             onSuccess = {
-                _profileEditUiState.value = _profileEditUiState.value.copy(isSuccess = true)
+                _uiState.value = _uiState.value.copy(isSuccess = true)
             },
             onFailure = {
-                _profileEditUiState.value = _profileEditUiState.value.copy(
+                _uiState.value = _uiState.value.copy(
                     isSuccess = false,
                     errorMessage = it.message
                 )

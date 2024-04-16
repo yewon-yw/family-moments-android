@@ -129,7 +129,7 @@
     <string name="profile_text_field_hint_nickname">3~8자리 입력 (특수문자 불가)</string>
     <string name="profile_text_field_hint_birth_date">8자리 입력 ex) 19990101</string>
     <string name="profile_nickname_warning">닉네임 형식이 올바르지 않습니다. (3~8자리, 특수문자 불가)</string>
-    <string name="profile_birthdate_warning">생년원일 형식이 올바르지 않습니다. (ex.19990101)</string>
+    <string name="profile_birthdate_warning">생년월일 형식이 올바르지 않습니다. (ex.19990101)</string>
 
     <string name="my_page_title">마이페이지</string>
     <string name="my_page_account_group">Account</string>
