@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.PostItem
-import io.familymoments.app.core.component.PostItem2Preview
+import io.familymoments.app.core.component.PostItemPreview
 import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.component.popup.DeletePopUp
 import io.familymoments.app.core.component.popup.ReportPopUp
@@ -245,7 +245,7 @@ fun CalendarDayScreenPreview() {
             contentPadding = PaddingValues(horizontal = 16.dp)
         ) {
             items(10) {
-                PostItem2Preview()
+                PostItemPreview()
             }
         }
     }
