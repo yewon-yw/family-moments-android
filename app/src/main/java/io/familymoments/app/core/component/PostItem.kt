@@ -239,17 +239,21 @@ private fun String.formattedDate(): String {
 
 @Preview(showBackground = true)
 @Composable
-fun PostItem2Preview() {
-//    PostItem(
-//        post = Post(
-//            postId = 0,
-//            writer = "writer",
-//            profileImg = "",
-//            createdAt = "2023-03-12",
-//            content = "게시글 내용",
-//            imgs = listOf(""),
-//            loved = false
-//        ),
-//        navigateToPostDetail = {},
-//    )
+fun PostItemPreview() {
+    PostItem(
+        post = Post(
+            postId = 0,
+            writer = "test",
+            profileImg = "",
+            createdAt = "2023-03-12",
+            content = "test",
+            imgs = listOf(""),
+            loved = false
+        ),
+        navigateToPostDetail = {},
+        navigateToEditPost = {},
+        onClickPostLoves = {},
+        showDeletePostPopup = {},
+        showReportPostPopup = {}
+    )
 }
