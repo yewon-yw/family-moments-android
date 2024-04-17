@@ -1,0 +1,19 @@
+name: FEATURE
+description: 새로운 기능이 필요한가요?
+body:
+  - type: textarea
+    id: feature-description
+    attributes:
+      label: Describe
+      description: 새로운 기능에 대해 자세히 설명해주세요.
+  - type: textarea
+    id: todo
+    attributes:
+      label: Todo
+      description: 해야 하는 일에 대한 todo를 적어주세요.
+  - type: textarea
+    id: more_description
+    attributes:
+      label: More
+      description: 필요한 설명이 있다면 적어주세요.
+      

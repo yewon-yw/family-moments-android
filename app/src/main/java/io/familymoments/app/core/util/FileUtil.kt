@@ -2,6 +2,7 @@ package io.familymoments.app.core.util
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
 import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
@@ -17,10 +18,13 @@ import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
+import java.net.URL
 import kotlin.math.roundToInt
 
 object FileUtil {
     private const val COMPRESS_QUALITY = 50
+    private const val URI_SCHEME_HTTPS = "https"
+    private const val URI_SCHEME_CONTENT = "content"
 
     suspend fun imageFilesResize(
         context: Context,
@@ -68,13 +72,23 @@ object FileUtil {
     @Suppress("DEPRECATION")
     fun convertUriToBitmap(uri: Uri?, context: Context): Bitmap {
         var bitmap: Bitmap? = null
-        uri?.let {
+
+        /*
+        uri 의 scheme 에 따라 비트맵 변환하는 과정이 다름
+        - 갤러리에서 불러온 이미지 uri 의 scheme -> content
+        - url 을 변환한 uri 의 scheme -> https
+        */
+        if (uri?.scheme == URI_SCHEME_HTTPS) {
+            val url = URL(uri.toString())
+            bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream())
+        }
+        if (uri?.scheme == URI_SCHEME_CONTENT) {
             bitmap = if (Build.VERSION.SDK_INT < 28) {
                 MediaStore.Images
-                    .Media.getBitmap(context.contentResolver, it)
+                    .Media.getBitmap(context.contentResolver, uri)
             } else {
                 val source = ImageDecoder
-                    .createSource(context.contentResolver, it)
+                    .createSource(context.contentResolver, uri)
                 ImageDecoder.decodeBitmap(source)
             }
         }
