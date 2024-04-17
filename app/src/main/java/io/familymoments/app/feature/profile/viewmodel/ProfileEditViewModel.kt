@@ -1,6 +1,6 @@
 package io.familymoments.app.feature.profile.viewmodel
 
-import android.graphics.Bitmap
+import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
@@ -9,7 +9,6 @@ import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.feature.profile.mapper.toRequest
 import io.familymoments.app.feature.profile.uistate.ProfileEditInfoUiState
 import io.familymoments.app.feature.profile.uistate.ProfileEditUiState
-import io.familymoments.app.feature.profile.uistate.ProfileImage
 import io.familymoments.app.feature.signup.UserInfoFormatChecker.checkBirthDay
 import io.familymoments.app.feature.signup.UserInfoFormatChecker.checkNickname
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -34,15 +33,14 @@ class ProfileEditViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<ProfileEditUiState> = MutableStateFlow(
         ProfileEditUiState(
             profileEditInfoUiState = ProfileEditInfoUiState(name, nickname, birthdate),
-            profileImage = ProfileImage.Url(profileImg)
+            profileImage = Uri.parse(profileImg)
         )
     )
     val uiState: StateFlow<ProfileEditUiState> = _uiState.asStateFlow()
 
-    fun imageChanged(bitmap: Bitmap?) {
-        if (bitmap == null) return
+    fun imageChanged(uri: Uri) {
         _uiState.value = _uiState.value.copy(
-            profileImage = ProfileImage.Bitmap(bitmap)
+            profileImage = uri
         )
     }
 

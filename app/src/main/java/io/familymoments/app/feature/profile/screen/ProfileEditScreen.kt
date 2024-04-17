@@ -1,12 +1,11 @@
 package io.familymoments.app.feature.profile.screen
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.content.Context
+import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -30,12 +29,12 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
@@ -49,31 +48,24 @@ import io.familymoments.app.core.component.FMDropdownMenu
 import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.core.util.FileUtil.convertBitmapToFile
-import io.familymoments.app.core.util.FileUtil.convertUriToBitmap
-import io.familymoments.app.core.util.FileUtil.convertUrlToBitmap
-import io.familymoments.app.feature.profile.uistate.ProfileImage
+import io.familymoments.app.core.util.FileUtil
 import io.familymoments.app.feature.profile.viewmodel.ProfileEditViewModel
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.launch
+import java.io.File
 
 @Composable
 fun ProfileEditScreen(
     navigateBack: () -> Unit,
     viewModel: ProfileEditViewModel,
 ) {
-    val defaultProfileImageBitmap =
-        BitmapFactory.decodeResource(LocalContext.current.resources, R.drawable.default_profile)
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val buttonEnabled = uiState.value.profileEditValidated.nameValidated &&
         uiState.value.profileEditValidated.nicknameValidated &&
         uiState.value.profileEditValidated.birthdateValidated
-
-    LaunchedEffect(uiState.value.profileImage) {
-        if (uiState.value.profileImage is ProfileImage.Url) {
-            val bitmap = convertUrlToBitmap((uiState.value.profileImage as ProfileImage.Url).imgUrl, context)
-            viewModel.imageChanged(bitmap)
-        }
-    }
+    val defaultProfileImageUri = Uri.parse("android.resource://${context.packageName}/${R.drawable.default_profile}")
+    val scope = rememberCoroutineScope()
     LaunchedEffect(uiState.value.isSuccess) {
         if (uiState.value.isSuccess) {
             navigateBack()
@@ -99,7 +91,7 @@ fun ProfileEditScreen(
             profileImage = uiState.value.profileImage
         )
         ProfileDropdown(
-            defaultProfileImageBitmap = defaultProfileImageBitmap,
+            defaultProfileImageUri = defaultProfileImageUri,
             onImageChanged = viewModel::imageChanged,
         )
         Column(
@@ -146,13 +138,7 @@ fun ProfileEditScreen(
             Spacer(modifier = Modifier.width(34.dp))
             ProfileButton(
                 modifier = Modifier.weight(1f),
-                onClick = {
-                    val imageFile = convertBitmapToFile(
-                        bitmap = (uiState.value.profileImage as ProfileImage.Bitmap).bitmap,
-                        context = context
-                    )
-                    viewModel.editUserProfile(imageFile)
-                },
+                onClick = { onButtonClicked(scope, context, uiState.value.profileImage, viewModel::editUserProfile) },
                 enabled = buttonEnabled,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = AppColors.purple2,
@@ -166,10 +152,22 @@ fun ProfileEditScreen(
     }
 }
 
+private fun onButtonClicked(
+    scope: CoroutineScope,
+    context: Context,
+    uri: Uri,
+    editUserProfile: (File) -> Unit = {}
+) {
+    scope.launch {
+        val imageFile = FileUtil.imageFileResize(context, uri)
+        editUserProfile(imageFile)
+    }
+}
+
 @Composable
 fun ProfileImageRenderer(
     modifier: Modifier = Modifier,
-    profileImage: ProfileImage,
+    profileImage: Uri,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
@@ -179,29 +177,14 @@ fun ProfileImageRenderer(
         Box(
             modifier = Modifier.padding(top = 4.dp)
         ) {
-            when (profileImage) {
-                is ProfileImage.Url -> {
-                    AsyncImage(
-                        model = profileImage.imgUrl,
-                        contentDescription = "profile",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(80.dp)
-                            .clip(CircleShape)
-                    )
-                }
-
-                is ProfileImage.Bitmap -> {
-                    Image(
-                        bitmap = profileImage.bitmap.asImageBitmap(),
-                        contentDescription = "profile",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(80.dp)
-                            .clip(CircleShape)
-                    )
-                }
-            }
+            AsyncImage(
+                model = profileImage,
+                contentDescription = "profile",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape)
+            )
         }
     }
 }
@@ -265,15 +248,14 @@ fun WarningText(
 
 @Composable
 fun ProfileDropdown(
-    defaultProfileImageBitmap: Bitmap,
-    onImageChanged: (Bitmap?) -> Unit,
+    defaultProfileImageUri: Uri,
+    onImageChanged: (Uri) -> Unit,
 ) {
-    val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = {
             if (it == null) return@rememberLauncherForActivityResult
-            onImageChanged(convertUriToBitmap(it, context))
+            onImageChanged(it)
         }
     )
     FMDropdownMenu(
@@ -283,7 +265,7 @@ fun ProfileDropdown(
             )
         },
         onDefaultImageSelected = {
-            onImageChanged(defaultProfileImageBitmap)
+            onImageChanged(defaultProfileImageUri)
         }
     )
 }
@@ -297,7 +279,7 @@ fun ProfileButton(
     @StringRes stringResId: Int,
 ) {
     Button(
-        onClick = { onClick() },
+        onClick = onClick,
         modifier = modifier
             .size(54.dp),
         enabled = enabled,
