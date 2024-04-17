@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Icon
@@ -34,7 +35,6 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.PostItem
-import io.familymoments.app.core.component.PostItemPreview
 import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.component.popup.DeletePopUp
 import io.familymoments.app.core.component.popup.ReportPopUp
@@ -43,19 +43,20 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.calendar.viewmodel.CalendarDayViewModel
 import io.familymoments.app.feature.home.uistate.PostPopupType
+import java.time.LocalDate
 
 @Composable
 fun CalendarDayScreen(
     modifier: Modifier,
     viewModel: CalendarDayViewModel,
     navigateToPostDetail: (Int) -> Unit,
-    navigateToPostEdit:(Post) -> Unit
+    navigateToPostEdit: (Post) -> Unit
 ) {
-    val calendarDayUiState = viewModel.calendarDayUiState.collectAsStateWithLifecycle()
-    val initialDate = calendarDayUiState.value.selectedDate
-    val posts = calendarDayUiState.value.posts
-    val hasNoPost = calendarDayUiState.value.hasNoPost
-    val popup = calendarDayUiState.value.popup
+    val calendarDayUiState = viewModel.calendarDayUiState.collectAsStateWithLifecycle().value
+    val initialDate = calendarDayUiState.selectedDate
+    val posts = calendarDayUiState.posts
+    val hasNoPost = calendarDayUiState.hasNoPost
+    val popup = calendarDayUiState.popup
 
     val lazyListState = rememberLazyListState()
     val isScrolledToLast by remember(lazyListState.canScrollForward) {
@@ -65,19 +66,45 @@ fun CalendarDayScreen(
             mutableStateOf(!lazyListState.canScrollForward)
         }
     }
-    val showPopup = remember { mutableStateOf(false) }
 
+    LaunchedEffectShowPopup(popup, viewModel::deletePost, viewModel::dismissPopup)
+    LaunchedEffectLoadMorePostsIfScrolledToLast(isScrolledToLast, viewModel::loadMorePostsByDay)
+
+    CalendarDayUI(
+        lazyListState = lazyListState,
+        modifier = modifier,
+        hasNoPost = hasNoPost,
+        posts = posts,
+        initialDate = initialDate,
+        getPostsByPrevDay = viewModel::getPostsByPrevDay,
+        getPostsByNextDay = viewModel::getPostsByNextDay,
+        navigateToPostDetail = navigateToPostDetail,
+        navigateToPostEdit = navigateToPostEdit,
+        deletePostLoves = viewModel::deletePostLoves,
+        postPostLoves = viewModel::postPostLoves,
+        showDeletePostPopup = viewModel::showDeletePostPopup,
+        showReportPostPopup = viewModel::showReportPostPopup
+    )
+}
+
+@Composable
+private fun LaunchedEffectLoadMorePostsIfScrolledToLast(isScrolledToLast: Boolean, loadMorePostsByDay: () -> Unit) {
     LaunchedEffect(isScrolledToLast) {
         if (isScrolledToLast) {
-            viewModel.loadMorePostsByDay()
+            loadMorePostsByDay()
         }
     }
+}
+
+@Composable
+private fun LaunchedEffectShowPopup(popup: PostPopupType?, deletePost: (Long) -> Unit, dismissPopup: () -> Unit) {
+    val showPopup = remember { mutableStateOf(false) }
 
     LaunchedEffect(popup) {
         showPopup.value = popup != null
     }
 
-    if (showPopup.value){
+    if (showPopup.value) {
         when (popup) {
             PostPopupType.PostLovesFailure -> {
                 //TODO: 좋아요 생성 실패 팝업
@@ -90,17 +117,15 @@ fun CalendarDayScreen(
             is PostPopupType.DeletePost -> {
                 DeletePopUp(
                     content = stringResource(id = R.string.post_delete_pop_up_content),
-                    delete = {
-                        viewModel.deletePost(popup.postId)
-                    },
-                    onDismissRequest = viewModel::dismissPopup
+                    delete = { deletePost(popup.postId) },
+                    onDismissRequest = dismissPopup
                 )
             }
 
             PostPopupType.DeletePostSuccess -> {
                 CompletePopUp(
                     content = stringResource(R.string.post_detail_delete_complete_pop_label),
-                    onDismissRequest = viewModel::dismissPopup
+                    onDismissRequest = dismissPopup
                 )
             }
 
@@ -110,7 +135,7 @@ fun CalendarDayScreen(
 
             is PostPopupType.ReportPost -> {
                 ReportPopUp(
-                    onDismissRequest = viewModel::dismissPopup,
+                    onDismissRequest = dismissPopup,
                     onReportRequest = {
                         // TODO: 신고하기 기능 구현
                         // viewModel.reportPost(popup.postId)
@@ -131,12 +156,29 @@ fun CalendarDayScreen(
             }
         }
     }
+}
 
+@Composable
+private fun CalendarDayUI(
+    lazyListState: LazyListState,
+    modifier: Modifier = Modifier,
+    hasNoPost: Boolean,
+    posts: List<Post>,
+    initialDate: LocalDate,
+    getPostsByPrevDay: () -> Unit = {},
+    getPostsByNextDay: () -> Unit = {},
+    navigateToPostDetail: (Int) -> Unit = {},
+    navigateToPostEdit: (Post) -> Unit = {},
+    deletePostLoves: (Long) -> Unit = {},
+    postPostLoves: (Long) -> Unit = {},
+    showDeletePostPopup: (Long) -> Unit = {},
+    showReportPostPopup: (Long) -> Unit = {}
+) {
     Column(modifier = modifier) {
         CalendarHeader(
             formattedYearMonth = initialDate.toString().replace("-", "."),
-            onClickPrevMonth = viewModel::getPostsByPrevDay,
-            onClickNextMonth = viewModel::getPostsByNextDay
+            onClickPrevMonth = getPostsByPrevDay,
+            onClickNextMonth = getPostsByNextDay
         )
 
         if (hasNoPost) {
@@ -176,16 +218,16 @@ fun CalendarDayScreen(
                         },
                         onClickPostLoves = {
                             if (post.loved) {
-                                viewModel.deletePostLoves(post.postId)
+                                deletePostLoves(post.postId)
                             } else {
-                                viewModel.postPostLoves(post.postId)
+                                postPostLoves(post.postId)
                             }
                         },
                         showDeletePostPopup = {
-                            viewModel.showDeletePostPopup(post.postId)
+                            showDeletePostPopup(post.postId)
                         },
                         showReportPostPopup = {
-                            viewModel.showReportPostPopup(post.postId)
+                            showReportPostPopup(post.postId)
                         })
                 }
             }
@@ -235,18 +277,21 @@ private fun CalendarHeader(
 @Preview(showBackground = true)
 @Composable
 fun CalendarDayScreenPreview() {
-    Column(modifier = Modifier) {
-        CalendarHeader(
-            formattedYearMonth = "2023.08.16",
-            onClickPrevMonth = {},
-            onClickNextMonth = {}
-        )
-        LazyColumn(
-            contentPadding = PaddingValues(horizontal = 16.dp)
-        ) {
-            items(10) {
-                PostItemPreview()
-            }
-        }
-    }
+    val lazyListState = rememberLazyListState()
+    CalendarDayUI(
+        lazyListState = lazyListState,
+        hasNoPost = false,
+        posts = List(10) {
+            Post(
+                postId = it.toLong(),
+                writer = "test$it",
+                profileImg = "",
+                content = "test",
+                imgs = listOf(),
+                createdAt = "2023-03-12",
+                loved = false
+            )
+        },
+        initialDate = LocalDate.now()
+    )
 }

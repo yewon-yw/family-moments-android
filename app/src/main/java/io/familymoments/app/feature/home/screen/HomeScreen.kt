@@ -94,7 +94,7 @@ fun HomeScreen(
 }
 
 @Composable
-fun LaunchedEffectSetupData(getNicknameDday: () -> Unit, getPosts: () -> Unit) {
+private fun LaunchedEffectSetupData(getNicknameDday: () -> Unit, getPosts: () -> Unit) {
     LaunchedEffect(Unit) {
         getNicknameDday()
         getPosts()
@@ -102,7 +102,7 @@ fun LaunchedEffectSetupData(getNicknameDday: () -> Unit, getPosts: () -> Unit) {
 }
 
 @Composable
-fun LaunchedEffectShowPopup(
+private fun LaunchedEffectShowPopup(
     popup: PostPopupType?,
     deletePost: (Long) -> Unit,
     dismissPopup: () -> Unit
@@ -147,7 +147,8 @@ fun LaunchedEffectShowPopup(
             is PostPopupType.ReportPost -> {
                 ReportPopUp(
                     onDismissRequest = dismissPopup,
-                    onReportRequest = {// TODO: 신고하기 기능 구현
+                    onReportRequest = {
+                        // TODO: 신고하기 기능 구현
                         // viewModel.reportPost(popup.postId)
                     }
                 )
@@ -169,7 +170,7 @@ fun LaunchedEffectShowPopup(
 }
 
 @Composable
-fun LaunchedEffectLoadMorePostsIfScrolledToLast(isScrolledToLast: Boolean, loadMorePosts: () -> Unit) {
+private fun LaunchedEffectLoadMorePostsIfScrolledToLast(isScrolledToLast: Boolean, loadMorePosts: () -> Unit) {
     LaunchedEffect(isScrolledToLast) {
         if (isScrolledToLast) {
             loadMorePosts()
