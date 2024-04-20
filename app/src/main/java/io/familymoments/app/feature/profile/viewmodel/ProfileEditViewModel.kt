@@ -5,8 +5,8 @@ import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.graph.Route
+import io.familymoments.app.core.network.dto.request.ProfileEditRequest
 import io.familymoments.app.core.network.repository.UserRepository
-import io.familymoments.app.feature.profile.mapper.toRequest
 import io.familymoments.app.feature.profile.uistate.ProfileEditInfoUiState
 import io.familymoments.app.feature.profile.uistate.ProfileEditUiState
 import io.familymoments.app.feature.signup.UserInfoFormatChecker.checkBirthDay
@@ -33,45 +33,42 @@ class ProfileEditViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<ProfileEditUiState> = MutableStateFlow(
         ProfileEditUiState(
             profileEditInfoUiState = ProfileEditInfoUiState(name, nickname, birthdate),
-            profileImage = Uri.parse(profileImg)
+            profileImageUri = Uri.parse(profileImg)
         )
     )
     val uiState: StateFlow<ProfileEditUiState> = _uiState.asStateFlow()
 
     fun imageChanged(uri: Uri) {
         _uiState.value = _uiState.value.copy(
-            profileImage = uri
+            profileImageUri = uri
         )
     }
 
-    fun nameChanged(name: String) {
+    fun validateName(name: String) {
         _uiState.value = _uiState.value.copy(
-            profileEditInfoUiState = _uiState.value.profileEditInfoUiState.copy(name = name),
             profileEditValidated = _uiState.value.profileEditValidated.copy(nameValidated = name.isNotEmpty())
         )
     }
 
-    fun nicknameChanged(nickname: String) {
+    fun validateNickname(nickname: String) {
         _uiState.value = _uiState.value.copy(
-            profileEditInfoUiState = _uiState.value.profileEditInfoUiState.copy(nickname = nickname),
             profileEditValidated = _uiState.value.profileEditValidated.copy(nicknameValidated = checkNickname(nickname))
         )
     }
 
-    fun birthdateChanged(birthdate: String) {
+    fun validateBirthdate(birthdate: String) {
         _uiState.value = _uiState.value.copy(
-            profileEditInfoUiState = _uiState.value.profileEditInfoUiState.copy(birthdate = birthdate),
             profileEditValidated = _uiState.value.profileEditValidated.copy(birthdateValidated = checkBirthDay(birthdate))
         )
     }
 
-    fun editUserProfile(imageFile: File) {
+    fun editUserProfile(imageFile: File, name: String, nickname: String, birthdate: String) {
         val imageRequestBody = imageFile.asRequestBody("image/*".toMediaTypeOrNull())
         val profileImgPart = MultipartBody.Part.createFormData("profileImg", imageFile.name, imageRequestBody)
         async(
             operation = {
                 userRepository.editUserProfile(
-                    profileEditRequest = _uiState.value.profileEditInfoUiState.toRequest(),
+                    profileEditRequest = ProfileEditRequest(name, nickname, birthdate),
                     profileImg = profileImgPart
                 )
             },

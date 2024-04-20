@@ -7,7 +7,6 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -49,6 +48,8 @@ import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.FileUtil
+import io.familymoments.app.core.util.URI_SCHEME_RESOURCE
+import io.familymoments.app.feature.profile.uistate.ProfileEditValidated
 import io.familymoments.app.feature.profile.viewmodel.ProfileEditViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
@@ -60,20 +61,74 @@ fun ProfileEditScreen(
     viewModel: ProfileEditViewModel,
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-    val context = LocalContext.current
-    val buttonEnabled = uiState.value.profileEditValidated.nameValidated &&
-        uiState.value.profileEditValidated.nicknameValidated &&
-        uiState.value.profileEditValidated.birthdateValidated
-    val defaultProfileImageUri = Uri.parse("android.resource://${context.packageName}/${R.drawable.default_profile}")
     val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+    val defaultProfileImageUri =
+        Uri.parse("$URI_SCHEME_RESOURCE://${context.packageName}/${R.drawable.default_profile}")
+    var name by remember { mutableStateOf(TextFieldValue(uiState.value.profileEditInfoUiState.name)) }
+    var nickname by remember { mutableStateOf(TextFieldValue(uiState.value.profileEditInfoUiState.nickname)) }
+    var birthdate by remember { mutableStateOf(TextFieldValue(uiState.value.profileEditInfoUiState.birthdate)) }
+
     LaunchedEffect(uiState.value.isSuccess) {
         if (uiState.value.isSuccess) {
             navigateBack()
         }
     }
 
+    ProfileEditScreenUI(
+        modifier = Modifier,
+        name = name,
+        nickname = nickname,
+        birthdate = birthdate,
+        defaultProfileImageUri = defaultProfileImageUri,
+        profileImageUri = uiState.value.profileImageUri,
+        onImageChanged = viewModel::imageChanged,
+        onNameChanged = {
+            name = it
+            viewModel.validateName(it.text)
+        },
+        onNicknameChanged = {
+            nickname = it
+            viewModel.validateNickname(it.text)
+        },
+        onBirthdateChanged = {
+            birthdate = it
+            viewModel.validateBirthdate(it.text)
+        },
+        profileEditValidated = uiState.value.profileEditValidated,
+        onEditButtonClicked = {
+            onEditButtonClicked(
+                scope = scope,
+                context = context,
+                profileImageUri = uiState.value.profileImageUri,
+                name = name.text,
+                nickname = nickname.text,
+                birthdate = birthdate.text,
+                editUserProfile = viewModel::editUserProfile
+            )
+        },
+        navigateBack = navigateBack
+    )
+}
+
+@Composable
+private fun ProfileEditScreenUI(
+    modifier: Modifier = Modifier,
+    name: TextFieldValue = TextFieldValue(),
+    nickname: TextFieldValue = TextFieldValue(),
+    birthdate: TextFieldValue = TextFieldValue(),
+    defaultProfileImageUri: Uri,
+    profileImageUri: Uri,
+    onImageChanged: (Uri) -> Unit = {},
+    onNameChanged: (TextFieldValue) -> Unit = {},
+    onNicknameChanged: (TextFieldValue) -> Unit = {},
+    onBirthdateChanged: (TextFieldValue) -> Unit = {},
+    profileEditValidated: ProfileEditValidated,
+    onEditButtonClicked: () -> Unit = {},
+    navigateBack: () -> Unit = {}
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
@@ -87,12 +142,12 @@ fun ProfileEditScreen(
             modifier = Modifier.padding(vertical = 18.dp)
         )
         ProfileImageRenderer(
-            modifier = Modifier.padding(bottom = 22.dp),
-            profileImage = uiState.value.profileImage
+            modifier = Modifier.padding(top = 4.dp, bottom = 22.dp),
+            profileImageUri = profileImageUri
         )
         ProfileDropdown(
             defaultProfileImageUri = defaultProfileImageUri,
-            onImageChanged = viewModel::imageChanged,
+            onImageChanged = onImageChanged,
         )
         Column(
             modifier = Modifier
@@ -102,26 +157,26 @@ fun ProfileEditScreen(
         ) {
             ProfileTextField(
                 title = stringResource(id = R.string.profile_text_field_name),
-                value = uiState.value.profileEditInfoUiState.name,
                 hint = stringResource(id = R.string.profile_text_field_hint_name),
-                onValueChanged = viewModel::nameChanged,
-                showWarning = !uiState.value.profileEditValidated.nameValidated
+                showWarning = !profileEditValidated.nameValidated,
+                value = name,
+                onValueChanged = onNameChanged
             )
             ProfileTextField(
                 title = stringResource(id = R.string.profile_text_field_nickname),
-                value = uiState.value.profileEditInfoUiState.nickname,
                 hint = stringResource(id = R.string.profile_text_field_hint_nickname),
                 warning = stringResource(id = R.string.profile_nickname_warning),
-                onValueChanged = viewModel::nicknameChanged,
-                showWarning = !uiState.value.profileEditValidated.nicknameValidated
+                showWarning = !profileEditValidated.nicknameValidated,
+                value = nickname,
+                onValueChanged = onNicknameChanged
             )
             ProfileTextField(
                 title = stringResource(id = R.string.profile_text_field_birth_date),
-                value = uiState.value.profileEditInfoUiState.birthdate,
                 hint = stringResource(id = R.string.profile_text_field_hint_birth_date),
                 warning = stringResource(id = R.string.profile_birthdate_warning),
-                onValueChanged = viewModel::birthdateChanged,
-                showWarning = !uiState.value.profileEditValidated.birthdateValidated
+                showWarning = !profileEditValidated.birthdateValidated,
+                value = birthdate,
+                onValueChanged = onBirthdateChanged
             )
         }
         Row(
@@ -138,8 +193,8 @@ fun ProfileEditScreen(
             Spacer(modifier = Modifier.width(34.dp))
             ProfileButton(
                 modifier = Modifier.weight(1f),
-                onClick = { onButtonClicked(scope, context, uiState.value.profileImage, viewModel::editUserProfile) },
-                enabled = buttonEnabled,
+                onClick = onEditButtonClicked,
+                enabled = profileEditValidated.nameValidated && profileEditValidated.nicknameValidated && profileEditValidated.birthdateValidated,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = AppColors.purple2,
                     contentColor = AppColors.grey6,
@@ -152,53 +207,51 @@ fun ProfileEditScreen(
     }
 }
 
-private fun onButtonClicked(
+private fun onEditButtonClicked(
     scope: CoroutineScope,
     context: Context,
-    uri: Uri,
-    editUserProfile: (File) -> Unit = {}
+    profileImageUri: Uri,
+    name: String,
+    nickname: String,
+    birthdate: String,
+    editUserProfile: (File, String, String, String) -> Unit
 ) {
     scope.launch {
-        val imageFile = FileUtil.imageFileResize(context, uri)
-        editUserProfile(imageFile)
+        val imageFile = FileUtil.imageFileResize(context, profileImageUri)
+        editUserProfile(imageFile, name, nickname, birthdate)
     }
 }
 
 @Composable
-fun ProfileImageRenderer(
+private fun ProfileImageRenderer(
     modifier: Modifier = Modifier,
-    profileImage: Uri,
+    profileImageUri: Uri,
 ) {
     Row(
         modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.Top
     ) {
-        Box(
-            modifier = Modifier.padding(top = 4.dp)
-        ) {
-            AsyncImage(
-                model = profileImage,
-                contentDescription = "profile",
-                contentScale = ContentScale.Crop,
-                modifier = Modifier
-                    .size(80.dp)
-                    .clip(CircleShape)
-            )
-        }
+        AsyncImage(
+            model = profileImageUri,
+            contentDescription = "profile",
+            contentScale = ContentScale.Crop,
+            modifier = Modifier
+                .size(80.dp)
+                .clip(CircleShape)
+        )
     }
 }
 
 @Composable
 private fun ProfileTextField(
     title: String = "",
-    value: String = "",
     hint: String = "",
     warning: String = "",
     showWarning: Boolean = false,
-    onValueChanged: (String) -> Unit = {},
+    value: TextFieldValue = TextFieldValue(),
+    onValueChanged: (TextFieldValue) -> Unit = {},
 ) {
-    var textFieldValue by remember { mutableStateOf(TextFieldValue(value)) }
     Column {
         Text(
             text = title,
@@ -207,23 +260,21 @@ private fun ProfileTextField(
             modifier = Modifier.padding(start = 1.dp, bottom = 2.dp)
         )
         FMTextField(
-            value = textFieldValue,
-            onValueChange = { newValue ->
-                textFieldValue = newValue
-                onValueChanged(newValue.text)
-            },
+            value = value,
+            onValueChange = onValueChanged,
             hint = hint,
             textColor = if (showWarning) AppColors.red2 else AppColors.black2,
             hintColor = if (showWarning) AppColors.red2 else AppColors.grey2,
             borderColor = if (showWarning) AppColors.red2 else AppColors.grey2
         )
         if (showWarning) {
-            WarningText(
+            Text(
                 modifier = Modifier
                     .height(42.dp)
                     .padding(top = 3.dp),
-                    warning = warning,
-                showText = showWarning
+                text = warning,
+                style = AppTypography.LB2_11,
+                color = AppColors.red2
             )
         } else {
             Spacer(modifier = Modifier.height(42.dp))
@@ -232,22 +283,7 @@ private fun ProfileTextField(
 }
 
 @Composable
-fun WarningText(
-    modifier: Modifier = Modifier,
-    showText: Boolean = false,
-    warning: String = ""
-) {
-    if (!showText) return
-    Text(
-        modifier = modifier.padding(top = 3.dp),
-        text = warning,
-        style = AppTypography.LB2_11,
-        color = AppColors.red2
-    )
-}
-
-@Composable
-fun ProfileDropdown(
+private fun ProfileDropdown(
     defaultProfileImageUri: Uri,
     onImageChanged: (Uri) -> Unit,
 ) {
@@ -271,7 +307,7 @@ fun ProfileDropdown(
 }
 
 @Composable
-fun ProfileButton(
+private fun ProfileButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     onClick: () -> Unit = {},
@@ -296,6 +332,14 @@ fun ProfileButton(
 
 @Preview(showBackground = true)
 @Composable
-fun ProfileEditScreenPreview() {
-
+private fun ProfileEditScreenPreview() {
+    ProfileEditScreenUI(
+        defaultProfileImageUri = Uri.parse(""),
+        profileImageUri = Uri.parse(""),
+        profileEditValidated = ProfileEditValidated(
+            nameValidated = true,
+            nicknameValidated = true,
+            birthdateValidated = true
+        ),
+    )
 }

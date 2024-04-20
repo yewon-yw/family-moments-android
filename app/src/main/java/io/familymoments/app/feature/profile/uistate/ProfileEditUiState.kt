@@ -9,7 +9,7 @@ data class ProfileEditUiState(
     val errorMessage: String? = null,
     val profileEditInfoUiState: ProfileEditInfoUiState = ProfileEditInfoUiState(),
     val profileEditValidated: ProfileEditValidated = ProfileEditValidated(),
-    val profileImage: Uri
+    val profileImageUri: Uri
 )
 
 data class ProfileEditInfoUiState(

@@ -21,7 +21,6 @@ object FileUtil {
     private const val COMPRESS_QUALITY = 50
     private const val URI_SCHEME_HTTPS = "https"
     private const val URI_SCHEME_CONTENT = "content"
-    private const val URI_SCHEME_RESOURCE = "android.resource"
 
     suspend fun imageFilesResize(
         context: Context,
