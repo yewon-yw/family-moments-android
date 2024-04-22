@@ -2,20 +2,16 @@ package io.familymoments.app.feature.postdetail.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
+import io.familymoments.app.core.network.dto.response.GetPostDetailResult
+import io.familymoments.app.core.network.dto.response.GetPostLovesResult
 import io.familymoments.app.core.network.repository.CommentRepository
 import io.familymoments.app.core.network.repository.PostRepository
-import io.familymoments.app.core.uistate.CompletePopupUiState
-import io.familymoments.app.core.uistate.DeletePopupUiState
-import io.familymoments.app.core.uistate.PopupStatusLogics
-import io.familymoments.app.core.uistate.PopupUiState
-import io.familymoments.app.core.uistate.ReportPopupUiState
-import io.familymoments.app.feature.postdetail.uistate.CommentLogics
-import io.familymoments.app.feature.postdetail.uistate.CommentUiState
-import io.familymoments.app.feature.postdetail.uistate.PostLogics
-import io.familymoments.app.feature.postdetail.uistate.PostUiState
+import io.familymoments.app.feature.postdetail.uistate.PostDetailPopupType
+import io.familymoments.app.feature.postdetail.uistate.PostDetailUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDate
@@ -30,94 +26,54 @@ class PostDetailViewModel @Inject constructor(
     private val commentRepository: CommentRepository
 ) : BaseViewModel() {
 
-    private val _postUiState: MutableStateFlow<PostUiState> =
-        MutableStateFlow(
-            PostUiState(
-                logics = PostLogics(
-                    getPostDetail = this::getPostDetail,
-                    getPostLoves = this::getPostLoves,
-                    postPostLoves = this::postPostLoves,
-                    deletePostLoves = this::deletePostLoves,
-                    deletePost = this::deletePost
-                )
-            )
-        )
-    val postUiState: StateFlow<PostUiState> = _postUiState.asStateFlow()
-
-    private val _commentUiState: MutableStateFlow<CommentUiState> =
-        MutableStateFlow(
-            CommentUiState(
-                logics = CommentLogics(
-                    getComments = this::getPostComments,
-                    postComment = this::postComment,
-                    deleteComment = this::deleteComment,
-                    postCommentLoves = this::postCommentLoves,
-                    deleteCommentLoves = this::deleteCommentLoves
-                )
-            )
-        )
-    val commentUiState: StateFlow<CommentUiState> =
-        _commentUiState.asStateFlow()
-
-    private val _popupUiState: MutableStateFlow<PopupUiState> = MutableStateFlow(
-        PopupUiState(
-            popupStatusLogics = PopupStatusLogics(
-                this::showCompletePopup,
-                this::showDeletePopup,
-                this::showReportPopup
-            )
-        )
-    )
-    val popupUiState: StateFlow<PopupUiState> = _popupUiState.asStateFlow()
+    private val _uiState: MutableStateFlow<PostDetailUiState> = MutableStateFlow(PostDetailUiState())
+    val uiState: StateFlow<PostDetailUiState> = _uiState.asStateFlow()
 
     fun getPostDetail(index: Long) {
         async(
             operation = { postRepository.getPostDetail(index) },
-            onSuccess = {
-                val getPostUiState = _postUiState.value.getPostDetailUiState
-                _postUiState.value = _postUiState.value.copy(
-                    getPostDetailUiState = getPostUiState.copy(
+            onSuccess = { response ->
+                _uiState.update {
+                    it.copy(
                         isSuccess = true,
-                        isLoading = isLoading.value,
-                        result = it.result
+                        postDetail = response.result
                     )
-                )
+                }
+                resetSuccess()
             },
-            onFailure = {
-                val postDetailUiState = _postUiState.value.getPostDetailUiState
-                _postUiState.value = _postUiState.value.copy(
-                    getPostDetailUiState = postDetailUiState.copy(
+            onFailure = { throwable ->
+                _uiState.update {
+                    it.copy(
                         isSuccess = false,
-                        isLoading = isLoading.value,
-                        message = it.message
+                        errorMessage = throwable.message
                     )
-                )
+                }
             })
 
     }
 
-    fun getPostComments(index: Long) {
+    fun getComments(index: Long) {
         async(
             operation = { commentRepository.getPostComments(index) },
-            onSuccess = {
-                val getCommentsUiState = _commentUiState.value.getCommentsUiState
-                _commentUiState.value = _commentUiState.value.copy(
-                    getCommentsUiState = getCommentsUiState.copy(
+            onSuccess = { response ->
+                _uiState.update {
+                    it.copy(
                         isSuccess = true,
-                        isLoading = isLoading.value,
-                        result = it.result
+                        comments = response.result
                     )
-                )
+                }
+                resetSuccess()
             },
-            onFailure = {
-                val getCommentsUiState = _commentUiState.value.getCommentsUiState
-                _commentUiState.value = _commentUiState.value.copy(
-                    getCommentsUiState = getCommentsUiState.copy(
-                        isSuccess = false,
-                        isLoading = isLoading.value,
-                        message = it.message
-                    )
-                )
+            onFailure = { throwable ->
+                if (throwable.message != ERROR_MESSAGE_NO_POST_COMMENTS) {
+                    _uiState.update {
+                        it.copy(
+                            isSuccess = false,
+                            errorMessage = throwable.message
+                        )
+                    }
+                }
+
             }
         )
     }
@@ -125,25 +81,23 @@ class PostDetailViewModel @Inject constructor(
     fun getPostLoves(index: Long) {
         async(
             operation = { postRepository.getPostLoves(index) },
-            onSuccess = {
-                val getPostLovesUiState = _postUiState.value.getPostLovesUiState
-                _postUiState.value = _postUiState.value.copy(
-                    getPostLovesUiState = getPostLovesUiState.copy(
+            onSuccess = { response ->
+                _uiState.update {
+                    it.copy(
                         isSuccess = true,
-                        isLoading = isLoading.value,
-                        result = it.results
+                        postLoves = response.results
                     )
-                )
+                }
             },
-            onFailure = {
-                val getPostLovesUiState = _postUiState.value.getPostLovesUiState
-                _postUiState.value = _postUiState.value.copy(
-                    getPostLovesUiState = getPostLovesUiState.copy(
-                        isSuccess = false,
-                        isLoading = isLoading.value,
-                        message = it.message
-                    )
-                )
+            onFailure = { throwable ->
+                if (throwable.message != ERROR_MESSAGE_NO_POST_LOVES) {
+                    _uiState.update {
+                        it.copy(
+                            isSuccess = false,
+                            errorMessage = throwable.message
+                        )
+                    }
+                }
             }
         )
     }
@@ -152,208 +106,196 @@ class PostDetailViewModel @Inject constructor(
         async(
             operation = { commentRepository.postComment(content, index) },
             onSuccess = {
-                val postCommentUiState = _commentUiState.value.postCommentUiState
-                _commentUiState.value = _commentUiState.value.copy(
-                    postCommentUiState = postCommentUiState.copy(
-                        isSuccess = true,
-                        isLoading = isLoading.value,
-                        result = it.result
+                _uiState.update {
+                    it.copy(
+                        isSuccess = true
                     )
-                )
+                }
             },
-            onFailure = {
-                val postCommentUiState = _commentUiState.value.postCommentUiState
-                _commentUiState.value = _commentUiState.value.copy(
-                    postCommentUiState = postCommentUiState.copy(
+            onFailure = { throwable ->
+                _uiState.update {
+                    it.copy(
                         isSuccess = false,
-                        isLoading = isLoading.value,
-                        message = it.message
+                        errorMessage = throwable.message
                     )
-                )
+                }
             }
         )
     }
 
-    private fun deleteComment(index: Long) {
+    fun deleteComment(index: Long) {
         async(
             operation = { commentRepository.deleteComment(index) },
             onSuccess = {
-                val deleteCommentUiState = _commentUiState.value.deleteCommentUiState
-                _commentUiState.value = _commentUiState.value.copy(
-                    deleteCommentUiState = deleteCommentUiState.copy(
+                _uiState.update {
+                    it.copy(
                         isSuccess = true,
-                        isLoading = isLoading.value,
-                        result = it.result
+                        popup = PostDetailPopupType.DeleteCommentSuccess
                     )
-                )
+                }
             },
-            onFailure = {
-                val deleteCommentUiState = _commentUiState.value.deleteCommentUiState
-                _commentUiState.value = _commentUiState.value.copy(
-                    deleteCommentUiState = deleteCommentUiState.copy(
+            onFailure = { throwable ->
+                _uiState.update {
+                    it.copy(
                         isSuccess = false,
-                        isLoading = isLoading.value,
-                        message = it.message
+                        errorMessage = throwable.message,
+                        popup = PostDetailPopupType.DeleteCommentFailed
                     )
-                )
+                }
             }
         )
     }
 
-    private fun postCommentLoves(commentId: Long) {
+    fun postCommentLoves(commentId: Long) {
         async(
             operation = { commentRepository.postCommentLoves(commentId) },
             onSuccess = {
-                val postCommentLovesUiState = _commentUiState.value.postCommentLovesUiState
-                _commentUiState.value = _commentUiState.value.copy(
-                    postCommentLovesUiState = postCommentLovesUiState.copy(
-                        isSuccess = true,
-                        isLoading = isLoading.value,
-                        result = it.result
+                _uiState.update {
+                    it.copy(
+                        isSuccess = true
                     )
-                )
+                }
             },
-            onFailure = {
-                val postCommentLovesUiState = _commentUiState.value.postCommentLovesUiState
-                _commentUiState.value = _commentUiState.value.copy(
-                    postCommentLovesUiState = postCommentLovesUiState.copy(
+            onFailure = { throwable ->
+                _uiState.update {
+                    it.copy(
                         isSuccess = false,
-                        isLoading = isLoading.value,
-                        message = it.message
+                        errorMessage = throwable.message
                     )
-                )
+                }
             }
         )
     }
 
-    private fun deleteCommentLoves(commentId: Long) {
+    fun deleteCommentLoves(commentId: Long) {
         async(
             operation = { commentRepository.deleteCommentLoves(commentId) },
             onSuccess = {
-                val deleteCommentLovesUiState = _commentUiState.value.deleteCommentLovesUiState
-                _commentUiState.value = _commentUiState.value.copy(
-                    deleteCommentLovesUiState = deleteCommentLovesUiState.copy(
-                        isSuccess = true,
-                        isLoading = isLoading.value,
-                        result = it.result
+                _uiState.update {
+                    it.copy(
+                        isSuccess = true
                     )
-                )
+                }
             },
-            onFailure = {
-                val deleteCommentLovesUiState = _commentUiState.value.deleteCommentLovesUiState
-                _commentUiState.value = _commentUiState.value.copy(
-                    deleteCommentLovesUiState = deleteCommentLovesUiState.copy(
+            onFailure = { throwable ->
+                _uiState.update {
+                    it.copy(
                         isSuccess = false,
-                        isLoading = isLoading.value,
-                        message = it.message
+                        errorMessage = throwable.message
                     )
-                )
+                }
             }
         )
     }
 
-    private fun postPostLoves(index: Long) {
+    fun postPostLoves(index: Long) {
         async(
             operation = { postRepository.postPostLoves(index) },
             onSuccess = {
-                val postPostLovesUiState = _postUiState.value.postPostLovesUiState
-                _postUiState.value = _postUiState.value.copy(
-                    postPostLovesUiState = postPostLovesUiState.copy(
-                        isSuccess = true,
-                        isLoading = isLoading.value,
-                        result = it.result
+                _uiState.update {
+                    it.copy(
+                        isSuccess = true
                     )
-                )
+                }
             },
-            onFailure = {
-                val postPostLovesUiState = _postUiState.value.postPostLovesUiState
-                _postUiState.value = _postUiState.value.copy(
-                    postPostLovesUiState = postPostLovesUiState.copy(
+            onFailure = { throwable ->
+                _uiState.update {
+                    it.copy(
                         isSuccess = false,
-                        isLoading = isLoading.value,
-                        message = it.message
+                        errorMessage = throwable.message
                     )
-                )
+                }
             }
         )
     }
 
-    private fun deletePostLoves(index: Long) {
+    fun deletePostLoves(index: Long) {
         async(
             operation = { postRepository.deletePostLoves(index) },
             onSuccess = {
-                val deletePostLovesUiState = _postUiState.value.deletePostLovesUiState
-                _postUiState.value = _postUiState.value.copy(
-                    deletePostLovesUiState = deletePostLovesUiState.copy(
-                        isSuccess = true,
-                        isLoading = isLoading.value,
-                        result = it.result
+                _uiState.update {
+                    it.copy(
+                        isSuccess = true
                     )
-                )
+                }
             },
-            onFailure = {
-                val deletePostLovesUiState = _postUiState.value.deletePostLovesUiState
-                _postUiState.value = _postUiState.value.copy(
-                    deletePostLovesUiState = deletePostLovesUiState.copy(
-                        isSuccess = true,
-                        isLoading = isLoading.value,
-                        message = it.message
+            onFailure = { throwable ->
+                _uiState.update {
+                    it.copy(
+                        isSuccess = false,
+                        errorMessage = throwable.message
                     )
-                )
+                }
             }
         )
     }
 
-    private fun deletePost(index: Long) {
+    fun deletePost(index: Long) {
         async(
             operation = { postRepository.deletePost(index) },
             onSuccess = {
-                val deletePostUiState = _postUiState.value.deletePostUiState
-                _postUiState.value = _postUiState.value.copy(
-                    deletePostUiState = deletePostUiState.copy(
+                _uiState.update {
+                    it.copy(
                         isSuccess = true,
-                        isLoading = isLoading.value,
-                        result = it.message
+                        popup = PostDetailPopupType.DeletePostSuccess
                     )
-                )
+                }
             },
-            onFailure = {
-                val deletePostUiState = _postUiState.value.deletePostUiState
-                _postUiState.value = _postUiState.value.copy(
-                    deletePostUiState = deletePostUiState.copy(
+            onFailure = { throwable ->
+                _uiState.update {
+                    it.copy(
                         isSuccess = false,
-                        isLoading = isLoading.value,
-                        result = it.message
+                        errorMessage = throwable.message,
+                        popup = PostDetailPopupType.DeletePostFailed
                     )
-                )
+                }
             }
         )
     }
 
-    fun showCompletePopup(status: Boolean) {
-        _popupUiState.value = _popupUiState.value.copy(
-            completePopupUiState = CompletePopupUiState(show = status)
-        )
+    fun showDeletePostPopup(id: Long) {
+        _uiState.update {
+            it.copy(popup = PostDetailPopupType.DeletePost(id))
+        }
     }
 
-    fun showDeletePopup(status: Boolean, content: String, execute: () -> Unit) {
-        _popupUiState.value = _popupUiState.value.copy(
-            deletePopupUiState = DeletePopupUiState(status, content, execute)
-        )
+    fun showDeleteCommentPopup(id: Long) {
+        _uiState.update {
+            it.copy(popup = PostDetailPopupType.DeleteComment(id))
+        }
     }
 
-    private fun showReportPopup(status: Boolean, execute: () -> Unit) {
-        _popupUiState.value = _popupUiState.value.copy(
-            reportPopupUiState = ReportPopupUiState(status, execute)
-        )
+    fun showReportPostPopup(id: Long) {
+        _uiState.update {
+            it.copy(popup = PostDetailPopupType.ReportPost(id))
+        }
     }
 
-    fun resetPostCommentUiStateSuccess() {
-        val newPostCommentUiState = _commentUiState.value.postCommentUiState.copy(isSuccess = null)
-        _commentUiState.value = _commentUiState.value.copy(
-            postCommentUiState = newPostCommentUiState
-        )
+    fun showReportCommentPopup(id: Long) {
+        _uiState.update {
+            it.copy(popup = PostDetailPopupType.ReportComment(id))
+        }
     }
+
+    fun showLoveListPopup(loves: List<GetPostLovesResult>) {
+        _uiState.update {
+            it.copy(popup = PostDetailPopupType.LoveList(loves))
+        }
+    }
+
+    fun dismissPopup() {
+        _uiState.update {
+            it.copy(popup = null)
+        }
+    }
+
+    fun resetSuccess() {
+        _uiState.update {
+            it.copy(isSuccess = null)
+        }
+    }
+
+    fun checkPostDetailExist(value: GetPostDetailResult) = value != GetPostDetailResult()
 
     @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
     fun formatPostCreatedDate(createdAt: String): String {
@@ -396,5 +338,10 @@ class PostDetailViewModel @Inject constructor(
             durationSeconds < oneYear -> "${durationSeconds / oneMonth}달 전"
             else -> "${durationSeconds / oneYear}년 전"
         }
+    }
+
+    companion object {
+        private const val ERROR_MESSAGE_NO_POST_LOVES = "좋아요가 존재하지 않습니다."
+        private const val ERROR_MESSAGE_NO_POST_COMMENTS = "댓글이 존재하지 않습니다."
     }
 }

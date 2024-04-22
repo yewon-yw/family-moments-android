@@ -13,7 +13,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -70,10 +70,21 @@ fun LoveListPopUp(
                     )
                 }
                 LazyColumn(modifier = Modifier.padding(vertical = 17.dp)) {
-                    items(postLoves.size) {
-                        LoveListItem(postLoves[it])
-                        Divider(thickness = 0.75.dp, color = AppColors.grey3)
+                    val modifier = Modifier.padding(horizontal = 13.dp, vertical = 6.dp)
+                    if (postLoves.isNotEmpty()){
+                        items(postLoves.size) {
+                            LoveListItem(postLoves[it], modifier)
+                            HorizontalDivider(thickness = 0.75.dp, color = AppColors.grey3)
+                        }
+                    }else{
+                        item { Text(
+                            modifier = modifier,
+                            text = stringResource(R.string.love_list_popup_no_loves),
+                            style = AppTypography.LB1_13,
+                            color = AppColors.grey2
+                        ) }
                     }
+
                 }
             }
         }
@@ -81,10 +92,10 @@ fun LoveListPopUp(
 }
 
 @Composable
-fun LoveListItem(member: GetPostLovesResult) {
+fun LoveListItem(member: GetPostLovesResult, modifier: Modifier) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier.padding(horizontal = 13.dp, vertical = 6.dp)
+        modifier = modifier
     ) {
         AsyncImage(
             model = member.profileImg,
