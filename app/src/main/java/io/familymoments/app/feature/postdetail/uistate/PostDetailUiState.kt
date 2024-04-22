@@ -18,21 +18,6 @@ data class PostDetailUiState(
     val popup: PostDetailPopupType? = null
 )
 
-//data class DetailUiState(
-//    val isSuccess: Boolean? = null,
-//    val result: GetPostDetailResult = GetPostDetailResult()
-//)
-
-//data class CommentsUiState(
-//    val isSuccess: Boolean? = null,
-//    val result: List<GetCommentsResult> = listOf()
-//)
-
-//data class PostLovesUiState(
-//    val isSuccess: Boolean? = null,
-//    val result: List<GetPostLovesResult> = listOf()
-//)
-
 sealed interface PostDetailPopupType {
     data class DeletePost(val postId: Long) : PostDetailPopupType
     data object DeletePostSuccess : PostDetailPopupType
