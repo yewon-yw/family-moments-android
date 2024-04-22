@@ -113,10 +113,6 @@ fun PostDetailScreen(
                         createdAt = viewModel.formatPostCreatedDate(postDetail.createdAt),
                     )
                 }
-
-                Spacer(modifier = Modifier.height(15.dp))
-                HorizontalDivider(Modifier.height(1.dp), color = AppColors.deepPurple3)
-                Spacer(modifier = Modifier.height(19.dp))
                 Box(modifier = Modifier.postDetailContentShadow()) {
                     Column(
                         modifier = Modifier
@@ -133,12 +129,7 @@ fun PostDetailScreen(
                             uiState.postPostLovesSuccess,
                             uiState.deletePostLovesSuccess
                         ) { navigateToModify(postDetail) }
-                        Spacer(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(5.dp)
-                                .background(color = AppColors.grey4)
-                        )
+
                         CommentTextField(
                             comments.size,
                             postDetail.postId,
@@ -148,7 +139,6 @@ fun PostDetailScreen(
                             uiState.resetComment,
                             viewModel::makeCommentAvailable
                         )
-                        Spacer(modifier = Modifier.height(18.dp))
                         if (comments.isNotEmpty()) {
                             CommentItems(
                                 comments,
@@ -162,7 +152,6 @@ fun PostDetailScreen(
                             )
                         }
 
-                        Spacer(modifier = Modifier.height(20.dp))
                     }
                 }
 
@@ -320,6 +309,9 @@ fun WriterInfo(
             color = AppColors.grey3
         )
     }
+    Spacer(modifier = Modifier.height(15.dp))
+    HorizontalDivider(Modifier.height(1.dp), color = AppColors.deepPurple3)
+    Spacer(modifier = Modifier.height(19.dp))
 }
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -431,7 +423,6 @@ fun PostContent(
                             expanded = true
                         }
                     )
-
                     PostDropdownMenu(
                         items = listOf(
                             Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify)) {
@@ -473,6 +464,12 @@ fun PostContent(
             }
         }
     }
+    Spacer(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(5.dp)
+            .background(color = AppColors.grey4)
+    )
 }
 
 @Composable
@@ -559,12 +556,12 @@ fun CommentTextField(
                     enabled = comment.text.trim().isNotEmpty(),
                     modifier = Modifier
                         .padding(end = 6.dp)
-                        .clip(RoundedCornerShape(10.dp))
                         .height(52.dp)
                         .width(42.dp)
                         .align(Alignment.CenterVertically),
                     colors = ButtonDefaults.buttonColors(containerColor = AppColors.purple1),
                     contentPadding = PaddingValues(0.dp),
+                    shape = RoundedCornerShape(10.dp)
                 ) {
                     Text(
                         text = stringResource(R.string.post_detail_screen_comment_post_button),
@@ -575,6 +572,7 @@ fun CommentTextField(
             }
         }
     }
+    Spacer(modifier = Modifier.height(18.dp))
 }
 
 @Composable
@@ -585,9 +583,9 @@ fun CommentItems(
     showDeleteCommentPopup: (Long) -> Unit,
     deleteCommentLoves: (Long) -> Unit,
     postCommentLoves: (Long) -> Unit,
-    postCommentLovesSuccess:Boolean?,
-    deleteCommentLovesSuccess:Boolean?
-    ) {
+    postCommentLovesSuccess: Boolean?,
+    deleteCommentLovesSuccess: Boolean?
+) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         comments.forEach {
             CommentItem(
@@ -602,7 +600,7 @@ fun CommentItems(
             )
         }
     }
-
+    Spacer(modifier = Modifier.height(20.dp))
 }
 
 @Composable
@@ -613,8 +611,8 @@ fun CommentItem(
     showDeleteCommentPopup: (Long) -> Unit,
     deleteCommentLoves: (Long) -> Unit,
     postCommentLoves: (Long) -> Unit,
-    postCommentLovesSuccess:Boolean?,
-    deleteCommentLovesSuccess:Boolean?
+    postCommentLovesSuccess: Boolean?,
+    deleteCommentLovesSuccess: Boolean?
 ) {
     var expanded by remember {
         mutableStateOf(false)
