@@ -46,7 +46,6 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -98,9 +97,7 @@ fun PostDetailScreen(
         viewModel::deletePost,
         viewModel::deleteComment,
         viewModel::dismissPopup,
-        viewModel::getComments,
         navigateToBack,
-        postDetail.postId
     )
     LaunchedEffectShowErrorMessage(uiState, context, viewModel::resetSuccess)
 
@@ -141,14 +138,13 @@ fun PostDetailScreen(
                                 .background(color = AppColors.grey4)
                         )
                         CommentTextField(
-                            uiState.isSuccess,
                             comments.size,
                             postDetail.postId,
                             viewModel::postComment,
                             viewModel::showLoveListPopup,
                             postLoves,
-                            viewModel::getComments,
-                            viewModel::resetSuccess
+                            uiState.resetComment,
+                            viewModel::makeCommentAvailable
                         )
                         Spacer(modifier = Modifier.height(18.dp))
                         if (comments.isNotEmpty()) {
@@ -178,9 +174,7 @@ fun LaunchedEffectShowPopup(
     deletePost: (Long) -> Unit,
     deleteComment: (Long) -> Unit,
     dismissPopup: () -> Unit,
-    getComments: (Long) -> Unit,
     navigateToBack: () -> Unit,
-    postId: Long
 ) {
     val showPopup = remember { mutableStateOf(false) }
     LaunchedEffect(popup) {
@@ -205,7 +199,6 @@ fun LaunchedEffectShowPopup(
                     content = stringResource(id = R.string.post_detail_delete_complete_pop_label),
                     onDismissRequest = {
                         dismissPopup()
-                        getComments(postId)
                     }
                 )
             }
@@ -466,15 +459,23 @@ fun PostContent(
 
 @Composable
 fun CommentTextField(
-    postCommentsSuccess: Boolean?,
     commentsCount: Int,
     postId: Long,
     postComment: (Long, String) -> Unit,
     showLoveListPopup: (List<GetPostLovesResult>) -> Unit,
     postLoves: List<GetPostLovesResult>,
-    getComments: (Long) -> Unit,
-    resetSuccess: () -> Unit
+    resetComment:Boolean,
+    makeCommentAvailable:()->Unit
 ) {
+    var comment by remember {
+        mutableStateOf(TextFieldValue())
+    }
+
+    if (resetComment){
+        comment = TextFieldValue()
+        makeCommentAvailable()
+    }
+
     Column {
         Row(
             modifier = Modifier.padding(
@@ -499,9 +500,6 @@ fun CommentTextField(
             )
         }
         Spacer(modifier = Modifier.height(10.dp))
-        var comments by remember {
-            mutableStateOf(TextFieldValue())
-        }
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -513,13 +511,12 @@ fun CommentTextField(
                 )
         ) {
             val focusRequester = remember { FocusRequester() }
-            val focusManager = LocalFocusManager.current
 
             Row(modifier = Modifier.fillMaxHeight()) {
                 BasicTextField(
-                    value = comments,
+                    value = comment,
                     onValueChange = {
-                        if (it.text.length <= 50) comments = it
+                        if (it.text.length <= 50) comment = it
                     },
                     textStyle = AppTypography.LB2_11.copy(AppColors.black1),
                     modifier = Modifier
@@ -527,7 +524,7 @@ fun CommentTextField(
                         .padding(11.dp)
                         .focusRequester(focusRequester)
                 ) { innerTextField ->
-                    if (comments.text.isEmpty()) {
+                    if (comment.text.isEmpty()) {
                         Text(
                             text = stringResource(R.string.post_detail_screen_comment_text_field_hint),
                             color = AppColors.grey3,
@@ -537,17 +534,11 @@ fun CommentTextField(
                     innerTextField()
                 }
 
-                if (postCommentsSuccess == true) {
-                    comments = TextFieldValue()
-                    focusManager.clearFocus()
-                    getComments(postId)
-                    resetSuccess()
-                }
                 Button(
                     onClick = {
-                        postComment(postId, comments.text)
+                        postComment(postId, comment.text)
                     },
-                    enabled = comments.text.trim().isNotEmpty(),
+                    enabled = comment.text.trim().isNotEmpty(),
                     modifier = Modifier
                         .padding(end = 6.dp)
                         .clip(RoundedCornerShape(10.dp))

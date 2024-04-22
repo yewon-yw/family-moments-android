@@ -39,7 +39,6 @@ class PostDetailViewModel @Inject constructor(
                         postDetail = response.result
                     )
                 }
-                resetSuccess()
             },
             onFailure = { throwable ->
                 _uiState.update {
@@ -62,7 +61,6 @@ class PostDetailViewModel @Inject constructor(
                         comments = response.result
                     )
                 }
-                resetSuccess()
             },
             onFailure = { throwable ->
                 if (throwable.message != ERROR_MESSAGE_NO_POST_COMMENTS) {
@@ -108,15 +106,18 @@ class PostDetailViewModel @Inject constructor(
             onSuccess = {
                 _uiState.update {
                     it.copy(
-                        isSuccess = true
+                        isSuccess = true,
+                        resetComment = true
                     )
                 }
+                getComments(index)
             },
             onFailure = { throwable ->
                 _uiState.update {
                     it.copy(
                         isSuccess = false,
-                        errorMessage = throwable.message
+                        errorMessage = throwable.message,
+                        resetComment = false
                     )
                 }
             }
@@ -130,9 +131,10 @@ class PostDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isSuccess = true,
-                        popup = PostDetailPopupType.DeleteCommentSuccess
+                        popup = PostDetailPopupType.DeleteCommentSuccess,
                     )
                 }
+                getComments(_uiState.value.postDetail.postId)
             },
             onFailure = { throwable ->
                 _uiState.update {
@@ -296,6 +298,12 @@ class PostDetailViewModel @Inject constructor(
     }
 
     fun checkPostDetailExist(value: GetPostDetailResult) = value != GetPostDetailResult()
+
+    fun makeCommentAvailable(){
+        _uiState.update {
+            it.copy(resetComment = false)
+        }
+    }
 
     @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
     fun formatPostCreatedDate(createdAt: String): String {

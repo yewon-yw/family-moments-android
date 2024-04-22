@@ -10,6 +10,7 @@ data class PostDetailUiState(
     val postDetail:GetPostDetailResult = GetPostDetailResult(),
     val comments:List<GetCommentsResult> = listOf(),
     val postLoves: List<GetPostLovesResult> = listOf(),
+    val resetComment:Boolean = false,
     val popup: PostDetailPopupType? = null
 )
 
