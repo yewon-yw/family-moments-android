@@ -11,6 +11,10 @@ data class PostDetailUiState(
     val comments:List<GetCommentsResult> = listOf(),
     val postLoves: List<GetPostLovesResult> = listOf(),
     val resetComment:Boolean = false,
+    val postPostLovesSuccess:Boolean? = null,
+    val deletePostLovesSuccess:Boolean? = null,
+    val postCommentLovesSuccess:Boolean? = null,
+    val deleteCommentLovesSuccess:Boolean? = null,
     val popup: PostDetailPopupType? = null
 )
 

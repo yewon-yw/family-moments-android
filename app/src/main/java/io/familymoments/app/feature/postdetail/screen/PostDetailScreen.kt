@@ -130,6 +130,8 @@ fun PostDetailScreen(
                             viewModel::showReportPostPopup,
                             viewModel::deletePostLoves,
                             viewModel::postPostLoves,
+                            uiState.postPostLovesSuccess,
+                            uiState.deletePostLovesSuccess
                         ) { navigateToModify(postDetail) }
                         Spacer(
                             modifier = Modifier
@@ -154,7 +156,9 @@ fun PostDetailScreen(
                                 viewModel::showReportCommentPopup,
                                 viewModel::showDeleteCommentPopup,
                                 viewModel::deleteCommentLoves,
-                                viewModel::postCommentLoves
+                                viewModel::postCommentLoves,
+                                uiState.postCommentLovesSuccess,
+                                uiState.deleteCommentLovesSuccess
                             )
                         }
 
@@ -369,11 +373,35 @@ fun PostContent(
     showReportPostPopup: (Long) -> Unit,
     deletePostLoves: (Long) -> Unit,
     postPostLoves: (Long) -> Unit,
+    postPostLovesSuccess: Boolean?,
+    deletePostLovesSuccess: Boolean?,
     navigateToModify: () -> Unit,
 ) {
     var expanded by remember {
         mutableStateOf(false)
     }
+
+    var lovedState by remember {
+        mutableStateOf(postInfo.loved)
+    }
+    var countLoveState by remember {
+        mutableIntStateOf(postInfo.countLove)
+    }
+
+    LaunchedEffect(postPostLovesSuccess) {
+        if (postPostLovesSuccess == true) {
+            countLoveState += 1
+            lovedState = !lovedState
+        }
+    }
+
+    LaunchedEffect(deletePostLovesSuccess) {
+        if (deletePostLovesSuccess == true) {
+            countLoveState -= 1
+            lovedState = !lovedState
+        }
+    }
+
     Box {
         Row(
             modifier = Modifier
@@ -422,13 +450,6 @@ fun PostContent(
 
                 Spacer(modifier = Modifier.height(6.dp))
 
-                var lovedState by remember {
-                    mutableStateOf(postInfo.loved)
-                }
-                var countLoveState by remember {
-                    mutableIntStateOf(postInfo.countLove)
-                }
-
                 Icon(
                     imageVector =
                     if (!lovedState) ImageVector.vectorResource(R.drawable.ic_heart_empty)
@@ -438,12 +459,9 @@ fun PostContent(
                     modifier = Modifier.noRippleClickable {
                         if (lovedState) {
                             deletePostLoves(postInfo.postId)
-                            countLoveState -= 1
                         } else {
                             postPostLoves(postInfo.postId)
-                            countLoveState += 1
                         }
-                        lovedState = !lovedState
                     }
                 )
                 Spacer(modifier = Modifier.height(3.dp))
@@ -464,14 +482,14 @@ fun CommentTextField(
     postComment: (Long, String) -> Unit,
     showLoveListPopup: (List<GetPostLovesResult>) -> Unit,
     postLoves: List<GetPostLovesResult>,
-    resetComment:Boolean,
-    makeCommentAvailable:()->Unit
+    resetComment: Boolean,
+    makeCommentAvailable: () -> Unit
 ) {
     var comment by remember {
         mutableStateOf(TextFieldValue())
     }
 
-    if (resetComment){
+    if (resetComment) {
         comment = TextFieldValue()
         makeCommentAvailable()
     }
@@ -567,7 +585,8 @@ fun CommentItems(
     showDeleteCommentPopup: (Long) -> Unit,
     deleteCommentLoves: (Long) -> Unit,
     postCommentLoves: (Long) -> Unit,
-
+    postCommentLovesSuccess:Boolean?,
+    deleteCommentLovesSuccess:Boolean?
     ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         comments.forEach {
@@ -577,7 +596,9 @@ fun CommentItems(
                 showReportCommentPopup,
                 showDeleteCommentPopup,
                 deleteCommentLoves,
-                postCommentLoves
+                postCommentLoves,
+                postCommentLovesSuccess,
+                deleteCommentLovesSuccess
             )
         }
     }
@@ -591,10 +612,27 @@ fun CommentItem(
     showReportCommentPopup: (Long) -> Unit,
     showDeleteCommentPopup: (Long) -> Unit,
     deleteCommentLoves: (Long) -> Unit,
-    postCommentLoves: (Long) -> Unit
+    postCommentLoves: (Long) -> Unit,
+    postCommentLovesSuccess:Boolean?,
+    deleteCommentLovesSuccess:Boolean?
 ) {
     var expanded by remember {
         mutableStateOf(false)
+    }
+    var lovedState by remember {
+        mutableStateOf(comment.heart)
+    }
+
+    LaunchedEffect(postCommentLovesSuccess) {
+        if (postCommentLovesSuccess == true) {
+            lovedState = !lovedState
+        }
+    }
+
+    LaunchedEffect(deleteCommentLovesSuccess) {
+        if (deleteCommentLovesSuccess == true) {
+            lovedState = !lovedState
+        }
     }
     Row(
         modifier = Modifier
@@ -636,9 +674,6 @@ fun CommentItem(
                 .padding(top = 3.dp, end = 6.dp, bottom = 8.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            var commentLikeState by remember {
-                mutableStateOf(comment.heart)
-            }
             Box(modifier = Modifier.align(Alignment.End)) {
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_three_dots_row),
@@ -661,7 +696,7 @@ fun CommentItem(
 
             Icon(
                 imageVector =
-                if (!commentLikeState) ImageVector.vectorResource(R.drawable.ic_heart_empty)
+                if (!lovedState) ImageVector.vectorResource(R.drawable.ic_heart_empty)
                 else ImageVector.vectorResource(R.drawable.ic_heart_filled),
                 contentDescription = null,
                 tint = Color.Unspecified,
@@ -669,12 +704,11 @@ fun CommentItem(
                     .padding(top = 5.dp)
                     .align(Alignment.End)
                     .noRippleClickable {
-                        if (commentLikeState) {
+                        if (lovedState) {
                             deleteCommentLoves(comment.commentId)
                         } else {
                             postCommentLoves(comment.commentId)
                         }
-                        commentLikeState = !commentLikeState
                     }
             )
             Text(

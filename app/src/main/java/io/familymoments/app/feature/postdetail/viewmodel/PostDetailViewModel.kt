@@ -154,7 +154,8 @@ class PostDetailViewModel @Inject constructor(
             onSuccess = {
                 _uiState.update {
                     it.copy(
-                        isSuccess = true
+                        isSuccess = true,
+                        postCommentLovesSuccess = true
                     )
                 }
             },
@@ -162,7 +163,8 @@ class PostDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isSuccess = false,
-                        errorMessage = throwable.message
+                        errorMessage = throwable.message,
+                        postCommentLovesSuccess = false
                     )
                 }
             }
@@ -175,7 +177,8 @@ class PostDetailViewModel @Inject constructor(
             onSuccess = {
                 _uiState.update {
                     it.copy(
-                        isSuccess = true
+                        isSuccess = true,
+                        deleteCommentLovesSuccess = true
                     )
                 }
             },
@@ -183,7 +186,8 @@ class PostDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isSuccess = false,
-                        errorMessage = throwable.message
+                        errorMessage = throwable.message,
+                        deleteCommentLovesSuccess = false
                     )
                 }
             }
@@ -196,7 +200,8 @@ class PostDetailViewModel @Inject constructor(
             onSuccess = {
                 _uiState.update {
                     it.copy(
-                        isSuccess = true
+                        isSuccess = true,
+                        postPostLovesSuccess = true
                     )
                 }
             },
@@ -204,7 +209,8 @@ class PostDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isSuccess = false,
-                        errorMessage = throwable.message
+                        errorMessage = throwable.message,
+                        postPostLovesSuccess = false
                     )
                 }
             }
@@ -217,7 +223,8 @@ class PostDetailViewModel @Inject constructor(
             onSuccess = {
                 _uiState.update {
                     it.copy(
-                        isSuccess = true
+                        isSuccess = true,
+                        deletePostLovesSuccess = true
                     )
                 }
             },
@@ -225,7 +232,8 @@ class PostDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isSuccess = false,
-                        errorMessage = throwable.message
+                        errorMessage = throwable.message,
+                        deletePostLovesSuccess = false
                     )
                 }
             }
@@ -299,7 +307,7 @@ class PostDetailViewModel @Inject constructor(
 
     fun checkPostDetailExist(value: GetPostDetailResult) = value != GetPostDetailResult()
 
-    fun makeCommentAvailable(){
+    fun makeCommentAvailable() {
         _uiState.update {
             it.copy(resetComment = false)
         }
