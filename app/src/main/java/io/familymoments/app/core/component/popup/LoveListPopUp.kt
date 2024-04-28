@@ -71,20 +71,12 @@ fun LoveListPopUp(
                 }
                 LazyColumn(modifier = Modifier.padding(vertical = 17.dp)) {
                     val modifier = Modifier.padding(horizontal = 13.dp, vertical = 6.dp)
-                    if (postLoves.isNotEmpty()){
+                    if (postLoves.isNotEmpty()) {
                         items(postLoves.size) {
                             LoveListItem(postLoves[it], modifier)
                             HorizontalDivider(thickness = 0.75.dp, color = AppColors.grey3)
                         }
-                    }else{
-                        item { Text(
-                            modifier = modifier,
-                            text = stringResource(R.string.love_list_popup_no_loves),
-                            style = AppTypography.LB1_13,
-                            color = AppColors.grey2
-                        ) }
                     }
-
                 }
             }
         }

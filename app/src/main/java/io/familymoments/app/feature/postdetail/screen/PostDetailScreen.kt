@@ -34,7 +34,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -66,6 +65,7 @@ import io.familymoments.app.core.network.dto.response.GetPostLovesResult
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.noRippleClickable
+import io.familymoments.app.core.util.oneClick
 import io.familymoments.app.feature.postdetail.component.postDetailContentShadow
 import io.familymoments.app.feature.postdetail.uistate.PostDetailPopupType
 import io.familymoments.app.feature.postdetail.uistate.PostDetailUiState
@@ -91,6 +91,7 @@ fun PostDetailScreen(
     val postDetail = uiState.postDetail
     val comments = uiState.comments
     val postLoves = uiState.postLoves
+    val pagerState = rememberPagerState(pageCount = { postDetail.imgs.size })
 
     LaunchedEffectShowPopup(
         popup,
@@ -100,8 +101,6 @@ fun PostDetailScreen(
         navigateToBack,
     )
     LaunchedEffectShowErrorMessage(uiState, context, viewModel::resetSuccess)
-
-    val pagerState = rememberPagerState(pageCount = { postDetail.imgs.size })
 
     LazyColumn {
         item {
@@ -258,7 +257,6 @@ fun LaunchedEffectShowPopup(
                     onDismissRequest = dismissPopup
                 )
             }
-
             null -> {}
         }
     }
@@ -369,28 +367,35 @@ fun PostContent(
     deletePostLovesSuccess: Boolean?,
     navigateToModify: () -> Unit,
 ) {
-    var expanded by remember {
-        mutableStateOf(false)
-    }
-
     var lovedState by remember {
         mutableStateOf(postInfo.loved)
     }
     var countLoveState by remember {
-        mutableIntStateOf(postInfo.countLove)
+        mutableStateOf(postInfo.countLove)
+    }
+    var expanded by remember {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(postInfo.loved){
+        lovedState = postInfo.loved
+    }
+
+    LaunchedEffect(postInfo.countLove){
+        countLoveState = postInfo.countLove
     }
 
     LaunchedEffect(postPostLovesSuccess) {
         if (postPostLovesSuccess == true) {
             countLoveState += 1
-            lovedState = !lovedState
+            lovedState = true
         }
     }
 
     LaunchedEffect(deletePostLovesSuccess) {
         if (deletePostLovesSuccess == true) {
             countLoveState -= 1
-            lovedState = !lovedState
+            lovedState = false
         }
     }
 
@@ -447,7 +452,7 @@ fun PostContent(
                     else ImageVector.vectorResource(R.drawable.ic_heart_filled),
                     contentDescription = null,
                     tint = Color.Unspecified,
-                    modifier = Modifier.noRippleClickable {
+                    modifier = Modifier.oneClick(1000) {
                         if (lovedState) {
                             deletePostLoves(postInfo.postId)
                         } else {
@@ -583,8 +588,8 @@ fun CommentItems(
     showDeleteCommentPopup: (Long) -> Unit,
     deleteCommentLoves: (Long) -> Unit,
     postCommentLoves: (Long) -> Unit,
-    postCommentLovesSuccess: Boolean?,
-    deleteCommentLovesSuccess: Boolean?
+    postCommentLovesSuccess: Boolean,
+    deleteCommentLovesSuccess: Boolean
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         comments.forEach {
@@ -611,8 +616,8 @@ fun CommentItem(
     showDeleteCommentPopup: (Long) -> Unit,
     deleteCommentLoves: (Long) -> Unit,
     postCommentLoves: (Long) -> Unit,
-    postCommentLovesSuccess: Boolean?,
-    deleteCommentLovesSuccess: Boolean?
+    postCommentLovesSuccess: Boolean,
+    deleteCommentLovesSuccess: Boolean
 ) {
     var expanded by remember {
         mutableStateOf(false)
@@ -621,14 +626,18 @@ fun CommentItem(
         mutableStateOf(comment.heart)
     }
 
+    LaunchedEffect(comment.heart){
+        lovedState = comment.heart
+    }
+
     LaunchedEffect(postCommentLovesSuccess) {
-        if (postCommentLovesSuccess == true) {
+        if (postCommentLovesSuccess) {
             lovedState = !lovedState
         }
     }
 
     LaunchedEffect(deleteCommentLovesSuccess) {
-        if (deleteCommentLovesSuccess == true) {
+        if (deleteCommentLovesSuccess) {
             lovedState = !lovedState
         }
     }
