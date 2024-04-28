@@ -50,7 +50,6 @@ import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import io.familymoments.app.R
@@ -91,7 +90,6 @@ fun PostDetailScreen(
     val postDetail = uiState.postDetail
     val comments = uiState.comments
     val postLoves = uiState.postLoves
-    val pagerState = rememberPagerState(pageCount = { postDetail.imgs.size })
 
     LaunchedEffectShowPopup(
         popup,
@@ -101,15 +99,76 @@ fun PostDetailScreen(
         navigateToBack,
     )
     LaunchedEffectShowErrorMessage(uiState, context, viewModel::resetSuccess)
+    PostDetailScreenUI(
+        modifier = modifier,
+        isPostDetailExist = viewModel.checkPostDetailExist(postDetail),
+        postDetail = postDetail,
+        formatPostCreatedDate = viewModel::formatPostCreatedDate,
+        showDeletePostPopup = viewModel::showDeletePostPopup,
+        showReportPostPopup = viewModel::showReportPostPopup,
+        deletePostLoves = viewModel::deletePostLoves,
+        postPostLoves = viewModel::postPostLoves,
+        postPostLovesSuccess = uiState.postPostLovesSuccess,
+        deletePostLovesSuccess = uiState.deletePostLovesSuccess,
+        navigateToPostModify  = navigateToModify,
+        comments = comments,
+        postComment = viewModel::postComment,
+        showLoveListPopup = viewModel::showLoveListPopup,
+        postLoves = postLoves,
+        resetComment = uiState.resetComment,
+        makeCommentAvailable = viewModel::makeCommentAvailable,
+        formatCommentCreatedDate = viewModel::formatCommentCreatedDate,
+        showReportCommentPopup = viewModel::showReportCommentPopup,
+        showDeleteCommentPopup = viewModel::showDeleteCommentPopup,
+        deleteCommentLoves = viewModel::deleteCommentLoves,
+        postCommentLoves = viewModel::postCommentLoves,
+        postCommentLovesSuccess = uiState.postCommentLovesSuccess,
+        deleteCommentLovesSuccess = uiState.deleteCommentLovesSuccess
+    )
+}
 
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun PostDetailScreenUI(
+    modifier: Modifier = Modifier,
+    isPostDetailExist:Boolean = true,
+    postDetail:GetPostDetailResult,
+    formatPostCreatedDate:(String)->String,
+    showDeletePostPopup:(Long)->Unit = {},
+    showReportPostPopup:(Long)->Unit = {},
+    deletePostLoves:(Long)->Unit={},
+    postPostLoves:(Long)->Unit={},
+    postPostLovesSuccess:Boolean = true,
+    deletePostLovesSuccess:Boolean = true,
+    navigateToPostModify: (GetPostDetailResult) -> Unit = {},
+    comments: List<GetCommentsResult>,
+    postComment:(Long, String) -> Unit = {_,_->},
+    showLoveListPopup:(List<GetPostLovesResult>)->Unit = {},
+    postLoves:List<GetPostLovesResult> = listOf(),
+    resetComment: Boolean = false,
+    makeCommentAvailable:()->Unit = {},
+    formatCommentCreatedDate: (String) -> String,
+    showReportCommentPopup:(Long)->Unit = {},
+    showDeleteCommentPopup:(Long)->Unit = {},
+    deleteCommentLoves:(Long)->Unit = {},
+    postCommentLoves:(Long)->Unit = {},
+    postCommentLovesSuccess:Boolean = true,
+    deleteCommentLovesSuccess:Boolean = true
+) {
+
+    val pagerState = rememberPagerState(pageCount = { postDetail.imgs.size })
     LazyColumn {
         item {
-            Column(modifier = modifier.padding(start = 16.dp, end = 16.dp, top = 26.dp, bottom = 63.dp)) {
-                if (viewModel.checkPostDetailExist(postDetail)) {
+            Column(
+                modifier = modifier.padding(
+                    start = 16.dp, end = 16.dp, top = 26.dp, bottom = 63.dp
+                )
+            ) {
+                if (isPostDetailExist) {
                     WriterInfo(
                         writer = postDetail.writer,
                         profileImg = postDetail.profileImg,
-                        createdAt = viewModel.formatPostCreatedDate(postDetail.createdAt),
+                        createdAt = formatPostCreatedDate(postDetail.createdAt),
                     )
                 }
                 Box(modifier = Modifier.postDetailContentShadow()) {
@@ -121,33 +180,33 @@ fun PostDetailScreen(
                         PostPhotos(postDetail.imgs, pagerState)
                         PostContent(
                             postDetail,
-                            viewModel::showDeletePostPopup,
-                            viewModel::showReportPostPopup,
-                            viewModel::deletePostLoves,
-                            viewModel::postPostLoves,
-                            uiState.postPostLovesSuccess,
-                            uiState.deletePostLovesSuccess
-                        ) { navigateToModify(postDetail) }
+                            showDeletePostPopup,
+                            showReportPostPopup,
+                            deletePostLoves,
+                            postPostLoves,
+                            postPostLovesSuccess,
+                            deletePostLovesSuccess
+                        ) { navigateToPostModify(postDetail) }
 
                         CommentTextField(
                             comments.size,
                             postDetail.postId,
-                            viewModel::postComment,
-                            viewModel::showLoveListPopup,
+                            postComment,
+                            showLoveListPopup,
                             postLoves,
-                            uiState.resetComment,
-                            viewModel::makeCommentAvailable
+                            resetComment,
+                            makeCommentAvailable
                         )
                         if (comments.isNotEmpty()) {
                             CommentItems(
                                 comments,
-                                viewModel::formatCommentCreatedDate,
-                                viewModel::showReportCommentPopup,
-                                viewModel::showDeleteCommentPopup,
-                                viewModel::deleteCommentLoves,
-                                viewModel::postCommentLoves,
-                                uiState.postCommentLovesSuccess,
-                                uiState.deleteCommentLovesSuccess
+                                formatCommentCreatedDate,
+                                showReportCommentPopup,
+                                showDeleteCommentPopup,
+                                deleteCommentLoves,
+                                postCommentLoves,
+                                postCommentLovesSuccess,
+                                deleteCommentLovesSuccess
                             )
                         }
 
@@ -157,7 +216,6 @@ fun PostDetailScreen(
             }
         }
     }
-
 }
 
 @Composable
@@ -257,6 +315,7 @@ fun LaunchedEffectShowPopup(
                     onDismissRequest = dismissPopup
                 )
             }
+
             null -> {}
         }
     }
@@ -377,11 +436,11 @@ fun PostContent(
         mutableStateOf(false)
     }
 
-    LaunchedEffect(postInfo.loved){
+    LaunchedEffect(postInfo.loved) {
         lovedState = postInfo.loved
     }
 
-    LaunchedEffect(postInfo.countLove){
+    LaunchedEffect(postInfo.countLove) {
         countLoveState = postInfo.countLove
     }
 
@@ -626,7 +685,7 @@ fun CommentItem(
         mutableStateOf(comment.heart)
     }
 
-    LaunchedEffect(comment.heart){
+    LaunchedEffect(comment.heart) {
         lovedState = comment.heart
     }
 
@@ -731,8 +790,22 @@ fun CommentItem(
 
 @Preview(showBackground = true)
 @Composable
-fun PostDetailPreview() {
-    PostDetailScreen(hiltViewModel(), 0, modifier = Modifier, {}) {}
+fun PostDetailScreenUIPreview() {
+    PostDetailScreenUI(
+        comments = List(10){
+            GetCommentsResult(
+                commentId = it.toLong(),
+                nickname = "nickname$it",
+                content = "content$it"
+            )
+        },
+        formatPostCreatedDate = {"2024-04-29"},
+        formatCommentCreatedDate = {"방금"},
+        postDetail = GetPostDetailResult(
+            writer = "nickname",
+            content = "content"
+        )
+    )
 }
 
 @Preview(showBackground = true)
