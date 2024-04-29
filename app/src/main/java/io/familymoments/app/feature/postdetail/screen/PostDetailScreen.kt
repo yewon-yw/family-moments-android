@@ -64,13 +64,11 @@ import io.familymoments.app.core.network.dto.response.GetPostLovesResult
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.noRippleClickable
-import io.familymoments.app.core.util.oneClick
 import io.familymoments.app.feature.postdetail.component.postDetailContentShadow
 import io.familymoments.app.feature.postdetail.uistate.PostDetailPopupType
 import io.familymoments.app.feature.postdetail.uistate.PostDetailUiState
 import io.familymoments.app.feature.postdetail.viewmodel.PostDetailViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostDetailScreen(
     viewModel: PostDetailViewModel,
@@ -106,11 +104,7 @@ fun PostDetailScreen(
         formatPostCreatedDate = viewModel::formatPostCreatedDate,
         showDeletePostPopup = viewModel::showDeletePostPopup,
         showReportPostPopup = viewModel::showReportPostPopup,
-        deletePostLoves = viewModel::deletePostLoves,
-        postPostLoves = viewModel::postPostLoves,
-        postPostLovesSuccess = uiState.postPostLovesSuccess,
-        deletePostLovesSuccess = uiState.deletePostLovesSuccess,
-        navigateToPostModify  = navigateToModify,
+        navigateToPostModify = navigateToModify,
         comments = comments,
         postComment = viewModel::postComment,
         showLoveListPopup = viewModel::showLoveListPopup,
@@ -120,10 +114,20 @@ fun PostDetailScreen(
         formatCommentCreatedDate = viewModel::formatCommentCreatedDate,
         showReportCommentPopup = viewModel::showReportCommentPopup,
         showDeleteCommentPopup = viewModel::showDeleteCommentPopup,
-        deleteCommentLoves = viewModel::deleteCommentLoves,
-        postCommentLoves = viewModel::postCommentLoves,
-        postCommentLovesSuccess = uiState.postCommentLovesSuccess,
-        deleteCommentLovesSuccess = uiState.deleteCommentLovesSuccess
+        onClickPostLoves = {
+            if (postDetail.loved) {
+                viewModel.deletePostLoves(it)
+            } else {
+                viewModel.postPostLoves(it)
+            }
+        },
+        onClickCommentLoves = { heart, id ->
+            if (heart) {
+                viewModel.deleteCommentLoves(id)
+            } else {
+                viewModel.postCommentLoves(id)
+            }
+        }
     )
 }
 
@@ -131,29 +135,23 @@ fun PostDetailScreen(
 @Composable
 fun PostDetailScreenUI(
     modifier: Modifier = Modifier,
-    isPostDetailExist:Boolean = true,
-    postDetail:GetPostDetailResult,
-    formatPostCreatedDate:(String)->String,
-    showDeletePostPopup:(Long)->Unit = {},
-    showReportPostPopup:(Long)->Unit = {},
-    deletePostLoves:(Long)->Unit={},
-    postPostLoves:(Long)->Unit={},
-    postPostLovesSuccess:Boolean = true,
-    deletePostLovesSuccess:Boolean = true,
+    isPostDetailExist: Boolean = true,
+    postDetail: GetPostDetailResult,
+    formatPostCreatedDate: (String) -> String,
+    showDeletePostPopup: (Long) -> Unit = {},
+    showReportPostPopup: (Long) -> Unit = {},
     navigateToPostModify: (GetPostDetailResult) -> Unit = {},
     comments: List<GetCommentsResult>,
-    postComment:(Long, String) -> Unit = {_,_->},
-    showLoveListPopup:(List<GetPostLovesResult>)->Unit = {},
-    postLoves:List<GetPostLovesResult> = listOf(),
+    postComment: (Long, String) -> Unit = { _, _ -> },
+    showLoveListPopup: (List<GetPostLovesResult>) -> Unit = {},
+    postLoves: List<GetPostLovesResult> = listOf(),
     resetComment: Boolean = false,
-    makeCommentAvailable:()->Unit = {},
+    makeCommentAvailable: () -> Unit = {},
     formatCommentCreatedDate: (String) -> String,
-    showReportCommentPopup:(Long)->Unit = {},
-    showDeleteCommentPopup:(Long)->Unit = {},
-    deleteCommentLoves:(Long)->Unit = {},
-    postCommentLoves:(Long)->Unit = {},
-    postCommentLovesSuccess:Boolean = true,
-    deleteCommentLovesSuccess:Boolean = true
+    showReportCommentPopup: (Long) -> Unit = {},
+    showDeleteCommentPopup: (Long) -> Unit = {},
+    onClickPostLoves: (Long) -> Unit = {},
+    onClickCommentLoves: (Boolean, Long) -> Unit = { _, _ -> },
 ) {
 
     val pagerState = rememberPagerState(pageCount = { postDetail.imgs.size })
@@ -182,10 +180,7 @@ fun PostDetailScreenUI(
                             postDetail,
                             showDeletePostPopup,
                             showReportPostPopup,
-                            deletePostLoves,
-                            postPostLoves,
-                            postPostLovesSuccess,
-                            deletePostLovesSuccess
+                            onClickPostLoves
                         ) { navigateToPostModify(postDetail) }
 
                         CommentTextField(
@@ -203,10 +198,7 @@ fun PostDetailScreenUI(
                                 formatCommentCreatedDate,
                                 showReportCommentPopup,
                                 showDeleteCommentPopup,
-                                deleteCommentLoves,
-                                postCommentLoves,
-                                postCommentLovesSuccess,
-                                deleteCommentLovesSuccess
+                                onClickCommentLoves,
                             )
                         }
 
@@ -420,42 +412,11 @@ fun PostContent(
     postInfo: GetPostDetailResult,
     showDeletePostPopup: (Long) -> Unit,
     showReportPostPopup: (Long) -> Unit,
-    deletePostLoves: (Long) -> Unit,
-    postPostLoves: (Long) -> Unit,
-    postPostLovesSuccess: Boolean?,
-    deletePostLovesSuccess: Boolean?,
+    onClickPostLoves: (Long) -> Unit,
     navigateToModify: () -> Unit,
 ) {
-    var loved by remember {
-        mutableStateOf(postInfo.loved)
-    }
-    var countLove by remember {
-        mutableStateOf(postInfo.countLove)
-    }
     var menuExpanded by remember {
         mutableStateOf(false)
-    }
-
-    LaunchedEffect(postInfo.loved) {
-        loved = postInfo.loved
-    }
-
-    LaunchedEffect(postInfo.countLove) {
-        countLove = postInfo.countLove
-    }
-
-    LaunchedEffect(postPostLovesSuccess) {
-        if (postPostLovesSuccess == true) {
-            countLove += 1
-            loved = true
-        }
-    }
-
-    LaunchedEffect(deletePostLovesSuccess) {
-        if (deletePostLovesSuccess == true) {
-            countLove -= 1
-            loved = false
-        }
     }
 
     Box {
@@ -507,21 +468,17 @@ fun PostContent(
 
                 Icon(
                     imageVector =
-                    if (!loved) ImageVector.vectorResource(R.drawable.ic_heart_empty)
+                    if (!postInfo.loved) ImageVector.vectorResource(R.drawable.ic_heart_empty)
                     else ImageVector.vectorResource(R.drawable.ic_heart_filled),
                     contentDescription = null,
                     tint = Color.Unspecified,
-                    modifier = Modifier.oneClick(1000) {
-                        if (loved) {
-                            deletePostLoves(postInfo.postId)
-                        } else {
-                            postPostLoves(postInfo.postId)
-                        }
+                    modifier = Modifier.noRippleClickable {
+                        onClickPostLoves(postInfo.postId)
                     }
                 )
                 Spacer(modifier = Modifier.height(3.dp))
                 Text(
-                    text = countLove.toString(),
+                    text = postInfo.countLove.toString(),
                     style = AppTypography.LB2_11,
                     color = AppColors.black2
                 )
@@ -645,10 +602,7 @@ fun CommentItems(
     formatCommentCreatedDate: (String) -> String,
     showReportCommentPopup: (Long) -> Unit,
     showDeleteCommentPopup: (Long) -> Unit,
-    deleteCommentLoves: (Long) -> Unit,
-    postCommentLoves: (Long) -> Unit,
-    postCommentLovesSuccess: Boolean,
-    deleteCommentLovesSuccess: Boolean
+    onClickCommentLoves: (Boolean, Long) -> Unit,
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         comments.forEach {
@@ -657,10 +611,7 @@ fun CommentItems(
                 formatCommentCreatedDate,
                 showReportCommentPopup,
                 showDeleteCommentPopup,
-                deleteCommentLoves,
-                postCommentLoves,
-                postCommentLovesSuccess,
-                deleteCommentLovesSuccess
+                onClickCommentLoves
             )
         }
     }
@@ -673,33 +624,12 @@ fun CommentItem(
     formatCommentCreatedDate: (String) -> String,
     showReportCommentPopup: (Long) -> Unit,
     showDeleteCommentPopup: (Long) -> Unit,
-    deleteCommentLoves: (Long) -> Unit,
-    postCommentLoves: (Long) -> Unit,
-    postCommentLovesSuccess: Boolean,
-    deleteCommentLovesSuccess: Boolean
+    onClickCommentLoves: (Boolean, Long) -> Unit
 ) {
-    var expanded by remember {
+    var menuExpanded by remember {
         mutableStateOf(false)
     }
-    var lovedState by remember {
-        mutableStateOf(comment.heart)
-    }
 
-    LaunchedEffect(comment.heart) {
-        lovedState = comment.heart
-    }
-
-    LaunchedEffect(postCommentLovesSuccess) {
-        if (postCommentLovesSuccess) {
-            lovedState = !lovedState
-        }
-    }
-
-    LaunchedEffect(deleteCommentLovesSuccess) {
-        if (deleteCommentLovesSuccess) {
-            lovedState = !lovedState
-        }
-    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -744,7 +674,7 @@ fun CommentItem(
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_three_dots_row),
                     contentDescription = null,
-                    modifier = Modifier.noRippleClickable { expanded = true },
+                    modifier = Modifier.noRippleClickable { menuExpanded = true },
                     tint = Color.Unspecified,
                 )
                 PostDropdownMenu(
@@ -756,13 +686,13 @@ fun CommentItem(
                             showDeleteCommentPopup(comment.commentId)
                         },
                     ),
-                    expanded = expanded
-                ) { expanded = it }
+                    expanded = menuExpanded
+                ) { menuExpanded = it }
             }
 
             Icon(
                 imageVector =
-                if (!lovedState) ImageVector.vectorResource(R.drawable.ic_heart_empty)
+                if (!comment.heart) ImageVector.vectorResource(R.drawable.ic_heart_empty)
                 else ImageVector.vectorResource(R.drawable.ic_heart_filled),
                 contentDescription = null,
                 tint = Color.Unspecified,
@@ -770,11 +700,7 @@ fun CommentItem(
                     .padding(top = 5.dp)
                     .align(Alignment.End)
                     .noRippleClickable {
-                        if (lovedState) {
-                            deleteCommentLoves(comment.commentId)
-                        } else {
-                            postCommentLoves(comment.commentId)
-                        }
+                        onClickCommentLoves(comment.heart, comment.commentId)
                     }
             )
             Text(
@@ -792,15 +718,15 @@ fun CommentItem(
 @Composable
 fun PostDetailScreenUIPreview() {
     PostDetailScreenUI(
-        comments = List(10){
+        comments = List(10) {
             GetCommentsResult(
                 commentId = it.toLong(),
                 nickname = "nickname$it",
                 content = "content$it"
             )
         },
-        formatPostCreatedDate = {"2024-04-29"},
-        formatCommentCreatedDate = {"방금"},
+        formatPostCreatedDate = { "2024-04-29" },
+        formatCommentCreatedDate = { "방금" },
         postDetail = GetPostDetailResult(
             writer = "nickname",
             content = "content"
