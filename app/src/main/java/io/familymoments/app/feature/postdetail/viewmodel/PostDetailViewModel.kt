@@ -1,7 +1,9 @@
 package io.familymoments.app.feature.postdetail.viewmodel
 
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
+import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.dto.response.GetPostDetailResult
 import io.familymoments.app.core.network.dto.response.GetPostLovesResult
 import io.familymoments.app.core.network.repository.CommentRepository
@@ -12,6 +14,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.Duration
 import java.time.LocalDate
@@ -23,11 +26,21 @@ import javax.inject.Inject
 @HiltViewModel
 class PostDetailViewModel @Inject constructor(
     private val postRepository: PostRepository,
-    private val commentRepository: CommentRepository
+    private val commentRepository: CommentRepository,
+    private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource,
 ) : BaseViewModel() {
 
     private val _uiState: MutableStateFlow<PostDetailUiState> = MutableStateFlow(PostDetailUiState())
     val uiState: StateFlow<PostDetailUiState> = _uiState.asStateFlow()
+
+    fun getNickname() {
+        viewModelScope.launch {
+            val nickname = userInfoPreferencesDataSource.loadUserProfile().nickName
+            _uiState.value = _uiState.value.copy(
+                userNickname = nickname,
+            )
+        }
+    }
 
     fun getPostDetail(index: Long) {
         async(

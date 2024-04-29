@@ -70,7 +70,6 @@ import io.familymoments.app.feature.postdetail.uistate.PostDetailPopupType
 import io.familymoments.app.feature.postdetail.uistate.PostDetailUiState
 import io.familymoments.app.feature.postdetail.viewmodel.PostDetailViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostDetailScreen(
     viewModel: PostDetailViewModel,
@@ -80,6 +79,7 @@ fun PostDetailScreen(
     navigateToModify: (GetPostDetailResult) -> Unit,
 ) {
     LaunchedEffect(Unit) {
+        viewModel.getNickname()
         viewModel.getPostDetail(index)
         viewModel.getComments(index)
         viewModel.getPostLoves(index)
@@ -88,9 +88,14 @@ fun PostDetailScreen(
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
     val popup = uiState.popup
     val postDetail = uiState.postDetail
-    val comments = uiState.comments
-    val postLoves = uiState.postLoves
 
+    LaunchedEffectSetUpData(
+        index,
+        viewModel::getNickname,
+        viewModel::getPostDetail,
+        viewModel::getComments,
+        viewModel::getPostLoves
+    )
     LaunchedEffectShowPopup(
         popup,
         viewModel::deletePost,
@@ -101,29 +106,22 @@ fun PostDetailScreen(
     LaunchedEffectShowErrorMessage(uiState, context, viewModel::resetSuccess)
     PostDetailScreenUI(
         modifier = modifier,
+        uiState = uiState,
         isPostDetailExist = viewModel.checkPostDetailExist(postDetail),
-        postDetail = postDetail,
         formatPostCreatedDate = viewModel::formatPostCreatedDate,
         showDeletePostPopup = viewModel::showDeletePostPopup,
         showReportPostPopup = viewModel::showReportPostPopup,
         deletePostLoves = viewModel::deletePostLoves,
         postPostLoves = viewModel::postPostLoves,
-        postPostLovesSuccess = uiState.postPostLovesSuccess,
-        deletePostLovesSuccess = uiState.deletePostLovesSuccess,
-        navigateToPostModify  = navigateToModify,
-        comments = comments,
+        navigateToPostModify = navigateToModify,
         postComment = viewModel::postComment,
         showLoveListPopup = viewModel::showLoveListPopup,
-        postLoves = postLoves,
-        resetComment = uiState.resetComment,
         makeCommentAvailable = viewModel::makeCommentAvailable,
         formatCommentCreatedDate = viewModel::formatCommentCreatedDate,
         showReportCommentPopup = viewModel::showReportCommentPopup,
         showDeleteCommentPopup = viewModel::showDeleteCommentPopup,
         deleteCommentLoves = viewModel::deleteCommentLoves,
         postCommentLoves = viewModel::postCommentLoves,
-        postCommentLovesSuccess = uiState.postCommentLovesSuccess,
-        deleteCommentLovesSuccess = uiState.deleteCommentLovesSuccess
     )
 }
 
@@ -131,32 +129,25 @@ fun PostDetailScreen(
 @Composable
 fun PostDetailScreenUI(
     modifier: Modifier = Modifier,
-    isPostDetailExist:Boolean = true,
-    postDetail:GetPostDetailResult,
-    formatPostCreatedDate:(String)->String,
-    showDeletePostPopup:(Long)->Unit = {},
-    showReportPostPopup:(Long)->Unit = {},
-    deletePostLoves:(Long)->Unit={},
-    postPostLoves:(Long)->Unit={},
-    postPostLovesSuccess:Boolean = true,
-    deletePostLovesSuccess:Boolean = true,
+    uiState: PostDetailUiState,
+    isPostDetailExist: Boolean = true,
+    formatPostCreatedDate: (String) -> String,
+    showDeletePostPopup: (Long) -> Unit = {},
+    showReportPostPopup: (Long) -> Unit = {},
+    deletePostLoves: (Long) -> Unit = {},
+    postPostLoves: (Long) -> Unit = {},
     navigateToPostModify: (GetPostDetailResult) -> Unit = {},
-    comments: List<GetCommentsResult>,
-    postComment:(Long, String) -> Unit = {_,_->},
-    showLoveListPopup:(List<GetPostLovesResult>)->Unit = {},
-    postLoves:List<GetPostLovesResult> = listOf(),
-    resetComment: Boolean = false,
-    makeCommentAvailable:()->Unit = {},
+    postComment: (Long, String) -> Unit = { _, _ -> },
+    showLoveListPopup: (List<GetPostLovesResult>) -> Unit = {},
+    makeCommentAvailable: () -> Unit = {},
     formatCommentCreatedDate: (String) -> String,
-    showReportCommentPopup:(Long)->Unit = {},
-    showDeleteCommentPopup:(Long)->Unit = {},
-    deleteCommentLoves:(Long)->Unit = {},
-    postCommentLoves:(Long)->Unit = {},
-    postCommentLovesSuccess:Boolean = true,
-    deleteCommentLovesSuccess:Boolean = true
+    showReportCommentPopup: (Long) -> Unit = {},
+    showDeleteCommentPopup: (Long) -> Unit = {},
+    deleteCommentLoves: (Long) -> Unit = {},
+    postCommentLoves: (Long) -> Unit = {},
 ) {
 
-    val pagerState = rememberPagerState(pageCount = { postDetail.imgs.size })
+    val pagerState = rememberPagerState(pageCount = { uiState.postDetail.imgs.size })
     LazyColumn {
         item {
             Column(
@@ -166,9 +157,9 @@ fun PostDetailScreenUI(
             ) {
                 if (isPostDetailExist) {
                     WriterInfo(
-                        writer = postDetail.writer,
-                        profileImg = postDetail.profileImg,
-                        createdAt = formatPostCreatedDate(postDetail.createdAt),
+                        writer = uiState.postDetail.writer,
+                        profileImg = uiState.postDetail.profileImg,
+                        createdAt = formatPostCreatedDate(uiState.postDetail.createdAt),
                     )
                 }
                 Box(modifier = Modifier.postDetailContentShadow()) {
@@ -177,36 +168,38 @@ fun PostDetailScreenUI(
                             .clip(shape = RoundedCornerShape(10.dp))
                             .background(AppColors.grey6)
                     ) {
-                        PostPhotos(postDetail.imgs, pagerState)
+                        PostPhotos(uiState.postDetail.imgs, pagerState)
                         PostContent(
-                            postDetail,
+                            uiState.userNickname,
+                            uiState.postDetail,
                             showDeletePostPopup,
                             showReportPostPopup,
                             deletePostLoves,
                             postPostLoves,
-                            postPostLovesSuccess,
-                            deletePostLovesSuccess
-                        ) { navigateToPostModify(postDetail) }
+                            uiState.postPostLovesSuccess,
+                            uiState.deletePostLovesSuccess
+                        ) { navigateToPostModify(uiState.postDetail) }
 
                         CommentTextField(
-                            comments.size,
-                            postDetail.postId,
+                            uiState.comments.size,
+                            uiState.postDetail.postId,
                             postComment,
                             showLoveListPopup,
-                            postLoves,
-                            resetComment,
+                            uiState.postLoves,
+                            uiState.resetComment,
                             makeCommentAvailable
                         )
-                        if (comments.isNotEmpty()) {
+                        if (uiState.comments.isNotEmpty()) {
                             CommentItems(
-                                comments,
+                                uiState.userNickname,
+                                uiState.comments,
                                 formatCommentCreatedDate,
                                 showReportCommentPopup,
                                 showDeleteCommentPopup,
                                 deleteCommentLoves,
                                 postCommentLoves,
-                                postCommentLovesSuccess,
-                                deleteCommentLovesSuccess
+                                uiState.postCommentLovesSuccess,
+                                uiState.deleteCommentLovesSuccess
                             )
                         }
 
@@ -215,6 +208,22 @@ fun PostDetailScreenUI(
 
             }
         }
+    }
+}
+
+@Composable
+fun LaunchedEffectSetUpData(
+    index:Long,
+    getNickname:()->Unit,
+    getPostDetail:(Long)->Unit,
+    getComments:(Long)->Unit,
+    getPostLoves:(Long) ->Unit
+){
+    LaunchedEffect(Unit) {
+        getNickname()
+        getPostDetail(index)
+        getComments(index)
+        getPostLoves(index)
     }
 }
 
@@ -417,6 +426,7 @@ fun PostPhotos(imgs: List<String>, pagerState: PagerState) {
 
 @Composable
 fun PostContent(
+    userNickname: String,
     postInfo: GetPostDetailResult,
     showDeletePostPopup: (Long) -> Unit,
     showReportPostPopup: (Long) -> Unit,
@@ -488,7 +498,8 @@ fun PostContent(
                         }
                     )
                     PostDropdownMenu(
-                        items = listOf(
+                        items =
+                        if (userNickname == postInfo.writer) listOf(
                             Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify)) {
                                 navigateToModify()
                             },
@@ -497,6 +508,10 @@ fun PostContent(
                             },
                             Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_delete)) {
                                 showDeletePostPopup(postInfo.postId)
+                            },
+                        ) else listOf(
+                            Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {
+                                showReportPostPopup(postInfo.postId)
                             },
                         ),
                         expanded = expanded
@@ -641,6 +656,7 @@ fun CommentTextField(
 
 @Composable
 fun CommentItems(
+    userNickname: String,
     comments: List<GetCommentsResult>,
     formatCommentCreatedDate: (String) -> String,
     showReportCommentPopup: (Long) -> Unit,
@@ -653,6 +669,7 @@ fun CommentItems(
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         comments.forEach {
             CommentItem(
+                userNickname,
                 it,
                 formatCommentCreatedDate,
                 showReportCommentPopup,
@@ -669,6 +686,7 @@ fun CommentItems(
 
 @Composable
 fun CommentItem(
+    userNickname: String,
     comment: GetCommentsResult,
     formatCommentCreatedDate: (String) -> String,
     showReportCommentPopup: (Long) -> Unit,
@@ -744,16 +762,23 @@ fun CommentItem(
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_three_dots_row),
                     contentDescription = null,
-                    modifier = Modifier.noRippleClickable { expanded = true },
+                    modifier = Modifier.noRippleClickable {
+                        expanded = true
+                    },
                     tint = Color.Unspecified,
                 )
                 PostDropdownMenu(
-                    items = listOf(
+                    items =
+                    if (userNickname == comment.nickname) listOf(
                         Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {
                             showReportCommentPopup(comment.commentId)
                         },
                         Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_delete)) {
                             showDeleteCommentPopup(comment.commentId)
+                        },
+                    ) else listOf(
+                        Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {
+                            showReportCommentPopup(comment.commentId)
                         },
                     ),
                     expanded = expanded
@@ -792,19 +817,21 @@ fun CommentItem(
 @Composable
 fun PostDetailScreenUIPreview() {
     PostDetailScreenUI(
-        comments = List(10){
-            GetCommentsResult(
-                commentId = it.toLong(),
-                nickname = "nickname$it",
-                content = "content$it"
-            )
-        },
-        formatPostCreatedDate = {"2024-04-29"},
-        formatCommentCreatedDate = {"방금"},
-        postDetail = GetPostDetailResult(
-            writer = "nickname",
-            content = "content"
-        )
+        uiState = PostDetailUiState(
+            postDetail = GetPostDetailResult(
+                writer = "nickname",
+                content = "content"
+            ),
+            comments = List(10) {
+                GetCommentsResult(
+                    commentId = it.toLong(),
+                    nickname = "nickname$it",
+                    content = "content$it"
+                )
+            }
+        ),
+        formatPostCreatedDate = { "2024-04-29" },
+        formatCommentCreatedDate = { "방금" },
     )
 }
 

@@ -66,13 +66,13 @@ fun CalendarDayScreen(
             mutableStateOf(!lazyListState.canScrollForward)
         }
     }
-
     LaunchedEffectShowPopup(popup, viewModel::deletePost, viewModel::dismissPopup)
     LaunchedEffectLoadMorePostsIfScrolledToLast(isScrolledToLast, viewModel::loadMorePostsByDay)
 
     CalendarDayUI(
         lazyListState = lazyListState,
         modifier = modifier,
+        userNickname = calendarDayUiState.userNickname,
         hasNoPost = hasNoPost,
         posts = posts,
         initialDate = initialDate,
@@ -162,6 +162,7 @@ private fun LaunchedEffectShowPopup(popup: PostPopupType?, deletePost: (Long) ->
 private fun CalendarDayUI(
     lazyListState: LazyListState,
     modifier: Modifier = Modifier,
+    userNickname:String,
     hasNoPost: Boolean,
     posts: List<Post>,
     initialDate: LocalDate,
@@ -211,6 +212,7 @@ private fun CalendarDayUI(
                 )
                 { post ->
                     PostItem(
+                        userNickname = userNickname,
                         post = post,
                         navigateToPostDetail = navigateToPostDetail,
                         navigateToEditPost = {
@@ -279,6 +281,7 @@ private fun CalendarHeader(
 fun CalendarDayScreenPreview() {
     val lazyListState = rememberLazyListState()
     CalendarDayUI(
+        userNickname = "test0",
         lazyListState = lazyListState,
         hasNoPost = false,
         posts = List(10) {
