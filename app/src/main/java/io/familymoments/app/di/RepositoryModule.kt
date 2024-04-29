@@ -69,8 +69,8 @@ object RepositoryModule {
 
     @Provides
     @Singleton
-    fun provideFamilyRepository(familyService: FamilyService): FamilyRepository {
-        return FamilyRepositoryImpl(familyService)
+    fun provideFamilyRepository(familyService: FamilyService,  userInfoPreferencesDataSource: UserInfoPreferencesDataSource,): FamilyRepository {
+        return FamilyRepositoryImpl(familyService, userInfoPreferencesDataSource)
     }
 
 }

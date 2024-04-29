@@ -15,7 +15,8 @@ data class PostDetailUiState(
     val deletePostLovesSuccess:Boolean = false,
     val postCommentLovesSuccess:Boolean = false,
     val deleteCommentLovesSuccess:Boolean = false,
-    val popup: PostDetailPopupType? = null
+    val popup: PostDetailPopupType? = null,
+    val userNickname:String = ""
 )
 
 sealed interface PostDetailPopupType {
