@@ -1,22 +1,18 @@
 package io.familymoments.app.feature.joiningfamily.viewmodel
 
-import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
-import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.feature.joiningfamily.uistate.JoinFamilyUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class JoinFamilyViewModel @Inject constructor(
-    private val familyRepository: FamilyRepository,
-    private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
+    private val familyRepository: FamilyRepository
 ) : BaseViewModel() {
 
     private val _joinFamilyUiState: MutableStateFlow<JoinFamilyUiState> = MutableStateFlow(JoinFamilyUiState())
@@ -59,7 +55,6 @@ class JoinFamilyViewModel @Inject constructor(
                 familyRepository.joinFamily(familyId)
             },
             onSuccess = { response ->
-                saveFamilyId(familyId)
                 _joinFamilyUiState.update {
                     it.copy(
                         joinFamilyExecuteUiState = it.joinFamilyExecuteUiState.copy(
@@ -82,12 +77,6 @@ class JoinFamilyViewModel @Inject constructor(
                 }
             }
         )
-    }
-
-    private fun saveFamilyId(familyId: Long) {
-        viewModelScope.launch {
-            userInfoPreferencesDataSource.saveFamilyId(familyId)
-        }
     }
 
     fun resetJoinFamilyExecuteSuccess() {
