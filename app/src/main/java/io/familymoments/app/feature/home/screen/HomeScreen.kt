@@ -43,6 +43,7 @@ import io.familymoments.app.core.component.popup.ReportPopUp
 import io.familymoments.app.core.network.dto.response.Post
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.feature.home.uistate.HomeUiState
 import io.familymoments.app.feature.home.uistate.PostPopupType
 import io.familymoments.app.feature.home.viewmodel.HomeViewModel
 
@@ -56,10 +57,6 @@ fun HomeScreen(
 ) {
     val homeUiState = viewModel.homeUiState.collectAsStateWithLifecycle().value
     val posts = homeUiState.posts
-    val isLoading = homeUiState.isLoading
-    val hasNoPost = homeUiState.hasNoPost
-    val nickname = homeUiState.nickname
-    val dday = homeUiState.dday
     val popup = homeUiState.popup
 
     val lazyListState = rememberLazyListState()
@@ -78,11 +75,7 @@ fun HomeScreen(
     HomeScreenUI(
         lazyListState = lazyListState,
         modifier = modifier,
-        isLoading = isLoading,
-        hasNoPost = hasNoPost,
-        nickname = nickname,
-        dday = dday,
-        posts = posts,
+        homeUiState = homeUiState,
         navigateToPostDetail = navigateToPostDetail,
         navigateToPostEdit = navigateToPostEdit,
         deletePostLoves = viewModel::deletePostLoves,
@@ -182,11 +175,7 @@ private fun LaunchedEffectLoadMorePostsIfScrolledToLast(isScrolledToLast: Boolea
 fun HomeScreenUI(
     lazyListState: LazyListState,
     modifier: Modifier = Modifier,
-    isLoading: Boolean?,
-    hasNoPost: Boolean,
-    nickname: String,
-    dday: String,
-    posts: List<Post>,
+    homeUiState: HomeUiState,
     navigateToPostDetail: (Int) -> Unit = {},
     navigateToPostEdit: (Post) -> Unit = {},
     deletePostLoves: (Long) -> Unit = {},
@@ -194,7 +183,7 @@ fun HomeScreenUI(
     showDeletePostPopup: (Long) -> Unit = {},
     showReportPostPopup: (Long) -> Unit = {}
 ) {
-    if (isLoading != false) {
+    if (homeUiState.isLoading != false) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
@@ -206,11 +195,11 @@ fun HomeScreenUI(
             )
         }
     } else {
-        if (hasNoPost) {
+        if (homeUiState.hasNoPost) {
             Column(
                 modifier = modifier.padding(horizontal = 16.dp),
             ) {
-                HomeScreenTitle(hasNoPost = true, nickname = nickname, dday = dday)
+                HomeScreenTitle(hasNoPost = true, nickname = homeUiState.nickname, dday = homeUiState.dday)
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
@@ -237,10 +226,10 @@ fun HomeScreenUI(
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp)
             ) {
                 item {
-                    HomeScreenTitle(hasNoPost = false, nickname = nickname, dday = dday)
+                    HomeScreenTitle(hasNoPost = false, nickname = homeUiState.nickname, dday = homeUiState.dday)
                 }
                 items(
-                    items = posts,
+                    items = homeUiState.posts,
                     key = { it.postId }
                 ) { post ->
                     PostItem(
@@ -317,10 +306,9 @@ fun HomeScreenTitle(
 @Composable
 fun HomeScreenPreview() {
     val lazyListState = rememberLazyListState()
-    HomeScreenUI(
-        lazyListState = lazyListState,
+    val homeUiState = HomeUiState(
+        isSuccess = true,
         isLoading = false,
-        hasNoPost = false,
         nickname = "test",
         dday = "1",
         posts = List(10) {
@@ -334,5 +322,9 @@ fun HomeScreenPreview() {
                 loved = false
             )
         }
+    )
+    HomeScreenUI(
+        lazyListState = lazyListState,
+        homeUiState = homeUiState
     )
 }
