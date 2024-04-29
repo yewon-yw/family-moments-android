@@ -1,84 +1,108 @@
 package io.familymoments.app.feature.joiningfamily.viewmodel
 
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
+import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.feature.joiningfamily.uistate.JoinFamilyUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class JoinFamilyViewModel @Inject constructor(
-    private val familyRepository: FamilyRepository
+    private val familyRepository: FamilyRepository,
+    private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
 ) : BaseViewModel() {
 
     private val _joinFamilyUiState: MutableStateFlow<JoinFamilyUiState> = MutableStateFlow(JoinFamilyUiState())
     val joinFamilyUiState: StateFlow<JoinFamilyUiState> = _joinFamilyUiState.asStateFlow()
 
-    fun searchFamilyByInviteLink(inviteLink: String) {
+    fun searchFamily(inviteLink: String) {
         async(
             operation = {
                 familyRepository.searchFamilyByInviteLink(inviteLink)
             },
-            onSuccess = {
-                val newSearchFamilyByInviteLinkUiState = _joinFamilyUiState.value.searchFamilyByInviteLinkUiState.copy(
-                    isSuccess = true,
-                    isLoading = isLoading.value,
-                    result = it.result
-                )
-                _joinFamilyUiState.value = _joinFamilyUiState.value.copy(
-                    searchFamilyByInviteLinkUiState = newSearchFamilyByInviteLinkUiState
-                )
+            onSuccess = { response ->
+                _joinFamilyUiState.update {
+                    it.copy(
+                        searchFamilyByInviteLinkUiState = it.searchFamilyByInviteLinkUiState.copy(
+                            isSuccess = true,
+                            isLoading = isLoading.value,
+                            result = response.result
+                        )
+                    )
+                }
             },
-            onFailure = {
-                val newSearchFamilyByInviteLinkUiState = _joinFamilyUiState.value.searchFamilyByInviteLinkUiState.copy(
-                    isSuccess = false,
-                    isLoading = isLoading.value,
-                    errorMessage = it.message
-                )
-                _joinFamilyUiState.value = _joinFamilyUiState.value.copy(
-                    searchFamilyByInviteLinkUiState = newSearchFamilyByInviteLinkUiState
-                )
+            onFailure = { throwable ->
+                _joinFamilyUiState.update {
+                    it.copy(
+                        searchFamilyByInviteLinkUiState = it.searchFamilyByInviteLinkUiState.copy(
+                            isSuccess = false,
+                            isLoading = isLoading.value,
+                            errorMessage = throwable.message
+                        )
+                    )
+                }
             }
         )
     }
 
-    fun joinFamily(familyId: Long) {
+    fun joinFamily() {
+        val familyId = _joinFamilyUiState.value.selectedFamilyId ?: throw IllegalStateException()
         async(
             operation = {
                 familyRepository.joinFamily(familyId)
             },
-            onSuccess = {
-                val newJoinFamilyExecuteUiState = _joinFamilyUiState.value.joinFamilyExecuteUiState.copy(
-                    isSuccess = true,
-                    isLoading = isLoading.value,
-                    result = it.result
-                )
-                _joinFamilyUiState.value = _joinFamilyUiState.value.copy(
-                    joinFamilyExecuteUiState = newJoinFamilyExecuteUiState
-                )
+            onSuccess = { response ->
+                saveFamilyId(familyId)
+                _joinFamilyUiState.update {
+                    it.copy(
+                        joinFamilyExecuteUiState = it.joinFamilyExecuteUiState.copy(
+                            isSuccess = true,
+                            isLoading = isLoading.value,
+                            result = response.result
+                        )
+                    )
+                }
             },
-            onFailure = {
-                val newJoinFamilyExecuteUiState = _joinFamilyUiState.value.joinFamilyExecuteUiState.copy(
-                    isSuccess = false,
-                    isLoading = isLoading.value,
-                    errorMessage = it.message
-                )
-                _joinFamilyUiState.value = _joinFamilyUiState.value.copy(
-                    joinFamilyExecuteUiState = newJoinFamilyExecuteUiState
-                )
+            onFailure = { throwable ->
+                _joinFamilyUiState.update {
+                    it.copy(
+                        joinFamilyExecuteUiState = it.joinFamilyExecuteUiState.copy(
+                            isSuccess = false,
+                            isLoading = isLoading.value,
+                            errorMessage = throwable.message
+                        )
+                    )
+                }
             }
         )
     }
 
+    private fun saveFamilyId(familyId: Long) {
+        viewModelScope.launch {
+            userInfoPreferencesDataSource.saveFamilyId(familyId)
+        }
+    }
+
     fun resetJoinFamilyExecuteSuccess() {
-        val newJoinFamilyExecuteUiState = _joinFamilyUiState.value.joinFamilyExecuteUiState.copy(
-            isSuccess = null
-        )
-        _joinFamilyUiState.value = _joinFamilyUiState.value.copy(
-            joinFamilyExecuteUiState = newJoinFamilyExecuteUiState
-        )
+        _joinFamilyUiState.update {
+            it.copy(
+                joinFamilyExecuteUiState = it.joinFamilyExecuteUiState.copy(
+                    isSuccess = null
+                )
+            )
+        }
+    }
+
+    fun updateSelectedFamilyId(familyId: Long?) {
+        _joinFamilyUiState.update {
+            it.copy(selectedFamilyId = familyId)
+        }
     }
 }
