@@ -2,6 +2,8 @@ package io.familymoments.app.feature.postdetail.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
+import io.familymoments.app.core.network.HttpResponseMessage.NO_COMMENTS_404
+import io.familymoments.app.core.network.HttpResponseMessage.NO_POST_LOVES_404
 import io.familymoments.app.core.network.dto.response.GetPostDetailResult
 import io.familymoments.app.core.network.dto.response.GetPostLovesResult
 import io.familymoments.app.core.network.repository.CommentRepository
@@ -63,7 +65,14 @@ class PostDetailViewModel @Inject constructor(
                 }
             },
             onFailure = { throwable ->
-                if (throwable.message != ERROR_MESSAGE_NO_POST_COMMENTS) {
+                if (throwable.message == NO_COMMENTS_404) {
+                    _uiState.update {
+                        it.copy(
+                            errorMessage = throwable.message,
+                            comments = listOf()
+                        )
+                    }
+                } else {
                     _uiState.update {
                         it.copy(
                             isSuccess = false,
@@ -88,7 +97,14 @@ class PostDetailViewModel @Inject constructor(
                 }
             },
             onFailure = { throwable ->
-                if (throwable.message != ERROR_MESSAGE_NO_POST_LOVES) {
+                if (throwable.message == NO_POST_LOVES_404) {
+                    _uiState.update {
+                        it.copy(
+                            errorMessage = throwable.message,
+                            postLoves = listOf()
+                        )
+                    }
+                } else {
                     _uiState.update {
                         it.copy(
                             isSuccess = false,
@@ -135,6 +151,7 @@ class PostDetailViewModel @Inject constructor(
                     )
                 }
                 getComments(_uiState.value.postDetail.postId)
+
             },
             onFailure = { throwable ->
                 _uiState.update {
@@ -354,10 +371,5 @@ class PostDetailViewModel @Inject constructor(
             durationSeconds < oneYear -> "${durationSeconds / oneMonth}달 전"
             else -> "${durationSeconds / oneYear}년 전"
         }
-    }
-
-    companion object {
-        private const val ERROR_MESSAGE_NO_POST_LOVES = "좋아요가 존재하지 않습니다."
-        private const val ERROR_MESSAGE_NO_POST_COMMENTS = "댓글이 존재하지 않습니다."
     }
 }
