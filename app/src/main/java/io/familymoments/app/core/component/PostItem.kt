@@ -223,7 +223,7 @@ private fun PostItemContent(
                     modifier = Modifier.noRippleClickable { onClickPostLoves() }
                 )
                 Spacer(modifier = Modifier.height(3.dp))
-                Text(text = "0", style = AppTypography.LB2_11, color = AppColors.black1)
+                Text(text = post.countLove.toString(), style = AppTypography.LB2_11, color = AppColors.black1)
             }
         }
     }
@@ -248,6 +248,7 @@ fun PostItemPreview() {
             createdAt = "2023-03-12",
             content = "test",
             imgs = listOf(""),
+            countLove = 0,
             loved = false
         ),
         navigateToPostDetail = {},

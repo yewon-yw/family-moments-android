@@ -426,35 +426,35 @@ fun PostContent(
     deletePostLovesSuccess: Boolean?,
     navigateToModify: () -> Unit,
 ) {
-    var lovedState by remember {
+    var loved by remember {
         mutableStateOf(postInfo.loved)
     }
-    var countLoveState by remember {
+    var countLove by remember {
         mutableStateOf(postInfo.countLove)
     }
-    var expanded by remember {
+    var menuExpanded by remember {
         mutableStateOf(false)
     }
 
     LaunchedEffect(postInfo.loved) {
-        lovedState = postInfo.loved
+        loved = postInfo.loved
     }
 
     LaunchedEffect(postInfo.countLove) {
-        countLoveState = postInfo.countLove
+        countLove = postInfo.countLove
     }
 
     LaunchedEffect(postPostLovesSuccess) {
         if (postPostLovesSuccess == true) {
-            countLoveState += 1
-            lovedState = true
+            countLove += 1
+            loved = true
         }
     }
 
     LaunchedEffect(deletePostLovesSuccess) {
         if (deletePostLovesSuccess == true) {
-            countLoveState -= 1
-            lovedState = false
+            countLove -= 1
+            loved = false
         }
     }
 
@@ -484,7 +484,7 @@ fun PostContent(
                         tint = AppColors.deepPurple1,
                         contentDescription = null,
                         modifier = Modifier.noRippleClickable {
-                            expanded = true
+                            menuExpanded = true
                         }
                     )
                     PostDropdownMenu(
@@ -499,20 +499,20 @@ fun PostContent(
                                 showDeletePostPopup(postInfo.postId)
                             },
                         ),
-                        expanded = expanded
-                    ) { expanded = it }
+                        expanded = menuExpanded
+                    ) { menuExpanded = it }
                 }
 
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Icon(
                     imageVector =
-                    if (!lovedState) ImageVector.vectorResource(R.drawable.ic_heart_empty)
+                    if (!loved) ImageVector.vectorResource(R.drawable.ic_heart_empty)
                     else ImageVector.vectorResource(R.drawable.ic_heart_filled),
                     contentDescription = null,
                     tint = Color.Unspecified,
                     modifier = Modifier.oneClick(1000) {
-                        if (lovedState) {
+                        if (loved) {
                             deletePostLoves(postInfo.postId)
                         } else {
                             postPostLoves(postInfo.postId)
@@ -521,7 +521,7 @@ fun PostContent(
                 )
                 Spacer(modifier = Modifier.height(3.dp))
                 Text(
-                    text = countLoveState.toString(),
+                    text = countLove.toString(),
                     style = AppTypography.LB2_11,
                     color = AppColors.black2
                 )
