@@ -2,9 +2,11 @@ package io.familymoments.app.feature.postdetail.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
+import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.dto.response.GetPostDetailResult
 import io.familymoments.app.core.network.dto.response.GetPostLovesResult
 import io.familymoments.app.core.network.repository.CommentRepository
+import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.feature.postdetail.uistate.PostDetailPopupType
 import io.familymoments.app.feature.postdetail.uistate.PostDetailUiState
@@ -23,11 +25,33 @@ import javax.inject.Inject
 @HiltViewModel
 class PostDetailViewModel @Inject constructor(
     private val postRepository: PostRepository,
-    private val commentRepository: CommentRepository
+    private val commentRepository: CommentRepository,
+    private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource,
+    private val familyRepository: FamilyRepository
 ) : BaseViewModel() {
 
     private val _uiState: MutableStateFlow<PostDetailUiState> = MutableStateFlow(PostDetailUiState())
     val uiState: StateFlow<PostDetailUiState> = _uiState.asStateFlow()
+
+    fun getNickname(){
+        async(
+            operation = {
+                val familyId = userInfoPreferencesDataSource.loadFamilyId()
+                familyRepository.getNicknameDday(familyId)
+            },
+            onSuccess = {
+                _uiState.value = _uiState.value.copy(
+                    isSuccess = true,
+                    userNickname = it.result.nickname,
+                )
+            },
+            onFailure = {
+                _uiState.value = _uiState.value.copy(
+                    isSuccess = false,
+                )
+            }
+        )
+    }
 
     fun getPostDetail(index: Long) {
         async(

@@ -5,6 +5,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.graph.Route
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
+import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.feature.calendar.uistate.CalendarDayUiState
 import io.familymoments.app.feature.home.uistate.PostPopupType
@@ -19,7 +20,8 @@ import javax.inject.Inject
 class CalendarDayViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
     private val postRepository: PostRepository,
-    private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
+    private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource,
+    private val familyRepository: FamilyRepository
 ) : BaseViewModel() {
 
     private val initialLocalDate = LocalDate.parse(savedStateHandle.get<String>(Route.CalendarDay.localDateStringArgs))
@@ -31,9 +33,30 @@ class CalendarDayViewModel @Inject constructor(
 
     init {
         getPostsByDay()
+        getNickname()
     }
 
-    fun getPostsByDay() {
+    private fun getNickname(){
+        async(
+            operation = {
+                val familyId = userInfoPreferencesDataSource.loadFamilyId()
+                familyRepository.getNicknameDday(familyId)
+            },
+            onSuccess = {
+                _calendarDayUiState.value = _calendarDayUiState.value.copy(
+                    isSuccess = true,
+                    userNickname = it.result.nickname,
+                )
+            },
+            onFailure = {
+                _calendarDayUiState.value = _calendarDayUiState.value.copy(
+                    isSuccess = false,
+                )
+            }
+        )
+    }
+
+    private fun getPostsByDay() {
         Timber.d("getPostsByDay")
         val selectedDate = _calendarDayUiState.value.selectedDate
         val year = selectedDate.year

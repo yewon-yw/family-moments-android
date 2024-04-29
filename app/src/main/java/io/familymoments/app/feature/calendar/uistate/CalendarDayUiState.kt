@@ -13,7 +13,8 @@ data class CalendarDayUiState(
     val errorMessage: String? = null,
     val selectedDate: LocalDate = LocalDate.now(),
     val posts: List<Post> = emptyList(),
-    val popup:PostPopupType? = null
+    val popup:PostPopupType? = null,
+    val userNickname:String = ""
 ) {
     val hasNoPost = errorMessage == NO_POST_404
 }
