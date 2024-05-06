@@ -21,7 +21,9 @@ fun FMButton(
     onClick: () -> Unit,
     text: String,
     enabled: Boolean = true,
-    radius: Dp = 60.dp
+    radius: Dp = 60.dp,
+    contentModifier:Modifier = Modifier.padding(vertical = 6.dp),
+    contentPaddingValues: PaddingValues = PaddingValues(vertical = 4.dp, horizontal = 18.dp)
 ) {
     Button(
         onClick = onClick,
@@ -32,11 +34,11 @@ fun FMButton(
             disabledContainerColor = AppColors.grey3
         ),
         shape = RoundedCornerShape(radius),
-        contentPadding = PaddingValues(vertical = 4.dp, horizontal = 18.dp)
+        contentPadding = contentPaddingValues
     ) {
         Text(
             text = text,
-            modifier = Modifier.padding(vertical = 6.dp),
+            modifier = contentModifier,
             style = AppTypography.BTN4_18,
             color = Color.White
         )

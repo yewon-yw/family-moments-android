@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,8 +27,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -67,7 +66,9 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.FMVisualTransformation
+import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.bottomnav.activity.MainActivity
+import io.familymoments.app.feature.forgotpassword.activity.ForgotPasswordActivity
 import io.familymoments.app.feature.login.uistate.LoginUiState
 import io.familymoments.app.feature.login.viewmodel.LoginViewModel
 import io.familymoments.app.feature.signup.activity.SignUpActivity
@@ -80,6 +81,9 @@ fun LoginScreen(viewModel: LoginViewModel) {
     val context = LocalContext.current
     val goToJoin = {
         context.startActivity(Intent(context, SignUpActivity::class.java))
+    }
+    val goToForgotPassword = {
+        context.startActivity(Intent(context, ForgotPasswordActivity::class.java))
     }
 
     LaunchedEffect(loginUiState.value.isSuccess) {
@@ -97,7 +101,13 @@ fun LoginScreen(viewModel: LoginViewModel) {
             color = AppColors.deepPurple1
         )
     }) {
-        LoginScreen(login = viewModel::loginUser, loginUiState.value, goToJoin, viewModel::updateSuccessNull)
+        LoginScreen(
+            login = viewModel::loginUser,
+            loginUiState = loginUiState.value,
+            goToJoin = goToJoin,
+            updateSuccessNull = viewModel::updateSuccessNull,
+            goToForgotPassword = goToForgotPassword
+        )
     }
 }
 
@@ -107,7 +117,8 @@ private fun LoginScreen(
     login: (String, String) -> Unit,
     loginUiState: LoginUiState,
     goToJoin: () -> Unit,
-    updateSuccessNull: () -> Unit
+    updateSuccessNull: () -> Unit,
+    goToForgotPassword: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -123,7 +134,10 @@ private fun LoginScreen(
             loginUiState = loginUiState,
             updateSuccessNull = updateSuccessNull
         )
-        LoginOption(goToJoin)
+        LoginOption(
+           goToJoin =  goToJoin,
+            goToForgotPassword = goToForgotPassword
+        )
         SocialLogin()
     }
 }
@@ -281,7 +295,10 @@ fun LoginFormRoundedCornerTextField(
 }
 
 @Composable
-fun LoginOption(goToJoin: () -> Unit) {
+fun LoginOption(
+    goToJoin: () -> Unit,
+    goToForgotPassword: () -> Unit
+) {
     Row(
         modifier = Modifier
             .height(IntrinsicSize.Min)
@@ -294,31 +311,30 @@ fun LoginOption(goToJoin: () -> Unit) {
             style = AppTypography.BTN6_13
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Divider(
-            color = AppColors.grey2,
-            modifier =
-            Modifier
+        HorizontalDivider(
+            modifier = Modifier
                 .fillMaxHeight()
                 .width(1.dp),
+            color = AppColors.grey2
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
+            modifier = Modifier.noRippleClickable { goToForgotPassword() },
             text = stringResource(id = R.string.login_forgot_pw),
             fontSize = 13.sp,
             color = AppColors.grey2,
             style = AppTypography.BTN6_13
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Divider(
-            color = AppColors.grey2,
-            modifier =
-            Modifier
+        HorizontalDivider(
+            modifier = Modifier
                 .fillMaxHeight()
                 .width(1.dp),
+            color = AppColors.grey2
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            modifier = Modifier.clickable {
+            modifier = Modifier.noRippleClickable {
                 goToJoin()
             },
             text = stringResource(id = R.string.login_signup),
@@ -335,7 +351,7 @@ fun SocialLogin() {
         modifier = Modifier.padding(top = 23.dp, start = 17.dp, end = 17.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Divider(
+        HorizontalDivider(
             modifier = Modifier
                 .weight(1f)
                 .height(1.dp)
@@ -349,7 +365,7 @@ fun SocialLogin() {
             fontSize = 13.sp,
             style = AppTypography.BTN6_13
         )
-        Divider(
+        HorizontalDivider(
             modifier = Modifier
                 .weight(1f)
                 .height(1.dp)
@@ -372,7 +388,8 @@ private fun LoginScreenPreview() {
             login = { _, _ -> },
             loginUiState = LoginUiState(),
             goToJoin = {},
-            updateSuccessNull = {}
+            updateSuccessNull = {},
+            goToForgotPassword = {}
         )
     }
 }
