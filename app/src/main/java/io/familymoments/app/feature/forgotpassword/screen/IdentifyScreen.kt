@@ -116,7 +116,7 @@ fun IdentifyScreenUI(
             text = stringResource(id = R.string.next),
             modifier = Modifier.fillMaxWidth(),
             contentPaddingValues = PaddingValues(top = 20.dp, bottom = 18.dp),
-            contentModifier = Modifier
+            textModifier = Modifier
         )
 
         if (!textFieldFocused) {

@@ -13,7 +13,7 @@ fun NavGraphBuilder.forgotPasswordGraph(navController: NavController) {
         IdentifyScreen(hiltViewModel()) { navController.navigate(ForgotPasswordRoute.VERIFY.name) }
     }
     composable(ForgotPasswordRoute.VERIFY.name) {
-        VerifyScreen { navController.navigate(ForgotPasswordRoute.RESET.name) }
+        VerifyScreen(hiltViewModel()) { navController.navigate(ForgotPasswordRoute.RESET.name) }
     }
     composable(ForgotPasswordRoute.RESET.name) {
         ResetScreen {}
