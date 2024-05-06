@@ -53,8 +53,8 @@ class AddPostViewModel @Inject constructor(
     }
 
     suspend fun addPost(content: String, files: List<File>) {
-        val imagesMultipart = files.mapIndexed { index, file ->
-            createImageMultiPart(file, "img${index + 1}")
+        val imagesMultipart = files.map { file ->
+            createImageMultiPart(file, "imgs")
         }
         async(
             operation = {
@@ -77,11 +77,11 @@ class AddPostViewModel @Inject constructor(
         )
     }
 
-    fun editPost(index:Long, content: String,files: List<File> ){
+    fun editPost(index: Long, content: String, files: List<File>) {
         async(
             operation = {
                 val imagesMultipart = files.mapIndexed { index, file ->
-                    createImageMultiPart(file, "img${index + 1}")
+                    createImageMultiPart(file, "imgs")
                 }
                 postRepository.editPost(index, content, imagesMultipart)
             },
