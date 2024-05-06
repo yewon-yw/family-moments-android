@@ -17,13 +17,13 @@ import io.familymoments.app.R
 import io.familymoments.app.core.component.AppBarScreen
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.feature.forgotpassword.viewmodel.ForgotPasswordViewModel
+import io.familymoments.app.feature.forgotpassword.viewmodel.IdentifyViewModel
 import io.familymoments.app.feature.forgotpassword.graph.ForgotPasswordRoute
 import io.familymoments.app.feature.forgotpassword.graph.forgotPasswordGraph
 
 @ExperimentalMaterial3Api
 @Composable
-fun ForgotPasswordScreen(viewModel: ForgotPasswordViewModel) {
+fun ForgotPasswordScreen(viewModel: IdentifyViewModel) {
     val navController = rememberNavController()
     val context = LocalContext.current
     AppBarScreen(

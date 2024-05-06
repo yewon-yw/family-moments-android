@@ -10,12 +10,14 @@ import io.familymoments.app.core.network.dto.request.CheckIdExistRequest
 import io.familymoments.app.core.network.dto.request.LoginRequest
 import io.familymoments.app.core.network.dto.request.ModifyPasswordRequest
 import io.familymoments.app.core.network.dto.request.ProfileEditRequest
+import io.familymoments.app.core.network.dto.request.SendEmailRequest
 import io.familymoments.app.core.network.dto.response.CheckIdExistResponse
 import io.familymoments.app.core.network.dto.response.LoginResponse
 import io.familymoments.app.core.network.dto.response.LogoutResponse
 import io.familymoments.app.core.network.dto.response.ModifyPasswordResponse
 import io.familymoments.app.core.network.dto.response.ProfileEditResponse
 import io.familymoments.app.core.network.dto.response.SearchMemberResponse
+import io.familymoments.app.core.network.dto.response.SendEmailResponse
 import io.familymoments.app.core.network.dto.response.UserProfileResponse
 import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.core.util.DEFAULT_FAMILY_ID_VALUE
@@ -182,6 +184,25 @@ class UserRepositoryImpl @Inject constructor(
             val response = userService.checkIdExist(CheckIdExistRequest(userId))
             if (response.code() == HttpResponse.SUCCESS) {
                 val responseBody = response.body() ?: CheckIdExistResponse()
+                if (responseBody.isSuccess) {
+                    emit(Resource.Success(responseBody))
+                } else {
+                    emit(Resource.Fail(Throwable(responseBody.message)))
+                }
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun sendEmail(name: String, email: String): Flow<Resource<SendEmailResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = userService.sendEmail(SendEmailRequest(name, email))
+            if (response.code() == HttpResponse.SUCCESS) {
+                val responseBody = response.body() ?: SendEmailResponse()
                 if (responseBody.isSuccess) {
                     emit(Resource.Success(responseBody))
                 } else {

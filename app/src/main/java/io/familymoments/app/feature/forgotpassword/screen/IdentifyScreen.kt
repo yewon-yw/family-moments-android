@@ -29,12 +29,12 @@ import io.familymoments.app.core.component.FMButton
 import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.feature.forgotpassword.uistate.ForgotPasswordUiState
-import io.familymoments.app.feature.forgotpassword.viewmodel.ForgotPasswordViewModel
+import io.familymoments.app.feature.forgotpassword.uistate.IdentifyUiState
+import io.familymoments.app.feature.forgotpassword.viewmodel.IdentifyViewModel
 
 
 @Composable
-fun IdentifyScreen(viewModel: ForgotPasswordViewModel, navigate: () -> Unit) {
+fun IdentifyScreen(viewModel: IdentifyViewModel, navigate: () -> Unit) {
     var id by remember { mutableStateOf(TextFieldValue()) }
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
     val context = LocalContext.current
@@ -56,7 +56,7 @@ fun IdentifyScreen(viewModel: ForgotPasswordViewModel, navigate: () -> Unit) {
 @Composable
 fun LaunchedEffectWithSuccess(
     context: Context,
-    uiState: ForgotPasswordUiState,
+    uiState: IdentifyUiState,
     resetSuccess: () -> Unit,
     navigate: () -> Unit
 ) {

@@ -4,12 +4,14 @@ import io.familymoments.app.core.network.dto.request.CheckIdExistRequest
 import io.familymoments.app.core.network.dto.request.LoginRequest
 import io.familymoments.app.core.network.dto.request.ModifyPasswordRequest
 import io.familymoments.app.core.network.dto.request.ProfileEditRequest
+import io.familymoments.app.core.network.dto.request.SendEmailRequest
 import io.familymoments.app.core.network.dto.response.CheckIdExistResponse
 import io.familymoments.app.core.network.dto.response.LoginResponse
 import io.familymoments.app.core.network.dto.response.LogoutResponse
 import io.familymoments.app.core.network.dto.response.ModifyPasswordResponse
 import io.familymoments.app.core.network.dto.response.ProfileEditResponse
 import io.familymoments.app.core.network.dto.response.SearchMemberResponse
+import io.familymoments.app.core.network.dto.response.SendEmailResponse
 import io.familymoments.app.core.network.dto.response.UserProfileResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -56,4 +58,7 @@ interface UserService {
 
     @POST("/users/auth/check-id")
     suspend fun checkIdExist(@Body checkIdExistRequest: CheckIdExistRequest):Response<CheckIdExistResponse>
+
+    @POST("/users/auth/send-email")
+    suspend fun sendEmail(@Body sendEmailRequest: SendEmailRequest):Response<SendEmailResponse>
 }

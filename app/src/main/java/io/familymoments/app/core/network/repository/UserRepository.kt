@@ -9,6 +9,7 @@ import io.familymoments.app.core.network.dto.response.LogoutResponse
 import io.familymoments.app.core.network.dto.response.ModifyPasswordResponse
 import io.familymoments.app.core.network.dto.response.ProfileEditResponse
 import io.familymoments.app.core.network.dto.response.SearchMemberResponse
+import io.familymoments.app.core.network.dto.response.SendEmailResponse
 import io.familymoments.app.core.network.dto.response.UserProfileResponse
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
@@ -35,4 +36,6 @@ interface UserRepository {
     ): Flow<Resource<ProfileEditResponse>>
 
     suspend fun checkIdExist(userId: String):Flow<Resource<CheckIdExistResponse>>
+
+    suspend fun sendEmail(name:String, email:String):Flow<Resource<SendEmailResponse>>
 }

@@ -1,5 +1,7 @@
 package io.familymoments.app.feature.forgotpassword.screen
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -12,28 +14,37 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.FMButton
 import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
-import io.familymoments.app.feature.forgotpassword.viewmodel.ForgotPasswordViewModel
+import io.familymoments.app.feature.forgotpassword.uistate.SendEmailUiState
+import io.familymoments.app.feature.forgotpassword.viewmodel.VerifyViewModel
 
 @Composable
-fun VerifyScreen(viewModel: ForgotPasswordViewModel, navigate: () -> Unit) {
+fun VerifyScreen(viewModel: VerifyViewModel, navigate: () -> Unit) {
     var name by remember { mutableStateOf(TextFieldValue()) }
     var email by remember { mutableStateOf(TextFieldValue()) }
     var certifyNumber by remember { mutableStateOf(TextFieldValue()) }
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+    val sendEmailUiState = uiState.sendEmailUiState
+    val context = LocalContext.current
+
+    LaunchedEffectWithSendEmailUiState(context, sendEmailUiState, viewModel::resetSendEmailSuccess)
 
     VerifyScreenUI(
         name = name,
@@ -42,9 +53,22 @@ fun VerifyScreen(viewModel: ForgotPasswordViewModel, navigate: () -> Unit) {
         onNameChanged = { name = it },
         onEmailChanged = { email = it },
         onCertifyNumberChanged = { certifyNumber = it },
+        sendEmail = { viewModel.sendEmail(name.text, email.text) },
         navigate = {}
     )
 
+}
+
+@Composable
+fun LaunchedEffectWithSendEmailUiState(context: Context, uiState: SendEmailUiState, resetSuccess: () -> Unit) {
+    LaunchedEffect(uiState.isSuccess) {
+        if (uiState.isSuccess == true) {
+            Toast.makeText(context, uiState.result, Toast.LENGTH_SHORT).show()
+        } else if (uiState.isSuccess == false) {
+            Toast.makeText(context, uiState.message, Toast.LENGTH_SHORT).show()
+        }
+        resetSuccess()
+    }
 }
 
 @Composable
@@ -55,6 +79,7 @@ fun VerifyScreenUI(
     onNameChanged: (TextFieldValue) -> Unit,
     onEmailChanged: (TextFieldValue) -> Unit,
     onCertifyNumberChanged: (TextFieldValue) -> Unit,
+    sendEmail: () -> Unit,
     navigate: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
@@ -106,7 +131,7 @@ fun VerifyScreenUI(
                         .weight(1f),
                 )
                 FMButton(
-                    onClick = {},
+                    onClick = { sendEmail() },
                     text = stringResource(id = R.string.forgot_password_btn_cert),
                     modifier = Modifier.padding(start = 8.dp),
                     radius = 10.dp,
@@ -149,9 +174,9 @@ fun VerifyScreenUIPreview() {
             certifyNumber = certifyNumber,
             onNameChanged = { name = it },
             onEmailChanged = { email = it },
-            onCertifyNumberChanged = { certifyNumber = it }
-        ) {
-
-        }
+            onCertifyNumberChanged = { certifyNumber = it },
+            sendEmail = {},
+            navigate = {}
+        )
     }
 }

@@ -1,6 +1,6 @@
 package io.familymoments.app.feature.forgotpassword.uistate
 
-data class ForgotPasswordUiState(
+data class IdentifyUiState(
     val isSuccess:Boolean? = null,
     val message:String = ""
 )
