@@ -15,8 +15,8 @@ sealed class FamilySettingNavItem(
         R.string.family_setting_label_modify_family_info
     )
 
-    data object InviteFamilyLink : FamilySettingNavItem(
-        FamilySettingRoute.INVITE_FAMILY_LINK.name,
+    data object FamilyInvitationLink : FamilySettingNavItem(
+        FamilySettingRoute.FAMILY_INVITATION_LINK.name,
         R.drawable.ic_family_setting_invite_family_link,
         R.string.family_setting_label_invite_family_link
     )
@@ -60,7 +60,7 @@ sealed class FamilySettingNavItem(
 
 enum class FamilySettingRoute {
     MODIFY_FAMILY_INFO,
-    INVITE_FAMILY_LINK,
+    FAMILY_INVITATION_LINK,
     ADD_FAMILY_MEMBER,
     CHANGE_UPLOAD_CYCLE,
     TRANSFER_FAMILY_PERMISSION,

@@ -9,7 +9,7 @@ fun NavGraphBuilder.familySettingGraph(navController: NavController) {
     composable(FamilySettingNavItem.ModifyFamilyInfo.route) {
         // 가족 정보 수정
     }
-    composable(FamilySettingNavItem.InviteFamilyLink.route) {
+    composable(FamilySettingNavItem.FamilyInvitationLink.route) {
         // 가족 초대 링크
     }
     composable (FamilySettingNavItem.AddFamilyMember.route) {

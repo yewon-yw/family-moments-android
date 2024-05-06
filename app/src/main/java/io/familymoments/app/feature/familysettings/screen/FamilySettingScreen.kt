@@ -103,7 +103,7 @@ fun FamilySettingItem(
 private object FamilySetting {
     val items = listOf(
         FamilySettingNavItem.ModifyFamilyInfo,
-        FamilySettingNavItem.InviteFamilyLink,
+        FamilySettingNavItem.FamilyInvitationLink,
         FamilySettingNavItem.AddFamilyMember,
         FamilySettingNavItem.ChangeUploadCycle,
         FamilySettingNavItem.TransferFamilyPermission,
