@@ -1,8 +1,10 @@
 package io.familymoments.app.core.network.api
 
+import io.familymoments.app.core.network.dto.request.CheckIdExistRequest
 import io.familymoments.app.core.network.dto.request.LoginRequest
 import io.familymoments.app.core.network.dto.request.ModifyPasswordRequest
 import io.familymoments.app.core.network.dto.request.ProfileEditRequest
+import io.familymoments.app.core.network.dto.response.CheckIdExistResponse
 import io.familymoments.app.core.network.dto.response.LoginResponse
 import io.familymoments.app.core.network.dto.response.LogoutResponse
 import io.familymoments.app.core.network.dto.response.ModifyPasswordResponse
@@ -51,4 +53,7 @@ interface UserService {
         @Part("PatchProfileReqRes") profileEditRequest: ProfileEditRequest,
         @Part profileImg: MultipartBody.Part
     ): Response<ProfileEditResponse>
+
+    @POST("/users/auth/check-id")
+    suspend fun checkIdExist(@Body checkIdExistRequest: CheckIdExistRequest):Response<CheckIdExistResponse>
 }

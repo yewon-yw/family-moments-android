@@ -6,9 +6,11 @@ import io.familymoments.app.core.network.HttpResponse
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.UserService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
+import io.familymoments.app.core.network.dto.request.CheckIdExistRequest
 import io.familymoments.app.core.network.dto.request.LoginRequest
 import io.familymoments.app.core.network.dto.request.ModifyPasswordRequest
 import io.familymoments.app.core.network.dto.request.ProfileEditRequest
+import io.familymoments.app.core.network.dto.response.CheckIdExistResponse
 import io.familymoments.app.core.network.dto.response.LoginResponse
 import io.familymoments.app.core.network.dto.response.LogoutResponse
 import io.familymoments.app.core.network.dto.response.ModifyPasswordResponse
@@ -168,6 +170,25 @@ class UserRepositoryImpl @Inject constructor(
                 emit(Resource.Success(responseBody))
             } else {
                 emit(Resource.Fail(Throwable(responseBody.message)))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun checkIdExist(userId: String): Flow<Resource<CheckIdExistResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = userService.checkIdExist(CheckIdExistRequest(userId))
+            if (response.code() == HttpResponse.SUCCESS) {
+                val responseBody = response.body() ?: CheckIdExistResponse()
+                if (responseBody.isSuccess) {
+                    emit(Resource.Success(responseBody))
+                } else {
+                    emit(Resource.Fail(Throwable(responseBody.message)))
+                }
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
             }
         }.catch { e ->
             emit(Resource.Fail(e))

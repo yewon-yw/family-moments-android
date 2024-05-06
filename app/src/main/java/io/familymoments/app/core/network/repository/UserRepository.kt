@@ -3,6 +3,7 @@ package io.familymoments.app.core.network.repository
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.dto.request.ModifyPasswordRequest
 import io.familymoments.app.core.network.dto.request.ProfileEditRequest
+import io.familymoments.app.core.network.dto.response.CheckIdExistResponse
 import io.familymoments.app.core.network.dto.response.LoginResponse
 import io.familymoments.app.core.network.dto.response.LogoutResponse
 import io.familymoments.app.core.network.dto.response.ModifyPasswordResponse
@@ -32,4 +33,6 @@ interface UserRepository {
         profileEditRequest: ProfileEditRequest,
         profileImg: MultipartBody.Part
     ): Flow<Resource<ProfileEditResponse>>
+
+    suspend fun checkIdExist(userId: String):Flow<Resource<CheckIdExistResponse>>
 }
