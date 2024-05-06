@@ -80,7 +80,7 @@ class AddPostViewModel @Inject constructor(
     fun editPost(index: Long, content: String, files: List<File>) {
         async(
             operation = {
-                val imagesMultipart = files.mapIndexed { index, file ->
+                val imagesMultipart = files.map { file ->
                     createImageMultiPart(file, "imgs")
                 }
                 postRepository.editPost(index, content, imagesMultipart)
