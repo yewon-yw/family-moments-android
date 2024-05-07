@@ -28,28 +28,28 @@ class AddPostViewModel @Inject constructor(
     private val editImages: Array<String> = savedStateHandle[Route.EditPost.editImagesArg] ?: arrayOf()
     private val editContent: String = savedStateHandle[Route.EditPost.editContentArg] ?: ""
 
-    private val _uiState = MutableStateFlow(
-        AddPostUiState(
-            mode = when (mode) {
-                AddPostMode.ADD.mode -> AddPostMode.ADD
-                else -> AddPostMode.EDIT
-            },
-            existPostUiState = ExistPostUiState(
-                editPostId = editPostId,
-                editImages = editImages.toList(),
-                editContent = editContent
-            )
-        )
-    )
+    private val _uiState = MutableStateFlow(AddPostUiState())
     val uiState = _uiState.asStateFlow()
 
     init {
-        // 문자열에서 공백, 대괄호 제거
-        val regex = Regex("[\\[\\] ]")
-        val editImages = this.editImages.getOrNull(0)?.replace(regex, "")?.split(",") ?: listOf()
         _uiState.update {
-            it.copy(existPostUiState = it.existPostUiState.copy(editImages = editImages))
+            it.copy(
+                mode = when (mode) {
+                    AddPostMode.ADD.mode -> AddPostMode.ADD
+                    else -> AddPostMode.EDIT
+                },
+                existPostUiState = ExistPostUiState(
+                    editPostId = editPostId,
+                    editImages = getEditImagesUrlList(this.editImages),
+                    editContent = editContent
+                )
+            )
         }
+    }
+
+    private fun getEditImagesUrlList(editImages: Array<String>): List<String> {
+        val regex = Regex("[\\[\\] ]")  // 문자열에서 공백, 대괄호 제거
+        return editImages.getOrNull(0)?.replace(regex, "")?.split(",") ?: listOf()
     }
 
     suspend fun addPost(content: String, files: List<File>) {

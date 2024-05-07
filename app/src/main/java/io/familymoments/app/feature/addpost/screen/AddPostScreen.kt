@@ -47,7 +47,6 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.buildAnnotatedString
@@ -64,7 +63,6 @@ import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.FileUtil
 import io.familymoments.app.core.util.POST_PHOTO_MAX_SIZE
 import io.familymoments.app.core.util.keyboardAsState
-import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.core.util.oneClick
 import io.familymoments.app.feature.addpost.AddPostMode
 import io.familymoments.app.feature.addpost.AddPostMode.ADD
@@ -90,12 +88,9 @@ fun AddPostScreen(
     val scope = rememberCoroutineScope()
     val isKeyboardOpen by keyboardAsState()
     val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
 
     AddPostScreenUI(
-        modifier = modifier.noRippleClickable {
-            keyboardController?.hide()
-        },
+        modifier = modifier,
         modeEnum = addPostUiState.mode,
         focusManager = focusManager,
         uriList = uriList,
