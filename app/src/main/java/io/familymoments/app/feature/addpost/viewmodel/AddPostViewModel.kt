@@ -13,6 +13,7 @@ import io.familymoments.app.feature.addpost.uistate.ExistPostUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
 
@@ -53,6 +54,13 @@ class AddPostViewModel @Inject constructor(
     }
 
     suspend fun addPost(content: String, files: List<File>) {
+
+        for (file in files) {
+            // 이미지 크기 Log 출력
+            val size = file.length() / 1024
+            Timber.tag("Image").i("Image Size: $size KB")
+        }
+
         val imagesMultipart = files.map { file ->
             createImageMultiPart(file, "imgs")
         }

@@ -7,9 +7,7 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
@@ -22,20 +20,16 @@ object FileUtil {
     private const val URI_SCHEME_HTTPS = "https"
     private const val URI_SCHEME_CONTENT = "content"
 
-    suspend fun imageFilesResize(
+    fun imageFilesResize(
         context: Context,
         uriList: List<Uri>
     ): List<File> {
         val pathHashMap = hashMapOf<Int, String?>()
 
-        CoroutineScope(Dispatchers.IO).launch {
-            uriList.forEachIndexed { index, uri ->
-                launch {
-                    val path = optimizeBitmap(context, uri, index)
-                    pathHashMap[index] = path
-                }
-            }
-        }.join()
+        uriList.forEachIndexed { index, uri ->
+            val path = optimizeBitmap(context, uri, index)
+            pathHashMap[index] = path
+        }
 
         return pathHashMap.map { File(it.value!!) }
     }
@@ -52,14 +46,18 @@ object FileUtil {
 
     private fun optimizeBitmap(context: Context, uri: Uri, index: Int): String? {
         try {
-            val tempFile = File(context.cacheDir, "image$index.jpg")
+            val tempFile = File(context.cacheDir, "image$index.webp")
             tempFile.createNewFile() // 임시 파일 생성
 
             // 지정된 이름을 가진 파일에 쓸 파일 출력 스트림을 만든다.
             val fos = FileOutputStream(tempFile)
 
             convertUriToBitmap(uri, context).apply {
-                compress(Bitmap.CompressFormat.JPEG, COMPRESS_QUALITY, fos)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    compress(Bitmap.CompressFormat.WEBP_LOSSY, COMPRESS_QUALITY, fos)
+                } else {
+                    compress(Bitmap.CompressFormat.WEBP, COMPRESS_QUALITY, fos)
+                }
                 recycle()
             }
 
@@ -103,17 +101,15 @@ object FileUtil {
     }
 
     fun convertBitmapToFile(bitmap: Bitmap, context: Context): File {
-        val file = File(context.cacheDir, "image.jpg")
+        val file = File(context.cacheDir, "image.webp")
         file.outputStream().use { outputStream ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESS_QUALITY, outputStream)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, COMPRESS_QUALITY, outputStream)
+            } else {
+                bitmap.compress(Bitmap.CompressFormat.WEBP, COMPRESS_QUALITY, outputStream)
+            }
         }
         return file
     }
 
-    fun resizeBitmap(bitmap: Bitmap, density: Float, height: Int): Bitmap {
-        val aspectRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
-        val desiredHeightPx = (height.toFloat() * density).roundToInt()
-        val scaledWidthPx = (desiredHeightPx * aspectRatio).roundToInt()
-        return Bitmap.createScaledBitmap(bitmap, scaledWidthPx, desiredHeightPx, true)
-    }
 }
