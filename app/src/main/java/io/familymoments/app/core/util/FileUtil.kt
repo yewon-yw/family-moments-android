@@ -13,7 +13,6 @@ import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
-import kotlin.math.roundToInt
 
 object FileUtil {
     private const val COMPRESS_QUALITY = 50
@@ -56,6 +55,7 @@ object FileUtil {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                     compress(Bitmap.CompressFormat.WEBP_LOSSY, COMPRESS_QUALITY, fos)
                 } else {
+                    @Suppress("DEPRECATION")
                     compress(Bitmap.CompressFormat.WEBP, COMPRESS_QUALITY, fos)
                 }
                 recycle()
@@ -100,15 +100,29 @@ object FileUtil {
         return bitmap ?: throw NullPointerException()
     }
 
-    fun convertBitmapToFile(bitmap: Bitmap, context: Context): File {
+    fun convertBitmapToCompressedFile(bitmap: Bitmap, context: Context): File {
         val file = File(context.cacheDir, "image.webp")
         file.outputStream().use { outputStream ->
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
                 bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, COMPRESS_QUALITY, outputStream)
             } else {
+                @Suppress("DEPRECATION")
                 bitmap.compress(Bitmap.CompressFormat.WEBP, COMPRESS_QUALITY, outputStream)
             }
         }
+        return file
+    }
+
+    fun uriToFile(uri: Uri, index: Int): File {
+        val url = URL(uri.toString())
+        val inputStream = url.openConnection().getInputStream()
+        val file = File.createTempFile("temp$index", ".webp")
+        inputStream?.let { input ->
+            file.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+        inputStream?.close()
         return file
     }
 
