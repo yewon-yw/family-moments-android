@@ -29,9 +29,11 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.FMButton
 import io.familymoments.app.core.component.FMTextField
+import io.familymoments.app.core.component.LoadingIndicator
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
+import io.familymoments.app.feature.forgotpassword.uistate.FindPwdUiState
 import io.familymoments.app.feature.forgotpassword.uistate.SendEmailUiState
 import io.familymoments.app.feature.forgotpassword.viewmodel.VerifyViewModel
 
@@ -42,9 +44,12 @@ fun VerifyScreen(viewModel: VerifyViewModel, navigate: () -> Unit) {
     var certifyNumber by remember { mutableStateOf(TextFieldValue()) }
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
     val sendEmailUiState = uiState.sendEmailUiState
+    val findPwdUiState = uiState.findPwdUiState
     val context = LocalContext.current
 
     LaunchedEffectWithSendEmailUiState(context, sendEmailUiState, viewModel::resetSendEmailSuccess)
+    LaunchedEffectWithFindPwdUiState(context, findPwdUiState, navigate, viewModel::resetFindPwdSuccess)
+    ShowLoading(sendEmailUiState)
 
     VerifyScreenUI(
         name = name,
@@ -54,9 +59,8 @@ fun VerifyScreen(viewModel: VerifyViewModel, navigate: () -> Unit) {
         onEmailChanged = { email = it },
         onCertifyNumberChanged = { certifyNumber = it },
         sendEmail = { viewModel.sendEmail(name.text, email.text) },
-        navigate = {}
+        verify = { viewModel.findPwd(name.text, email.text, certifyNumber.text) }
     )
-
 }
 
 @Composable
@@ -72,6 +76,31 @@ fun LaunchedEffectWithSendEmailUiState(context: Context, uiState: SendEmailUiSta
 }
 
 @Composable
+fun LaunchedEffectWithFindPwdUiState(
+    context: Context,
+    uiState: FindPwdUiState,
+    navigate: () -> Unit,
+    resetSuccess: () -> Unit
+) {
+    LaunchedEffect(uiState.isSuccess) {
+        if (uiState.isSuccess == true) {
+            Toast.makeText(context, uiState.result, Toast.LENGTH_SHORT).show()
+            navigate()
+        } else if (uiState.isSuccess == false) {
+            Toast.makeText(context, uiState.message, Toast.LENGTH_SHORT).show()
+        }
+        resetSuccess()
+    }
+}
+
+@Composable
+fun ShowLoading(uiState: SendEmailUiState) {
+    if (uiState.isLoading == true) {
+        LoadingIndicator(isLoading = true)
+    }
+}
+
+@Composable
 fun VerifyScreenUI(
     name: TextFieldValue,
     email: TextFieldValue,
@@ -80,7 +109,7 @@ fun VerifyScreenUI(
     onEmailChanged: (TextFieldValue) -> Unit,
     onCertifyNumberChanged: (TextFieldValue) -> Unit,
     sendEmail: () -> Unit,
-    navigate: () -> Unit
+    verify: () -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
         Column(
@@ -150,7 +179,7 @@ fun VerifyScreenUI(
             Spacer(modifier = Modifier.height(33.dp))
             Spacer(modifier = Modifier.weight(1f))
             FMButton(
-                onClick = navigate,
+                onClick = verify,
                 text = stringResource(id = R.string.next),
                 contentPaddingValues = PaddingValues(top = 20.dp, bottom = 18.dp),
                 modifier = Modifier.fillMaxWidth(),
@@ -176,7 +205,7 @@ fun VerifyScreenUIPreview() {
             onEmailChanged = { email = it },
             onCertifyNumberChanged = { certifyNumber = it },
             sendEmail = {},
-            navigate = {}
+            verify = {}
         )
     }
 }

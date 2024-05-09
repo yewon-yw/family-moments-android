@@ -20,13 +20,21 @@ class VerifyViewModel @Inject constructor(
     fun sendEmail(name: String, email: String) {
         async(
             operation = {
+                _uiState.update {
+                    it.copy(
+                        sendEmailUiState = it.sendEmailUiState.copy(
+                            isLoading = true,
+                        )
+                    )
+                }
                 userRepository.sendEmail(name, email)
             },
-            onSuccess = {response->
+            onSuccess = { response ->
                 _uiState.update {
                     it.copy(
                         sendEmailUiState = it.sendEmailUiState.copy(
                             isSuccess = true,
+                            isLoading = false,
                             result = response.result
                         )
                     )
@@ -36,6 +44,35 @@ class VerifyViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         sendEmailUiState = it.sendEmailUiState.copy(
+                            isSuccess = false,
+                            isLoading = false,
+                            message = throwable.message ?: ""
+                        )
+                    )
+                }
+            }
+        )
+    }
+
+    fun findPwd(name: String, email: String, code: String) {
+        async(
+            operation = {
+                userRepository.findPwd(name, email, code)
+            },
+            onSuccess = { response ->
+                _uiState.update {
+                    it.copy(
+                        findPwdUiState = it.findPwdUiState.copy(
+                            isSuccess = true,
+                            result = response.result
+                        )
+                    )
+                }
+            },
+            onFailure = { throwable ->
+                _uiState.update {
+                    it.copy(
+                        findPwdUiState = it.findPwdUiState.copy(
                             isSuccess = false,
                             message = throwable.message ?: ""
                         )
@@ -49,6 +86,16 @@ class VerifyViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 sendEmailUiState = it.sendEmailUiState.copy(
+                    isSuccess = null
+                )
+            )
+        }
+    }
+
+    fun resetFindPwdSuccess() {
+        _uiState.update {
+            it.copy(
+                findPwdUiState = it.findPwdUiState.copy(
                     isSuccess = null
                 )
             )

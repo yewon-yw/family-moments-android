@@ -7,11 +7,13 @@ import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.UserService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.dto.request.CheckIdExistRequest
+import io.familymoments.app.core.network.dto.request.FindPwdRequest
 import io.familymoments.app.core.network.dto.request.LoginRequest
 import io.familymoments.app.core.network.dto.request.ModifyPasswordRequest
 import io.familymoments.app.core.network.dto.request.ProfileEditRequest
 import io.familymoments.app.core.network.dto.request.SendEmailRequest
 import io.familymoments.app.core.network.dto.response.CheckIdExistResponse
+import io.familymoments.app.core.network.dto.response.FindPwdResponse
 import io.familymoments.app.core.network.dto.response.LoginResponse
 import io.familymoments.app.core.network.dto.response.LogoutResponse
 import io.familymoments.app.core.network.dto.response.ModifyPasswordResponse
@@ -203,6 +205,25 @@ class UserRepositoryImpl @Inject constructor(
             val response = userService.sendEmail(SendEmailRequest(name, email))
             if (response.code() == HttpResponse.SUCCESS) {
                 val responseBody = response.body() ?: SendEmailResponse()
+                if (responseBody.isSuccess) {
+                    emit(Resource.Success(responseBody))
+                } else {
+                    emit(Resource.Fail(Throwable(responseBody.message)))
+                }
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun findPwd(name: String, email: String, code: String): Flow<Resource<FindPwdResponse>> {
+        return flow{
+            emit(Resource.Loading)
+            val response = userService.findPwd(FindPwdRequest(name, email, code))
+            if (response.code() == HttpResponse.SUCCESS) {
+                val responseBody = response.body() ?: FindPwdResponse()
                 if (responseBody.isSuccess) {
                     emit(Resource.Success(responseBody))
                 } else {
