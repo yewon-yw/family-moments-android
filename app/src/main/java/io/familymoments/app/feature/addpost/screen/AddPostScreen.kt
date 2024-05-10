@@ -59,7 +59,6 @@ import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
-import io.familymoments.app.core.util.FileUtil
 import io.familymoments.app.core.util.POST_PHOTO_MAX_SIZE
 import io.familymoments.app.core.util.keyboardAsState
 import io.familymoments.app.core.util.oneClick
@@ -80,10 +79,16 @@ fun AddPostScreen(
     var content by remember { mutableStateOf(addPostUiState.existPostUiState.editContent) }
     val context = LocalContext.current
 
-    LaunchedEffectIfPostSuccess(addPostUiState, popBackStack, context, viewModel)
+    LaunchedEffectWithSuccess(addPostUiState, popBackStack, context, viewModel)
 
     val fileList = viewModel.filesState
-    val launcher = generateVisualMediaRequestLauncher(context, fileList)
+    val launcher = generateVisualMediaRequestLauncher { uris ->
+        viewModel.addImages(
+            uris = uris,
+            context = context,
+            errorMessage = context.getString(R.string.add_post_exceed_max_photo_size_error, POST_PHOTO_MAX_SIZE)
+        )
+    }
 
     val scope = rememberCoroutineScope()
     val isKeyboardOpen by keyboardAsState()
@@ -128,14 +133,14 @@ private fun onUploadClicked(
 }
 
 @Composable
-private fun LaunchedEffectIfPostSuccess(
+private fun LaunchedEffectWithSuccess(
     addPostUiState: AddPostUiState, popBackStack: () -> Unit, context: Context, viewModel: AddPostViewModel
 ) {
     LaunchedEffect(addPostUiState.isSuccess) {
         if (addPostUiState.isSuccess == true) {
             popBackStack()
         } else if (addPostUiState.isSuccess == false) {
-            Toast.makeText(context, context.getString(R.string.add_post_fail), Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, addPostUiState.errorMessage, Toast.LENGTH_SHORT).show()
             viewModel.initSuccessState()
         }
     }
@@ -143,13 +148,14 @@ private fun LaunchedEffectIfPostSuccess(
 
 
 @Composable
-private fun generateVisualMediaRequestLauncher(context: Context, fileList: MutableList<File>) =
+private fun generateVisualMediaRequestLauncher(
+    addImages: (List<Uri>) -> Unit
+) =
     rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickMultipleVisualMedia(POST_PHOTO_MAX_SIZE)
     ) { uris ->
         if (uris.isNotEmpty<@JvmSuppressWildcards Uri>()) {
-//            fileList.clear()
-            fileList.addAll(FileUtil.imageFilesResize(context, uris))
+            addImages(uris)
         }
     }
 

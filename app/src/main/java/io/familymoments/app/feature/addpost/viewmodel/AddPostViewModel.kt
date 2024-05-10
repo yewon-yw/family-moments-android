@@ -1,5 +1,6 @@
 package io.familymoments.app.feature.addpost.viewmodel
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.runtime.mutableStateListOf
 import androidx.lifecycle.SavedStateHandle
@@ -11,6 +12,7 @@ import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourc
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.core.network.util.createImageMultiPart
 import io.familymoments.app.core.util.FileUtil
+import io.familymoments.app.core.util.POST_PHOTO_MAX_SIZE
 import io.familymoments.app.feature.addpost.AddPostMode
 import io.familymoments.app.feature.addpost.uistate.AddPostUiState
 import io.familymoments.app.feature.addpost.uistate.ExistPostUiState
@@ -42,6 +44,7 @@ class AddPostViewModel @Inject constructor(
 
     init {
         initUiState()
+        // 이미 업로드된 이미지 파일로 변환 (수정 화면 시)
         getFileList()
     }
 
@@ -130,6 +133,21 @@ class AddPostViewModel @Inject constructor(
                 )
             }
         )
+    }
+
+    fun addImages(uris: List<Uri>, context: Context, errorMessage: String) {
+        if (uris.size + filesState.size <= POST_PHOTO_MAX_SIZE) {
+            filesState.addAll(FileUtil.imageFilesResize(context, uris))
+        } else {
+            val availableCount = POST_PHOTO_MAX_SIZE - filesState.size
+            filesState.addAll(FileUtil.imageFilesResize(context, uris.subList(0, availableCount)))
+            _uiState.update {
+                it.copy(
+                    isSuccess = false,
+                    errorMessage = errorMessage
+                )
+            }
+        }
     }
 
     fun initSuccessState() {
