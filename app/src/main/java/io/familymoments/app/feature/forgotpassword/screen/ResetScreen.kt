@@ -10,6 +10,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -110,7 +112,11 @@ fun ResetScreenUI(
     isValid: Boolean,
     modifyPwd: () -> Unit
 ) {
-    Column(modifier = Modifier.padding(16.dp)) {
+    Column(
+        modifier = Modifier
+            .padding(16.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
         Spacer(modifier = Modifier.height(67.dp))
         Text(
             text = stringResource(id = R.string.forgot_password_title_02),
@@ -152,6 +158,7 @@ fun ResetScreenUI(
             )
         }
 
+        Spacer(modifier = Modifier.height(201.dp))
         Spacer(modifier = Modifier.weight(1f))
         FMButton(
             onClick = modifyPwd,

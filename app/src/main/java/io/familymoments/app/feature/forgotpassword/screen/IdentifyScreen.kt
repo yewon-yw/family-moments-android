@@ -18,7 +18,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -79,9 +78,6 @@ fun IdentifyScreenUI(
     onIdChanged: (TextFieldValue) -> Unit,
     checkIdExist: () -> Unit
 ) {
-    var textFieldFocused by remember {
-        mutableStateOf(false)
-    }
 
     Column(modifier = Modifier.padding(16.dp)) {
         Spacer(modifier = Modifier.height(68.dp))
@@ -105,12 +101,9 @@ fun IdentifyScreenUI(
             modifier = Modifier
                 .width(240.dp)
                 .align(Alignment.CenterHorizontally)
-                .onFocusChanged {
-                    textFieldFocused = it.isFocused
-                }
         )
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(253.dp))
         FMButton(
             onClick = checkIdExist,
             text = stringResource(id = R.string.next),
@@ -118,10 +111,6 @@ fun IdentifyScreenUI(
             contentPaddingValues = PaddingValues(top = 20.dp, bottom = 18.dp),
             textModifier = Modifier
         )
-
-        if (!textFieldFocused) {
-            Spacer(modifier = Modifier.height(101.dp))
-
-        }
+        Spacer(modifier = Modifier.height(101.dp))
     }
 }
