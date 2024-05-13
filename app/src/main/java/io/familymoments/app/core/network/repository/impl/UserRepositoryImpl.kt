@@ -10,6 +10,7 @@ import io.familymoments.app.core.network.dto.request.CheckIdExistRequest
 import io.familymoments.app.core.network.dto.request.FindPwdRequest
 import io.familymoments.app.core.network.dto.request.LoginRequest
 import io.familymoments.app.core.network.dto.request.ModifyPasswordRequest
+import io.familymoments.app.core.network.dto.request.ModifyPwdInFindPwdRequest
 import io.familymoments.app.core.network.dto.request.ProfileEditRequest
 import io.familymoments.app.core.network.dto.request.SendEmailRequest
 import io.familymoments.app.core.network.dto.response.CheckIdExistResponse
@@ -17,6 +18,7 @@ import io.familymoments.app.core.network.dto.response.FindPwdResponse
 import io.familymoments.app.core.network.dto.response.LoginResponse
 import io.familymoments.app.core.network.dto.response.LogoutResponse
 import io.familymoments.app.core.network.dto.response.ModifyPasswordResponse
+import io.familymoments.app.core.network.dto.response.ModifyPwdInFindPwdResponse
 import io.familymoments.app.core.network.dto.response.ProfileEditResponse
 import io.familymoments.app.core.network.dto.response.SearchMemberResponse
 import io.familymoments.app.core.network.dto.response.SendEmailResponse
@@ -224,6 +226,29 @@ class UserRepositoryImpl @Inject constructor(
             val response = userService.findPwd(FindPwdRequest(name, email, code))
             if (response.code() == HttpResponse.SUCCESS) {
                 val responseBody = response.body() ?: FindPwdResponse()
+                if (responseBody.isSuccess) {
+                    emit(Resource.Success(responseBody))
+                } else {
+                    emit(Resource.Fail(Throwable(responseBody.message)))
+                }
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun modifyPwdInFindPwd(
+        id:String,
+        password: String,
+        passwordConfirm: String
+    ): Flow<Resource<ModifyPwdInFindPwdResponse>> {
+        return flow{
+            emit(Resource.Loading)
+            val response = userService.modifyPwdInFindPwd(id, ModifyPwdInFindPwdRequest(password, passwordConfirm))
+            if (response.code() == HttpResponse.SUCCESS) {
+                val responseBody = response.body() ?: ModifyPwdInFindPwdResponse()
                 if (responseBody.isSuccess) {
                     emit(Resource.Success(responseBody))
                 } else {

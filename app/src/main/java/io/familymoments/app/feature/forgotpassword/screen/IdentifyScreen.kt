@@ -34,7 +34,7 @@ import io.familymoments.app.feature.forgotpassword.viewmodel.IdentifyViewModel
 
 
 @Composable
-fun IdentifyScreen(viewModel: IdentifyViewModel, navigate: () -> Unit) {
+fun IdentifyScreen(viewModel: IdentifyViewModel, navigate: (String) -> Unit) {
     var id by remember { mutableStateOf(TextFieldValue()) }
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
     val context = LocalContext.current
@@ -43,7 +43,7 @@ fun IdentifyScreen(viewModel: IdentifyViewModel, navigate: () -> Unit) {
         context = context,
         uiState = uiState,
         resetSuccess = viewModel::resetSuccess,
-        navigate = navigate
+        navigate = { navigate(id.text) }
     )
 
     IdentifyScreenUI(

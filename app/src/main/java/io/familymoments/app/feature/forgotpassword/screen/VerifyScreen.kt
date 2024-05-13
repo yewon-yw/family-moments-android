@@ -38,7 +38,7 @@ import io.familymoments.app.feature.forgotpassword.uistate.SendEmailUiState
 import io.familymoments.app.feature.forgotpassword.viewmodel.VerifyViewModel
 
 @Composable
-fun VerifyScreen(viewModel: VerifyViewModel, navigate: () -> Unit) {
+fun VerifyScreen(viewModel: VerifyViewModel, navigate: (String) -> Unit) {
     var name by remember { mutableStateOf(TextFieldValue()) }
     var email by remember { mutableStateOf(TextFieldValue()) }
     var certifyNumber by remember { mutableStateOf(TextFieldValue()) }
@@ -48,8 +48,7 @@ fun VerifyScreen(viewModel: VerifyViewModel, navigate: () -> Unit) {
     val context = LocalContext.current
 
     LaunchedEffectWithSendEmailUiState(context, sendEmailUiState, viewModel::resetSendEmailSuccess)
-    LaunchedEffectWithFindPwdUiState(context, findPwdUiState, navigate, viewModel::resetFindPwdSuccess)
-    ShowLoading(sendEmailUiState)
+    LaunchedEffectWithFindPwdUiState(context, findPwdUiState, viewModel::resetFindPwdSuccess) { navigate(uiState.id) }
 
     VerifyScreenUI(
         name = name,
@@ -64,7 +63,18 @@ fun VerifyScreen(viewModel: VerifyViewModel, navigate: () -> Unit) {
 }
 
 @Composable
-fun LaunchedEffectWithSendEmailUiState(context: Context, uiState: SendEmailUiState, resetSuccess: () -> Unit) {
+fun LaunchedEffectWithSendEmailUiState(
+    context: Context,
+    uiState: SendEmailUiState,
+    resetSuccess: () -> Unit
+) {
+    var isLoading by remember { mutableStateOf(false) }
+
+    LoadingIndicator(isLoading = isLoading)
+
+    LaunchedEffect(uiState.isLoading) {
+        isLoading = uiState.isLoading
+    }
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess == true) {
             Toast.makeText(context, uiState.result, Toast.LENGTH_SHORT).show()
@@ -79,8 +89,8 @@ fun LaunchedEffectWithSendEmailUiState(context: Context, uiState: SendEmailUiSta
 fun LaunchedEffectWithFindPwdUiState(
     context: Context,
     uiState: FindPwdUiState,
+    resetSuccess: () -> Unit,
     navigate: () -> Unit,
-    resetSuccess: () -> Unit
 ) {
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess == true) {
@@ -90,13 +100,6 @@ fun LaunchedEffectWithFindPwdUiState(
             Toast.makeText(context, uiState.message, Toast.LENGTH_SHORT).show()
         }
         resetSuccess()
-    }
-}
-
-@Composable
-fun ShowLoading(uiState: SendEmailUiState) {
-    if (uiState.isLoading == true) {
-        LoadingIndicator(isLoading = true)
     }
 }
 
@@ -177,7 +180,6 @@ fun VerifyScreenUI(
             )
 
             Spacer(modifier = Modifier.height(33.dp))
-            Spacer(modifier = Modifier.weight(1f))
             FMButton(
                 onClick = verify,
                 text = stringResource(id = R.string.next),

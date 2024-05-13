@@ -44,7 +44,7 @@ fun ForgotPasswordScreen() {
             )
         },
     ) {
-        NavHost(navController = navController, startDestination = ForgotPasswordRoute.IDENTIFY.name) {
+        NavHost(navController = navController, startDestination = ForgotPasswordRoute.Identify.route) {
             forgotPasswordGraph(navController)
         }
     }

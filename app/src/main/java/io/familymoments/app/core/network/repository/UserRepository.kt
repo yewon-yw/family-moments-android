@@ -8,6 +8,7 @@ import io.familymoments.app.core.network.dto.response.FindPwdResponse
 import io.familymoments.app.core.network.dto.response.LoginResponse
 import io.familymoments.app.core.network.dto.response.LogoutResponse
 import io.familymoments.app.core.network.dto.response.ModifyPasswordResponse
+import io.familymoments.app.core.network.dto.response.ModifyPwdInFindPwdResponse
 import io.familymoments.app.core.network.dto.response.ProfileEditResponse
 import io.familymoments.app.core.network.dto.response.SearchMemberResponse
 import io.familymoments.app.core.network.dto.response.SendEmailResponse
@@ -39,4 +40,5 @@ interface UserRepository {
     suspend fun checkIdExist(userId: String):Flow<Resource<CheckIdExistResponse>>
     suspend fun sendEmail(name:String, email:String):Flow<Resource<SendEmailResponse>>
     suspend fun findPwd(name:String, email:String, code:String):Flow<Resource<FindPwdResponse>>
+    suspend fun modifyPwdInFindPwd(id:String, password: String, passwordConfirm:String):Flow<Resource<ModifyPwdInFindPwdResponse>>
 }

@@ -4,6 +4,7 @@ import io.familymoments.app.core.network.dto.request.CheckIdExistRequest
 import io.familymoments.app.core.network.dto.request.FindPwdRequest
 import io.familymoments.app.core.network.dto.request.LoginRequest
 import io.familymoments.app.core.network.dto.request.ModifyPasswordRequest
+import io.familymoments.app.core.network.dto.request.ModifyPwdInFindPwdRequest
 import io.familymoments.app.core.network.dto.request.ProfileEditRequest
 import io.familymoments.app.core.network.dto.request.SendEmailRequest
 import io.familymoments.app.core.network.dto.response.CheckIdExistResponse
@@ -11,6 +12,7 @@ import io.familymoments.app.core.network.dto.response.FindPwdResponse
 import io.familymoments.app.core.network.dto.response.LoginResponse
 import io.familymoments.app.core.network.dto.response.LogoutResponse
 import io.familymoments.app.core.network.dto.response.ModifyPasswordResponse
+import io.familymoments.app.core.network.dto.response.ModifyPwdInFindPwdResponse
 import io.familymoments.app.core.network.dto.response.ProfileEditResponse
 import io.familymoments.app.core.network.dto.response.SearchMemberResponse
 import io.familymoments.app.core.network.dto.response.SendEmailResponse
@@ -59,11 +61,17 @@ interface UserService {
     ): Response<ProfileEditResponse>
 
     @POST("/users/auth/check-id")
-    suspend fun checkIdExist(@Body checkIdExistRequest: CheckIdExistRequest):Response<CheckIdExistResponse>
+    suspend fun checkIdExist(@Body checkIdExistRequest: CheckIdExistRequest): Response<CheckIdExistResponse>
 
     @POST("/users/auth/send-email")
-    suspend fun sendEmail(@Body sendEmailRequest: SendEmailRequest):Response<SendEmailResponse>
+    suspend fun sendEmail(@Body sendEmailRequest: SendEmailRequest): Response<SendEmailResponse>
 
     @POST("/users/auth/find-pwd")
-    suspend fun findPwd(@Body findPwdRequest: FindPwdRequest):Response<FindPwdResponse>
+    suspend fun findPwd(@Body findPwdRequest: FindPwdRequest): Response<FindPwdResponse>
+
+    @PATCH("/users/auth/modify-pwd")
+    suspend fun modifyPwdInFindPwd(
+        @Query("id") id: String,
+        @Body modifyPwdInFindPwdRequest: ModifyPwdInFindPwdRequest
+    ): Response<ModifyPwdInFindPwdResponse>
 }
