@@ -29,9 +29,9 @@ import io.familymoments.app.R
 import io.familymoments.app.core.component.FMButton
 import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.component.LoadingIndicator
+import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.feature.forgotpassword.component.CompleteModifyPopUp
 import io.familymoments.app.feature.forgotpassword.uistate.ResetUiState
 import io.familymoments.app.feature.forgotpassword.viewmodel.ResetViewModel
 
@@ -77,7 +77,10 @@ fun LaunchedEffectWithUiState(
         LoadingIndicator(isLoading = true)
     }
     if (dialog) {
-        CompleteModifyPopUp { (context as Activity).finish() }
+        CompletePopUp(
+            content = stringResource(R.string.modify_pwd_in_find_pwd_dialog_content),
+            dismissText = stringResource(R.string.modify_pwd_in_find_pwd_dialog_dismiss)
+        ) { (context as Activity).finish() }
     }
 
     LaunchedEffect(uiState.isLoading) {
