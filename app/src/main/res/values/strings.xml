@@ -205,4 +205,8 @@
     <string name="family_setting_label_remove_family_member">가족 강퇴시키기</string>
     <string name="family_setting_label_leave_family">가족 탈퇴하기</string>
     <string name="family_setting_label_delete_family">가족 삭제하기</string>
+
+    <string name="family_invitation_link_title">가족 초대 링크</string>
+    <string name="family_invitation_link_copy">초대 링크 복사</string>
+    <string name="family_invitation_link_copied">링크가 복사되었습니다.</string>
 </resources>

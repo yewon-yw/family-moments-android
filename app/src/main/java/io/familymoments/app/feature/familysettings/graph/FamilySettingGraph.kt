@@ -1,8 +1,10 @@
 package io.familymoments.app.feature.familysettings.graph
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import io.familymoments.app.feature.familyinvitationlink.screen.FamilyInvitationLinkScreen
 import io.familymoments.app.feature.familysettings.FamilySettingNavItem
 
 fun NavGraphBuilder.familySettingGraph(navController: NavController) {
@@ -10,7 +12,7 @@ fun NavGraphBuilder.familySettingGraph(navController: NavController) {
         // 가족 정보 수정
     }
     composable(FamilySettingNavItem.FamilyInvitationLink.route) {
-        // 가족 초대 링크
+        FamilyInvitationLinkScreen(viewModel = hiltViewModel())
     }
     composable (FamilySettingNavItem.AddFamilyMember.route) {
         // 가족 추가하기

@@ -6,7 +6,7 @@ import io.familymoments.app.core.network.dto.response.CreateFamilyResponse
 import io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse
 import io.familymoments.app.core.network.dto.response.JoinFamilyResponse
 import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse
-import io.familymoments.app.feature.familysettings.model.FamilyInfoResponse
+import io.familymoments.app.core.network.dto.response.FamilyInfoResponse
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
