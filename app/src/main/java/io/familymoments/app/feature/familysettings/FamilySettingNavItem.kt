@@ -17,8 +17,8 @@ sealed class FamilySettingNavItem(
 
     data object FamilyInvitationLink : FamilySettingNavItem(
         FamilySettingRoute.FAMILY_INVITATION_LINK.name,
-        R.drawable.ic_family_setting_invite_family_link,
-        R.string.family_setting_label_invite_family_link
+        R.drawable.ic_family_setting_family_invitation_link,
+        R.string.family_setting_label_family_invitation_link
     )
 
     data object AddFamilyMember : FamilySettingNavItem(
