@@ -19,10 +19,11 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.forgotpassword.graph.ForgotPasswordRoute
 import io.familymoments.app.feature.forgotpassword.graph.forgotPasswordGraph
+import io.familymoments.app.feature.forgotpassword.viewmodel.ForgotPasswordSharedViewModel
 
 @ExperimentalMaterial3Api
 @Composable
-fun ForgotPasswordScreen() {
+fun ForgotPasswordScreen(forgotPasswordSharedViewModel: ForgotPasswordSharedViewModel) {
     val navController = rememberNavController()
     val context = LocalContext.current
     AppBarScreen(
@@ -45,7 +46,7 @@ fun ForgotPasswordScreen() {
         },
     ) {
         NavHost(navController = navController, startDestination = ForgotPasswordRoute.Identify.route) {
-            forgotPasswordGraph(navController)
+            forgotPasswordGraph(navController, forgotPasswordSharedViewModel)
         }
     }
 }

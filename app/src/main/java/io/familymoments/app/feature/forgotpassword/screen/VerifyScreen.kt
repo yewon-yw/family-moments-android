@@ -38,17 +38,20 @@ import io.familymoments.app.feature.forgotpassword.uistate.SendEmailUiState
 import io.familymoments.app.feature.forgotpassword.viewmodel.VerifyViewModel
 
 @Composable
-fun VerifyScreen(viewModel: VerifyViewModel, navigate: (String) -> Unit) {
+fun VerifyScreen(
+    verifyViewModel: VerifyViewModel,
+    navigate: () -> Unit
+) {
     var name by remember { mutableStateOf(TextFieldValue()) }
     var email by remember { mutableStateOf(TextFieldValue()) }
     var certifyNumber by remember { mutableStateOf(TextFieldValue()) }
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+    val uiState = verifyViewModel.uiState.collectAsStateWithLifecycle().value
     val sendEmailUiState = uiState.sendEmailUiState
     val findPwdUiState = uiState.findPwdUiState
     val context = LocalContext.current
 
-    LaunchedEffectWithSendEmailUiState(context, sendEmailUiState, viewModel::resetSendEmailSuccess)
-    LaunchedEffectWithFindPwdUiState(context, findPwdUiState, viewModel::resetFindPwdSuccess) { navigate(uiState.id) }
+    LaunchedEffectWithSendEmailUiState(context, sendEmailUiState, verifyViewModel::resetSendEmailSuccess)
+    LaunchedEffectWithFindPwdUiState(context, findPwdUiState, verifyViewModel::resetFindPwdSuccess) { navigate() }
 
     VerifyScreenUI(
         name = name,
@@ -57,8 +60,8 @@ fun VerifyScreen(viewModel: VerifyViewModel, navigate: (String) -> Unit) {
         onNameChanged = { name = it },
         onEmailChanged = { email = it },
         onCertifyNumberChanged = { certifyNumber = it },
-        sendEmail = { viewModel.sendEmail(name.text, email.text) },
-        verify = { viewModel.findPwd(name.text, email.text, certifyNumber.text) }
+        sendEmail = { verifyViewModel.sendEmail(name.text, email.text) },
+        verify = { verifyViewModel.findPwd(name.text, email.text, certifyNumber.text) }
     )
 }
 

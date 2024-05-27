@@ -1,7 +1,6 @@
 package io.familymoments.app.feature.forgotpassword.uistate
 
 data class ResetUiState(
-    val id:String = "",
     val password:String = "",
     val passwordConfirm:String = "",
     val isValid:Boolean = false,

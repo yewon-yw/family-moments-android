@@ -1,7 +1,6 @@
 package io.familymoments.app.feature.forgotpassword.uistate
 
 data class VerifyUiState(
-    val id:String = "",
     val sendEmailUiState: SendEmailUiState = SendEmailUiState(),
     val findPwdUiState: FindPwdUiState = FindPwdUiState()
 )

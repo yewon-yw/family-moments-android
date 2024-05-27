@@ -29,26 +29,34 @@ import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.forgotpassword.uistate.IdentifyUiState
+import io.familymoments.app.feature.forgotpassword.viewmodel.ForgotPasswordSharedViewModel
 import io.familymoments.app.feature.forgotpassword.viewmodel.IdentifyViewModel
 
 
 @Composable
-fun IdentifyScreen(viewModel: IdentifyViewModel, navigate: (String) -> Unit) {
+fun IdentifyScreen(
+    forgotPasswordSharedViewModel: ForgotPasswordSharedViewModel,
+    identifyViewModel: IdentifyViewModel,
+    navigate: () -> Unit
+) {
     var id by remember { mutableStateOf(TextFieldValue()) }
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+    val uiState = identifyViewModel.uiState.collectAsStateWithLifecycle().value
     val context = LocalContext.current
 
     LaunchedEffectWithSuccess(
         context = context,
         uiState = uiState,
-        resetSuccess = viewModel::resetSuccess,
-        navigate = { navigate(id.text) }
+        resetSuccess = identifyViewModel::resetSuccess,
+        onSuccess = {
+            forgotPasswordSharedViewModel.updateId(id.text)
+            navigate()
+        }
     )
 
     IdentifyScreenUI(
         id = id,
         onIdChanged = { id = it },
-        checkIdExist = { viewModel.checkIdExist(id.text) }
+        checkIdExist = { identifyViewModel.checkIdExist(id.text) }
     )
 }
 
@@ -57,7 +65,7 @@ fun LaunchedEffectWithSuccess(
     context: Context,
     uiState: IdentifyUiState,
     resetSuccess: () -> Unit,
-    navigate: () -> Unit
+    onSuccess: () -> Unit
 ) {
     LaunchedEffect(uiState.isSuccess) {
         if (uiState.isSuccess == false) {
@@ -67,7 +75,7 @@ fun LaunchedEffectWithSuccess(
             Toast.makeText(context, message, Toast.LENGTH_SHORT).show()
             resetSuccess()
         } else if (uiState.isSuccess == true) {
-            navigate()
+            onSuccess()
         }
     }
 }

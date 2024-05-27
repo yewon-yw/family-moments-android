@@ -35,33 +35,35 @@ import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.forgotpassword.uistate.ResetUiState
+import io.familymoments.app.feature.forgotpassword.viewmodel.ForgotPasswordSharedViewModel
 import io.familymoments.app.feature.forgotpassword.viewmodel.ResetViewModel
 
 @Composable
-fun ResetScreen(viewModel: ResetViewModel) {
+fun ResetScreen(forgotPasswordSharedViewModel: ForgotPasswordSharedViewModel, resetViewModel: ResetViewModel) {
 
     val context = LocalContext.current
     var password by remember { mutableStateOf(TextFieldValue()) }
     var passwordConfirm by remember { mutableStateOf(TextFieldValue()) }
     var isValid by remember { mutableStateOf(false) }
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+    val uiState = resetViewModel.uiState.collectAsStateWithLifecycle().value
+    val id = forgotPasswordSharedViewModel.id.collectAsStateWithLifecycle().value
 
-    LaunchedEffectWithUiState(context, uiState, viewModel::showDialog) { isValid = it }
+    LaunchedEffectWithUiState(context, uiState, resetViewModel::showDialog) { isValid = it }
     ResetScreenUI(
         password = password,
         passwordConfirm = passwordConfirm,
         onPasswordChanged = {
             password = it
-            viewModel.updatePassword(password.text)
-            viewModel.checkPasswordValid()
+            resetViewModel.updatePassword(password.text)
+            resetViewModel.checkPasswordValid()
         },
         onPasswordConfirmChanged = {
             passwordConfirm = it
-            viewModel.updatePasswordConfirm(passwordConfirm.text)
-            viewModel.checkPasswordValid()
+            resetViewModel.updatePasswordConfirm(passwordConfirm.text)
+            resetViewModel.checkPasswordValid()
         },
         isValid = isValid,
-        modifyPwd = { viewModel.modifyPwd() }
+        modifyPwd = { resetViewModel.modifyPwd(id) }
     )
 }
 

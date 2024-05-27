@@ -1,10 +1,8 @@
 package io.familymoments.app.feature.forgotpassword.viewmodel
 
-import androidx.lifecycle.SavedStateHandle
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.repository.UserRepository
-import io.familymoments.app.feature.forgotpassword.graph.ForgotPasswordRoute
 import io.familymoments.app.feature.forgotpassword.uistate.VerifyUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -13,21 +11,11 @@ import javax.inject.Inject
 
 @HiltViewModel
 class VerifyViewModel @Inject constructor(
-    private val userRepository: UserRepository,
-    savedStateHandle: SavedStateHandle,
+    private val userRepository: UserRepository
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow(VerifyUiState())
     val uiState = _uiState.asStateFlow()
-
-    init {
-        val id: String = checkNotNull(savedStateHandle[ForgotPasswordRoute.Verify.idArg])
-        _uiState.update {
-            it.copy(
-                id = id
-            )
-        }
-    }
 
     fun sendEmail(name: String, email: String) {
         _uiState.update {
