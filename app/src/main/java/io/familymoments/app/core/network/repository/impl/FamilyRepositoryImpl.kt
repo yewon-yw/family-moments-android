@@ -7,6 +7,7 @@ import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourc
 import io.familymoments.app.core.network.dto.request.CreateFamilyRequest
 import io.familymoments.app.core.network.dto.request.SearchFamilyByInviteLinkRequest
 import io.familymoments.app.core.network.dto.response.CreateFamilyResponse
+import io.familymoments.app.core.network.dto.response.FamilyInfo
 import io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse
 import io.familymoments.app.core.network.dto.response.JoinFamilyResponse
 import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse
@@ -102,14 +103,14 @@ class FamilyRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getFamilyInfo(familyId: Long): Flow<Resource<FamilyInfoResponse>> {
+    override suspend fun getFamilyInfo(familyId: Long): Flow<Resource<FamilyInfo>> {
         return flow {
             emit(Resource.Loading)
             val response = familyService.getFamilyInfo(familyId)
             if (response.code() == HttpResponse.SUCCESS) {
                 val responseBody = response.body()?: FamilyInfoResponse()
                 if (responseBody.isSuccess) {
-                    emit(Resource.Success(responseBody))
+                    emit(Resource.Success(responseBody.result))
                 } else {
                     emit(Resource.Fail(Throwable(responseBody.message)))
                 }

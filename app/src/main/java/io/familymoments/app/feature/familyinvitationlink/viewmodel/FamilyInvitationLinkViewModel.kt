@@ -27,7 +27,7 @@ class FamilyInvitationLinkViewModel @Inject constructor(
             onSuccess = {
                 _uiState.value = _uiState.value.copy(
                     isSuccess = true,
-                    invitationLink = it.result.inviteCode
+                    invitationLink = it.inviteCode
                 )
             },
             onFailure = {
