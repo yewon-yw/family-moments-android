@@ -34,13 +34,14 @@ import io.familymoments.app.feature.familyinvitationlink.viewmodel.FamilyInvitat
 
 @Composable
 fun FamilyInvitationLinkScreen(
+    modifier: Modifier = Modifier,
     viewModel: FamilyInvitationLinkViewModel
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     LaunchedEffect(Unit) {
         viewModel.getFamilyInvitationLink()
     }
-    FamilyInvitationLinkScreenUI(invitationLink = uiState.value.invitationLink)
+    FamilyInvitationLinkScreenUI(modifier = modifier, invitationLink = uiState.value.invitationLink)
 }
 
 private fun invitationLinkCopyButtonOnClick(context: Context, invitationLink: String) {
@@ -54,10 +55,13 @@ private fun invitationLinkCopyButtonOnClick(context: Context, invitationLink: St
 }
 
 @Composable
-private fun FamilyInvitationLinkScreenUI(invitationLink: String) {
+private fun FamilyInvitationLinkScreenUI(
+    modifier: Modifier = Modifier,
+    invitationLink: String
+) {
     val context = LocalContext.current
     Column(
-        modifier = Modifier.padding(horizontal = 16.dp)
+        modifier = modifier.padding(horizontal = 16.dp)
     ) {
         Box(
             modifier = Modifier

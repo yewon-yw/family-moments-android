@@ -24,6 +24,7 @@ import androidx.compose.ui.unit.dp
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.familysettings.FamilySettingNavItem
 
 @Composable
@@ -32,6 +33,10 @@ fun FamilySettingScreen(
 ) {
     Column(
         modifier = Modifier
+            .scaffoldState(
+                hasShadow = true,
+                hasBackButton = true
+            )
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState())
     ) {
