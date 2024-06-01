@@ -14,7 +14,10 @@ fun NavGraphBuilder.familySettingGraph(navController: NavController) {
     composable(FamilySettingNavItem.ModifyFamilyInfo.route) {
         ModifyFamilyInfoScreen(
             modifier = Modifier.scaffoldState(hasShadow = false, hasBackButton = true),
-            viewModel = hiltViewModel()
+            viewModel = hiltViewModel(),
+            navigateBack = {
+                navController.popBackStack()
+            }
         )
     }
     composable(FamilySettingNavItem.FamilyInvitationLink.route) {

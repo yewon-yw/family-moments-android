@@ -216,6 +216,9 @@
     <string name="modify_family_info_family_name">가족 이름</string>
     <string name="modify_family_info_btn">확인</string>
     <string name="modify_family_info_image_error">이미지가 선택되지 않았습니다.</string>
+    <string name="modify_family_info_load_error">정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</string>
+    <string name="modify_family_info_success">변경이 완료되었습니다.</string>
+    <string name="modify_family_info_fail">변경에 실패하였습니다. 잠시 후 다시 시도해 주세요.</string>
 
     <string name="edit_image_gallery_select">갤러리에서 선택</string>
     <string name="edit_image_default_image">기본 이미지로 하기</string>

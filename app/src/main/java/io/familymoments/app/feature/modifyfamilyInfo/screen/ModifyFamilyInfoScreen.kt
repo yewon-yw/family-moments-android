@@ -47,8 +47,10 @@ import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.component.ImageSelectionMenu
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.util.FAMILY_NAME_MAX_LENGTH
 import io.familymoments.app.core.util.URI_SCHEME_RESOURCE
 import io.familymoments.app.core.util.noRippleClickable
+import io.familymoments.app.feature.modifyfamilyInfo.uistate.ModifyFamilyInfoUiState
 import io.familymoments.app.feature.modifyfamilyInfo.viewmodel.ModifyFamilyInfoViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -58,7 +60,8 @@ import java.io.File
 @Composable
 fun ModifyFamilyInfoScreen(
     modifier: Modifier = Modifier,
-    viewModel: ModifyFamilyInfoViewModel
+    viewModel: ModifyFamilyInfoViewModel,
+    navigateBack: () -> Unit
 ) {
     val showDialog = remember { mutableStateOf(false) }
     val familyName = remember { mutableStateOf(TextFieldValue()) }
@@ -74,16 +77,19 @@ fun ModifyFamilyInfoScreen(
         viewModel.updateRepresentImg(context, uri)
     }
 
-    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
     LaunchedEffect(Unit) {
         viewModel.getFamilyInfo()
     }
-    LaunchedEffect(uiState.value) {
-        if (uiState.value.isSuccess) {
-            familyName.value = TextFieldValue(uiState.value.familyName)
-        }
-    }
+    LaunchedEffectHandleSuccessOrFailure(
+        uiState = uiState,
+        context = context,
+        navigateBack = navigateBack,
+        initFamilyName = { familyName.value = TextFieldValue(uiState.familyName) },
+        resetGetFamilyInfoIsSuccess = viewModel::resetGetFamilyInfoIsSuccess,
+        resetPostFamilyInfoIsSuccess = viewModel::resetPostFamilyInfoIsSuccess
+    )
 
     if (showDialog.value) {
         ImageSelectionMenu(
@@ -100,7 +106,11 @@ fun ModifyFamilyInfoScreen(
     ModifyFamilyInfoScreenUI(
         modifier = modifier.bringIntoViewRequester(requester),
         onEditImageClicked = { showDialog.value = true },
-        onFamilyNameChanged = { familyName.value = it },
+        onFamilyNameChanged = {
+            if (it.text.length <= FAMILY_NAME_MAX_LENGTH) {
+                familyName.value = it
+            }
+        },
         onFocusChanged = {
             scope.launch {
                 delay(300)
@@ -108,13 +118,13 @@ fun ModifyFamilyInfoScreen(
             }
         },
         familyName = familyName.value,
-        representImg = uiState.value.representImg,
+        representImg = uiState.representImg,
         focusManager = focusManager,
         onDoneButtonClicked = {
             onDoneButtonClicked(
                 context = context,
-                representImg = uiState.value.representImg,
-                familyName = familyName.value.text,
+                representImg = uiState.representImg,
+                familyName = familyName.value.text.trim(),
                 modifyFamilyInfo = viewModel::modifyFamilyInfo
             )
         }
@@ -223,14 +233,61 @@ private fun generateVisualMediaRequestLauncher(updateImage: (Uri) -> Unit) =
         }
     }
 
-fun onDoneButtonClicked(
+@Composable
+private fun LaunchedEffectHandleSuccessOrFailure(
+    uiState: ModifyFamilyInfoUiState,
+    context: Context = LocalContext.current,
+    navigateBack: () -> Unit = {},
+    initFamilyName: () -> Unit = {},
+    resetGetFamilyInfoIsSuccess: () -> Unit = {},
+    resetPostFamilyInfoIsSuccess: () -> Unit = {}
+) {
+    LaunchedEffect(uiState) {
+        handleSuccessOrFailure(
+            isSuccess = uiState.getSuccess,
+            onSuccess = { initFamilyName() },
+            onFailure = { showToast(context, R.string.modify_family_info_load_error) },
+            onCommon = { resetGetFamilyInfoIsSuccess() }
+        )
+        handleSuccessOrFailure(
+            isSuccess = uiState.postSuccess,
+            onSuccess = {
+                showToast(context, R.string.modify_family_info_success)
+                navigateBack()
+            },
+            onFailure = { showToast(context, R.string.modify_family_info_fail) },
+            onCommon = { resetPostFamilyInfoIsSuccess() }
+        )
+    }
+}
+
+private fun showToast(context: Context, messageResId: Int) {
+    Toast.makeText(context, messageResId, Toast.LENGTH_SHORT).show()
+}
+
+private fun handleSuccessOrFailure(
+    isSuccess: Boolean?,
+    onSuccess: () -> Unit = {},
+    onFailure: () -> Unit = {},
+    onCommon: () -> Unit = {}
+) {
+    isSuccess?.let {
+        when (it) {
+            true -> onSuccess()
+            false -> onFailure()
+        }
+        onCommon()
+    }
+}
+
+private fun onDoneButtonClicked(
     context: Context,
     representImg: File?,
     familyName: String,
     modifyFamilyInfo: (File, String) -> Unit
 ) {
     if (representImg == null) {
-        Toast.makeText(context, R.string.modify_family_info_image_error, Toast.LENGTH_SHORT).show()
+        showToast(context, R.string.modify_family_info_image_error)
     } else {
         modifyFamilyInfo(representImg, familyName)
     }

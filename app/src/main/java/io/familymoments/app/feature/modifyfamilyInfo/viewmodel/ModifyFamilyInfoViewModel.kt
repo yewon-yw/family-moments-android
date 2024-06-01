@@ -2,8 +2,6 @@ package io.familymoments.app.feature.modifyfamilyInfo.viewmodel
 
 import android.content.Context
 import android.net.Uri
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
@@ -18,9 +16,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.MultipartBody
-import okhttp3.RequestBody.Companion.asRequestBody
 import timber.log.Timber
 import java.io.File
 import javax.inject.Inject
@@ -59,7 +54,7 @@ class ModifyFamilyInfoViewModel @Inject constructor(
             },
             onSuccess = {
                 _uiState.value = _uiState.value.copy(
-                    isSuccess = true,
+                    getSuccess = true,
                     familyName = it.familyName
                 )
                 viewModelScope.launch(Dispatchers.IO) {
@@ -70,7 +65,7 @@ class ModifyFamilyInfoViewModel @Inject constructor(
             },
             onFailure = {
                 _uiState.value = _uiState.value.copy(
-                    isSuccess = false,
+                    getSuccess = false,
                     errorMessage = it.message
                 )
             }
@@ -90,15 +85,23 @@ class ModifyFamilyInfoViewModel @Inject constructor(
             },
             onSuccess = {
                 _uiState.value = uiState.value.copy(
-                    isSuccess = true,
+                    postSuccess = true,
                 )
             },
             onFailure = {
                 _uiState.value = uiState.value.copy(
-                    isSuccess = false,
+                    postSuccess = false,
                     errorMessage = it.message
                 )
             }
         )
+    }
+
+    fun resetGetFamilyInfoIsSuccess() {
+        _uiState.value = _uiState.value.copy(getSuccess = null)
+    }
+
+    fun resetPostFamilyInfoIsSuccess() {
+        _uiState.value = _uiState.value.copy(postSuccess = null)
     }
 }
