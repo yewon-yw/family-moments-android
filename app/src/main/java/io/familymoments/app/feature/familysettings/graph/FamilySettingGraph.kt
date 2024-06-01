@@ -8,10 +8,14 @@ import androidx.navigation.compose.composable
 import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.familyinvitationlink.screen.FamilyInvitationLinkScreen
 import io.familymoments.app.feature.familysettings.FamilySettingNavItem
+import io.familymoments.app.feature.modifyfamilyInfo.screen.ModifyFamilyInfoScreen
 
 fun NavGraphBuilder.familySettingGraph(navController: NavController) {
     composable(FamilySettingNavItem.ModifyFamilyInfo.route) {
-        // 가족 정보 수정
+        ModifyFamilyInfoScreen(
+            modifier = Modifier.scaffoldState(hasShadow = false, hasBackButton = true),
+            viewModel = hiltViewModel()
+        )
     }
     composable(FamilySettingNavItem.FamilyInvitationLink.route) {
         FamilyInvitationLinkScreen(

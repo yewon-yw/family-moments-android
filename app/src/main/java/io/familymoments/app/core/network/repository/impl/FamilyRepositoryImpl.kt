@@ -13,6 +13,7 @@ import io.familymoments.app.core.network.dto.response.JoinFamilyResponse
 import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse
 import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.dto.response.FamilyInfoResponse
+import io.familymoments.app.feature.modifyfamilyInfo.model.ModifyFamilyInfoRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow
@@ -120,4 +121,24 @@ class FamilyRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun modifyFamilyInfo(
+        familyId: Long,
+        representImg: MultipartBody.Part,
+        modifyFamilyInfoRequest: ModifyFamilyInfoRequest
+    ): Flow<Resource<FamilyInfo>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = familyService.modifyFamilyInfo(familyId, modifyFamilyInfoRequest, representImg)
+            if (response.code() == HttpResponse.SUCCESS) {
+                val responseBody = response.body()?: FamilyInfoResponse()
+                if (responseBody.isSuccess) {
+                    emit(Resource.Success(responseBody.result))
+                } else {
+                    emit(Resource.Fail(Throwable(responseBody.message)))
+                }
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
+            }
+        }
+    }
 }
