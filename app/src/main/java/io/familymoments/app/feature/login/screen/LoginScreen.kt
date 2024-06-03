@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,6 +34,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
+import androidx.compose.material3.VerticalDivider
 import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -71,6 +71,8 @@ import io.familymoments.app.core.util.FMVisualTransformation
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.bottomnav.activity.MainActivity
 import io.familymoments.app.feature.forgotid.activity.ForgotIdActivity
+import io.familymoments.app.feature.forgotpassword.activity.ForgotPasswordActivity
+import io.familymoments.app.feature.forgotid.activity.ForgotIdActivity
 import io.familymoments.app.feature.login.uistate.LoginUiState
 import io.familymoments.app.feature.login.viewmodel.LoginViewModel
 import io.familymoments.app.feature.signup.activity.SignUpActivity
@@ -83,6 +85,9 @@ fun LoginScreen(viewModel: LoginViewModel) {
     val context = LocalContext.current
     val goToJoin = {
         context.startActivity(Intent(context, SignUpActivity::class.java))
+    }
+    val goToForgotPassword = {
+        context.startActivity(Intent(context, ForgotPasswordActivity::class.java))
     }
     val goToForgotId = {
         context.startActivity(Intent(context, ForgotIdActivity::class.java))
@@ -105,10 +110,11 @@ fun LoginScreen(viewModel: LoginViewModel) {
     }) {
         LoginScreen(
             login = viewModel::loginUser,
-            loginUiState.value,
-            goToJoin,
-            goToForgotId,
-            viewModel::updateSuccessNull
+            loginUiState = loginUiState.value,
+            goToJoin = goToJoin,
+            goToForgotId = goToForgotId,,
+            updateSuccessNull = viewModel::updateSuccessNull,
+            goToForgotPassword = goToForgotPassword
         )
     }
 }
@@ -120,7 +126,8 @@ private fun LoginScreen(
     loginUiState: LoginUiState,
     goToJoin: () -> Unit,
     goToForgotId: () -> Unit,
-    updateSuccessNull: () -> Unit
+    updateSuccessNull: () -> Unit,
+    goToForgotPassword: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -136,7 +143,11 @@ private fun LoginScreen(
             loginUiState = loginUiState,
             updateSuccessNull = updateSuccessNull
         )
-        LoginOption(goToJoin, goToForgotId)
+        LoginOption(
+           goToJoin =  goToJoin,
+            goToForgotPassword = goToForgotPassword,
+            goToForgotId = goToForgotId
+        )
         SocialLogin()
     }
 }
@@ -294,7 +305,11 @@ fun LoginFormRoundedCornerTextField(
 }
 
 @Composable
-fun LoginOption(goToJoin: () -> Unit, goToForgotId: () -> Unit) {
+fun LoginOption(
+    goToJoin: () -> Unit,
+    goToForgotPassword: () -> Unit,
+    goToForgotId: () -> Unit
+) {
     Row(
         modifier = Modifier
             .height(IntrinsicSize.Min)
@@ -318,6 +333,7 @@ fun LoginOption(goToJoin: () -> Unit, goToForgotId: () -> Unit) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
+            modifier = Modifier.noRippleClickable { goToForgotPassword() },
             text = stringResource(id = R.string.login_forgot_pw),
             fontSize = 13.sp,
             color = AppColors.grey2,
@@ -332,7 +348,7 @@ fun LoginOption(goToJoin: () -> Unit, goToForgotId: () -> Unit) {
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            modifier = Modifier.clickable {
+            modifier = Modifier.noRippleClickable {
                 goToJoin()
             },
             text = stringResource(id = R.string.login_signup),
@@ -387,7 +403,8 @@ private fun LoginScreenPreview() {
             loginUiState = LoginUiState(),
             goToJoin = {},
             goToForgotId = {},
-            updateSuccessNull = {}
+            updateSuccessNull = {},
+            goToForgotPassword = {}
         )
     }
 }
