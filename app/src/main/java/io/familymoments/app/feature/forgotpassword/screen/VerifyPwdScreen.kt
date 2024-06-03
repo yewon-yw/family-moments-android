@@ -33,35 +33,35 @@ import io.familymoments.app.core.component.LoadingIndicator
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
+import io.familymoments.app.core.uistate.SendEmailUiState
 import io.familymoments.app.feature.forgotpassword.uistate.FindPwdUiState
-import io.familymoments.app.feature.forgotpassword.uistate.SendEmailUiState
-import io.familymoments.app.feature.forgotpassword.viewmodel.VerifyViewModel
+import io.familymoments.app.feature.forgotpassword.viewmodel.VerifyPwdViewModel
 
 @Composable
-fun VerifyScreen(
-    verifyViewModel: VerifyViewModel,
+fun VerifyPwdScreen(
+    verifyPwdViewModel: VerifyPwdViewModel,
     navigate: () -> Unit
 ) {
     var name by remember { mutableStateOf(TextFieldValue()) }
     var email by remember { mutableStateOf(TextFieldValue()) }
     var certifyNumber by remember { mutableStateOf(TextFieldValue()) }
-    val uiState = verifyViewModel.uiState.collectAsStateWithLifecycle().value
+    val uiState = verifyPwdViewModel.uiState.collectAsStateWithLifecycle().value
     val sendEmailUiState = uiState.sendEmailUiState
     val findPwdUiState = uiState.findPwdUiState
     val context = LocalContext.current
 
-    LaunchedEffectWithSendEmailUiState(context, sendEmailUiState, verifyViewModel::resetSendEmailSuccess)
-    LaunchedEffectWithFindPwdUiState(context, findPwdUiState, verifyViewModel::resetFindPwdSuccess) { navigate() }
+    LaunchedEffectWithSendEmailUiState(context, sendEmailUiState, verifyPwdViewModel::resetSendEmailSuccess)
+    LaunchedEffectWithFindPwdUiState(context, findPwdUiState, verifyPwdViewModel::resetFindPwdSuccess) { navigate() }
 
-    VerifyScreenUI(
+    VerifyPwdScreenUI(
         name = name,
         email = email,
         certifyNumber = certifyNumber,
         onNameChanged = { name = it },
         onEmailChanged = { email = it },
         onCertifyNumberChanged = { certifyNumber = it },
-        sendEmail = { verifyViewModel.sendEmail(name.text, email.text) },
-        verify = { verifyViewModel.findPwd(name.text, email.text, certifyNumber.text) }
+        sendEmail = { verifyPwdViewModel.sendEmail(name.text, email.text) },
+        verify = { verifyPwdViewModel.findPwd(name.text, email.text, certifyNumber.text) }
     )
 }
 
@@ -107,7 +107,7 @@ fun LaunchedEffectWithFindPwdUiState(
 }
 
 @Composable
-fun VerifyScreenUI(
+fun VerifyPwdScreenUI(
     name: TextFieldValue,
     email: TextFieldValue,
     certifyNumber: TextFieldValue,
@@ -197,12 +197,12 @@ fun VerifyScreenUI(
 
 @Preview(showBackground = true)
 @Composable
-fun VerifyScreenUIPreview() {
+fun VerifyPwdScreenUIPreview() {
     var name by remember { mutableStateOf(TextFieldValue()) }
     var email by remember { mutableStateOf(TextFieldValue()) }
     var certifyNumber by remember { mutableStateOf(TextFieldValue()) }
     FamilyMomentsTheme {
-        VerifyScreenUI(
+        VerifyPwdScreenUI(
             name = name,
             email = email,
             certifyNumber = certifyNumber,

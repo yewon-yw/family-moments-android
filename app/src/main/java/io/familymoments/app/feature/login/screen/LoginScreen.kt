@@ -35,7 +35,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.material3.VerticalDivider
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -72,7 +71,6 @@ import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.bottomnav.activity.MainActivity
 import io.familymoments.app.feature.forgotid.activity.ForgotIdActivity
 import io.familymoments.app.feature.forgotpassword.activity.ForgotPasswordActivity
-import io.familymoments.app.feature.forgotid.activity.ForgotIdActivity
 import io.familymoments.app.feature.login.uistate.LoginUiState
 import io.familymoments.app.feature.login.viewmodel.LoginViewModel
 import io.familymoments.app.feature.signup.activity.SignUpActivity
@@ -112,7 +110,7 @@ fun LoginScreen(viewModel: LoginViewModel) {
             login = viewModel::loginUser,
             loginUiState = loginUiState.value,
             goToJoin = goToJoin,
-            goToForgotId = goToForgotId,,
+            goToForgotId = goToForgotId,
             updateSuccessNull = viewModel::updateSuccessNull,
             goToForgotPassword = goToForgotPassword
         )

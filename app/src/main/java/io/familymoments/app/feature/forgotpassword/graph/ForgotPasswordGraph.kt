@@ -5,7 +5,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import io.familymoments.app.feature.forgotpassword.screen.IdentifyScreen
 import io.familymoments.app.feature.forgotpassword.screen.ResetScreen
-import io.familymoments.app.feature.forgotpassword.screen.VerifyScreen
+import io.familymoments.app.feature.forgotpassword.screen.VerifyPwdScreen
 import io.familymoments.app.feature.forgotpassword.viewmodel.ForgotPasswordSharedViewModel
 import androidx.hilt.navigation.compose.hiltViewModel as hiltViewModel1
 
@@ -16,7 +16,7 @@ fun NavGraphBuilder.forgotPasswordGraph(navController: NavController, forgotPass
         }
     }
     composable(route = ForgotPasswordRoute.Verify.route) {
-        VerifyScreen(verifyViewModel = hiltViewModel1()) {
+        VerifyPwdScreen(verifyPwdViewModel = hiltViewModel1()) {
             navController.navigate(ForgotPasswordRoute.Reset.route)
         }
     }

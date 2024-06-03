@@ -1,14 +1,15 @@
 package io.familymoments.app.feature.forgotid.graph
 
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import io.familymoments.app.feature.forgotid.screen.FindScreen
-import io.familymoments.app.feature.forgotid.screen.VerifyScreen
+import io.familymoments.app.feature.forgotid.screen.VerifyIdScreen
 
 fun NavGraphBuilder.forgotIdGraph(navController: NavController) {
     composable(route = ForgotIdRoute.Verify.route) {
-        VerifyScreen{navController.navigate(ForgotIdRoute.Find.route)}
+        VerifyIdScreen(hiltViewModel()) { navController.navigate(ForgotIdRoute.Find.route) }
     }
     composable(route = ForgotIdRoute.Find.route) {
         FindScreen()
