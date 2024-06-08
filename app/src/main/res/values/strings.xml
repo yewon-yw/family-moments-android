@@ -221,4 +221,7 @@
     <string name="verify_id_screen_send_email_btn">인증받기</string>
     <string name="verify_id_screen_code_hint">인증번호 6자리</string>
     <string name="verify_id_screen_next_btn">다음</string>
+    <string name="find_id_screen_label">고객님의 정보와 일치하는 아이디입니다.</string>
+    <string name="find_id_screen_go_to_login_btn">로그인 하기</string>
+    <string name="find_id_screen_go_to_forgot_pwd_btn">비밀번호 찾기</string>
 </resources>

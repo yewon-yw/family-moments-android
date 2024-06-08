@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
@@ -25,7 +26,7 @@ fun ForgotIdScreen(goToLogin: () -> Unit, goToForgotPwd: () -> Unit) {
     AppBarScreen(
         title = {
             Text(
-                text = "아이디 찾기",
+                text = stringResource(id = R.string.login_forgot_id),
                 style = AppTypography.SH3_16,
                 color = AppColors.deepPurple1
             )
