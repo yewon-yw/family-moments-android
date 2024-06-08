@@ -167,7 +167,6 @@ fun ResetScreenUI(
             text = stringResource(id = R.string.forgot_password_btn_reset),
             contentPaddingValues = PaddingValues(top = 20.dp, bottom = 18.dp),
             modifier = Modifier.fillMaxWidth(),
-            textModifier = Modifier,
             enabled = isValid
         )
         Spacer(modifier = Modifier.height(101.dp))

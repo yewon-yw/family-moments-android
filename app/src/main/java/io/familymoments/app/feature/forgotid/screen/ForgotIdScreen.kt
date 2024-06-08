@@ -19,7 +19,7 @@ import io.familymoments.app.feature.forgotid.graph.ForgotIdRoute
 import io.familymoments.app.feature.forgotid.graph.forgotIdGraph
 
 @Composable
-fun ForgotIdScreen() {
+fun ForgotIdScreen(goToLogin: () -> Unit, goToForgotPwd: () -> Unit) {
     val navController = rememberNavController()
     val context = LocalContext.current
     AppBarScreen(
@@ -46,7 +46,7 @@ fun ForgotIdScreen() {
                 })
         }) {
         NavHost(navController = navController, startDestination = ForgotIdRoute.Verify.route) {
-            forgotIdGraph(navController)
+            forgotIdGraph(navController, goToLogin, goToForgotPwd)
         }
     }
 }
@@ -54,5 +54,5 @@ fun ForgotIdScreen() {
 @Composable
 @Preview(showBackground = true)
 fun ForgotIdScreenPreview() {
-    ForgotIdScreen()
+    ForgotIdScreen({}){}
 }

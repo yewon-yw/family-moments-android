@@ -37,7 +37,7 @@ import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.forgotid.viewmodel.VerifyIdViewModel
 
 @Composable
-fun VerifyIdScreen(viewModel: VerifyIdViewModel, navigate: () -> Unit) {
+fun VerifyIdScreen(viewModel: VerifyIdViewModel, navigate: (String) -> Unit) {
     var name by remember {
         mutableStateOf(TextFieldValue())
     }
@@ -67,7 +67,7 @@ fun VerifyIdScreen(viewModel: VerifyIdViewModel, navigate: () -> Unit) {
 
     LaunchedEffect(findIdUiState) {
         if (findIdUiState.isSuccess == true) {
-            navigate()
+            navigate(findIdUiState.userId)
         } else if (findIdUiState.isSuccess == false) {
             Toast.makeText(context, findIdUiState.message, Toast.LENGTH_SHORT).show()
         }

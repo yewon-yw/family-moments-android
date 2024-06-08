@@ -188,7 +188,6 @@ fun VerifyPwdScreenUI(
                 text = stringResource(id = R.string.next),
                 contentPaddingValues = PaddingValues(top = 20.dp, bottom = 18.dp),
                 modifier = Modifier.fillMaxWidth(),
-                textModifier = Modifier
             )
             Spacer(modifier = Modifier.height(101.dp))
         }
