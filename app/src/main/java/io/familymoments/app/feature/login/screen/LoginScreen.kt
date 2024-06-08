@@ -4,7 +4,6 @@ import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,8 +27,8 @@ import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -67,26 +66,33 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.FMVisualTransformation
-import io.familymoments.app.feature.bottomnav.activity.MainActivity
+import io.familymoments.app.core.util.noRippleClickable
+import io.familymoments.app.core.util.oneClick
+import io.familymoments.app.feature.forgotpassword.activity.ForgotPasswordActivity
 import io.familymoments.app.feature.login.uistate.LoginUiState
 import io.familymoments.app.feature.login.viewmodel.LoginViewModel
-import io.familymoments.app.feature.signup.activity.SignUpActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel) {
+fun LoginScreen(
+    viewModel: LoginViewModel,
+    routeToSignUp: (LoginUiState) -> Unit = { _ -> },
+    routeToMainActivity: () -> Unit = {}
+) {
     val loginUiState = viewModel.loginUiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val goToJoin = {
-        context.startActivity(Intent(context, SignUpActivity::class.java))
+    val goToForgotPassword = {
+        context.startActivity(Intent(context, ForgotPasswordActivity::class.java))
     }
 
     LaunchedEffect(loginUiState.value.isSuccess) {
         if (loginUiState.value.isSuccess == true) {
-            val intent = Intent(context, MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            context.startActivity(intent)
+            if (loginUiState.value.isNeedToSignUp == true) {
+                routeToSignUp(loginUiState.value)
+            } else {
+                routeToMainActivity()
+            }
         }
     }
 
@@ -97,7 +103,15 @@ fun LoginScreen(viewModel: LoginViewModel) {
             color = AppColors.deepPurple1
         )
     }) {
-        LoginScreen(login = viewModel::loginUser, loginUiState.value, goToJoin, viewModel::updateSuccessNull)
+        LoginScreen(
+            login = viewModel::loginUser,
+            loginUiState.value,
+            onRouteToSignUp = { routeToSignUp(loginUiState.value) },
+            viewModel::updateSuccessNull,
+            kakaoLogin = { viewModel.kakaoLogin(context) },
+            naverLogin = { viewModel.naverLogin(context) },
+            goToForgotPassword = goToForgotPassword
+        )
     }
 }
 
@@ -106,8 +120,11 @@ fun LoginScreen(viewModel: LoginViewModel) {
 private fun LoginScreen(
     login: (String, String) -> Unit,
     loginUiState: LoginUiState,
-    goToJoin: () -> Unit,
-    updateSuccessNull: () -> Unit
+    onRouteToSignUp: () -> Unit = {},
+    updateSuccessNull: () -> Unit = {},
+    kakaoLogin: () -> Unit = {},
+    naverLogin: () -> Unit = {},
+    goToForgotPassword: () -> Unit
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -123,8 +140,11 @@ private fun LoginScreen(
             loginUiState = loginUiState,
             updateSuccessNull = updateSuccessNull
         )
-        LoginOption(goToJoin)
-        SocialLogin()
+        LoginOption(
+           goToForgotPassword = goToForgotPassword,
+           onRouteToSignUp = onRouteToSignUp
+        )
+        SocialLogin(kakaoLogin, naverLogin)
     }
 }
 
@@ -281,7 +301,10 @@ fun LoginFormRoundedCornerTextField(
 }
 
 @Composable
-fun LoginOption(goToJoin: () -> Unit) {
+fun LoginOption(
+    goToForgotPassword: () -> Unit,
+    onRouteToSignUp: () -> Unit
+) {
     Row(
         modifier = Modifier
             .height(IntrinsicSize.Min)
@@ -294,32 +317,31 @@ fun LoginOption(goToJoin: () -> Unit) {
             style = AppTypography.BTN6_13
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Divider(
-            color = AppColors.grey2,
-            modifier =
-            Modifier
+        HorizontalDivider(
+            modifier = Modifier
                 .fillMaxHeight()
                 .width(1.dp),
+            color = AppColors.grey2
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
+            modifier = Modifier.noRippleClickable { goToForgotPassword() },
             text = stringResource(id = R.string.login_forgot_pw),
             fontSize = 13.sp,
             color = AppColors.grey2,
             style = AppTypography.BTN6_13
         )
         Spacer(modifier = Modifier.width(8.dp))
-        Divider(
-            color = AppColors.grey2,
-            modifier =
-            Modifier
+        HorizontalDivider(
+            modifier = Modifier
                 .fillMaxHeight()
                 .width(1.dp),
+            color = AppColors.grey2
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            modifier = Modifier.clickable {
-                goToJoin()
+            modifier = Modifier.oneClick {
+                onRouteToSignUp()
             },
             text = stringResource(id = R.string.login_signup),
             fontSize = 13.sp,
@@ -330,12 +352,15 @@ fun LoginOption(goToJoin: () -> Unit) {
 }
 
 @Composable
-fun SocialLogin() {
+fun SocialLogin(
+    kakaoLogin: () -> Unit,
+    naverLogin: () -> Unit
+) {
     Row(
         modifier = Modifier.padding(top = 23.dp, start = 17.dp, end = 17.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Divider(
+        HorizontalDivider(
             modifier = Modifier
                 .weight(1f)
                 .height(1.dp)
@@ -349,18 +374,30 @@ fun SocialLogin() {
             fontSize = 13.sp,
             style = AppTypography.BTN6_13
         )
-        Divider(
+        HorizontalDivider(
             modifier = Modifier
                 .weight(1f)
                 .height(1.dp)
         )
     }
-    Spacer(modifier = Modifier.height(11.dp))
+    Spacer(modifier = Modifier.height(31.dp))
     Row(
         horizontalArrangement = Arrangement.spacedBy(37.dp),
     ) {
-        Image(painter = painterResource(id = R.drawable.ic_kakao_login), contentDescription = null)
-        Image(painter = painterResource(id = R.drawable.ic_naver_login), contentDescription = null)
+        Image(
+            painter = painterResource(id = R.drawable.ic_kakao_login),
+            contentDescription = null,
+            modifier = Modifier
+                .size(36.dp)
+                .oneClick(400, kakaoLogin)
+        )
+        Image(
+            painter = painterResource(id = R.drawable.ic_naver_login),
+            contentDescription = null,
+            modifier = Modifier
+                .size(36.dp)
+                .oneClick(400, naverLogin)
+        )
     }
 }
 
@@ -371,8 +408,8 @@ private fun LoginScreenPreview() {
         LoginScreen(
             login = { _, _ -> },
             loginUiState = LoginUiState(),
-            goToJoin = {},
-            updateSuccessNull = {}
+            updateSuccessNull = {},
+            goToForgotPassword = {}
         )
     }
 }
