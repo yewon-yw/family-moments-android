@@ -67,30 +67,32 @@ import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.FMVisualTransformation
 import io.familymoments.app.core.util.noRippleClickable
-import io.familymoments.app.feature.bottomnav.activity.MainActivity
+import io.familymoments.app.core.util.oneClick
 import io.familymoments.app.feature.forgotpassword.activity.ForgotPasswordActivity
 import io.familymoments.app.feature.login.uistate.LoginUiState
 import io.familymoments.app.feature.login.viewmodel.LoginViewModel
-import io.familymoments.app.feature.signup.activity.SignUpActivity
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel) {
+fun LoginScreen(
+    viewModel: LoginViewModel,
+    routeToSignUp: (LoginUiState) -> Unit = { _ -> },
+    routeToMainActivity: () -> Unit = {}
+) {
     val loginUiState = viewModel.loginUiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val goToJoin = {
-        context.startActivity(Intent(context, SignUpActivity::class.java))
-    }
     val goToForgotPassword = {
         context.startActivity(Intent(context, ForgotPasswordActivity::class.java))
     }
 
     LaunchedEffect(loginUiState.value.isSuccess) {
         if (loginUiState.value.isSuccess == true) {
-            val intent = Intent(context, MainActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-            context.startActivity(intent)
+            if (loginUiState.value.isNeedToSignUp == true) {
+                routeToSignUp(loginUiState.value)
+            } else {
+                routeToMainActivity()
+            }
         }
     }
 
@@ -103,9 +105,11 @@ fun LoginScreen(viewModel: LoginViewModel) {
     }) {
         LoginScreen(
             login = viewModel::loginUser,
-            loginUiState = loginUiState.value,
-            goToJoin = goToJoin,
-            updateSuccessNull = viewModel::updateSuccessNull,
+            loginUiState.value,
+            onRouteToSignUp = { routeToSignUp(loginUiState.value) },
+            viewModel::updateSuccessNull,
+            kakaoLogin = { viewModel.kakaoLogin(context) },
+            naverLogin = { viewModel.naverLogin(context) },
             goToForgotPassword = goToForgotPassword
         )
     }
@@ -116,8 +120,10 @@ fun LoginScreen(viewModel: LoginViewModel) {
 private fun LoginScreen(
     login: (String, String) -> Unit,
     loginUiState: LoginUiState,
-    goToJoin: () -> Unit,
-    updateSuccessNull: () -> Unit,
+    onRouteToSignUp: () -> Unit = {},
+    updateSuccessNull: () -> Unit = {},
+    kakaoLogin: () -> Unit = {},
+    naverLogin: () -> Unit = {},
     goToForgotPassword: () -> Unit
 ) {
     val scrollState = rememberScrollState()
@@ -135,10 +141,10 @@ private fun LoginScreen(
             updateSuccessNull = updateSuccessNull
         )
         LoginOption(
-           goToJoin =  goToJoin,
-            goToForgotPassword = goToForgotPassword
+           goToForgotPassword = goToForgotPassword,
+           onRouteToSignUp = onRouteToSignUp
         )
-        SocialLogin()
+        SocialLogin(kakaoLogin, naverLogin)
     }
 }
 
@@ -296,8 +302,8 @@ fun LoginFormRoundedCornerTextField(
 
 @Composable
 fun LoginOption(
-    goToJoin: () -> Unit,
-    goToForgotPassword: () -> Unit
+    goToForgotPassword: () -> Unit,
+    onRouteToSignUp: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -334,8 +340,8 @@ fun LoginOption(
         )
         Spacer(modifier = Modifier.width(8.dp))
         Text(
-            modifier = Modifier.noRippleClickable {
-                goToJoin()
+            modifier = Modifier.oneClick {
+                onRouteToSignUp()
             },
             text = stringResource(id = R.string.login_signup),
             fontSize = 13.sp,
@@ -346,7 +352,10 @@ fun LoginOption(
 }
 
 @Composable
-fun SocialLogin() {
+fun SocialLogin(
+    kakaoLogin: () -> Unit,
+    naverLogin: () -> Unit
+) {
     Row(
         modifier = Modifier.padding(top = 23.dp, start = 17.dp, end = 17.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -371,12 +380,24 @@ fun SocialLogin() {
                 .height(1.dp)
         )
     }
-    Spacer(modifier = Modifier.height(11.dp))
+    Spacer(modifier = Modifier.height(31.dp))
     Row(
         horizontalArrangement = Arrangement.spacedBy(37.dp),
     ) {
-        Image(painter = painterResource(id = R.drawable.ic_kakao_login), contentDescription = null)
-        Image(painter = painterResource(id = R.drawable.ic_naver_login), contentDescription = null)
+        Image(
+            painter = painterResource(id = R.drawable.ic_kakao_login),
+            contentDescription = null,
+            modifier = Modifier
+                .size(36.dp)
+                .oneClick(400, kakaoLogin)
+        )
+        Image(
+            painter = painterResource(id = R.drawable.ic_naver_login),
+            contentDescription = null,
+            modifier = Modifier
+                .size(36.dp)
+                .oneClick(400, naverLogin)
+        )
     }
 }
 
@@ -387,7 +408,6 @@ private fun LoginScreenPreview() {
         LoginScreen(
             login = { _, _ -> },
             loginUiState = LoginUiState(),
-            goToJoin = {},
             updateSuccessNull = {},
             goToForgotPassword = {}
         )

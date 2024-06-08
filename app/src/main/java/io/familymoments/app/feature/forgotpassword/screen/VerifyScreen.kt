@@ -152,7 +152,7 @@ fun VerifyScreenUI(
             )
             Spacer(modifier = Modifier.height(40.dp))
             Text(
-                text = stringResource(id = R.string.forgot_password_tf_email_title),
+                text = stringResource(id = R.string.email),
                 style = AppTypography.SH2_18,
                 color = AppColors.grey2
             )
