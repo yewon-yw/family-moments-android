@@ -3,6 +3,7 @@ package io.familymoments.app.core.network.api
 import io.familymoments.app.core.network.dto.request.CreateFamilyRequest
 import io.familymoments.app.core.network.dto.request.SearchFamilyByInviteLinkRequest
 import io.familymoments.app.core.network.dto.response.CreateFamilyResponse
+import io.familymoments.app.core.network.dto.response.GetFamilyNameResponse
 import io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse
 import io.familymoments.app.core.network.dto.response.JoinFamilyResponse
 import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse
@@ -48,4 +49,7 @@ interface FamilyService {
         @Part("familyUpdateReq") modifyFamilyInfoRequest: ModifyFamilyInfoRequest,
         @Part representImg: MultipartBody.Part
     ): Response<FamilyInfoResponse>
+
+    @GET("/families/{familyId}/famillyName")
+    suspend fun getFamilyName(@Path("familyId") familyId: Long): Response<GetFamilyNameResponse>
 }

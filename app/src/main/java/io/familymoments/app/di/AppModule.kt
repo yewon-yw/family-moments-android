@@ -13,6 +13,7 @@ import io.familymoments.app.core.network.api.PostService
 import io.familymoments.app.core.network.api.SignInService
 import io.familymoments.app.core.network.api.UserService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
+import io.familymoments.app.core.util.EventManager
 import okhttp3.JavaNetCookieJar
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
@@ -132,5 +133,11 @@ object AppModule {
     @Singleton
     fun provideFamilyService(@AuthRetrofit retrofit: Retrofit): FamilyService {
         return retrofit.create(FamilyService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventManager(): EventManager {
+        return EventManager()
     }
 }

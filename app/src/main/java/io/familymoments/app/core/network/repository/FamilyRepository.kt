@@ -32,4 +32,6 @@ interface FamilyRepository {
         representImg: MultipartBody.Part,
         modifyFamilyInfoRequest: ModifyFamilyInfoRequest
     ): Flow<Resource<FamilyInfo>>
+
+    suspend fun getFamilyName(familyId: Long): Flow<Resource<String>>
 }

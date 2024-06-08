@@ -2,11 +2,14 @@ package io.familymoments.app.feature.profile.viewmodel
 
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.graph.Route
 import io.familymoments.app.core.network.dto.request.ProfileEditRequest
 import io.familymoments.app.core.network.repository.UserRepository
+import io.familymoments.app.core.util.EventManager
+import io.familymoments.app.core.util.UserEvent
 import io.familymoments.app.feature.profile.uistate.ProfileEditInfoUiState
 import io.familymoments.app.feature.profile.uistate.ProfileEditUiState
 import io.familymoments.app.feature.signup.UserInfoFormatChecker.checkBirthDay
@@ -14,6 +17,7 @@ import io.familymoments.app.feature.signup.UserInfoFormatChecker.checkNickname
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
@@ -23,6 +27,7 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileEditViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    private val eventManager: EventManager,
     private val userRepository: UserRepository
 ) : BaseViewModel() {
     private val name: String = checkNotNull(savedStateHandle[Route.ProfileEdit.nameArg])
@@ -73,6 +78,9 @@ class ProfileEditViewModel @Inject constructor(
                 )
             },
             onSuccess = {
+                viewModelScope.launch {
+                    eventManager.sendEvent(UserEvent.ProfileChanged)
+                }
                 _uiState.value = _uiState.value.copy(isSuccess = true)
             },
             onFailure = {

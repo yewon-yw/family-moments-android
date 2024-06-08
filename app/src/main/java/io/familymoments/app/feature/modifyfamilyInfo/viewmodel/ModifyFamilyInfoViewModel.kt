@@ -8,7 +8,9 @@ import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.util.createImageMultiPart
+import io.familymoments.app.core.util.EventManager
 import io.familymoments.app.core.util.FileUtil
+import io.familymoments.app.core.util.UserEvent
 import io.familymoments.app.feature.modifyfamilyInfo.model.ModifyFamilyInfoRequest
 import io.familymoments.app.feature.modifyfamilyInfo.uistate.ModifyFamilyInfoUiState
 import kotlinx.coroutines.Dispatchers
@@ -22,6 +24,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ModifyFamilyInfoViewModel @Inject constructor(
+    private val eventManager: EventManager,
     private val familyRepository: FamilyRepository,
     private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
 ) : BaseViewModel() {
@@ -84,6 +87,9 @@ class ModifyFamilyInfoViewModel @Inject constructor(
                 )
             },
             onSuccess = {
+                viewModelScope.launch {
+                    eventManager.sendEvent(UserEvent.FamilyNameChanged)
+                }
                 _uiState.value = uiState.value.copy(
                     postSuccess = true,
                 )
