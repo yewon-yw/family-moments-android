@@ -1,6 +1,5 @@
 package io.familymoments.app.feature.login.screen
 
-import android.content.Intent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -68,10 +67,7 @@ import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.FMVisualTransformation
 import io.familymoments.app.core.util.noRippleClickable
-import io.familymoments.app.feature.bottomnav.activity.MainActivity
-import io.familymoments.app.feature.forgotid.activity.ForgotIdActivity
 import io.familymoments.app.core.util.oneClick
-import io.familymoments.app.feature.forgotpassword.activity.ForgotPasswordActivity
 import io.familymoments.app.feature.login.uistate.LoginUiState
 import io.familymoments.app.feature.login.viewmodel.LoginViewModel
 import kotlinx.coroutines.delay
@@ -81,16 +77,12 @@ import kotlinx.coroutines.launch
 fun LoginScreen(
     viewModel: LoginViewModel,
     routeToSignUp: (LoginUiState) -> Unit = { _ -> },
-    routeToMainActivity: () -> Unit = {}
+    routeToMainActivity: () -> Unit = {},
+    routeToForgotPassword:()->Unit = {},
+    routeToForgotId:()->Unit = {}
 ) {
     val loginUiState = viewModel.loginUiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    val goToForgotPassword = {
-        context.startActivity(Intent(context, ForgotPasswordActivity::class.java))
-    }
-    val goToForgotId = {
-        context.startActivity(Intent(context, ForgotIdActivity::class.java))
-    }
 
     LaunchedEffect(loginUiState.value.isSuccess) {
         if (loginUiState.value.isSuccess == true) {
@@ -116,8 +108,8 @@ fun LoginScreen(
             viewModel::updateSuccessNull,
             kakaoLogin = { viewModel.kakaoLogin(context) },
             naverLogin = { viewModel.naverLogin(context) },
-            goToForgotPassword = goToForgotPassword,
-            goToForgotId = goToForgotId,
+            routeToForgotPassword = routeToForgotPassword,
+            routeToForgotId = routeToForgotId,
         )
     }
 }
@@ -131,8 +123,8 @@ private fun LoginScreen(
     updateSuccessNull: () -> Unit = {},
     kakaoLogin: () -> Unit = {},
     naverLogin: () -> Unit = {},
-    goToForgotPassword: () -> Unit,
-    goToForgotId: () -> Unit,
+    routeToForgotPassword: () -> Unit,
+    routeToForgotId: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
     Column(
@@ -149,9 +141,9 @@ private fun LoginScreen(
             updateSuccessNull = updateSuccessNull
         )
         LoginOption(
-           goToForgotPassword = goToForgotPassword,
+           goToForgotPassword = routeToForgotPassword,
            onRouteToSignUp = onRouteToSignUp,
-            goToForgotId = goToForgotId
+            goToForgotId = routeToForgotId
         )
         SocialLogin(kakaoLogin, naverLogin)
     }
@@ -421,9 +413,9 @@ private fun LoginScreenPreview() {
         LoginScreen(
             login = { _, _ -> },
             loginUiState = LoginUiState(),
-            goToForgotId = {},
+            routeToForgotId = {},
             updateSuccessNull = {},
-            goToForgotPassword = {}
+            routeToForgotPassword = {}
         )
     }
 }
