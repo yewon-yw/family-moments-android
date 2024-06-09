@@ -8,3 +8,12 @@ data class SignUpRequest(
     val strBirthDate: String,
     val nickname: String
 )
+
+data class UserJoinReq(
+    val id: String = "",
+    val name: String = "",
+    val email: String = "",
+    val strBirthDate: String = "",
+    val nickname: String = "",
+    val userType: String = ""
+)
