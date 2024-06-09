@@ -50,7 +50,7 @@ fun FindIdScreen(
         Spacer(modifier = Modifier.height(31.dp))
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = stringResource(R.string.find_id_screen_label),
+            text = stringResource(R.string.forgot_id_display_id_label),
             style = AppTypography.B1_16,
             color = AppColors.deepPurple1,
             textAlign = TextAlign.Center
@@ -79,7 +79,7 @@ fun FindIdScreen(
         Row {
             FMButton(
                 onClick = goToLogin,
-                text = stringResource(R.string.find_id_screen_go_to_login_btn),
+                text = stringResource(R.string.forgot_id_go_to_login_btn),
                 modifier = Modifier.weight(1f),
                 containerColor = AppColors.purple2,
                 contentPaddingValues = PaddingValues(vertical = 17.dp, horizontal = 18.dp)
@@ -87,7 +87,7 @@ fun FindIdScreen(
             Spacer(modifier = Modifier.width(20.dp))
             FMButton(
                 onClick = goToForgotPwd,
-                text = stringResource(R.string.find_id_screen_go_to_forgot_pwd_btn),
+                text = stringResource(R.string.forgot_id_go_to_forgot_pwd_btn),
                 modifier = Modifier.weight(1f),
                 contentPaddingValues = PaddingValues(vertical = 17.dp, horizontal = 18.dp)
             )
