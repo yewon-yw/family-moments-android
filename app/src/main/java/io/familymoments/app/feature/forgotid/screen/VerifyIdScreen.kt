@@ -116,13 +116,13 @@ fun VerifyIdScreenUI(
         )
         Spacer(modifier = Modifier.height(13.dp))
         Text(
-            text = stringResource(R.string.verify_id_screen_label),
+            text = stringResource(R.string.forgot_id_verify_email_label),
             style = AppTypography.LB1_13,
             color = AppColors.grey2
         )
         Spacer(modifier = Modifier.height(67.dp))
         Text(
-            text = "이름",
+            text = stringResource(R.string.forgot_id_name_tf_title),
             style = AppTypography.SH2_18,
             color = AppColors.grey2
         )
@@ -130,12 +130,12 @@ fun VerifyIdScreenUI(
         FMTextField(
             onValueChange = onNameChanged,
             value = name,
-            hint = stringResource(R.string.verify_id_screen_name_hint),
+            hint = stringResource(R.string.forgot_id_name_tf_hint),
             showDeleteButton = true
         )
         Spacer(modifier = Modifier.height(40.dp))
         Text(
-            text = stringResource(R.string.verify_id_screen_email),
+            text = stringResource(R.string.forgot_id_email_tf_title),
             style = AppTypography.SH2_18,
             color = AppColors.grey2
         )
@@ -150,12 +150,12 @@ fun VerifyIdScreenUI(
                     .weight(1f),
                 onValueChange = onEmailChanged,
                 value = email,
-                hint = stringResource(R.string.verify_id_screen_email_hint)
+                hint = stringResource(R.string.forgot_id_email_tf_hint)
             )
             Spacer(modifier = Modifier.width(7.dp))
             FMButton(
                 onClick = sendEmail,
-                text = stringResource(R.string.verify_id_screen_send_email_btn),
+                text = stringResource(R.string.forgot_id_send_email_btn),
                 radius = 10.dp,
                 textStyle = AppTypography.BTN5_16,
             )
@@ -165,14 +165,14 @@ fun VerifyIdScreenUI(
         FMTextField(
             onValueChange = onCodeChanged,
             value = code,
-            hint = stringResource(R.string.verify_id_screen_code_hint),
+            hint = stringResource(R.string.forgot_id_code_tf_hint),
             showDeleteButton = true
         )
         Spacer(modifier = Modifier.height(33.dp))
         FMButton(
             modifier = Modifier.fillMaxWidth(),
             onClick = findId,
-            text = stringResource(R.string.verify_id_screen_next_btn),
+            text = stringResource(R.string.next_btn),
             contentPaddingValues = PaddingValues(top = 20.dp, bottom = 19.dp)
         )
     }

@@ -214,14 +214,15 @@
     <string name="forgot_password_screen_check_id_default_error_message">아이디 찾기에 실패하였습니다.</string>
     <string name="modify_pwd_in_find_pwd_dialog_content">비밀번호가 재설정되었습니다.</string>
     <string name="modify_pwd_in_find_pwd_dialog_dismiss">로그인 바로가기</string>
-    <string name="verify_id_screen_label">본인 확인을 위하여 이메일로 인증해주세요.</string>
-    <string name="verify_id_screen_name_hint">실명을 입력하세요 ex) 홍길동</string>
-    <string name="verify_id_screen_email">이메일</string>
-    <string name="verify_id_screen_email_hint">example@email.com</string>
-    <string name="verify_id_screen_send_email_btn">인증받기</string>
-    <string name="verify_id_screen_code_hint">인증번호 6자리</string>
-    <string name="verify_id_screen_next_btn">다음</string>
-    <string name="find_id_screen_label">고객님의 정보와 일치하는 아이디입니다.</string>
-    <string name="find_id_screen_go_to_login_btn">로그인 하기</string>
-    <string name="find_id_screen_go_to_forgot_pwd_btn">비밀번호 찾기</string>
+    <string name="forgot_id_verify_email_label">본인 확인을 위하여 이메일로 인증해주세요.</string>
+    <string name="forgot_id_name_tf_hint">실명을 입력하세요 ex) 홍길동</string>
+    <string name="forgot_id_email_tf_title">이메일</string>
+    <string name="forgot_id_email_tf_hint">example@email.com</string>
+    <string name="forgot_id_send_email_btn">인증받기</string>
+    <string name="forgot_id_code_tf_hint">인증번호 6자리</string>
+    <string name="forgot_id_display_id_label">고객님의 정보와 일치하는 아이디입니다.</string>
+    <string name="forgot_id_go_to_login_btn">로그인 하기</string>
+    <string name="forgot_id_go_to_forgot_pwd_btn">비밀번호 찾기</string>
+    <string name="forgot_id_name_tf_title">이름</string>
+    <string name="forgot_password_check_validation_warning">입력한 비밀번호와 일치하지 않습니다.</string>
 </resources>
