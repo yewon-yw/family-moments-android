@@ -177,33 +177,42 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun executeSocialSignIn(type: String, token: String, fcmToken: String): Flow<Resource<SocialSignInResult>> {
-        return flow {
-            emit(Resource.Loading)
+    override suspend fun executeSocialSignIn(
+        type: String,
+        token: String,
+        fcmToken: String
+    ): Flow<Resource<SocialSignInResult>> = flow {
+        emit(Resource.Loading)
 
-            val response = userService.executeSocialSignIn(SocialSignInRequest(type), token, fcmToken)
+        val response = userService.executeSocialSignIn(SocialSignInRequest(type), token, fcmToken)
 
-            if (response.code() == 200) {
-                response.headers()["X-AUTH-TOKEN"]?.let {
-                    userInfoPreferencesDataSource.saveAccessToken(it)
-                }
+        if (response.code() == 200) {
+            val headers = response.headers()
+            saveTokensFrom(headers)
 
-                response.headers()["REFRESH-TOKEN"]?.let {
-                    userInfoPreferencesDataSource.saveRefreshToken(it)
-                }
-
-                val body = response.body()!!
-                if (body.isSuccess) {
-                    userInfoPreferencesDataSource.saveSocialLoginType(type)
-                    emit(Resource.Success(body.result))
-                } else {
-                    emit(Resource.Fail(Throwable(body.message)))
-                }
+            val body = response.body()!!
+            if (body.isSuccess) {
+                body.result.familyId?.let { userInfoPreferencesDataSource.saveFamilyId(it) }
+                userInfoPreferencesDataSource.saveSocialLoginType(type)
+                emit(Resource.Success(body.result))
             } else {
-                emit(Resource.Fail(Throwable("Failed to sign in")))
+                emit(Resource.Fail(Throwable(body.message)))
             }
-        }.catch { e ->
-            emit(Resource.Fail(e))
+        } else {
+            emit(Resource.Fail(Throwable("Failed to sign in")))
+        }
+    }.catch { e ->
+        emit(Resource.Fail(e))
+    }
+
+
+    private suspend fun saveTokensFrom(headers: Headers) {
+        headers["X-AUTH-TOKEN"]?.let {
+            userInfoPreferencesDataSource.saveAccessToken(it)
+        }
+
+        headers["REFRESH-TOKEN"]?.let {
+            userInfoPreferencesDataSource.saveRefreshToken(it)
         }
     }
 
