@@ -160,12 +160,36 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
+    fun resetUserIdDuplicatedSuccess() {
+        _uiState.update {
+            it.copy(
+                signUpValidatedUiState = it.signUpValidatedUiState.copy(
+                    userIdDuplicatedUiState = it.signUpValidatedUiState.userIdDuplicatedUiState.copy(
+                        isSuccess = null
+                    )
+                )
+            )
+        }
+    }
+
     fun resetEmailDuplicatedPass() {
         _uiState.update {
             it.copy(
                 signUpValidatedUiState = it.signUpValidatedUiState.copy(
                     emailDuplicatedUiState = it.signUpValidatedUiState.emailDuplicatedUiState.copy(
                         duplicatedPass = false
+                    )
+                )
+            )
+        }
+    }
+
+    fun resetEmailDuplicatedSuccess(){
+        _uiState.update {
+            it.copy(
+                signUpValidatedUiState = it.signUpValidatedUiState.copy(
+                    emailDuplicatedUiState = it.signUpValidatedUiState.emailDuplicatedUiState.copy(
+                        isSuccess = null
                     )
                 )
             )
