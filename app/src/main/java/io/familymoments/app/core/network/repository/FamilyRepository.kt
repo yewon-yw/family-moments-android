@@ -7,6 +7,7 @@ import io.familymoments.app.core.network.dto.response.FamilyInfo
 import io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse
 import io.familymoments.app.core.network.dto.response.JoinFamilyResponse
 import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse
+import io.familymoments.app.feature.modifyfamilyInfo.model.ModifyFamilyInfoRequest
 import kotlinx.coroutines.flow.Flow
 import okhttp3.MultipartBody
 
@@ -25,4 +26,12 @@ interface FamilyRepository {
     suspend fun joinFamily(familyId: Long): Flow<Resource<JoinFamilyResponse>>
 
     suspend fun getFamilyInfo(familyId: Long): Flow<Resource<FamilyInfo>>
+
+    suspend fun modifyFamilyInfo(
+        familyId: Long,
+        representImg: MultipartBody.Part,
+        modifyFamilyInfoRequest: ModifyFamilyInfoRequest
+    ): Flow<Resource<FamilyInfo>>
+
+    suspend fun getFamilyName(familyId: Long): Flow<Resource<String>>
 }
