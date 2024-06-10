@@ -364,7 +364,7 @@ class PostDetailViewModel @Inject constructor(
         val createdAtWithoutMillie = createdAt.split(".")[0]
         val dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss"
         val dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat, Locale.KOREA)
-        val localDateTime = LocalDateTime.parse(createdAtWithoutMillie, dateTimeFormatter)
+        val localDateTime = LocalDateTime.parse(createdAtWithoutMillie, dateTimeFormatter).plusHours(9)
         val durationSeconds = Duration.between(localDateTime, LocalDateTime.now()).seconds
 
         // 초 단위
