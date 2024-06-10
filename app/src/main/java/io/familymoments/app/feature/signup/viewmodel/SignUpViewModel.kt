@@ -210,31 +210,42 @@ class SignUpViewModel @Inject constructor(
                 }
             },
             onSuccess = {
-                async(
-                    operation = {
-                        val fcmToken = userInfoPreferencesDataSource.loadFCMToken()
-                        userRepository.executeSocialSignIn(socialType, socialToken, fcmToken)
-                    },
-                    onSuccess = {
-                        _uiState.update {
-                            it.copy(
-                                signUpResultUiState = it.signUpResultUiState.copy(
-                                    isSuccess = true
+                if (socialType.isNotEmpty()) {
+                    async(
+                        operation = {
+                            val fcmToken = userInfoPreferencesDataSource.loadFCMToken()
+                            userRepository.executeSocialSignIn(socialType, socialToken, fcmToken)
+                        },
+                        onSuccess = {
+                            _uiState.update {
+                                it.copy(
+                                    signUpResultUiState = it.signUpResultUiState.copy(
+                                        isSuccess = true
+                                    )
                                 )
-                            )
-                        }
-                    },
-                    onFailure = {
-                        _uiState.update {
-                            it.copy(
-                                signUpResultUiState = it.signUpResultUiState.copy(
-                                    isSuccess = false,
-                                    message = "회원가입에 성공했으나 로그인에 실패했습니다. 다시 시도해주세요."
+                            }
+                        },
+                        onFailure = {
+                            _uiState.update {
+                                it.copy(
+                                    signUpResultUiState = it.signUpResultUiState.copy(
+                                        isSuccess = false,
+                                        message = "회원가입에 성공했으나 로그인에 실패했습니다. 다시 시도해주세요."
+                                    )
                                 )
-                            )
+                            }
                         }
+                    )
+                } else {
+                    _uiState.update {
+                        it.copy(
+                            signUpResultUiState = it.signUpResultUiState.copy(
+                                isSuccess = true
+                            )
+                        )
                     }
-                )
+                }
+
             },
             onFailure = { throwable ->
                 _uiState.update {
