@@ -7,6 +7,7 @@ import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -43,12 +44,13 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import io.familymoments.app.R
-import io.familymoments.app.core.component.FMDropdownMenu
 import io.familymoments.app.core.component.FMTextField
+import io.familymoments.app.core.component.ImageSelectionMenu
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.FileUtil
 import io.familymoments.app.core.util.URI_SCHEME_RESOURCE
+import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.profile.uistate.ProfileEditValidated
 import io.familymoments.app.feature.profile.viewmodel.ProfileEditViewModel
 import kotlinx.coroutines.CoroutineScope
@@ -294,16 +296,33 @@ private fun ProfileDropdown(
             onImageChanged(it)
         }
     )
-    FMDropdownMenu(
-        onGallerySelected = {
-            launcher.launch(
-                PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
-            )
-        },
-        onDefaultImageSelected = {
-            onImageChanged(defaultProfileImageUri)
-        }
-    )
+    var showDialog by remember { mutableStateOf(false) }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+    ) {
+        Text(
+            text = stringResource(id = R.string.profile_select_photo),
+            style = AppTypography.B1_16,
+            color = AppColors.purple2,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .noRippleClickable { showDialog = true }
+        )
+    }
+    if (showDialog) {
+        ImageSelectionMenu(
+            onDismissRequest = { showDialog = false },
+            onGallerySelected = {
+                launcher.launch(
+                    PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            },
+            onDefaultImageSelected = {
+                onImageChanged(defaultProfileImageUri)
+            }
+        )
+    }
 }
 
 @Composable
