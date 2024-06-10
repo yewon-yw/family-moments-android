@@ -7,8 +7,6 @@ import android.graphics.ImageDecoder
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
@@ -33,14 +31,14 @@ object FileUtil {
         return pathHashMap.map { File(it.value!!) }
     }
 
-    suspend fun imageFileResize(
+    fun imageFileResize(
         context: Context,
-        uri: Uri
+        uri: Uri,
+        index: Int = 0
     ): File {
-        return withContext(Dispatchers.IO) {
-            val path = optimizeBitmap(context, uri, 0)
-            File(path!!)
-        }
+        val path = optimizeBitmap(context, uri, index)
+        requireNotNull(path) { "Failed to optimize bitmap" }
+        return File(path)
     }
 
     private fun optimizeBitmap(context: Context, uri: Uri, index: Int): String? {
