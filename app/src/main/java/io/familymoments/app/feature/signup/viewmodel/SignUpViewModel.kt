@@ -184,7 +184,7 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun resetEmailDuplicatedSuccess(){
+    fun resetEmailDuplicatedSuccess() {
         _uiState.update {
             it.copy(
                 signUpValidatedUiState = it.signUpValidatedUiState.copy(
@@ -236,11 +236,12 @@ class SignUpViewModel @Inject constructor(
                     }
                 )
             },
-            onFailure = {
+            onFailure = { throwable ->
                 _uiState.update {
                     it.copy(
                         signUpResultUiState = it.signUpResultUiState.copy(
-                            isSuccess = false
+                            isSuccess = false,
+                            message = throwable.message ?: ""
                         )
                     )
                 }
