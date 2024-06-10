@@ -1,5 +1,6 @@
 package io.familymoments.app.feature.profile.viewmodel
 
+import android.content.Context
 import android.net.Uri
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.viewModelScope
@@ -9,11 +10,14 @@ import io.familymoments.app.core.graph.Route
 import io.familymoments.app.core.network.dto.request.ProfileEditRequest
 import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.core.util.EventManager
+import io.familymoments.app.core.util.FileUtil.imageFileResize
+import io.familymoments.app.core.util.FileUtil.uriToFile
 import io.familymoments.app.core.util.UserEvent
 import io.familymoments.app.feature.profile.uistate.ProfileEditInfoUiState
 import io.familymoments.app.feature.profile.uistate.ProfileEditUiState
 import io.familymoments.app.feature.signup.UserInfoFormatChecker.checkBirthDay
 import io.familymoments.app.feature.signup.UserInfoFormatChecker.checkNickname
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -34,18 +38,32 @@ class ProfileEditViewModel @Inject constructor(
     private val nickname: String = checkNotNull(savedStateHandle[Route.ProfileEdit.nicknameArg])
     private val birthdate: String = checkNotNull(savedStateHandle[Route.ProfileEdit.birthdateArg])
     private val profileImg: String = checkNotNull(savedStateHandle[Route.ProfileEdit.profileImgArg])
+    private var index: Int = 0
+
+    // 파일 index 업데이트
+    private fun updateIndex() {
+        index = 1 - index
+    }
 
     private val _uiState: MutableStateFlow<ProfileEditUiState> = MutableStateFlow(
         ProfileEditUiState(
             profileEditInfoUiState = ProfileEditInfoUiState(name, nickname, birthdate),
-            profileImageUri = Uri.parse(profileImg)
         )
     )
     val uiState: StateFlow<ProfileEditUiState> = _uiState.asStateFlow()
 
-    fun imageChanged(uri: Uri) {
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            _uiState.value = _uiState.value.copy(
+                profileImage = uriToFile(Uri.parse(profileImg), 0)
+            )
+        }
+    }
+
+    fun imageChanged(context: Context, uri: Uri) {
+        updateIndex()
         _uiState.value = _uiState.value.copy(
-            profileImageUri = uri
+            profileImage = imageFileResize(context, uri, index)
         )
     }
 

@@ -2,6 +2,7 @@ package io.familymoments.app.feature.profile.screen
 
 import android.content.Context
 import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
@@ -29,7 +30,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -48,13 +48,10 @@ import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.component.ImageSelectionMenu
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.core.util.FileUtil
 import io.familymoments.app.core.util.URI_SCHEME_RESOURCE
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.profile.uistate.ProfileEditValidated
 import io.familymoments.app.feature.profile.viewmodel.ProfileEditViewModel
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.launch
 import java.io.File
 
 @Composable
@@ -63,7 +60,6 @@ fun ProfileEditScreen(
     viewModel: ProfileEditViewModel,
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle()
-    val scope = rememberCoroutineScope()
     val context = LocalContext.current
     val defaultProfileImageUri =
         Uri.parse("$URI_SCHEME_RESOURCE://${context.packageName}/${R.drawable.default_profile}")
@@ -79,11 +75,12 @@ fun ProfileEditScreen(
 
     ProfileEditScreenUI(
         modifier = Modifier,
+        context = context,
         name = name,
         nickname = nickname,
         birthdate = birthdate,
         defaultProfileImageUri = defaultProfileImageUri,
-        profileImageUri = uiState.value.profileImageUri,
+        profileImage = uiState.value.profileImage,
         onImageChanged = viewModel::imageChanged,
         onNameChanged = {
             name = it
@@ -100,9 +97,8 @@ fun ProfileEditScreen(
         profileEditValidated = uiState.value.profileEditValidated,
         onEditButtonClicked = {
             onEditButtonClicked(
-                scope = scope,
                 context = context,
-                profileImageUri = uiState.value.profileImageUri,
+                profileImage = uiState.value.profileImage,
                 name = name.text,
                 nickname = nickname.text,
                 birthdate = birthdate.text,
@@ -116,12 +112,13 @@ fun ProfileEditScreen(
 @Composable
 private fun ProfileEditScreenUI(
     modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
     name: TextFieldValue = TextFieldValue(),
     nickname: TextFieldValue = TextFieldValue(),
     birthdate: TextFieldValue = TextFieldValue(),
     defaultProfileImageUri: Uri,
-    profileImageUri: Uri,
-    onImageChanged: (Uri) -> Unit = {},
+    profileImage: File?,
+    onImageChanged: (Context, Uri) -> Unit = { _, _ -> },
     onNameChanged: (TextFieldValue) -> Unit = {},
     onNicknameChanged: (TextFieldValue) -> Unit = {},
     onBirthdateChanged: (TextFieldValue) -> Unit = {},
@@ -143,11 +140,23 @@ private fun ProfileEditScreenUI(
             color = AppColors.black1,
             modifier = Modifier.padding(vertical = 18.dp)
         )
-        ProfileImageRenderer(
-            modifier = Modifier.padding(top = 4.dp, bottom = 22.dp),
-            profileImageUri = profileImageUri
-        )
-        ProfileDropdown(
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp, bottom = 22.dp)
+        ) {
+            AsyncImage(
+                model = profileImage,
+                contentDescription = "profile",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape)
+                    .align(Alignment.Center)
+            )
+        }
+        EditImageDialog(
+            context = context,
             defaultProfileImageUri = defaultProfileImageUri,
             onImageChanged = onImageChanged,
         )
@@ -210,38 +219,17 @@ private fun ProfileEditScreenUI(
 }
 
 private fun onEditButtonClicked(
-    scope: CoroutineScope,
     context: Context,
-    profileImageUri: Uri,
+    profileImage: File?,
     name: String,
     nickname: String,
     birthdate: String,
     editUserProfile: (File, String, String, String) -> Unit
 ) {
-    scope.launch {
-        val imageFile = FileUtil.imageFileResize(context, profileImageUri)
-        editUserProfile(imageFile, name, nickname, birthdate)
-    }
-}
-
-@Composable
-private fun ProfileImageRenderer(
-    modifier: Modifier = Modifier,
-    profileImageUri: Uri,
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.Top
-    ) {
-        AsyncImage(
-            model = profileImageUri,
-            contentDescription = "profile",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(80.dp)
-                .clip(CircleShape)
-        )
+    if (profileImage == null) {
+        Toast.makeText(context, R.string.profile_edit_image_error, Toast.LENGTH_SHORT).show()
+    } else {
+        editUserProfile(profileImage, name, nickname, birthdate)
     }
 }
 
@@ -285,21 +273,21 @@ private fun ProfileTextField(
 }
 
 @Composable
-private fun ProfileDropdown(
+private fun EditImageDialog(
+    context: Context = LocalContext.current,
     defaultProfileImageUri: Uri,
-    onImageChanged: (Uri) -> Unit,
+    onImageChanged: (Context, Uri) -> Unit,
 ) {
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = {
             if (it == null) return@rememberLauncherForActivityResult
-            onImageChanged(it)
+            onImageChanged(context, it)
         }
     )
     var showDialog by remember { mutableStateOf(false) }
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
+        modifier = Modifier.fillMaxWidth()
     ) {
         Text(
             text = stringResource(id = R.string.profile_select_photo),
@@ -319,7 +307,7 @@ private fun ProfileDropdown(
                 )
             },
             onDefaultImageSelected = {
-                onImageChanged(defaultProfileImageUri)
+                onImageChanged(context, defaultProfileImageUri)
             }
         )
     }
@@ -354,7 +342,7 @@ private fun ProfileButton(
 private fun ProfileEditScreenPreview() {
     ProfileEditScreenUI(
         defaultProfileImageUri = Uri.parse(""),
-        profileImageUri = Uri.parse(""),
+        profileImage = null,
         profileEditValidated = ProfileEditValidated(
             nameValidated = true,
             nicknameValidated = true,
