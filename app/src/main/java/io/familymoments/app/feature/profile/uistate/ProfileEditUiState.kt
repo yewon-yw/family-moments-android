@@ -1,7 +1,7 @@
 package io.familymoments.app.feature.profile.uistate
 
-import android.net.Uri
 import androidx.compose.runtime.Immutable
+import java.io.File
 
 @Immutable
 data class ProfileEditUiState(
@@ -9,7 +9,7 @@ data class ProfileEditUiState(
     val errorMessage: String? = null,
     val profileEditInfoUiState: ProfileEditInfoUiState = ProfileEditInfoUiState(),
     val profileEditValidated: ProfileEditValidated = ProfileEditValidated(),
-    val profileImageUri: Uri
+    val profileImage: File? = null
 )
 
 data class ProfileEditInfoUiState(
