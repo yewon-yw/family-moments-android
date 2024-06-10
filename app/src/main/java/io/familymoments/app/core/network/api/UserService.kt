@@ -6,27 +6,20 @@ import io.familymoments.app.core.network.dto.request.LoginRequest
 import io.familymoments.app.core.network.dto.request.ModifyPasswordRequest
 import io.familymoments.app.core.network.dto.request.ModifyPwdInFindPwdRequest
 import io.familymoments.app.core.network.dto.request.ProfileEditRequest
-
+import io.familymoments.app.core.network.dto.request.SendEmailRequest
 import io.familymoments.app.core.network.dto.request.SocialSignInRequest
 import io.familymoments.app.core.network.dto.response.ApiResponse
-
-import io.familymoments.app.core.network.dto.request.SendEmailRequest
 import io.familymoments.app.core.network.dto.response.CheckIdExistResponse
 import io.familymoments.app.core.network.dto.response.FindPwdResponse
-
 import io.familymoments.app.core.network.dto.response.LoginResponse
 import io.familymoments.app.core.network.dto.response.LogoutResponse
 import io.familymoments.app.core.network.dto.response.ModifyPasswordResponse
 import io.familymoments.app.core.network.dto.response.ModifyPwdInFindPwdResponse
 import io.familymoments.app.core.network.dto.response.ProfileEditResponse
 import io.familymoments.app.core.network.dto.response.SearchMemberResponse
-
+import io.familymoments.app.core.network.dto.response.SendEmailResponse
 import io.familymoments.app.core.network.dto.response.SocialSignInResult
 import io.familymoments.app.core.network.dto.response.UserProfile
-
-import io.familymoments.app.core.network.dto.response.SendEmailResponse
-import io.familymoments.app.core.network.dto.response.UserProfileResponse
-
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
@@ -78,7 +71,8 @@ interface UserService {
     @POST("/users/oauth2/social/login/sdk")
     suspend fun executeSocialSignIn(
         @Body socialSignInRequest: SocialSignInRequest,
-        @Header("SOCIAL-TOKEN") token: String
+        @Header("SOCIAL-TOKEN") token: String,
+        @Header("FCM-Token") fcmToken: String
     ): Response<ApiResponse<SocialSignInResult>>
 
     @POST("/users/auth/check-id")

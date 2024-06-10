@@ -2,7 +2,7 @@ package io.familymoments.app.feature.signup.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
-import io.familymoments.app.core.network.dto.request.UserJoinReq
+import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.SignInRepository
 import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.feature.signup.UserInfoFormatChecker
@@ -22,7 +22,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SignUpViewModel @Inject constructor(
     private val signInRepository: SignInRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
 ) : BaseViewModel() {
 
     private val _uiState: MutableStateFlow<SignUpUiState> = MutableStateFlow(SignUpUiState())
@@ -171,30 +172,6 @@ class SignUpViewModel @Inject constructor(
         }
     }
 
-    fun resetUserIdDuplicatedSuccess() {
-        _uiState.update {
-            it.copy(
-                signUpValidatedUiState = it.signUpValidatedUiState.copy(
-                    userIdDuplicatedUiState = it.signUpValidatedUiState.userIdDuplicatedUiState.copy(
-                        isSuccess = null
-                    )
-                )
-            )
-        }
-    }
-
-    fun resetEmailDuplicatedSuccess() {
-        _uiState.update {
-            it.copy(
-                signUpValidatedUiState = it.signUpValidatedUiState.copy(
-                    emailDuplicatedUiState = it.signUpValidatedUiState.emailDuplicatedUiState.copy(
-                        isSuccess = null
-                    )
-                )
-            )
-        }
-    }
-
     fun executeSignUp(signUpInfoUiState: SignUpInfoUiState, socialType: String = "", socialToken: String = "") {
         check(signUpInfoUiState.imgFile != null) { throw NullPointerException() }
         val imageRequestBody = signUpInfoUiState.imgFile.asRequestBody("image/*".toMediaTypeOrNull())
@@ -211,7 +188,8 @@ class SignUpViewModel @Inject constructor(
             onSuccess = {
                 async(
                     operation = {
-                        userRepository.executeSocialSignIn(socialType, socialToken)
+                        val fcmToken = userInfoPreferencesDataSource.loadFCMToken()
+                        userRepository.executeSocialSignIn(socialType, socialToken, fcmToken)
                     },
                     onSuccess = {
                         _uiState.update {

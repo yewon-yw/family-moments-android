@@ -177,11 +177,11 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun executeSocialSignIn(type: String, token: String): Flow<Resource<SocialSignInResult>> {
+    override suspend fun executeSocialSignIn(type: String, token: String, fcmToken: String): Flow<Resource<SocialSignInResult>> {
         return flow {
             emit(Resource.Loading)
 
-            val response = userService.executeSocialSignIn(SocialSignInRequest(type), token)
+            val response = userService.executeSocialSignIn(SocialSignInRequest(type), token, fcmToken)
 
             if (response.code() == 200) {
                 response.headers()["X-AUTH-TOKEN"]?.let {

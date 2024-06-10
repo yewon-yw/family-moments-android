@@ -68,13 +68,22 @@ class LoginViewModel @Inject constructor(
         NaverAuth.login(context) { token ->
             if (token != null) {
                 async(
-                    operation = { userRepository.executeSocialSignIn(NaverAuth.NAME, token) },
+                    operation = {
+                        val fcmToken = userInfoPreferencesDataSource.loadFCMToken()
+                        userRepository.executeSocialSignIn(NaverAuth.NAME, token, fcmToken)
+                    },
                     onSuccess = {
                         _loginUiState.value = _loginUiState.value.copy(
                             isSuccess = true,
                             isNeedToSignUp = !it.isExisted,
                             isLoading = isLoading.value,
-                            loginResult = LoginResult(it.familyId, it.email ?: "", it.name ?: "", it.nickname ?: "", it.strBirthDate ?: ""),
+                            loginResult = LoginResult(
+                                it.familyId,
+                                it.email ?: "",
+                                it.name ?: "",
+                                it.nickname ?: "",
+                                it.strBirthDate ?: ""
+                            ),
                             socialType = NaverAuth.NAME,
                             socialToken = token
                         )
@@ -95,13 +104,20 @@ class LoginViewModel @Inject constructor(
         KakaoAuth.login(context) { token ->
             if (token != null) {
                 async(
-                    operation = { userRepository.executeSocialSignIn(KakaoAuth.NAME, token) },
+                    operation = {
+                        val fcmToken = userInfoPreferencesDataSource.loadFCMToken()
+                        userRepository.executeSocialSignIn(KakaoAuth.NAME, token, fcmToken)
+                    },
                     onSuccess = {
                         _loginUiState.value = _loginUiState.value.copy(
                             isSuccess = true,
                             isNeedToSignUp = !it.isExisted,
                             isLoading = isLoading.value,
-                            loginResult = LoginResult(it.familyId, it.email ?: "", strBirthDate = it.strBirthDate ?: ""),
+                            loginResult = LoginResult(
+                                it.familyId,
+                                it.email ?: "",
+                                strBirthDate = it.strBirthDate ?: ""
+                            ),
                             socialType = KakaoAuth.NAME,
                             socialToken = token
                         )
