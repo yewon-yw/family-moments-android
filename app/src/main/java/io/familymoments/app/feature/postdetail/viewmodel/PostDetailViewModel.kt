@@ -18,11 +18,10 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
-import java.time.Duration
 import java.time.LocalDate
-import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Locale
 import javax.inject.Inject
 
 @HiltViewModel
@@ -362,12 +361,16 @@ class PostDetailViewModel @Inject constructor(
 
     fun formatCommentCreatedDate(createdAt: String): String {
         val createdAtWithoutMillie = createdAt.split(".")[0]
-        val dateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss"
-        val dateTimeFormatter = DateTimeFormatter.ofPattern(dateTimeFormat, Locale.KOREA)
-        val localDateTime = LocalDateTime.parse(createdAtWithoutMillie, dateTimeFormatter)
-        val durationSeconds = Duration.between(localDateTime, LocalDateTime.now()).seconds
+        val utcDateTime =
+            ZonedDateTime.parse(createdAtWithoutMillie, DateTimeFormatter.ISO_DATE_TIME.withZone(ZoneId.of("UTC")))
+        val localDateTime = utcDateTime.withZoneSameInstant(ZoneId.systemDefault()) // 사용자의 로컬 시간대로 변환
+        val now = ZonedDateTime.now(ZoneId.systemDefault()) // 현재 시간
+        val durationSeconds = now.toEpochSecond() - localDateTime.toEpochSecond() // 경과 시간 계산
 
-        // 초 단위
+        return formatDuration(durationSeconds)
+    }
+
+    private fun formatDuration(durationSeconds: Long): String {
         val oneMinute = 60
         val oneHour = oneMinute * 60
         val oneDay = oneHour * 24
