@@ -1,6 +1,7 @@
 package io.familymoments.app.core.network.api
 
 import io.familymoments.app.core.network.dto.request.CheckIdExistRequest
+import io.familymoments.app.core.network.dto.request.FindIdRequest
 import io.familymoments.app.core.network.dto.request.FindPwdRequest
 import io.familymoments.app.core.network.dto.request.LoginRequest
 import io.familymoments.app.core.network.dto.request.ModifyPasswordRequest
@@ -10,6 +11,7 @@ import io.familymoments.app.core.network.dto.request.SendEmailRequest
 import io.familymoments.app.core.network.dto.request.SocialSignInRequest
 import io.familymoments.app.core.network.dto.response.ApiResponse
 import io.familymoments.app.core.network.dto.response.CheckIdExistResponse
+import io.familymoments.app.core.network.dto.response.FindIdResponse
 import io.familymoments.app.core.network.dto.response.FindPwdResponse
 import io.familymoments.app.core.network.dto.response.LoginResponse
 import io.familymoments.app.core.network.dto.response.LogoutResponse
@@ -90,4 +92,6 @@ interface UserService {
         @Body modifyPwdInFindPwdRequest: ModifyPwdInFindPwdRequest
     ): Response<ModifyPwdInFindPwdResponse>
 
+    @POST("/users/auth/find-id")
+    suspend fun findId(@Body findIdRequest: FindIdRequest): Response<FindIdResponse>
 }

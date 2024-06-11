@@ -1,7 +1,6 @@
 package io.familymoments.app.core.component
 
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -24,15 +23,15 @@ fun FMButton(
     enabled: Boolean = true,
     radius: Dp = 60.dp,
     textStyle: TextStyle = AppTypography.BTN4_18,
-    textModifier:Modifier = Modifier.padding(vertical = 6.dp),
-    contentPaddingValues: PaddingValues = PaddingValues(vertical = 4.dp, horizontal = 18.dp)
+    contentPaddingValues: PaddingValues = PaddingValues(vertical = 10.dp, horizontal = 18.dp),
+    containerColor:Color = AppColors.deepPurple1
 ) {
     Button(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
         colors = ButtonDefaults.buttonColors(
-            containerColor = AppColors.deepPurple1,
+            containerColor = containerColor,
             disabledContainerColor = AppColors.grey3
         ),
         shape = RoundedCornerShape(radius),
@@ -40,7 +39,6 @@ fun FMButton(
     ) {
         Text(
             text = text,
-            modifier = textModifier,
             style = textStyle,
             color = Color.White
         )

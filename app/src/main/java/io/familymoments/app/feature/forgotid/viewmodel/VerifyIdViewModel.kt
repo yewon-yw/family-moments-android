@@ -1,20 +1,20 @@
-package io.familymoments.app.feature.forgotpassword.viewmodel
+package io.familymoments.app.feature.forgotid.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.repository.UserRepository
-import io.familymoments.app.feature.forgotpassword.uistate.VerifyUiState
+import io.familymoments.app.feature.forgotid.uistate.VerifyIdUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class VerifyViewModel @Inject constructor(
-    private val userRepository: UserRepository
+class VerifyIdViewModel @Inject constructor(
+    val userRepository: UserRepository
 ) : BaseViewModel() {
 
-    private val _uiState = MutableStateFlow(VerifyUiState())
+    private val _uiState = MutableStateFlow(VerifyIdUiState())
     val uiState = _uiState.asStateFlow()
 
     fun sendEmail(name: String, email: String) {
@@ -54,17 +54,17 @@ class VerifyViewModel @Inject constructor(
         )
     }
 
-    fun findPwd(name: String, email: String, code: String) {
+    fun findId(name: String, email: String, code: String) {
         async(
             operation = {
-                userRepository.findPwd(name, email, code)
+                userRepository.findId(name, email, code)
             },
             onSuccess = { response ->
                 _uiState.update {
                     it.copy(
-                        findPwdUiState = it.findPwdUiState.copy(
+                        findIdUiState = it.findIdUiState.copy(
                             isSuccess = true,
-                            result = response.result
+                            userId = response.result.userId
                         )
                     )
                 }
@@ -72,7 +72,7 @@ class VerifyViewModel @Inject constructor(
             onFailure = { throwable ->
                 _uiState.update {
                     it.copy(
-                        findPwdUiState = it.findPwdUiState.copy(
+                        findIdUiState = it.findIdUiState.copy(
                             isSuccess = false,
                             message = throwable.message ?: ""
                         )
@@ -86,17 +86,17 @@ class VerifyViewModel @Inject constructor(
         _uiState.update {
             it.copy(
                 sendEmailUiState = it.sendEmailUiState.copy(
-                    isSuccess = null
+                    isSuccess = null,
                 )
             )
         }
     }
 
-    fun resetFindPwdSuccess() {
+    fun resetFindIdSuccess() {
         _uiState.update {
             it.copy(
-                findPwdUiState = it.findPwdUiState.copy(
-                    isSuccess = null
+                findIdUiState = it.findIdUiState.copy(
+                    isSuccess = null,
                 )
             )
         }

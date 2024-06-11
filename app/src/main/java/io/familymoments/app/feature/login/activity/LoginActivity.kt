@@ -6,6 +6,8 @@ import androidx.compose.runtime.Composable
 import dagger.hilt.android.AndroidEntryPoint
 import io.familymoments.app.core.base.BaseActivity
 import io.familymoments.app.feature.bottomnav.activity.MainActivity
+import io.familymoments.app.feature.forgotid.activity.ForgotIdActivity
+import io.familymoments.app.feature.forgotpassword.activity.ForgotPasswordActivity
 import io.familymoments.app.feature.login.screen.LoginScreen
 import io.familymoments.app.feature.login.uistate.LoginUiState
 import io.familymoments.app.feature.login.viewmodel.LoginViewModel
@@ -16,7 +18,7 @@ import io.familymoments.app.feature.signup.activity.SocialSignUpActivity
 
 class LoginActivity : BaseActivity<LoginViewModel>(LoginViewModel::class) {
     override val screen: @Composable () -> Unit = {
-        LoginScreen(viewModel, ::routeToSignUp, ::routeToMainActivity)
+        LoginScreen(viewModel, ::routeToSignUp, ::routeToMainActivity, ::routeToForgotPassword, ::routeToForgotId)
     }
 
     private val socialSignUpActivity = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -47,6 +49,14 @@ class LoginActivity : BaseActivity<LoginViewModel>(LoginViewModel::class) {
             intent.putExtra("strBirthDate", loginUiState.loginResult?.strBirthDate)
             socialSignUpActivity.launch(intent)
         }
+    }
+
+    private fun routeToForgotPassword() {
+        startActivity(Intent(this, ForgotPasswordActivity::class.java))
+    }
+
+    private fun routeToForgotId() {
+        startActivity(Intent(this, ForgotIdActivity::class.java))
     }
 
 }

@@ -154,7 +154,7 @@ fun ResetScreenUI(
         Spacer(modifier = Modifier.height(9.dp))
         if (passwordConfirm.text.isNotEmpty() && !isValid) {
             Text(
-                text = stringResource(id = R.string.sign_up_password_check_validation_warning),
+                text = stringResource(R.string.forgot_password_check_validation_warning),
                 style = AppTypography.LB1_13,
                 color = AppColors.red2
             )
@@ -167,7 +167,6 @@ fun ResetScreenUI(
             text = stringResource(id = R.string.forgot_password_btn_reset),
             contentPaddingValues = PaddingValues(top = 20.dp, bottom = 18.dp),
             modifier = Modifier.fillMaxWidth(),
-            textModifier = Modifier,
             enabled = isValid
         )
         Spacer(modifier = Modifier.height(101.dp))
