@@ -9,9 +9,3 @@ data class SignUpResponse(
     val message: String,
     val result: String
 )
-
-data class SignUpResult(
-    val email: String,
-    val nickname: String,
-    val profileImg: String,
-)
