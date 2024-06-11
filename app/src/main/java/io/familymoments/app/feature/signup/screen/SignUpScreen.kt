@@ -58,7 +58,9 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
     SignUpScreenUI(
         uiState = uiState,
         onResetUserIdDuplicatedPass = viewModel::resetUserIdDuplicatedPass,
+        onResetUserIdDuplicatedPassSuccess = viewModel::resetUserIdDuplicatedSuccess,
         onResetEmailDuplicatedPass = viewModel::resetEmailDuplicatedPass,
+        onResetEmailDuplicatedSuccess = viewModel::resetEmailDuplicatedSuccess,
         onResetSignUpResultSuccess = viewModel::resetSignUpResultSuccess,
         onCheckIdFormat = viewModel::checkIdFormat,
         onCheckIdDuplication = viewModel::checkIdDuplication,
@@ -76,7 +78,9 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
 fun SignUpScreenUI(
     uiState: State<SignUpUiState> = remember { mutableStateOf(SignUpUiState()) },
     onResetUserIdDuplicatedPass: () -> Unit = {},
+    onResetUserIdDuplicatedPassSuccess: () -> Unit = {},
     onResetEmailDuplicatedPass: () -> Unit = {},
+    onResetEmailDuplicatedSuccess: () -> Unit = {},
     onResetSignUpResultSuccess: () -> Unit = {},
     onCheckIdFormat: (String) -> Unit = {},
     onCheckIdDuplication: (String) -> Unit = {},
@@ -110,11 +114,11 @@ fun SignUpScreenUI(
             uiState.value.signUpValidatedUiState.userIdDuplicatedUiState.isSuccess,
             context
         )
-        onResetUserIdDuplicatedPass()
+        onResetUserIdDuplicatedPassSuccess()
     }
     LaunchedEffect(uiState.value.signUpValidatedUiState.emailDuplicatedUiState) {
         showEmailDuplicationCheckResult(uiState.value.signUpValidatedUiState.emailDuplicatedUiState.isSuccess, context)
-        onResetEmailDuplicatedPass()
+        onResetEmailDuplicatedSuccess()
     }
 
     LaunchedEffect(uiState.value.signUpResultUiState.isSuccess) {
@@ -160,7 +164,7 @@ fun SignUpScreenUI(
                 checkIdFormat = onCheckIdFormat,
                 checkIdDuplication = onCheckIdDuplication,
                 resetUserIdDuplicatedPass = onResetUserIdDuplicatedPass,
-                userIdDuplicated = uiState.value.signUpValidatedUiState.userIdDuplicatedUiState.duplicatedPass.not()
+                userIdDuplicated = uiState.value.signUpValidatedUiState.userIdDuplicatedUiState.duplicatedPass
             ) {
                 signUpInfoUiState = signUpInfoUiState.copy(id = it)
             }
@@ -223,7 +227,6 @@ private fun showEmailDuplicationCheckResult(emailDuplicated: Boolean?, context: 
             .show()
     }
 }
-
 
 
 @Composable

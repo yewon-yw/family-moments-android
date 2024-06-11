@@ -7,11 +7,5 @@ data class SignUpResponse(
     val isSuccess: Boolean,
     val code: Int,
     val message: String,
-    val result: SignUpResult
-)
-
-data class SignUpResult(
-    val email: String,
-    val nickname: String,
-    val profileImg: String,
+    val result: String
 )
