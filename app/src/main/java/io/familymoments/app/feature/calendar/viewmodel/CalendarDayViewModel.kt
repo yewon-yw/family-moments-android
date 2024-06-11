@@ -62,7 +62,9 @@ class CalendarDayViewModel @Inject constructor(
                     isLoading = isLoading.value,
                     posts = it.result
                 )
-                minPostId = it.result.minOf { post -> post.postId }
+                if (it.result.isNotEmpty()) {
+                    minPostId = it.result.minOf { post -> post.postId }
+                }
             },
             onFailure = {
                 _calendarDayUiState.value = _calendarDayUiState.value.copy(
@@ -92,7 +94,9 @@ class CalendarDayViewModel @Inject constructor(
                     isLoading = isLoading.value,
                     posts = _calendarDayUiState.value.posts + it.result
                 )
-                minPostId = it.result.minOf { post -> post.postId }
+                if (it.result.isNotEmpty()) {
+                    minPostId = it.result.minOf { post -> post.postId }
+                }
             },
             onFailure = {
                 _calendarDayUiState.value = _calendarDayUiState.value.copy(
