@@ -136,7 +136,13 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
     } == true
 
     AppBarScreen(
-        title = { Text(text = "sweety home", style = AppTypography.SH3_16, color = AppColors.deepPurple1) },
+        title = {
+            Text(
+                text = appBarUiState.value.familyName,
+                style = AppTypography.SH3_16,
+                color = AppColors.deepPurple1
+            )
+        },
         navigationIcon = navigationIcon,
         bottomBar = {
             if (isBottomNavItem && !isKeyboardOpen && !isAddPost) {

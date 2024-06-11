@@ -1,6 +1,7 @@
 package io.familymoments.app.feature.calendar.viewmodel
 
 import androidx.lifecycle.SavedStateHandle
+import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.graph.Route
@@ -11,6 +12,7 @@ import io.familymoments.app.feature.home.uistate.PostPopupType
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 import timber.log.Timber
 import java.time.LocalDate
 import javax.inject.Inject
@@ -31,9 +33,19 @@ class CalendarDayViewModel @Inject constructor(
 
     init {
         getPostsByDay()
+        getNickname()
     }
 
-    fun getPostsByDay() {
+    private fun getNickname() {
+        viewModelScope.launch {
+            val nickname = userInfoPreferencesDataSource.loadUserProfile().nickName
+            _calendarDayUiState.value = _calendarDayUiState.value.copy(
+                userNickname = nickname
+            )
+        }
+    }
+
+    private fun getPostsByDay() {
         Timber.d("getPostsByDay")
         val selectedDate = _calendarDayUiState.value.selectedDate
         val year = selectedDate.year

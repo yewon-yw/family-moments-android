@@ -4,6 +4,7 @@ import android.content.SharedPreferences
 import io.familymoments.app.core.network.dto.response.ProfileEditResult
 import io.familymoments.app.core.network.dto.response.UserProfile
 import io.familymoments.app.core.util.DEFAULT_FAMILY_ID_VALUE
+import io.familymoments.app.core.util.DEFAULT_FCM_TOKEN_VALUE
 import io.familymoments.app.core.util.DEFAULT_TOKEN_VALUE
 import javax.inject.Inject
 
@@ -23,6 +24,22 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
             DEFAULT_TOKEN_VALUE
         ) ?: throw IllegalStateException(
             ACCESS_TOKEN_KEY_NOT_EXIST_ERROR
+        )
+    }
+
+    override suspend fun saveFCMToken(token: String) {
+        with(sharedPreferences.edit()) {
+            putString(FCM_TOKEN_KEY, token)
+            apply()
+        }
+    }
+
+    override suspend fun loadFCMToken(): String {
+        return sharedPreferences.getString(
+            FCM_TOKEN_KEY,
+            DEFAULT_FCM_TOKEN_VALUE
+        ) ?: throw IllegalStateException(
+            FCM_TOKEN_KEY_NOT_EXIST_ERROR
         )
     }
 
@@ -96,7 +113,7 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
     }
 
     override suspend fun resetPreferencesData() {
-        sharedPreferences.edit().clear().commit()
+        sharedPreferences.edit().clear().apply()
     }
 
     override suspend fun updateUserProfile(profileEditResult: ProfileEditResult) {
@@ -109,10 +126,44 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
         }
     }
 
+    override suspend fun saveRefreshToken(refreshToken: String) {
+        with(sharedPreferences.edit()) {
+            putString(REFRESH_TOKEN_KEY, refreshToken)
+            apply()
+        }
+    }
+
+    override suspend fun loadRefreshToken(): String {
+        return sharedPreferences.getString(
+            REFRESH_TOKEN_KEY,
+            DEFAULT_TOKEN_VALUE
+        ) ?: throw IllegalStateException(
+            ACCESS_TOKEN_KEY_NOT_EXIST_ERROR
+        )
+    }
+
+    override fun saveSocialLoginType(socialLoginType: String) {
+        sharedPreferences.edit().putString(SOCIAL_LOGIN_TYPE_KEY, socialLoginType).apply()
+    }
+
+    override fun loadSocialLoginType(): String {
+        return sharedPreferences.getString(
+            SOCIAL_LOGIN_TYPE_KEY,
+            ""
+        ) ?: throw IllegalStateException(
+            "소셜 로그인 타입이 존재하지 않습니다."
+        )
+    }
+
     companion object {
         private const val ACCESS_TOKEN_KEY = "access_token"
         private const val ACCESS_TOKEN_KEY_NOT_EXIST_ERROR = "액세스 토큰이 존재하지 않습니다."
         private const val FAMILY_ID_KEY = "family_id"
+        private const val FCM_TOKEN_KEY = "fcm_token"
+        private const val FCM_TOKEN_KEY_NOT_EXIST_ERROR = "FCM 토큰이 존재하지 않습니다."
+
+        private const val REFRESH_TOKEN_KEY = "refresh_token"
+        private const val SOCIAL_LOGIN_TYPE_KEY = "social_login_type"
 
         private const val USER_NAME_KEY = "name"
         private const val USER_BIRTH_DATE_KEY = "birthDate"

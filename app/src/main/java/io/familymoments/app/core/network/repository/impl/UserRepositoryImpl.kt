@@ -6,15 +6,29 @@ import io.familymoments.app.core.network.HttpResponse
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.UserService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
+import io.familymoments.app.core.network.dto.request.CheckIdExistRequest
+import io.familymoments.app.core.network.dto.request.FindIdRequest
+import io.familymoments.app.core.network.dto.request.FindPwdRequest
 import io.familymoments.app.core.network.dto.request.LoginRequest
 import io.familymoments.app.core.network.dto.request.ModifyPasswordRequest
+import io.familymoments.app.core.network.dto.request.ModifyPwdInFindPwdRequest
 import io.familymoments.app.core.network.dto.request.ProfileEditRequest
+import io.familymoments.app.core.network.dto.request.SendEmailRequest
+import io.familymoments.app.core.network.dto.request.SocialSignInRequest
+import io.familymoments.app.core.network.dto.response.ApiResponse
+import io.familymoments.app.core.network.dto.response.CheckIdExistResponse
+import io.familymoments.app.core.network.dto.response.FindIdResponse
+import io.familymoments.app.core.network.dto.response.FindPwdResponse
 import io.familymoments.app.core.network.dto.response.LoginResponse
 import io.familymoments.app.core.network.dto.response.LogoutResponse
 import io.familymoments.app.core.network.dto.response.ModifyPasswordResponse
+import io.familymoments.app.core.network.dto.response.ModifyPwdInFindPwdResponse
 import io.familymoments.app.core.network.dto.response.ProfileEditResponse
 import io.familymoments.app.core.network.dto.response.SearchMemberResponse
-import io.familymoments.app.core.network.dto.response.UserProfileResponse
+import io.familymoments.app.core.network.dto.response.SendEmailResponse
+import io.familymoments.app.core.network.dto.response.SocialSignInResult
+import io.familymoments.app.core.network.dto.response.UserProfile
+import io.familymoments.app.core.network.dto.response.getResourceFlow
 import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.core.util.DEFAULT_FAMILY_ID_VALUE
 import kotlinx.coroutines.flow.Flow
@@ -31,17 +45,17 @@ class UserRepositoryImpl @Inject constructor(
 ) : UserRepository {
     override suspend fun loginUser(
         username: String,
-        password: String
+        password: String,
+        fcmToken: String
     ): Flow<Resource<LoginResponse>> {
         return flow {
             emit(Resource.Loading)
-            val response = userService.loginUser(
-                LoginRequest(
-                    username,
-                    password
-                )
-            )
+            val response = userService.loginUser(LoginRequest(username, password), fcmToken)
             val responseBody = response.body() ?: LoginResponse()
+
+            response.headers()["REFRESH_TOKEN"]?.let {
+                userInfoPreferencesDataSource.saveRefreshToken(it)
+            }
 
             if (responseBody.isSuccess) {
                 saveAccessToken(response.headers())
@@ -75,7 +89,10 @@ class UserRepositoryImpl @Inject constructor(
     override suspend fun reissueAccessToken(): Flow<Resource<Unit>> {
         return flow {
             emit(Resource.Loading)
-            val response = userService.reissueAccessToken()
+            // get refresh token from shared preferences
+            val refreshToken = userInfoPreferencesDataSource.loadRefreshToken()
+
+            val response = userService.reissueAccessToken(refreshToken)
             if (response.code() == HttpResponse.SUCCESS) {
                 // refresh token 을 기반으로 access token 재발급 성공
                 kotlin.runCatching {
@@ -100,21 +117,9 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun loadUserProfile(familyId: Long?): Flow<Resource<UserProfileResponse>> {
-        return flow {
-            emit(Resource.Loading)
-            val response = userService.loadUserProfile(familyId)
-            val responseBody = response.body() ?: UserProfileResponse()
-
-            if (responseBody.isSuccess) {
-                emit(Resource.Success(responseBody))
-            } else {
-                emit(Resource.Fail(Throwable(responseBody.message)))
-            }
-
-        }.catch { e ->
-            emit(Resource.Fail(e))
-        }
+    override suspend fun loadUserProfile(familyId: Long?): Flow<Resource<ApiResponse<UserProfile>>> {
+        val response = userService.loadUserProfile(familyId)
+        return getResourceFlow(response)
     }
 
     override suspend fun modifyPassword(modifyPasswordRequest: ModifyPasswordRequest): Flow<Resource<ModifyPasswordResponse>> {
@@ -168,6 +173,144 @@ class UserRepositoryImpl @Inject constructor(
                 emit(Resource.Success(responseBody))
             } else {
                 emit(Resource.Fail(Throwable(responseBody.message)))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun executeSocialSignIn(
+        type: String,
+        token: String,
+        fcmToken: String
+    ): Flow<Resource<SocialSignInResult>> = flow {
+        emit(Resource.Loading)
+
+        val response = userService.executeSocialSignIn(SocialSignInRequest(type), token, fcmToken)
+
+        if (response.code() == 200) {
+            val headers = response.headers()
+            saveTokensFrom(headers)
+
+            val body = response.body()!!
+            if (body.isSuccess) {
+                body.result.familyId?.let { userInfoPreferencesDataSource.saveFamilyId(it) }
+                userInfoPreferencesDataSource.saveSocialLoginType(type)
+                emit(Resource.Success(body.result))
+            } else {
+                emit(Resource.Fail(Throwable(body.message)))
+            }
+        } else {
+            emit(Resource.Fail(Throwable("Failed to sign in")))
+        }
+    }.catch { e ->
+        emit(Resource.Fail(e))
+    }
+
+
+    private suspend fun saveTokensFrom(headers: Headers) {
+        headers["X-AUTH-TOKEN"]?.let {
+            userInfoPreferencesDataSource.saveAccessToken(it)
+        }
+
+        headers["REFRESH-TOKEN"]?.let {
+            userInfoPreferencesDataSource.saveRefreshToken(it)
+        }
+    }
+
+    override suspend fun checkIdExist(userId: String): Flow<Resource<CheckIdExistResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = userService.checkIdExist(CheckIdExistRequest(userId))
+            if (response.code() == HttpResponse.SUCCESS) {
+                val responseBody = response.body() ?: CheckIdExistResponse()
+                if (responseBody.isSuccess) {
+                    emit(Resource.Success(responseBody))
+                } else {
+                    emit(Resource.Fail(Throwable(responseBody.message)))
+                }
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun sendEmail(name: String, email: String): Flow<Resource<SendEmailResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = userService.sendEmail(SendEmailRequest(name, email))
+            if (response.code() == HttpResponse.SUCCESS) {
+                val responseBody = response.body() ?: SendEmailResponse()
+                if (responseBody.isSuccess) {
+                    emit(Resource.Success(responseBody))
+                } else {
+                    emit(Resource.Fail(Throwable(responseBody.message)))
+                }
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun findPwd(name: String, email: String, code: String): Flow<Resource<FindPwdResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = userService.findPwd(FindPwdRequest(name, email, code))
+            if (response.code() == HttpResponse.SUCCESS) {
+                val responseBody = response.body() ?: FindPwdResponse()
+                if (responseBody.isSuccess) {
+                    emit(Resource.Success(responseBody))
+                } else {
+                    emit(Resource.Fail(Throwable(responseBody.message)))
+                }
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun modifyPwdInFindPwd(
+        id: String,
+        password: String,
+        passwordConfirm: String
+    ): Flow<Resource<ModifyPwdInFindPwdResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = userService.modifyPwdInFindPwd(id, ModifyPwdInFindPwdRequest(password, passwordConfirm))
+            if (response.code() == HttpResponse.SUCCESS) {
+                val responseBody = response.body() ?: ModifyPwdInFindPwdResponse()
+                if (responseBody.isSuccess) {
+                    emit(Resource.Success(responseBody))
+                } else {
+                    emit(Resource.Fail(Throwable(responseBody.message)))
+                }
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
+            }
+        }.catch { e ->
+            emit(Resource.Fail(e))
+        }
+    }
+
+    override suspend fun findId(name: String, email: String, code: String): Flow<Resource<FindIdResponse>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = userService.findId(FindIdRequest(name, email, code))
+            if (response.code() == HttpResponse.SUCCESS) {
+                val responseBody = response.body() ?: FindIdResponse()
+                if (responseBody.isSuccess) {
+                    emit(Resource.Success(responseBody))
+                } else {
+                    emit(Resource.Fail(Throwable(responseBody.message)))
+                }
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
             }
         }.catch { e ->
             emit(Resource.Fail(e))

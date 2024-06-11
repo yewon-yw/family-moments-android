@@ -11,7 +11,8 @@ data class PostDetailUiState(
     val comments:List<GetCommentsResult> = listOf(),
     val postLoves: List<GetPostLovesResult> = listOf(),
     val resetComment:Boolean = false,
-    val popup: PostDetailPopupType? = null
+    val popup: PostDetailPopupType? = null,
+    val userNickname:String = ""
 )
 
 sealed interface PostDetailPopupType {

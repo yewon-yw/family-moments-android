@@ -4,56 +4,58 @@ import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.ImageDecoder
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
-import coil.ImageLoader
-import coil.request.ImageRequest
-import coil.request.SuccessResult
-import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 import java.io.File
 import java.io.FileOutputStream
 import java.net.URL
-import kotlin.math.roundToInt
 
 object FileUtil {
     private const val COMPRESS_QUALITY = 50
     private const val URI_SCHEME_HTTPS = "https"
     private const val URI_SCHEME_CONTENT = "content"
 
-    suspend fun imageFilesResize(
+    fun imageFilesResize(
         context: Context,
         uriList: List<Uri>
     ): List<File> {
         val pathHashMap = hashMapOf<Int, String?>()
 
-        CoroutineScope(Dispatchers.IO).launch {
-            uriList.forEachIndexed { index, uri ->
-                launch {
-                    val path = optimizeBitmap(context, uri, index)
-                    pathHashMap[index] = path
-                }
-            }
-        }.join()
+        uriList.forEachIndexed { index, uri ->
+            val path = optimizeBitmap(context, uri, index)
+            pathHashMap[index] = path
+        }
 
         return pathHashMap.map { File(it.value!!) }
     }
 
+    fun imageFileResize(
+        context: Context,
+        uri: Uri,
+        index: Int = 0
+    ): File {
+        val path = optimizeBitmap(context, uri, index)
+        requireNotNull(path) { "Failed to optimize bitmap" }
+        return File(path)
+    }
+
     private fun optimizeBitmap(context: Context, uri: Uri, index: Int): String? {
         try {
-            val tempFile = File(context.cacheDir, "image$index.jpg")
+            val tempFile = File(context.cacheDir, "image$index.webp")
             tempFile.createNewFile() // 임시 파일 생성
 
             // 지정된 이름을 가진 파일에 쓸 파일 출력 스트림을 만든다.
             val fos = FileOutputStream(tempFile)
 
             convertUriToBitmap(uri, context).apply {
-                compress(Bitmap.CompressFormat.JPEG, COMPRESS_QUALITY, fos)
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                    compress(Bitmap.CompressFormat.WEBP_LOSSY, COMPRESS_QUALITY, fos)
+                } else {
+                    @Suppress("DEPRECATION")
+                    compress(Bitmap.CompressFormat.WEBP, COMPRESS_QUALITY, fos)
+                }
                 recycle()
             }
 
@@ -76,13 +78,14 @@ object FileUtil {
         /*
         uri 의 scheme 에 따라 비트맵 변환하는 과정이 다름
         - 갤러리에서 불러온 이미지 uri 의 scheme -> content
+        - app resource uri 의 scheme -> android.resource
         - url 을 변환한 uri 의 scheme -> https
         */
         if (uri?.scheme == URI_SCHEME_HTTPS) {
             val url = URL(uri.toString())
             bitmap = BitmapFactory.decodeStream(url.openConnection().getInputStream())
         }
-        if (uri?.scheme == URI_SCHEME_CONTENT) {
+        if (uri?.scheme == URI_SCHEME_CONTENT || uri?.scheme == URI_SCHEME_RESOURCE) {
             bitmap = if (Build.VERSION.SDK_INT < 28) {
                 MediaStore.Images
                     .Media.getBitmap(context.contentResolver, uri)
@@ -95,35 +98,30 @@ object FileUtil {
         return bitmap ?: throw NullPointerException()
     }
 
-
-    suspend fun convertUrlToBitmap(url: String, context: Context): Bitmap? {
-        return withContext(Dispatchers.IO) {
-            try {
-                val loader = ImageLoader(context)
-                val request = ImageRequest.Builder(context)
-                    .data(url)
-                    .build()
-                val result = (loader.execute(request) as SuccessResult).drawable
-                (result as BitmapDrawable).bitmap
-            } catch (e: Exception) {
-                e.printStackTrace()
-                null
-            }
-        }
-    }
-
-    fun convertBitmapToFile(bitmap: Bitmap, context: Context): File {
-        val file = File(context.cacheDir, "image.jpg")
+    fun convertBitmapToCompressedFile(bitmap: Bitmap, context: Context): File {
+        val file = File(context.cacheDir, "image.webp")
         file.outputStream().use { outputStream ->
-            bitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESS_QUALITY, outputStream)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                bitmap.compress(Bitmap.CompressFormat.WEBP_LOSSY, COMPRESS_QUALITY, outputStream)
+            } else {
+                @Suppress("DEPRECATION")
+                bitmap.compress(Bitmap.CompressFormat.WEBP, COMPRESS_QUALITY, outputStream)
+            }
         }
         return file
     }
 
-    fun resizeBitmap(bitmap: Bitmap, density: Float, height: Int): Bitmap {
-        val aspectRatio = bitmap.width.toFloat() / bitmap.height.toFloat()
-        val desiredHeightPx = (height.toFloat() * density).roundToInt()
-        val scaledWidthPx = (desiredHeightPx * aspectRatio).roundToInt()
-        return Bitmap.createScaledBitmap(bitmap, scaledWidthPx, desiredHeightPx, true)
+    fun uriToFile(uri: Uri, index: Int): File {
+        val url = URL(uri.toString())
+        val inputStream = url.openConnection().getInputStream()
+        val file = File.createTempFile("temp$index", ".webp")
+        inputStream?.let { input ->
+            file.outputStream().use { output ->
+                input.copyTo(output)
+            }
+        }
+        inputStream?.close()
+        return file
     }
+
 }

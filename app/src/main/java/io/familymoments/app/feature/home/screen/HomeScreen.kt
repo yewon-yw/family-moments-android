@@ -199,7 +199,7 @@ fun HomeScreenUI(
             Column(
                 modifier = modifier.padding(horizontal = 16.dp),
             ) {
-                HomeScreenTitle(hasNoPost = true, nickname = homeUiState.nickname, dday = homeUiState.dday)
+                HomeScreenTitle(hasNoPost = true, nickname = homeUiState.userNickname, dday = homeUiState.dday)
                 Column(
                     modifier = Modifier.fillMaxSize(),
                     verticalArrangement = Arrangement.Center,
@@ -226,13 +226,14 @@ fun HomeScreenUI(
                 contentPadding = PaddingValues(start = 16.dp, end = 16.dp, bottom = 24.dp)
             ) {
                 item {
-                    HomeScreenTitle(hasNoPost = false, nickname = homeUiState.nickname, dday = homeUiState.dday)
+                    HomeScreenTitle(hasNoPost = false, nickname = homeUiState.userNickname, dday = homeUiState.dday)
                 }
                 items(
                     items = homeUiState.posts,
                     key = { it.postId }
                 ) { post ->
                     PostItem(
+                        userNickname = homeUiState.userNickname,
                         post = post,
                         navigateToPostDetail = navigateToPostDetail,
                         navigateToEditPost = navigateToPostEdit,
@@ -309,7 +310,7 @@ fun HomeScreenPreview() {
     val homeUiState = HomeUiState(
         isSuccess = true,
         isLoading = false,
-        nickname = "test",
+        userNickname = "test",
         dday = "1",
         posts = List(10) {
             Post(

@@ -19,10 +19,13 @@ android {
         buildConfig = true
     }
 
+    val properties = Properties()
+    properties.load(project.rootProject.file("key.properties").inputStream())
+
     defaultConfig {
         applicationId = "io.familymoments.app"
         minSdk = 26
-        targetSdk = 33
+        targetSdk = 34
         versionCode = 2
         versionName = "0.0.1"
 
@@ -30,12 +33,18 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "NAVER_CLIENT_ID", "\"${properties.getProperty("NAVER_CLIENT_ID")}\"")
+        buildConfigField("String", "NAVER_CLIENT_SECRET", "\"${properties.getProperty("NAVER_CLIENT_SECRET")}\"")
+        buildConfigField("String", "NAVER_CLIENT_NAME", "\"${properties.getProperty("NAVER_CLIENT_NAME")}\"")
+
+        val kakaoAppKey = properties.getProperty("KAKAO_APP_KEY")
+        buildConfigField("String", "KAKAO_APP_KEY", "\"$kakaoAppKey\"")
+        manifestPlaceholders["KAKAO_APP_KEY"] = kakaoAppKey
     }
 
     signingConfigs {
         create("release") {
-            val properties = Properties()
-            properties.load(project.rootProject.file("key.properties").inputStream())
 
             keyAlias = properties.getProperty("keyAlias")
             keyPassword = properties.getProperty("keyPassword")
@@ -47,8 +56,7 @@ android {
 
     buildTypes {
         debug {
-            applicationIdSuffix = ".debug"
-            buildConfigField("String", "BASE_URL", "\"https://familymoments-be.site/\"")
+            buildConfigField("String", "BASE_URL",  "\"${properties.getProperty("DEV_BACKEND_URL")}\"")
         }
         release {
             isMinifyEnabled = true
@@ -56,11 +64,11 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
-            buildConfigField("String", "BASE_URL", "\"https://familymoments-be.site/\"")
+            buildConfigField("String", "BASE_URL", "\"${properties.getProperty("PROD_BACKEND_URL")}\"")
             signingConfig = signingConfigs.getByName("release")
         }
         create("stage") {
-            buildConfigField("String", "BASE_URL", "\"https://familymoments-be.site/\"")
+            buildConfigField("String", "BASE_URL", "\"${properties.getProperty("STAGE_BACKEND_URL")}\"")
         }
     }
     compileOptions {
@@ -136,6 +144,17 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.timber)
     implementation(libs.lottie.compose)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging.ktx)
+
+    implementation(libs.accompanist.systemuicontroller)
+
+    // Social Login
+    implementation(libs.naver.login)
+    implementation(libs.kakao.login)
+    implementation(libs.credentials)
+    implementation(libs.credentials.play.services)
+    implementation(libs.google.services.auth)
 
     testImplementation(libs.mockk)
     testImplementation(libs.junit)

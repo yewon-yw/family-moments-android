@@ -14,7 +14,7 @@
     <string name="forgot_password_tf_id_hint">ID</string>
     <string name="forgot_password_tf_name_title">이름</string>
     <string name="forgot_password_tf_name_hint">실명을 입력하세요 ex) 홍길동</string>
-    <string name="forgot_password_tf_email_title">이메일</string>
+    <string name="email">이메일</string>
     <string name="forgot_password_tf_email_hint">example@email.com</string>
     <string name="forgot_password_tf_cn_hint">인증번호 6자리</string>
     <string name="forgot_password_tf_pw_hint">새 비밀번호</string>
@@ -90,7 +90,7 @@
     <string name="sign_up_email_field_hint">example@email.com</string>
     <string name="sign_up_birthday_check_validation_warning">생년월일 형식이 올바르지 않습니다. (ex.19990101)</string>
     <string name="sign_up_birthday_field_title">생년월일</string>
-    <string name="sign_up_birthday_field_hint">8자리 입력 ex) 199990101</string>
+    <string name="sign_up_birthday_field_hint">8자리 입력 ex) 19990101</string>
     <string name="sign_up_nickname_field_title">닉네임</string>
     <string name="sign_up_nickname_field_hint">3~8자리 입력(특수문자 불가)</string>
     <string name="sign_up_nickname_validation_warning">닉네임 형식이 올바르지 않습니다. (3~8자리, 특수문자 불가)</string>
@@ -125,9 +125,12 @@
     <string name="profile_select_photo">사진 선택</string>
     <string name="profile_gallery_select_photo">갤러리에서 선택</string>
     <string name="profile_default_image_select">기본이미지로 하기</string>
-    <string name="profile_text_field_hint_name">ex) 홍길동</string>
-    <string name="profile_text_field_hint_nickname">ex) 아부지</string>
-    <string name="profile_text_field_hint_birth_date">ex) 19990101</string>
+    <string name="profile_text_field_hint_name">실명을 입력하세요 ex) 홍길동</string>
+    <string name="profile_text_field_hint_nickname">3~8자리 입력 (특수문자 불가)</string>
+    <string name="profile_text_field_hint_birth_date">8자리 입력 ex) 19990101</string>
+    <string name="profile_nickname_warning">닉네임 형식이 올바르지 않습니다. (3~8자리, 특수문자 불가)</string>
+    <string name="profile_birthdate_warning">생년월일 형식이 올바르지 않습니다. (ex.19990101)</string>
+    <string name="profile_edit_image_error">이미지가 선택되지 않았습니다.</string>
 
     <string name="my_page_title">마이페이지</string>
     <string name="my_page_account_group">Account</string>
@@ -193,4 +196,46 @@
     <string name="set_family_profile_name_empty_error">가족 이름이 비어있습니다.</string>
     <string name="set_family_profile_image_unsellect_error">이미지가 선택되지 않았습니다.</string>
     <string name="love_list_popup_no_loves">좋아요가 존재하지 않습니다.</string>
+
+    <string name="family_setting_title">가족 설정</string>
+    <string name="family_setting_label_modify_family_info">가족 정보 수정</string>
+    <string name="family_setting_label_family_invitation_link">가족 초대 링크</string>
+    <string name="family_setting_label_add_family_member">가족 추가하기</string>
+    <string name="family_setting_label_change_upload_cycle">업로드 주기 변경</string>
+    <string name="family_setting_label_transfer_family_permission">가족 권한 넘기기</string>
+    <string name="family_setting_label_remove_family_member">가족 강퇴시키기</string>
+    <string name="family_setting_label_leave_family">가족 탈퇴하기</string>
+    <string name="family_setting_label_delete_family">가족 삭제하기</string>
+
+    <string name="family_invitation_link_title">가족 초대 링크</string>
+    <string name="family_invitation_link_copy">초대 링크 복사</string>
+    <string name="family_invitation_link_copied">링크가 복사되었습니다.</string>
+    <string name="add_post_exceed_max_photo_size_error">사진은 최대 %1$d장 첨부할 수 있습니다.</string>
+
+    <string name="modify_family_info_title">가족 정보 수정</string>
+    <string name="modify_family_info_edit_image">사진 수정</string>
+    <string name="modify_family_info_family_name">가족 이름</string>
+    <string name="modify_family_info_btn">확인</string>
+    <string name="modify_family_info_image_error">이미지가 선택되지 않았습니다.</string>
+    <string name="modify_family_info_load_error">정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</string>
+    <string name="modify_family_info_success">변경이 완료되었습니다.</string>
+    <string name="modify_family_info_fail">변경에 실패하였습니다. 잠시 후 다시 시도해 주세요.</string>
+
+    <string name="edit_image_gallery_select">갤러리에서 선택</string>
+    <string name="edit_image_default_image">기본 이미지로 하기</string>
+    <string name="edit_image_cancel">취소</string>
+    <string name="forgot_password_screen_check_id_default_error_message">아이디 찾기에 실패하였습니다.</string>
+    <string name="modify_pwd_in_find_pwd_dialog_content">비밀번호가 재설정되었습니다.</string>
+    <string name="modify_pwd_in_find_pwd_dialog_dismiss">로그인 바로가기</string>
+    <string name="forgot_id_verify_email_label">본인 확인을 위하여 이메일로 인증해주세요.</string>
+    <string name="forgot_id_name_tf_hint">실명을 입력하세요 ex) 홍길동</string>
+    <string name="forgot_id_email_tf_title">이메일</string>
+    <string name="forgot_id_email_tf_hint">example@email.com</string>
+    <string name="forgot_id_send_email_btn">인증받기</string>
+    <string name="forgot_id_code_tf_hint">인증번호 6자리</string>
+    <string name="forgot_id_display_id_label">고객님의 정보와 일치하는 아이디입니다.</string>
+    <string name="forgot_id_go_to_login_btn">로그인 하기</string>
+    <string name="forgot_id_go_to_forgot_pwd_btn">비밀번호 찾기</string>
+    <string name="forgot_id_name_tf_title">이름</string>
+    <string name="forgot_password_check_validation_warning">입력한 비밀번호와 일치하지 않습니다.</string>
 </resources>

@@ -1,12 +1,12 @@
 package io.familymoments.app.feature.profile.screen
 
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.content.Context
+import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -35,10 +35,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -46,39 +44,90 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import io.familymoments.app.R
-import io.familymoments.app.core.component.FMDropdownMenu
 import io.familymoments.app.core.component.FMTextField
+import io.familymoments.app.core.component.ImageSelectionMenu
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.core.util.FileUtil.convertBitmapToFile
-import io.familymoments.app.core.util.FileUtil.convertUriToBitmap
-import io.familymoments.app.core.util.FileUtil.convertUrlToBitmap
-import io.familymoments.app.feature.profile.uistate.ProfileImage
+import io.familymoments.app.core.util.URI_SCHEME_RESOURCE
+import io.familymoments.app.core.util.noRippleClickable
+import io.familymoments.app.feature.profile.uistate.ProfileEditValidated
 import io.familymoments.app.feature.profile.viewmodel.ProfileEditViewModel
+import java.io.File
 
 @Composable
 fun ProfileEditScreen(
     navigateBack: () -> Unit,
     viewModel: ProfileEditViewModel,
 ) {
-    val defaultProfileImageBitmap =
-        BitmapFactory.decodeResource(LocalContext.current.resources, R.drawable.default_profile)
-    val profileEditUiState = viewModel.profileEditUiState.collectAsStateWithLifecycle()
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
-    LaunchedEffect(profileEditUiState.value.profileImage) {
-        if (profileEditUiState.value.profileImage is ProfileImage.Url) {
-            val bitmap = convertUrlToBitmap((profileEditUiState.value.profileImage as ProfileImage.Url).imgUrl, context)
-            viewModel.imageChanged(bitmap)
-        }
-    }
-    LaunchedEffect(profileEditUiState.value.isSuccess) {
-        if (profileEditUiState.value.isSuccess) {
+    val defaultProfileImageUri =
+        Uri.parse("$URI_SCHEME_RESOURCE://${context.packageName}/${R.drawable.default_profile}")
+    var name by remember { mutableStateOf(TextFieldValue(uiState.value.profileEditInfoUiState.name)) }
+    var nickname by remember { mutableStateOf(TextFieldValue(uiState.value.profileEditInfoUiState.nickname)) }
+    var birthdate by remember { mutableStateOf(TextFieldValue(uiState.value.profileEditInfoUiState.birthdate)) }
+
+    LaunchedEffect(uiState.value.isSuccess) {
+        if (uiState.value.isSuccess) {
             navigateBack()
         }
     }
 
+    ProfileEditScreenUI(
+        modifier = Modifier,
+        context = context,
+        name = name,
+        nickname = nickname,
+        birthdate = birthdate,
+        defaultProfileImageUri = defaultProfileImageUri,
+        profileImage = uiState.value.profileImage,
+        onImageChanged = viewModel::imageChanged,
+        onNameChanged = {
+            name = it
+            viewModel.validateName(it.text)
+        },
+        onNicknameChanged = {
+            nickname = it
+            viewModel.validateNickname(it.text)
+        },
+        onBirthdateChanged = {
+            birthdate = it
+            viewModel.validateBirthdate(it.text)
+        },
+        profileEditValidated = uiState.value.profileEditValidated,
+        onEditButtonClicked = {
+            onEditButtonClicked(
+                context = context,
+                profileImage = uiState.value.profileImage,
+                name = name.text,
+                nickname = nickname.text,
+                birthdate = birthdate.text,
+                editUserProfile = viewModel::editUserProfile
+            )
+        },
+        navigateBack = navigateBack
+    )
+}
+
+@Composable
+private fun ProfileEditScreenUI(
+    modifier: Modifier = Modifier,
+    context: Context = LocalContext.current,
+    name: TextFieldValue = TextFieldValue(),
+    nickname: TextFieldValue = TextFieldValue(),
+    birthdate: TextFieldValue = TextFieldValue(),
+    defaultProfileImageUri: Uri,
+    profileImage: File?,
+    onImageChanged: (Context, Uri) -> Unit = { _, _ -> },
+    onNameChanged: (TextFieldValue) -> Unit = {},
+    onNicknameChanged: (TextFieldValue) -> Unit = {},
+    onBirthdateChanged: (TextFieldValue) -> Unit = {},
+    profileEditValidated: ProfileEditValidated,
+    onEditButtonClicked: () -> Unit = {},
+    navigateBack: () -> Unit = {}
+) {
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
@@ -91,13 +140,25 @@ fun ProfileEditScreen(
             color = AppColors.black1,
             modifier = Modifier.padding(vertical = 18.dp)
         )
-        ProfileImageRenderer(
-            modifier = Modifier.padding(bottom = 22.dp),
-            profileImage = profileEditUiState.value.profileImage
-        )
-        ProfileDropdown(
-            defaultProfileImageBitmap = defaultProfileImageBitmap,
-            onImageChanged = viewModel::imageChanged,
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .padding(top = 4.dp, bottom = 22.dp)
+        ) {
+            AsyncImage(
+                model = profileImage,
+                contentDescription = "profile",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape)
+                    .align(Alignment.Center)
+            )
+        }
+        EditImageDialog(
+            context = context,
+            defaultProfileImageUri = defaultProfileImageUri,
+            onImageChanged = onImageChanged,
         )
         Column(
             modifier = Modifier
@@ -106,25 +167,27 @@ fun ProfileEditScreen(
             horizontalAlignment = Alignment.Start
         ) {
             ProfileTextField(
-                modifier = Modifier.padding(bottom = 42.dp),
                 title = stringResource(id = R.string.profile_text_field_name),
-                value = profileEditUiState.value.profileEditInfoUiState.name,
                 hint = stringResource(id = R.string.profile_text_field_hint_name),
-                onValueChanged = viewModel::nameChanged
+                showWarning = !profileEditValidated.nameValidated,
+                value = name,
+                onValueChanged = onNameChanged
             )
             ProfileTextField(
-                modifier = Modifier.padding(bottom = 42.dp),
                 title = stringResource(id = R.string.profile_text_field_nickname),
-                value = profileEditUiState.value.profileEditInfoUiState.nickname,
                 hint = stringResource(id = R.string.profile_text_field_hint_nickname),
-                onValueChanged = viewModel::nicknameChanged
+                warning = stringResource(id = R.string.profile_nickname_warning),
+                showWarning = !profileEditValidated.nicknameValidated,
+                value = nickname,
+                onValueChanged = onNicknameChanged
             )
             ProfileTextField(
-                modifier = Modifier.padding(bottom = 31.dp),
                 title = stringResource(id = R.string.profile_text_field_birth_date),
-                value = profileEditUiState.value.profileEditInfoUiState.birthdate,
                 hint = stringResource(id = R.string.profile_text_field_hint_birth_date),
-                onValueChanged = viewModel::birthdateChanged
+                warning = stringResource(id = R.string.profile_birthdate_warning),
+                showWarning = !profileEditValidated.birthdateValidated,
+                value = birthdate,
+                onValueChanged = onBirthdateChanged
             )
         }
         Row(
@@ -141,122 +204,128 @@ fun ProfileEditScreen(
             Spacer(modifier = Modifier.width(34.dp))
             ProfileButton(
                 modifier = Modifier.weight(1f),
-                onClick = {
-                    val imageFile = convertBitmapToFile(
-                        bitmap = (profileEditUiState.value.profileImage as ProfileImage.Bitmap).bitmap,
-                        context = context
-                    )
-                    viewModel.editUserProfile(imageFile)
-                },
-                colors = ButtonDefaults.buttonColors(AppColors.purple2, Color.White),
+                onClick = onEditButtonClicked,
+                enabled = profileEditValidated.nameValidated && profileEditValidated.nicknameValidated && profileEditValidated.birthdateValidated,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = AppColors.purple2,
+                    contentColor = AppColors.grey6,
+                    disabledContainerColor = AppColors.grey3,
+                    disabledContentColor = AppColors.grey6
+                ),
                 stringResId = R.string.profile_btn_done
             )
         }
     }
 }
 
-@Composable
-fun ProfileImageRenderer(
-    modifier: Modifier = Modifier,
-    profileImage: ProfileImage,
+private fun onEditButtonClicked(
+    context: Context,
+    profileImage: File?,
+    name: String,
+    nickname: String,
+    birthdate: String,
+    editUserProfile: (File, String, String, String) -> Unit
 ) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.Top
-    ) {
-        Box(
-            modifier = Modifier.padding(top = 4.dp)
-        ) {
-            when (profileImage) {
-                is ProfileImage.Url -> {
-                    AsyncImage(
-                        model = profileImage.imgUrl,
-                        contentDescription = "profile",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(80.dp)
-                            .clip(CircleShape)
-                    )
-                }
-
-                is ProfileImage.Bitmap -> {
-                    Image(
-                        bitmap = profileImage.bitmap.asImageBitmap(),
-                        contentDescription = "profile",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier
-                            .size(80.dp)
-                            .clip(CircleShape)
-                    )
-                }
-            }
-        }
+    if (profileImage == null) {
+        Toast.makeText(context, R.string.profile_edit_image_error, Toast.LENGTH_SHORT).show()
+    } else {
+        editUserProfile(profileImage, name, nickname, birthdate)
     }
 }
 
 @Composable
 private fun ProfileTextField(
-    modifier: Modifier = Modifier,
     title: String = "",
-    value: String = "",
     hint: String = "",
-    onValueChanged: (String) -> Unit = {}
+    warning: String = "",
+    showWarning: Boolean = false,
+    value: TextFieldValue = TextFieldValue(),
+    onValueChanged: (TextFieldValue) -> Unit = {},
 ) {
-    var textFieldValue by remember { mutableStateOf(TextFieldValue(value)) }
-    Text(
-        text = title,
-        style = AppTypography.B1_16,
-        color = AppColors.deepPurple1,
-        modifier = Modifier.padding(start = 1.dp, bottom = 2.dp)
-    )
-    FMTextField(
-        modifier = modifier,
-        value = textFieldValue,
-        onValueChange = { newValue ->
-            textFieldValue = newValue
-            onValueChanged(newValue.text)
-        },
-        hint = hint,
-    )
+    Column {
+        Text(
+            text = title,
+            style = AppTypography.B1_16,
+            color = AppColors.deepPurple1,
+            modifier = Modifier.padding(start = 1.dp, bottom = 2.dp)
+        )
+        FMTextField(
+            value = value,
+            onValueChange = onValueChanged,
+            hint = hint,
+            textColor = if (showWarning) AppColors.red2 else AppColors.black2,
+            hintColor = if (showWarning) AppColors.red2 else AppColors.grey2,
+            borderColor = if (showWarning) AppColors.red2 else AppColors.grey2
+        )
+        if (showWarning) {
+            Text(
+                modifier = Modifier
+                    .height(42.dp)
+                    .padding(top = 3.dp),
+                text = warning,
+                style = AppTypography.LB2_11,
+                color = AppColors.red2
+            )
+        } else {
+            Spacer(modifier = Modifier.height(42.dp))
+        }
+    }
 }
 
 @Composable
-fun ProfileDropdown(
-    defaultProfileImageBitmap: Bitmap,
-    onImageChanged: (Bitmap?) -> Unit,
+private fun EditImageDialog(
+    context: Context = LocalContext.current,
+    defaultProfileImageUri: Uri,
+    onImageChanged: (Context, Uri) -> Unit,
 ) {
-    val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = {
             if (it == null) return@rememberLauncherForActivityResult
-            onImageChanged(convertUriToBitmap(it, context))
+            onImageChanged(context, it)
         }
     )
-    FMDropdownMenu(
-        onGallerySelected = {
-            launcher.launch(
-                PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
-            )
-        },
-        onDefaultImageSelected = {
-            onImageChanged(defaultProfileImageBitmap)
-        }
-    )
+    var showDialog by remember { mutableStateOf(false) }
+    Box(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Text(
+            text = stringResource(id = R.string.profile_select_photo),
+            style = AppTypography.B1_16,
+            color = AppColors.purple2,
+            modifier = Modifier
+                .align(Alignment.Center)
+                .noRippleClickable { showDialog = true }
+        )
+    }
+    if (showDialog) {
+        ImageSelectionMenu(
+            onDismissRequest = { showDialog = false },
+            onGallerySelected = {
+                launcher.launch(
+                    PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            },
+            onDefaultImageSelected = {
+                onImageChanged(context, defaultProfileImageUri)
+            }
+        )
+    }
 }
 
 @Composable
-fun ProfileButton(
+private fun ProfileButton(
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     onClick: () -> Unit = {},
     colors: ButtonColors,
     @StringRes stringResId: Int,
 ) {
     Button(
-        onClick = { onClick() },
+        onClick = onClick,
         modifier = modifier
             .size(54.dp),
+        enabled = enabled,
         colors = colors,
         shape = RoundedCornerShape(60.dp)
     ) {
@@ -270,72 +339,14 @@ fun ProfileButton(
 
 @Preview(showBackground = true)
 @Composable
-fun ProfileEditScreenPreview() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = stringResource(id = R.string.edit_profile_title),
-            style = AppTypography.B1_16,
-            color = AppColors.black1,
-            modifier = Modifier.padding(vertical = 18.dp)
-        )
-        Image(
-            painter = painterResource(id = R.drawable.default_profile),
-            contentDescription = "profile",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .size(80.dp)
-                .clip(CircleShape)
-        )
-        Spacer(modifier = Modifier.height(22.dp))
-        Text(
-            text = stringResource(id = R.string.profile_select_photo),
-            style = AppTypography.B1_16,
-            color = AppColors.purple2,
-            modifier = Modifier.padding(bottom = 34.dp)
-        )
-        Column(
-            modifier = Modifier
-                .fillMaxWidth(),
-            horizontalAlignment = Alignment.Start
-        ) {
-            ProfileTextField(
-                modifier = Modifier.padding(bottom = 42.dp),
-                title = stringResource(id = R.string.profile_text_field_name),
-                value = "홍길동",
-            )
-            ProfileTextField(
-                modifier = Modifier.padding(bottom = 42.dp),
-                title = stringResource(id = R.string.profile_text_field_nickname),
-                value = "아부지"
-            )
-            ProfileTextField(
-                modifier = Modifier.padding(bottom = 31.dp),
-                title = stringResource(id = R.string.profile_text_field_birth_date),
-                value = "19990101"
-            )
-        }
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 11.dp),
-        ) {
-            ProfileButton(
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(AppColors.purple1, Color.White),
-                stringResId = R.string.profile_btn_cancel
-            )
-            Spacer(modifier = Modifier.width(34.dp))
-            ProfileButton(
-                modifier = Modifier.weight(1f),
-                colors = ButtonDefaults.buttonColors(AppColors.purple2, Color.White),
-                stringResId = R.string.profile_btn_done
-            )
-        }
-    }
+private fun ProfileEditScreenPreview() {
+    ProfileEditScreenUI(
+        defaultProfileImageUri = Uri.parse(""),
+        profileImage = null,
+        profileEditValidated = ProfileEditValidated(
+            nameValidated = true,
+            nicknameValidated = true,
+            birthdateValidated = true
+        ),
+    )
 }

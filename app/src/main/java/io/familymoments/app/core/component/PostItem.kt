@@ -48,6 +48,7 @@ import java.util.Locale
 
 @Composable
 fun PostItem(
+    userNickname: String,
     post: Post,
     navigateToPostDetail: (Int) -> Unit,
     navigateToEditPost: (Post) -> Unit,
@@ -61,6 +62,7 @@ fun PostItem(
         Spacer(modifier = Modifier.height(10.dp))
         Box(modifier = Modifier.postItemContentShadow()) {
             PostItemContent(
+                userNickname = userNickname,
                 post = post,
                 navigateToPostDetail = navigateToPostDetail,
                 navigateToEditPost = navigateToEditPost,
@@ -104,6 +106,7 @@ private fun PostItemHeader(post: Post) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PostItemContent(
+    userNickname: String,
     post: Post,
     navigateToPostDetail: (Int) -> Unit,
     navigateToEditPost: (Post) -> Unit,
@@ -193,7 +196,8 @@ private fun PostItemContent(
                     )
                     if (menuExpanded.value) {
                         PostDropdownMenu2(
-                            items = listOf(
+                            items =
+                            if (userNickname == post.writer) listOf(
                                 Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify)) {
                                     navigateToEditPost(post)
                                 },
@@ -203,6 +207,11 @@ private fun PostItemContent(
                                 },
                                 Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_delete)) {
                                     showDeletePostPopup()
+                                    menuExpanded.value = false
+                                },
+                            ) else listOf(
+                                Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {
+                                    showReportPostPopup()
                                     menuExpanded.value = false
                                 },
                             ),
@@ -241,6 +250,7 @@ private fun String.formattedDate(): String {
 @Composable
 fun PostItemPreview() {
     PostItem(
+        userNickname = "test",
         post = Post(
             postId = 0,
             writer = "test",

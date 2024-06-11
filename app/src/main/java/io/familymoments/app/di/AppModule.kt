@@ -13,11 +13,13 @@ import io.familymoments.app.core.network.api.PostService
 import io.familymoments.app.core.network.api.SignInService
 import io.familymoments.app.core.network.api.UserService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
+import io.familymoments.app.core.util.EventManager
 import okhttp3.JavaNetCookieJar
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import timber.log.Timber
 import java.net.CookieManager
 import javax.inject.Qualifier
 import javax.inject.Singleton
@@ -70,6 +72,15 @@ object AppModule {
         return OkHttpClient.Builder()
             .addNetworkInterceptor { chain ->
                 val request = chain.request().newBuilder().build()
+
+                val headers = request.headers
+                headers.forEach { header ->
+                    Timber.i("Header: ${header.first} = ${header.second}")
+                }
+                request.body?.let { body ->
+                    Timber.i("Body: $body")
+                }
+
                 chain.proceed(request)
             }
             .build()
@@ -122,5 +133,11 @@ object AppModule {
     @Singleton
     fun provideFamilyService(@AuthRetrofit retrofit: Retrofit): FamilyService {
         return retrofit.create(FamilyService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideEventManager(): EventManager {
+        return EventManager()
     }
 }

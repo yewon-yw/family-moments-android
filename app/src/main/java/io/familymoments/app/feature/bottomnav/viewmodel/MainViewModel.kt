@@ -5,9 +5,12 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
+import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.core.util.DEFAULT_FAMILY_ID_VALUE
 import io.familymoments.app.core.util.DEFAULT_TOKEN_VALUE
+import io.familymoments.app.core.util.EventManager
+import io.familymoments.app.core.util.UserEvent
 import io.familymoments.app.feature.bottomnav.uistate.AppBarUiState
 import io.familymoments.app.feature.bottomnav.uistate.MainUiState
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +22,9 @@ import javax.inject.Inject
 
 @HiltViewModel
 class MainViewModel @Inject constructor(
+    private val eventManager: EventManager,
     private val userRepository: UserRepository,
+    private val familyRepository: FamilyRepository,
     private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
 ) : BaseViewModel() {
 
@@ -31,7 +36,17 @@ class MainViewModel @Inject constructor(
 
     init {
         getProfileImg()
+        getFamilyName()
         checkFamilyExist()
+
+        viewModelScope.launch {
+            eventManager.events.collect { event ->
+                when (event) {
+                    is UserEvent.FamilyNameChanged -> getFamilyName()
+                    is UserEvent.ProfileChanged -> getProfileImg()
+                }
+            }
+        }
     }
 
     private fun getProfileImg() {
@@ -55,6 +70,21 @@ class MainViewModel @Inject constructor(
                         onFailure = {}
                     )
                 }
+            },
+            onFailure = {}
+        )
+    }
+
+    fun getFamilyName() {
+        async(
+            operation = {
+                val familyId = userInfoPreferencesDataSource.loadFamilyId()
+                familyRepository.getFamilyName(familyId)
+            },
+            onSuccess = {
+                _appBarUiState.value = _appBarUiState.value.copy(
+                    familyName = it
+                )
             },
             onFailure = {}
         )
