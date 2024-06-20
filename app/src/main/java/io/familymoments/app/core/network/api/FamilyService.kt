@@ -3,6 +3,7 @@ package io.familymoments.app.core.network.api
 import io.familymoments.app.core.network.dto.request.CreateFamilyRequest
 import io.familymoments.app.core.network.dto.request.SearchFamilyByInviteLinkRequest
 import io.familymoments.app.core.network.dto.request.TransferPermissionRequest
+import io.familymoments.app.core.network.dto.response.CheckFamilyPermissionResponse
 import io.familymoments.app.core.network.dto.response.CreateFamilyResponse
 import io.familymoments.app.core.network.dto.response.GetFamilyNameResponse
 import io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse
@@ -64,4 +65,7 @@ interface FamilyService {
         @Path("familyId") familyId: Long,
         @Body transferPermissionRequest: TransferPermissionRequest
     ): Response<TransferPermissionResponse>
+
+    @POST("/families/{familyId}/authority")
+    suspend fun checkFamilyPermission(@Path("familyId") familyId: Long): Response<CheckFamilyPermissionResponse>
 }

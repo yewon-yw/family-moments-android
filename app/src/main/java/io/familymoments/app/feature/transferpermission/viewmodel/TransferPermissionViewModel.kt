@@ -19,7 +19,29 @@ class TransferPermissionViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     init {
+        checkFamilyPermission()
         getFamilyMember()
+    }
+
+    private fun checkFamilyPermission() {
+        async(
+            operation = {
+                val familyId = userInfoPreferencesDataSource.loadFamilyId()
+                familyRepository.checkFamilyPermission(familyId)
+            },
+            onSuccess = {
+                _uiState.value = _uiState.value.copy(
+                    checkSuccess = true,
+                    isOwner = it
+                )
+            },
+            onFailure = {
+                _uiState.value = _uiState.value.copy(
+                    checkSuccess = false,
+                    errorMessage = it.message
+                )
+            }
+        )
     }
 
     private fun getFamilyMember() {

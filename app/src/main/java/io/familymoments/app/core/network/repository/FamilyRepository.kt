@@ -43,4 +43,6 @@ interface FamilyRepository {
         familyId: Long,
         transferPermissionRequest: TransferPermissionRequest
     ): Flow<Resource<String>>
+
+    suspend fun checkFamilyPermission(familyId: Long): Flow<Resource<Boolean>>
 }

@@ -7,6 +7,7 @@ import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourc
 import io.familymoments.app.core.network.dto.request.CreateFamilyRequest
 import io.familymoments.app.core.network.dto.request.SearchFamilyByInviteLinkRequest
 import io.familymoments.app.core.network.dto.request.TransferPermissionRequest
+import io.familymoments.app.core.network.dto.response.CheckFamilyPermissionResponse
 import io.familymoments.app.core.network.dto.response.CreateFamilyResponse
 import io.familymoments.app.core.network.dto.response.FamilyInfo
 import io.familymoments.app.core.network.dto.response.FamilyInfoResponse
@@ -191,6 +192,22 @@ class FamilyRepositoryImpl @Inject constructor(
                 val responseBody = response.body() ?: TransferPermissionResponse()
                 if (responseBody.isSuccess) {
                     emit(Resource.Success(responseBody.result))
+                } else {
+                    emit(Resource.Fail(Throwable(responseBody.message)))
+                }
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
+            }
+        }
+    }
+
+    override suspend fun checkFamilyPermission(familyId: Long): Flow<Resource<Boolean>> {
+        return flow {
+            val response = familyService.checkFamilyPermission(familyId)
+            if (response.code() == HttpResponse.SUCCESS) {
+                val responseBody = response.body() ?: CheckFamilyPermissionResponse()
+                if (responseBody.isSuccess) {
+                    emit(Resource.Success(responseBody.result.isOwner))
                 } else {
                     emit(Resource.Fail(Throwable(responseBody.message)))
                 }

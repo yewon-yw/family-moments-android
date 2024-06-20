@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -48,10 +49,15 @@ fun TransferPermissionScreen(
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
     var selectedMember by remember { mutableStateOf<Member?>(null) }
     var showCompletePopup by remember { mutableStateOf(false) }
+    var showPermissionPopup by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.transferSuccess) {
         showCompletePopup = uiState.transferSuccess
     }
+    LaunchedEffect(uiState.isOwner) {
+        showPermissionPopup = !uiState.isOwner
+    }
+
     TransferPermissionScreenUI(
         modifier = modifier,
         members = uiState.members,
@@ -59,17 +65,19 @@ fun TransferPermissionScreen(
         selectedMember = selectedMember,
         onDoneButtonClicked = viewModel::transferPermission
     )
-    if (showCompletePopup) {
-        CompletePopUp(
-            content = stringResource(id = R.string.transfer_permission_complete_popup_content),
-            dismissText = stringResource(id = R.string.transfer_permission_complete_popup_btn),
-            onDismissRequest = {
-                showCompletePopup = false
-                navigateBack()
-            }
-            // TODO popup 버튼 색상 변경 필요
-        )
-    }
+
+    TransferPermissionPopup(
+        showCompletePopup = showCompletePopup,
+        showPermissionPopup = showPermissionPopup,
+        completePopupDismissRequest = {
+            showCompletePopup = false
+            navigateBack()
+        },
+        permissionPopupDismissRequest = {
+            showPermissionPopup = false
+            navigateBack()
+        }
+    )
 }
 
 @Composable
@@ -92,7 +100,6 @@ fun TransferPermissionScreenUI(
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(items = members, key = { it.id }) { member ->
                 FamilyMember(
-                    isOwner = false,
                     member = member,
                     onSelectedMemberChanged = onSelectedMemberChanged,
                     selectedMember = selectedMember
@@ -115,7 +122,6 @@ fun TransferPermissionScreenUI(
 
 @Composable
 fun FamilyMember(
-    isOwner: Boolean = false,
     member: Member,
     onSelectedMemberChanged: (Member?) -> Unit,
     selectedMember: Member?,
@@ -153,6 +159,31 @@ fun FamilyMember(
                 tint = Color.Unspecified
             )
         }
+    }
+}
+
+@Composable
+private fun TransferPermissionPopup(
+    showCompletePopup: Boolean,
+    showPermissionPopup: Boolean,
+    completePopupDismissRequest: () -> Unit = {},
+    permissionPopupDismissRequest: () -> Unit = {}
+) {
+    if (showCompletePopup) {
+        CompletePopUp(
+            content = stringResource(id = R.string.transfer_permission_complete_popup_content),
+            dismissText = stringResource(id = R.string.transfer_permission_complete_popup_btn),
+            buttonColors = ButtonDefaults.buttonColors(containerColor = AppColors.purple2),
+            onDismissRequest = completePopupDismissRequest
+        )
+    }
+    if (showPermissionPopup) {
+        CompletePopUp(
+            content = stringResource(id = R.string.check_family_permission_popup_content),
+            dismissText = stringResource(id = R.string.check_family_permission_popup_btn),
+            buttonColors = ButtonDefaults.buttonColors(containerColor = AppColors.purple2),
+            onDismissRequest = permissionPopupDismissRequest
+        )
     }
 }
 
