@@ -238,4 +238,7 @@
     <string name="forgot_id_go_to_forgot_pwd_btn">비밀번호 찾기</string>
     <string name="forgot_id_name_tf_title">이름</string>
     <string name="forgot_password_check_validation_warning">입력한 비밀번호와 일치하지 않습니다.</string>
+
+    <string name="remove_family_member_title">강퇴시킬 멤버를 선택해주세요.</string>
+    <string name="remove_family_member_btn">탈퇴시키기</string>
 </resources>
