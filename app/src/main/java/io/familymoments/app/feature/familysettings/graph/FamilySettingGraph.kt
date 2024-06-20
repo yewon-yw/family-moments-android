@@ -36,7 +36,10 @@ fun NavGraphBuilder.familySettingGraph(navController: NavController) {
     composable (FamilySettingNavItem.TransferFamilyPermission.route) {
         TransferPermissionScreen(
             modifier = Modifier.scaffoldState(hasShadow = true, hasBackButton = true),
-            viewModel = hiltViewModel()
+            viewModel = hiltViewModel(),
+            navigateBack = {
+                navController.popBackStack()
+            }
         )
     }
     composable (FamilySettingNavItem.RemoveFamilyMember.route) {

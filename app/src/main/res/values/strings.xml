@@ -239,6 +239,8 @@
     <string name="forgot_id_name_tf_title">이름</string>
     <string name="forgot_password_check_validation_warning">입력한 비밀번호와 일치하지 않습니다.</string>
 
-    <string name="transfer_family_permission_title">권한 넘기기</string>
-    <string name="transfer_family_permission_btn">권한 넘기기</string>
+    <string name="transfer_permission_title">권한 넘기기</string>
+    <string name="transfer_permission_btn">권한 넘기기</string>
+    <string name="transfer_permission_complete_popup_content">변경이 완료되었습니다.</string>
+    <string name="transfer_permission_complete_popup_btn">확인</string>
 </resources>

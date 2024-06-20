@@ -6,6 +6,7 @@ import io.familymoments.app.core.network.api.FamilyService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.dto.request.CreateFamilyRequest
 import io.familymoments.app.core.network.dto.request.SearchFamilyByInviteLinkRequest
+import io.familymoments.app.core.network.dto.request.TransferPermissionRequest
 import io.familymoments.app.core.network.dto.response.CreateFamilyResponse
 import io.familymoments.app.core.network.dto.response.FamilyInfo
 import io.familymoments.app.core.network.dto.response.FamilyInfoResponse
@@ -15,6 +16,7 @@ import io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse
 import io.familymoments.app.core.network.dto.response.JoinFamilyResponse
 import io.familymoments.app.core.network.dto.response.Member
 import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse
+import io.familymoments.app.core.network.dto.response.TransferPermissionResponse
 import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.feature.modifyfamilyInfo.model.ModifyFamilyInfoRequest
 import kotlinx.coroutines.flow.Flow
@@ -168,6 +170,25 @@ class FamilyRepositoryImpl @Inject constructor(
             val response = familyService.getFamilyMember(familyId)
             if (response.code() == HttpResponse.SUCCESS) {
                 val responseBody = response.body()?: GetFamilyMemberResponse()
+                if (responseBody.isSuccess) {
+                    emit(Resource.Success(responseBody.result))
+                } else {
+                    emit(Resource.Fail(Throwable(responseBody.message)))
+                }
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
+            }
+        }
+    }
+
+    override suspend fun transferPermission(
+        familyId: Long,
+        transferPermissionRequest: TransferPermissionRequest
+    ): Flow<Resource<String>> {
+        return flow {
+            val response = familyService.transferPermission(familyId, transferPermissionRequest)
+            if (response.code() == HttpResponse.SUCCESS) {
+                val responseBody = response.body() ?: TransferPermissionResponse()
                 if (responseBody.isSuccess) {
                     emit(Resource.Success(responseBody.result))
                 } else {

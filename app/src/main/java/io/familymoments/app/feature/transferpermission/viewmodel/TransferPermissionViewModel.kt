@@ -3,6 +3,7 @@ package io.familymoments.app.feature.transferpermission.viewmodel
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
+import io.familymoments.app.core.network.dto.request.TransferPermissionRequest
 import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.feature.transferpermission.uistate.TransferPermissionUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,13 +30,33 @@ class TransferPermissionViewModel @Inject constructor(
             },
             onSuccess = {
                 _uiState.value = _uiState.value.copy(
-                    isSuccess = true,
+                    getSuccess = true,
                     members = it
                 )
             },
             onFailure = {
                 _uiState.value = _uiState.value.copy(
-                    isSuccess = false,
+                    getSuccess = false,
+                    errorMessage = it.message
+                )
+            }
+        )
+    }
+
+    fun transferPermission(userId: String) {
+        async(
+            operation = {
+                val familyId = userInfoPreferencesDataSource.loadFamilyId()
+                familyRepository.transferPermission(familyId, TransferPermissionRequest(userId))
+            },
+            onSuccess = {
+                _uiState.value = _uiState.value.copy(
+                    transferSuccess = true
+                )
+            },
+            onFailure = {
+                _uiState.value = _uiState.value.copy(
+                    transferSuccess = false,
                     errorMessage = it.message
                 )
             }

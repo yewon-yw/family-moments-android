@@ -14,6 +14,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -31,6 +32,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.component.FMButton
+import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.network.dto.response.Member
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
@@ -41,15 +43,33 @@ import io.familymoments.app.feature.transferpermission.viewmodel.TransferPermiss
 fun TransferPermissionScreen(
     modifier: Modifier,
     viewModel: TransferPermissionViewModel,
+    navigateBack: () -> Unit = {}
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
     var selectedMember by remember { mutableStateOf<Member?>(null) }
+    var showCompletePopup by remember { mutableStateOf(false) }
+
+    LaunchedEffect(uiState.transferSuccess) {
+        showCompletePopup = uiState.transferSuccess
+    }
     TransferPermissionScreenUI(
         modifier = modifier,
         members = uiState.members,
         onSelectedMemberChanged = { selectedMember = it },
-        selectedMember = selectedMember
+        selectedMember = selectedMember,
+        onDoneButtonClicked = viewModel::transferPermission
     )
+    if (showCompletePopup) {
+        CompletePopUp(
+            content = stringResource(id = R.string.transfer_permission_complete_popup_content),
+            dismissText = stringResource(id = R.string.transfer_permission_complete_popup_btn),
+            onDismissRequest = {
+                showCompletePopup = false
+                navigateBack()
+            }
+            // TODO popup 버튼 색상 변경 필요
+        )
+    }
 }
 
 @Composable
@@ -58,13 +78,14 @@ fun TransferPermissionScreenUI(
     members: List<Member>,
     selectedMember: Member? = null,
     onSelectedMemberChanged: (Member?) -> Unit = {},
+    onDoneButtonClicked: (String) -> Unit = {}
 ) {
     Column(
         modifier = modifier.padding(horizontal = 16.dp)
     ) {
         Text(
             modifier = Modifier.padding(top = 55.dp, bottom = 33.dp),
-            text = stringResource(id = R.string.transfer_family_permission_title),
+            text = stringResource(id = R.string.transfer_permission_title),
             style = AppTypography.SH2_18,
             color = AppColors.deepPurple1
         )
@@ -85,8 +106,8 @@ fun TransferPermissionScreenUI(
                 .padding(top = 29.dp, bottom = 95.dp)
                 .height(59.dp),
             enabled = selectedMember != null,
-            onClick = { /*TODO*/ },
-            text = stringResource(id = R.string.transfer_family_permission_btn),
+            onClick = { onDoneButtonClicked(selectedMember!!.id) },
+            text = stringResource(id = R.string.transfer_permission_btn),
             containerColor = AppColors.deepPurple1
         )
     }
