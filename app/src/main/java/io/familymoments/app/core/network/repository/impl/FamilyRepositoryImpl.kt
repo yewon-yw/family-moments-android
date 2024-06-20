@@ -8,12 +8,14 @@ import io.familymoments.app.core.network.dto.request.CreateFamilyRequest
 import io.familymoments.app.core.network.dto.request.SearchFamilyByInviteLinkRequest
 import io.familymoments.app.core.network.dto.response.CreateFamilyResponse
 import io.familymoments.app.core.network.dto.response.FamilyInfo
+import io.familymoments.app.core.network.dto.response.FamilyInfoResponse
+import io.familymoments.app.core.network.dto.response.GetFamilyMemberResponse
 import io.familymoments.app.core.network.dto.response.GetFamilyNameResponse
 import io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse
 import io.familymoments.app.core.network.dto.response.JoinFamilyResponse
+import io.familymoments.app.core.network.dto.response.Member
 import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse
 import io.familymoments.app.core.network.repository.FamilyRepository
-import io.familymoments.app.core.network.dto.response.FamilyInfoResponse
 import io.familymoments.app.feature.modifyfamilyInfo.model.ModifyFamilyInfoRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -149,6 +151,23 @@ class FamilyRepositoryImpl @Inject constructor(
             val response = familyService.getFamilyName(familyId)
             if (response.code() == HttpResponse.SUCCESS) {
                 val responseBody = response.body() ?: GetFamilyNameResponse()
+                if (responseBody.isSuccess) {
+                    emit(Resource.Success(responseBody.result))
+                } else {
+                    emit(Resource.Fail(Throwable(responseBody.message)))
+                }
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
+            }
+        }
+    }
+
+    override suspend fun getFamilyMember(familyId: Long): Flow<Resource<List<Member>>> {
+        return flow {
+            emit(Resource.Loading)
+            val response = familyService.getFamilyMember(familyId)
+            if (response.code() == HttpResponse.SUCCESS) {
+                val responseBody = response.body()?: GetFamilyMemberResponse()
                 if (responseBody.isSuccess) {
                     emit(Resource.Success(responseBody.result))
                 } else {

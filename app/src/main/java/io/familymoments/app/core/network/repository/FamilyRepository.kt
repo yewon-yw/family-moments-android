@@ -6,6 +6,7 @@ import io.familymoments.app.core.network.dto.response.CreateFamilyResponse
 import io.familymoments.app.core.network.dto.response.FamilyInfo
 import io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse
 import io.familymoments.app.core.network.dto.response.JoinFamilyResponse
+import io.familymoments.app.core.network.dto.response.Member
 import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse
 import io.familymoments.app.feature.modifyfamilyInfo.model.ModifyFamilyInfoRequest
 import kotlinx.coroutines.flow.Flow
@@ -34,4 +35,6 @@ interface FamilyRepository {
     ): Flow<Resource<FamilyInfo>>
 
     suspend fun getFamilyName(familyId: Long): Flow<Resource<String>>
+
+    suspend fun getFamilyMember(familyId: Long): Flow<Resource<List<Member>>>
 }

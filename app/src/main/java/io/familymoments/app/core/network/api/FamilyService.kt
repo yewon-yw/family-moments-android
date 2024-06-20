@@ -8,6 +8,7 @@ import io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse
 import io.familymoments.app.core.network.dto.response.JoinFamilyResponse
 import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse
 import io.familymoments.app.core.network.dto.response.FamilyInfoResponse
+import io.familymoments.app.core.network.dto.response.GetFamilyMemberResponse
 import io.familymoments.app.feature.modifyfamilyInfo.model.ModifyFamilyInfoRequest
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -52,4 +53,7 @@ interface FamilyService {
 
     @GET("/families/{familyId}/famillyName")
     suspend fun getFamilyName(@Path("familyId") familyId: Long): Response<GetFamilyNameResponse>
+
+    @GET("/families/{familyId}/users")
+    suspend fun getFamilyMember(@Path("familyId") familyId: Long): Response<GetFamilyMemberResponse>
 }
