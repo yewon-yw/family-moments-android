@@ -26,8 +26,8 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 
 @Composable
-fun DeleteAccountPopup() {
-    Dialog(onDismissRequest = { /*TODO 로그인 화면 이동 */ }) {
+fun DeleteAccountPopup(onDismissRequest:()->Unit = {}) {
+    Dialog(onDismissRequest = onDismissRequest) {
         Box(
             modifier = Modifier
                 .clip(RoundedCornerShape(20.dp))
@@ -54,7 +54,7 @@ fun DeleteAccountPopup() {
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(start = 38.dp, end = 38.dp, bottom = 21.dp),
-                    onClick = { /*TODO 로그인 화면 이동*/ },
+                    onClick = onDismissRequest,
                     text = stringResource(id = R.string.complete_pop_up_btn_ok),
                     containerColor = AppColors.purple2,
                     contentPaddingValues = PaddingValues(vertical = 16.dp)

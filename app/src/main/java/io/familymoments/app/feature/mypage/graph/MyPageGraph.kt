@@ -33,7 +33,7 @@ fun NavGraphBuilder.myPageGraph(navController: NavController) {
         )
     }
     composable(route = MyPageRoute.AccountDeletion.name) {
-        DeleteAccountScreen()
+        DeleteAccountScreen(hiltViewModel(), navController::popBackStack)
     }
 }
 

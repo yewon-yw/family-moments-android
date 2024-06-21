@@ -327,6 +327,12 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun deleteAccount(): Flow<Resource<ApiResponse<String>>> {
+        val accessToken = userInfoPreferencesDataSource.loadAccessToken()
+        val response = userService.deleteAccount(accessToken)
+        return getResourceFlow(response)
+    }
+
     override suspend fun logoutUser(): Flow<Resource<LogoutResponse>> {
         return flow {
             emit(Resource.Loading)

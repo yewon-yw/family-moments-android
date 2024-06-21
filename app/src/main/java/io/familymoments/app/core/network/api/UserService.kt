@@ -25,6 +25,7 @@ import io.familymoments.app.core.network.dto.response.UserProfile
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Header
 import retrofit2.http.Multipart
@@ -94,4 +95,7 @@ interface UserService {
 
     @POST("/users/auth/find-id")
     suspend fun findId(@Body findIdRequest: FindIdRequest): Response<FindIdResponse>
+
+   @DELETE("/users")
+   suspend fun deleteAccount(@Header("X-AUTH-TOKEN") accessToken:String):Response<ApiResponse<String>>
 }
