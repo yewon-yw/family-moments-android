@@ -4,7 +4,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
-import io.familymoments.app.feature.accountdeletion.screen.AccountDeletionScreen
+import io.familymoments.app.feature.deleteaccount.screen.DeleteAccountScreen
 import io.familymoments.app.feature.familysettings.screen.FamilySettingScreen
 import io.familymoments.app.feature.modifypassword.screen.ModifyPasswordScreen
 import io.familymoments.app.feature.profile.graph.profileGraph
@@ -33,7 +33,7 @@ fun NavGraphBuilder.myPageGraph(navController: NavController) {
         )
     }
     composable(route = MyPageRoute.AccountDeletion.name) {
-        AccountDeletionScreen()
+        DeleteAccountScreen()
     }
 }
 

@@ -1,4 +1,4 @@
-package io.familymoments.app.feature.accountdeletion.screen
+package io.familymoments.app.feature.deleteaccount.screen
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -21,23 +21,23 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 
 @Composable
-fun AccountDeletionScreen() {
+fun DeleteAccountScreen() {
     Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(horizontal = 13.dp)) {
         Spacer(modifier = Modifier.height(18.dp))
-        AccountDeletionHeader()
+        DeleteAccountHeader()
         Spacer(modifier = Modifier.height(141.dp))
-        AccountDeletionContent()
+        DeleteAccountContent()
     }
 
 }
 
 @Composable
-private fun AccountDeletionHeader() {
+private fun DeleteAccountHeader() {
     Text(text = stringResource(id = R.string.my_page_label_account_deletion), style = AppTypography.B1_16, color = AppColors.black1)
 }
 
 @Composable
-private fun AccountDeletionContent() {
+private fun DeleteAccountContent() {
     Column {
         Text(
             modifier = Modifier.padding(horizontal = 3.dp),
@@ -73,6 +73,6 @@ private fun AccountDeletionContent() {
 
 @Composable
 @Preview(showBackground = true)
-private fun AccountDeletionScreenPreview() {
-    AccountDeletionScreen()
+private fun DeleteAccountScreenPreview() {
+    DeleteAccountScreen()
 }

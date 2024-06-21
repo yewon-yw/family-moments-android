@@ -1,4 +1,4 @@
-package io.familymoments.app.feature.accountdeletion.component
+package io.familymoments.app.feature.deleteaccount.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -26,7 +26,7 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 
 @Composable
-fun AccountDeletePopup() {
+fun DeleteAccountPopup() {
     Dialog(onDismissRequest = { /*TODO 로그인 화면 이동 */ }) {
         Box(
             modifier = Modifier
@@ -67,6 +67,6 @@ fun AccountDeletePopup() {
 
 @Preview(showBackground = true)
 @Composable
-fun DeletePopupPreview() {
-    AccountDeletePopup()
+fun DeleteAccountPopupPreview() {
+    DeleteAccountPopup()
 }
