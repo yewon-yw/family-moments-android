@@ -66,6 +66,6 @@ interface FamilyService {
         @Body transferPermissionRequest: TransferPermissionRequest
     ): Response<TransferPermissionResponse>
 
-    @POST("/families/{familyId}/authority")
+    @GET("/families/{familyId}/authority")
     suspend fun checkFamilyPermission(@Path("familyId") familyId: Long): Response<CheckFamilyPermissionResponse>
 }
