@@ -16,5 +16,5 @@ data class CalendarDayUiState(
     val popup:PostPopupType? = null,
     val userNickname:String = ""
 ) {
-    val hasNoPost = errorMessage == NO_POST_404
+    val hasNoPost = posts.isEmpty()
 }

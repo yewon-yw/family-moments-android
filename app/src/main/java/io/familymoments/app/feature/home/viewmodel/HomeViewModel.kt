@@ -65,7 +65,9 @@ class HomeViewModel @Inject constructor(
                     errorMessage = null,
                     posts = it.result
                 )
-                minPostId = it.result.minOf { post -> post.postId }
+                if (it.result.isNotEmpty()) {
+                    minPostId = it.result.minOf { post -> post.postId }
+                }
             },
             onFailure = {
                 _homeUiState.value = _homeUiState.value.copy(
@@ -91,7 +93,9 @@ class HomeViewModel @Inject constructor(
                     isLoading = isLoading.value,
                     posts = _homeUiState.value.posts + it.result
                 )
-                minPostId = it.result.minOf { post -> post.postId }
+                if (it.result.isNotEmpty()) {
+                    minPostId = it.result.minOf { post -> post.postId }
+                }
             },
             onFailure = {
                 _homeUiState.value = _homeUiState.value.copy(
