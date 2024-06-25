@@ -18,5 +18,6 @@ data class Post(
     val content: String,
     val imgs: List<String>,
     val createdAt: String,
+    val countLove: Int,
     val loved: Boolean
 )

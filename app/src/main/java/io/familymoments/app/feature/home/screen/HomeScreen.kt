@@ -320,6 +320,7 @@ fun HomeScreenPreview() {
                 content = "test",
                 imgs = listOf(),
                 createdAt = "2023-03-12",
+                countLove = 0,
                 loved = false
             )
         }
