@@ -45,7 +45,8 @@ import io.familymoments.app.feature.removemember.viewmodel.RemoveFamilyMemberVie
 fun RemoveFamilyMemberScreen(
     modifier: Modifier = Modifier,
     viewModel: RemoveFamilyMemberViewModel,
-    navigateBack: () -> Unit = {}
+    navigateBack: () -> Unit = {},
+    navigateToConfirmScreen: (List<String>) -> Unit = {}
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
     var selectedMembers by remember { mutableStateOf(listOf<Member>()) }
@@ -74,6 +75,7 @@ fun RemoveFamilyMemberScreen(
         showPermissionPopup = showPermissionPopup,
         showRemovePopup = showRemovePopup,
         nicknames = selectedMembers.map { it.nickname },
+        userIds = selectedMembers.map { it.id },
         permissionPopupDismissRequest = {
             showPermissionPopup = false
             navigateBack()
@@ -81,9 +83,7 @@ fun RemoveFamilyMemberScreen(
         removePopupDismissRequest = {
             showRemovePopup = false
         },
-        removePopupOnDoneButtonClicked = {
-            // TODO 화면 이동
-        }
+        navigateToConfirmScreen = navigateToConfirmScreen
     )
 }
 
@@ -172,9 +172,10 @@ private fun RemoveFamilyMemberPopups(
     showPermissionPopup: Boolean,
     showRemovePopup: Boolean,
     nicknames: List<String> = emptyList(),
+    userIds: List<String> = emptyList(),
     permissionPopupDismissRequest: () -> Unit = {},
     removePopupDismissRequest: () -> Unit = {},
-    removePopupOnDoneButtonClicked: () -> Unit = {},
+    navigateToConfirmScreen: (List<String>) -> Unit = {},
 ) {
     if (showPermissionPopup) {
         CompletePopUp(
@@ -188,7 +189,10 @@ private fun RemoveFamilyMemberPopups(
         RemoveFamilyMemberPopup(
             nicknames = nicknames,
             onDismissRequest = removePopupDismissRequest,
-            onDoneButtonClicked = removePopupOnDoneButtonClicked
+            onDoneButtonClicked = {
+                removePopupDismissRequest()
+                navigateToConfirmScreen(userIds)
+            }
         )
     }
 }

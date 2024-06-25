@@ -5,6 +5,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import io.familymoments.app.core.graph.Route
 import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.familyinvitationlink.screen.FamilyInvitationLinkScreen
 import io.familymoments.app.feature.familysettings.FamilySettingNavItem
@@ -49,6 +50,9 @@ fun NavGraphBuilder.familySettingGraph(navController: NavController) {
             viewModel = hiltViewModel(),
             navigateBack = {
                 navController.popBackStack()
+            },
+            navigateToConfirmScreen = { userIds ->
+                navController.navigate(Route.RemoveFamilyMember.getRoute(userIds))
             }
         )
     }
