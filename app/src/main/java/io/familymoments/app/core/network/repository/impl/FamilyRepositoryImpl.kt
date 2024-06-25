@@ -6,14 +6,19 @@ import io.familymoments.app.core.network.api.FamilyService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.dto.request.CreateFamilyRequest
 import io.familymoments.app.core.network.dto.request.SearchFamilyByInviteLinkRequest
+import io.familymoments.app.core.network.dto.request.TransferPermissionRequest
+import io.familymoments.app.core.network.dto.response.ApiResponse
 import io.familymoments.app.core.network.dto.response.CreateFamilyResponse
 import io.familymoments.app.core.network.dto.response.FamilyInfo
+import io.familymoments.app.core.network.dto.response.FamilyInfoResponse
+import io.familymoments.app.core.network.dto.response.FamilyPermission
 import io.familymoments.app.core.network.dto.response.GetFamilyNameResponse
 import io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse
 import io.familymoments.app.core.network.dto.response.JoinFamilyResponse
+import io.familymoments.app.core.network.dto.response.Member
 import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse
+import io.familymoments.app.core.network.dto.response.getResourceFlow
 import io.familymoments.app.core.network.repository.FamilyRepository
-import io.familymoments.app.core.network.dto.response.FamilyInfoResponse
 import io.familymoments.app.feature.modifyfamilyInfo.model.ModifyFamilyInfoRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -158,5 +163,23 @@ class FamilyRepositoryImpl @Inject constructor(
                 emit(Resource.Fail(Throwable(response.message())))
             }
         }
+    }
+
+    override suspend fun getFamilyMember(familyId: Long): Flow<Resource<ApiResponse<List<Member>>>> {
+        val response = familyService.getFamilyMember(familyId)
+        return getResourceFlow(response)
+    }
+
+    override suspend fun transferPermission(
+        familyId: Long,
+        transferPermissionRequest: TransferPermissionRequest
+    ): Flow<Resource<ApiResponse<String>>> {
+        val response = familyService.transferPermission(familyId, transferPermissionRequest)
+        return getResourceFlow(response)
+    }
+
+    override suspend fun checkFamilyPermission(familyId: Long): Flow<Resource<ApiResponse<FamilyPermission>>> {
+        val response = familyService.checkFamilyPermission(familyId)
+        return getResourceFlow(response)
     }
 }
