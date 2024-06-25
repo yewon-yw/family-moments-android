@@ -46,6 +46,7 @@ fun NavGraphBuilder.familySettingGraph(navController: NavController) {
     composable (FamilySettingNavItem.RemoveFamilyMember.route) {
         RemoveFamilyMemberScreen(
             modifier = Modifier.scaffoldState(hasShadow = true, hasBackButton = true),
+            viewModel = hiltViewModel(),
             navigateBack = {
                 navController.popBackStack()
             }

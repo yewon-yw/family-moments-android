@@ -248,4 +248,8 @@
 
     <string name="remove_family_member_title">강퇴시킬 멤버를 선택해주세요.</string>
     <string name="remove_family_member_btn">탈퇴시키기</string>
+    <string name="remove_family_member_popup_content_1">강퇴시킬 멤버가</string>
+    <string name="remove_family_member_popup_content_2">가 맞습니까?</string>
+    <string name="remove_family_member_popup_cancel">취소</string>
+    <string name="remove_family_member_popup_done">확인</string>
 </resources>
