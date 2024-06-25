@@ -31,13 +31,11 @@ class TransferPermissionViewModel @Inject constructor(
             },
             onSuccess = {
                 _uiState.value = _uiState.value.copy(
-                    checkSuccess = true,
-                    isOwner = it
+                    isOwner = it.result.isOwner
                 )
             },
             onFailure = {
                 _uiState.value = _uiState.value.copy(
-                    checkSuccess = false,
                     errorMessage = it.message
                 )
             }
@@ -52,13 +50,11 @@ class TransferPermissionViewModel @Inject constructor(
             },
             onSuccess = {
                 _uiState.value = _uiState.value.copy(
-                    getSuccess = true,
-                    members = it
+                    members = it.result
                 )
             },
             onFailure = {
                 _uiState.value = _uiState.value.copy(
-                    getSuccess = false,
                     errorMessage = it.message
                 )
             }
@@ -73,12 +69,12 @@ class TransferPermissionViewModel @Inject constructor(
             },
             onSuccess = {
                 _uiState.value = _uiState.value.copy(
-                    transferSuccess = true
+                    isSuccess = true
                 )
             },
             onFailure = {
                 _uiState.value = _uiState.value.copy(
-                    transferSuccess = false,
+                    isSuccess = false,
                     errorMessage = it.message
                 )
             }

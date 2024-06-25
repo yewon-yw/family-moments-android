@@ -3,8 +3,10 @@ package io.familymoments.app.core.network.repository
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.dto.request.CreateFamilyRequest
 import io.familymoments.app.core.network.dto.request.TransferPermissionRequest
+import io.familymoments.app.core.network.dto.response.ApiResponse
 import io.familymoments.app.core.network.dto.response.CreateFamilyResponse
 import io.familymoments.app.core.network.dto.response.FamilyInfo
+import io.familymoments.app.core.network.dto.response.FamilyPermission
 import io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse
 import io.familymoments.app.core.network.dto.response.JoinFamilyResponse
 import io.familymoments.app.core.network.dto.response.Member
@@ -37,12 +39,12 @@ interface FamilyRepository {
 
     suspend fun getFamilyName(familyId: Long): Flow<Resource<String>>
 
-    suspend fun getFamilyMember(familyId: Long): Flow<Resource<List<Member>>>
+    suspend fun getFamilyMember(familyId: Long): Flow<Resource<ApiResponse<List<Member>>>>
 
     suspend fun transferPermission(
         familyId: Long,
         transferPermissionRequest: TransferPermissionRequest
-    ): Flow<Resource<String>>
+    ): Flow<Resource<ApiResponse<String>>>
 
-    suspend fun checkFamilyPermission(familyId: Long): Flow<Resource<Boolean>>
+    suspend fun checkFamilyPermission(familyId: Long): Flow<Resource<ApiResponse<FamilyPermission>>>
 }

@@ -51,8 +51,8 @@ fun TransferPermissionScreen(
     var showCompletePopup by remember { mutableStateOf(false) }
     var showPermissionPopup by remember { mutableStateOf(false) }
 
-    LaunchedEffect(uiState.transferSuccess) {
-        showCompletePopup = uiState.transferSuccess
+    LaunchedEffect(uiState.isSuccess) {
+        showCompletePopup = uiState.isSuccess
     }
     LaunchedEffect(uiState.isOwner) {
         showPermissionPopup = !uiState.isOwner
@@ -114,7 +114,7 @@ fun TransferPermissionScreenUI(
                 .height(59.dp),
             enabled = selectedMember != null,
             onClick = { onDoneButtonClicked(selectedMember!!.id) },
-            text = stringResource(id = R.string.transfer_permission_btn),
+            text = stringResource(id = R.string.transfer_permission_title),
             containerColor = AppColors.deepPurple1
         )
     }
