@@ -3,6 +3,7 @@ package io.familymoments.app.core.network.repository.impl
 import io.familymoments.app.core.network.AuthErrorManager
 import io.familymoments.app.core.network.AuthErrorResponse
 import io.familymoments.app.core.network.HttpResponse
+import io.familymoments.app.core.network.LoginType
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.UserService
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
@@ -53,16 +54,14 @@ class UserRepositoryImpl @Inject constructor(
             val response = userService.loginUser(LoginRequest(username, password), fcmToken)
             val responseBody = response.body() ?: LoginResponse()
 
-            response.headers()["REFRESH_TOKEN"]?.let {
-                userInfoPreferencesDataSource.saveRefreshToken(it)
-            }
-
             if (responseBody.isSuccess) {
-                saveAccessToken(response.headers())
+                saveTokensFrom(response.headers())
                 val familyId: Long? = responseBody.result.familyId
                 userInfoPreferencesDataSource.saveFamilyId(familyId ?: DEFAULT_FAMILY_ID_VALUE)
+
                 loadUserProfile(familyId).collect { result ->
                     if (result is Resource.Success) {
+                        userInfoPreferencesDataSource.saveLoginType(LoginType.NORMAL)
                         userInfoPreferencesDataSource.saveUserProfile(result.data.result)
                     }
                     if (result is Resource.Fail) {
@@ -91,6 +90,10 @@ class UserRepositoryImpl @Inject constructor(
             emit(Resource.Loading)
             // get refresh token from shared preferences
             val refreshToken = userInfoPreferencesDataSource.loadRefreshToken()
+            if (refreshToken.isEmpty()) {
+                emit(Resource.Fail(Throwable("Not Signed User")))
+                return@flow
+            }
 
             val response = userService.reissueAccessToken(refreshToken)
             if (response.code() == HttpResponse.SUCCESS) {
@@ -189,8 +192,7 @@ class UserRepositoryImpl @Inject constructor(
         val response = userService.executeSocialSignIn(SocialSignInRequest(type), token, fcmToken)
 
         if (response.code() == 200) {
-            val headers = response.headers()
-            saveTokensFrom(headers)
+            saveTokensFrom(response.headers())
 
             val body = response.body()!!
             if (body.isSuccess) {
@@ -205,7 +207,7 @@ class UserRepositoryImpl @Inject constructor(
                         }
                     }
                 }
-                userInfoPreferencesDataSource.saveSocialLoginType(type)
+                userInfoPreferencesDataSource.saveLoginType(type)
                 emit(Resource.Success(body.result))
             } else {
                 emit(Resource.Fail(Throwable(body.message)))
@@ -219,11 +221,11 @@ class UserRepositoryImpl @Inject constructor(
 
 
     private suspend fun saveTokensFrom(headers: Headers) {
-        headers["X-AUTH-TOKEN"]?.let {
+        headers[KEY_ACCESS_TOKEN]?.let {
             userInfoPreferencesDataSource.saveAccessToken(it)
         }
 
-        headers["REFRESH-TOKEN"]?.let {
+        headers[KEY_REFRESH_TOKEN]?.let {
             userInfoPreferencesDataSource.saveRefreshToken(it)
         }
     }
@@ -327,6 +329,12 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun autoSignIn(): Flow<Resource<ApiResponse<UserProfile>>> {
+        val familyId = userInfoPreferencesDataSource.loadFamilyId()
+        val response = userService.loadUserProfile(familyId)
+        return getResourceFlow(response)
+    }
+
     override suspend fun logoutUser(): Flow<Resource<LogoutResponse>> {
         return flow {
             emit(Resource.Loading)
@@ -345,6 +353,7 @@ class UserRepositoryImpl @Inject constructor(
 
     companion object {
         private const val KEY_ACCESS_TOKEN = "X-AUTH-TOKEN"
+        private const val KEY_REFRESH_TOKEN = "REFRESH-TOKEN"
         private const val GET_ACCESS_TOKEN_ERROR = "Fail to get Access Token"
     }
 }

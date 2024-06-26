@@ -140,6 +140,7 @@ dependencies {
     kapt(libs.room.compiler)
     implementation(libs.navigation.compose)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.compose.runtime.livedata)
     implementation(libs.hilt.navigation.compose)
     implementation(libs.coil.compose)
     implementation(libs.timber)
