@@ -62,7 +62,9 @@ class CalendarDayViewModel @Inject constructor(
                     isLoading = isLoading.value,
                     posts = it.result
                 )
-                minPostId = it.result.minOf { post -> post.postId }
+                if (it.result.isNotEmpty()) {
+                    minPostId = it.result.minOf { post -> post.postId }
+                }
             },
             onFailure = {
                 _calendarDayUiState.value = _calendarDayUiState.value.copy(
@@ -92,7 +94,9 @@ class CalendarDayViewModel @Inject constructor(
                     isLoading = isLoading.value,
                     posts = _calendarDayUiState.value.posts + it.result
                 )
-                minPostId = it.result.minOf { post -> post.postId }
+                if (it.result.isNotEmpty()) {
+                    minPostId = it.result.minOf { post -> post.postId }
+                }
             },
             onFailure = {
                 _calendarDayUiState.value = _calendarDayUiState.value.copy(
@@ -152,7 +156,10 @@ class CalendarDayViewModel @Inject constructor(
                     it.copy(
                         posts = it.posts.map { post ->
                             if (post.postId == postId) {
-                                post.copy(loved = false)
+                                post.copy(
+                                    loved = false,
+                                    countLove = post.countLove-1
+                                )
                             } else {
                                 post
                             }
@@ -181,7 +188,10 @@ class CalendarDayViewModel @Inject constructor(
                     it.copy(
                         posts = it.posts.map { post ->
                             if (post.postId == postId) {
-                                post.copy(loved = true)
+                                post.copy(
+                                    loved = true,
+                                    countLove = post.countLove+1
+                                )
                             } else {
                                 post
                             }

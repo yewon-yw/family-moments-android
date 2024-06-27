@@ -27,12 +27,12 @@ class PostRepositoryImpl @Inject constructor(
         return flow {
             emit(Resource.Loading)
             val response = postService.getPosts(familyId)
-            val responseBody = response.body() ?: GetPostsResponse()
+            val responseBody = response.body()
 
-            if (responseBody.isSuccess) {
+            if (responseBody?.isSuccess == true) {
                 emit(Resource.Success(responseBody))
             } else {
-                emit(Resource.Fail(Throwable(responseBody.message)))
+                emit(Resource.Fail(Throwable(responseBody?.message)))
             }
         }.catch { e ->
             emit(Resource.Fail(e))

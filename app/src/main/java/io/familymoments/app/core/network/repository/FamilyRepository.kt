@@ -2,10 +2,14 @@ package io.familymoments.app.core.network.repository
 
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.dto.request.CreateFamilyRequest
+import io.familymoments.app.core.network.dto.request.TransferPermissionRequest
+import io.familymoments.app.core.network.dto.response.ApiResponse
 import io.familymoments.app.core.network.dto.response.CreateFamilyResponse
 import io.familymoments.app.core.network.dto.response.FamilyInfo
+import io.familymoments.app.core.network.dto.response.FamilyPermission
 import io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse
 import io.familymoments.app.core.network.dto.response.JoinFamilyResponse
+import io.familymoments.app.core.network.dto.response.Member
 import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse
 import io.familymoments.app.feature.modifyfamilyInfo.model.ModifyFamilyInfoRequest
 import kotlinx.coroutines.flow.Flow
@@ -34,4 +38,13 @@ interface FamilyRepository {
     ): Flow<Resource<FamilyInfo>>
 
     suspend fun getFamilyName(familyId: Long): Flow<Resource<String>>
+
+    suspend fun getFamilyMember(familyId: Long): Flow<Resource<ApiResponse<List<Member>>>>
+
+    suspend fun transferPermission(
+        familyId: Long,
+        transferPermissionRequest: TransferPermissionRequest
+    ): Flow<Resource<ApiResponse<String>>>
+
+    suspend fun checkFamilyPermission(familyId: Long): Flow<Resource<ApiResponse<FamilyPermission>>>
 }

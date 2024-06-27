@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -33,6 +34,7 @@ import io.familymoments.app.core.util.noRippleClickable
 fun CompletePopUp(
     content: String,
     dismissText:String = stringResource(R.string.complete_pop_up_btn_ok),
+    buttonColors: ButtonColors = ButtonDefaults.buttonColors(containerColor = AppColors.pink1),
     onDismissRequest: () -> Unit = {}
 ) {
     Dialog(onDismissRequest = onDismissRequest) {
@@ -72,7 +74,7 @@ fun CompletePopUp(
                         .width(252.dp)
                         .align(Alignment.CenterHorizontally)
                         .padding(bottom = 21.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = AppColors.pink1),
+                    colors = buttonColors,
                     shape = RoundedCornerShape(60.dp),
                     onClick = onDismissRequest,
                     contentPadding = PaddingValues(top = 17.dp, bottom = 16.dp)

@@ -2,12 +2,16 @@ package io.familymoments.app.core.network.api
 
 import io.familymoments.app.core.network.dto.request.CreateFamilyRequest
 import io.familymoments.app.core.network.dto.request.SearchFamilyByInviteLinkRequest
+import io.familymoments.app.core.network.dto.request.TransferPermissionRequest
+import io.familymoments.app.core.network.dto.response.ApiResponse
 import io.familymoments.app.core.network.dto.response.CreateFamilyResponse
 import io.familymoments.app.core.network.dto.response.GetFamilyNameResponse
 import io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse
 import io.familymoments.app.core.network.dto.response.JoinFamilyResponse
 import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse
 import io.familymoments.app.core.network.dto.response.FamilyInfoResponse
+import io.familymoments.app.core.network.dto.response.FamilyPermission
+import io.familymoments.app.core.network.dto.response.Member
 import io.familymoments.app.feature.modifyfamilyInfo.model.ModifyFamilyInfoRequest
 import okhttp3.MultipartBody
 import retrofit2.Response
@@ -52,4 +56,16 @@ interface FamilyService {
 
     @GET("/families/{familyId}/famillyName")
     suspend fun getFamilyName(@Path("familyId") familyId: Long): Response<GetFamilyNameResponse>
+
+    @GET("/families/{familyId}/users")
+    suspend fun getFamilyMember(@Path("familyId") familyId: Long): Response<ApiResponse<List<Member>>>
+
+    @PATCH("/families/{familyId}/authority")
+    suspend fun transferPermission(
+        @Path("familyId") familyId: Long,
+        @Body transferPermissionRequest: TransferPermissionRequest
+    ): Response<ApiResponse<String>>
+
+    @GET("/families/{familyId}/authority")
+    suspend fun checkFamilyPermission(@Path("familyId") familyId: Long): Response<ApiResponse<FamilyPermission>>
 }

@@ -35,7 +35,9 @@ class AlbumViewModel @Inject constructor(
                     isLoading = isLoading.value,
                     album = it.result
                 )
-                minPostId = it.result.minOf { post -> post.postId }
+                if (it.result.isNotEmpty()) {
+                    minPostId = it.result.minOf { post -> post.postId }
+                }
             },
             onFailure = {
                 Timber.d("getAlbum: onFailure")
@@ -62,7 +64,9 @@ class AlbumViewModel @Inject constructor(
                     isLoading = isLoading.value,
                     album = _albumUiState.value.album + it.result
                 )
-                minPostId = it.result.minOf { post -> post.postId }
+                if (it.result.isNotEmpty()) {
+                    minPostId = it.result.minOf { post -> post.postId }
+                }
             },
             onFailure = {
                 Timber.d("loadMoreAlbum: onFailure")

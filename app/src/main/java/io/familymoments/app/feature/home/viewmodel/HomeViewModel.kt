@@ -65,7 +65,9 @@ class HomeViewModel @Inject constructor(
                     errorMessage = null,
                     posts = it.result
                 )
-                minPostId = it.result.minOf { post -> post.postId }
+                if (it.result.isNotEmpty()) {
+                    minPostId = it.result.minOf { post -> post.postId }
+                }
             },
             onFailure = {
                 _homeUiState.value = _homeUiState.value.copy(
@@ -91,7 +93,9 @@ class HomeViewModel @Inject constructor(
                     isLoading = isLoading.value,
                     posts = _homeUiState.value.posts + it.result
                 )
-                minPostId = it.result.minOf { post -> post.postId }
+                if (it.result.isNotEmpty()) {
+                    minPostId = it.result.minOf { post -> post.postId }
+                }
             },
             onFailure = {
                 _homeUiState.value = _homeUiState.value.copy(
@@ -113,7 +117,10 @@ class HomeViewModel @Inject constructor(
                     it.copy(
                         posts = it.posts.map { post ->
                             if (post.postId == postId) {
-                                post.copy(loved = true)
+                                post.copy(
+                                    loved = true,
+                                    countLove = post.countLove+1
+                                )
                             } else {
                                 post
                             }
@@ -142,7 +149,10 @@ class HomeViewModel @Inject constructor(
                     it.copy(
                         posts = it.posts.map { post ->
                             if (post.postId == postId) {
-                                post.copy(loved = false)
+                                post.copy(
+                                    loved = false,
+                                    countLove = post.countLove-1
+                                )
                             } else {
                                 post
                             }
