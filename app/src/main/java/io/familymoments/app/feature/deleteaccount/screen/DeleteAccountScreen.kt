@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -27,53 +28,47 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.FMButton
+import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.feature.deleteaccount.component.DeleteAccountPopup
 import io.familymoments.app.feature.deleteaccount.viewmodel.DeleteAccountViewModel
 import io.familymoments.app.feature.login.activity.LoginActivity
 
 @Composable
 fun DeleteAccountScreen(
-    viewModel: DeleteAccountViewModel,
-    navigateToBack: () -> Unit
+    viewModel: DeleteAccountViewModel, navigateToBack: () -> Unit
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
-    var showPopup by remember {
-        mutableStateOf(false)
-    }
+    var showCompletePopup by remember { mutableStateOf(false) }
     val context = LocalContext.current
 
-    LaunchedEffectWithShowPopup(uiState.showPopup) { showPopup = it }
-    LaunchedEffectWithSuccess(uiState.isSuccess, uiState.errorMessage, context, viewModel::resetSuccess)
+    LaunchedEffect(uiState.showPopup) {
+        showCompletePopup = uiState.showPopup
+    }
+    LaunchedEffect(uiState.isSuccess) {
+        if (uiState.isSuccess == false) {
+            Toast.makeText(context, uiState.errorMessage, Toast.LENGTH_SHORT).show()
+            viewModel.resetSuccess()
+        }
+    }
+    if (showCompletePopup) {
+        CompletePopUp(
+            content = stringResource(R.string.account_delete_popup_label),
+            buttonColors = ButtonDefaults.buttonColors(containerColor = AppColors.purple2)
+        ) {
+            viewModel.resetPopup()
+            navigateToLogin(context)
+        }
+    }
 
     DeleteAccountScreenUI(viewModel::deleteAccount, navigateToBack)
-    if (showPopup) {
-        DeleteAccountPopup { navigateToLogin(context) }
-    }
+
 }
 
 fun navigateToLogin(context: Context) {
     val intent = Intent(context, LoginActivity::class.java)
     intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
     context.startActivity(intent)
-}
-
-@Composable
-fun LaunchedEffectWithShowPopup(showPopup: Boolean, onChangePopup: (Boolean) -> Unit) {
-    LaunchedEffect(showPopup) {
-        onChangePopup(showPopup)
-    }
-}
-
-@Composable
-fun LaunchedEffectWithSuccess(isSuccess: Boolean?, errorMessage: String?, context: Context, resetSuccess: () -> Unit) {
-    LaunchedEffect(isSuccess) {
-        if (isSuccess == false) {
-            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
-            resetSuccess()
-        }
-    }
 }
 
 @Composable
@@ -101,14 +96,17 @@ private fun DeleteAccountContent(deleteAccount: () -> Unit, navigateToBack: () -
         Text(
             modifier = Modifier.padding(horizontal = 3.dp),
             text = stringResource(R.string.account_deletion_notice_text),
-            style = AppTypography.BTN4_18, color = AppColors.deepPurple1
+            style = AppTypography.BTN4_18,
+            color = AppColors.deepPurple1
         )
         Spacer(modifier = Modifier.height(58.dp))
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(R.string.account_deletion_farewell_text),
-            style = AppTypography.BTN3_20, color = AppColors.deepPurple1,
-            textAlign = TextAlign.Center, lineHeight = 24.sp
+            style = AppTypography.BTN3_20,
+            color = AppColors.deepPurple1,
+            textAlign = TextAlign.Center,
+            lineHeight = 24.sp
         )
         Spacer(modifier = Modifier.height(103.dp))
         FMButton(

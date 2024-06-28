@@ -58,4 +58,10 @@ object KakaoAuth {
             Timber.e(error)
         }
     }
+
+    fun kakaoUnlink(callback: (Throwable?) -> Unit) {
+        UserApiClient.instance.unlink { error ->
+            callback(error)
+        }
+    }
 }

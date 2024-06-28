@@ -97,5 +97,5 @@ interface UserService {
     suspend fun findId(@Body findIdRequest: FindIdRequest): Response<FindIdResponse>
 
    @DELETE("/users")
-   suspend fun deleteAccount(@Header("X-AUTH-TOKEN") accessToken:String):Response<ApiResponse<String>>
+   suspend fun deleteAccount():Response<ApiResponse<String>>
 }
