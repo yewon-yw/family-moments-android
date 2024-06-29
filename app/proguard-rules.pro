@@ -79,3 +79,4 @@
 -keep class androidx.credentials.playservices.** {
   *;
 }
+-keep class com.kakao.sdk.**.model.* { <fields>; }
