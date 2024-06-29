@@ -2,11 +2,10 @@ package io.familymoments.app.feature.mypage.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
+import io.familymoments.app.core.network.LoginType
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.UserRepository
-import io.familymoments.app.core.network.social.KakaoAuth
 import io.familymoments.app.core.network.social.KakaoAuth.kakaoLogout
-import io.familymoments.app.core.network.social.NaverAuth
 import io.familymoments.app.core.network.social.NaverAuth.naverLogout
 import io.familymoments.app.feature.mypage.uistate.MyPageUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -27,11 +26,11 @@ class MyPageViewModel @Inject constructor(
             operation = { userRepository.logoutUser() },
             onSuccess = {
 
-                val type = userInfoPreferencesDataSource.loadSocialLoginType()
+                val type = userInfoPreferencesDataSource.loadLoginType()
                 println(type)
                 when (type) {
-                    KakaoAuth.NAME -> kakaoLogout()
-                    NaverAuth.NAME -> naverLogout()
+                    LoginType.KAKAO -> kakaoLogout()
+                    LoginType.NAVER -> naverLogout()
                 }
 
                 _myPageUiState.value = _myPageUiState.value.copy(

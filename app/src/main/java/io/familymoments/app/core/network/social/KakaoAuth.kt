@@ -9,7 +9,6 @@ import timber.log.Timber
 
 object KakaoAuth {
 
-    const val NAME: String = "KAKAO"
     fun login(context: Context, resultCallback: (String?) -> Unit = {}) {
         // 로그인 조합 예제
 

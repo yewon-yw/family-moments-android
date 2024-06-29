@@ -2,11 +2,10 @@ package io.familymoments.app.feature.deleteaccount.viewmodel
 
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
+import io.familymoments.app.core.network.LoginType
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.UserRepository
-import io.familymoments.app.core.network.social.KakaoAuth
 import io.familymoments.app.core.network.social.KakaoAuth.kakaoUnlink
-import io.familymoments.app.core.network.social.NaverAuth
 import io.familymoments.app.core.network.social.NaverAuth.naverUnlink
 import io.familymoments.app.feature.deleteaccount.uistate.DeleteAccountUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,20 +25,11 @@ class DeleteAccountViewModel @Inject constructor(
         async(
             operation = { userRepository.deleteAccount() },
             onSuccess = {
-                val type = userInfoPreferencesDataSource.loadSocialLoginType()
+                val type = userInfoPreferencesDataSource.loadLoginType()
                 when (type) {
-                    KakaoAuth.NAME -> kakaoUnlink { error -> handleUnlinkSocialAccountResult(error) }
-
-                    NaverAuth.NAME -> naverUnlink { error -> handleUnlinkSocialAccountResult(error) }
-
-                    else -> {
-                        _uiState.update {
-                            it.copy(
-                                isSuccess = true,
-                                showPopup = true
-                            )
-                        }
-                    }
+                    LoginType.KAKAO -> kakaoUnlink { error -> handleDeleteAccountResult(error) }
+                    LoginType.NAVER -> naverUnlink { error -> handleDeleteAccountResult(error) }
+                    LoginType.NORMAL -> handleDeleteAccountResult(error = null)
                 }
                 userInfoPreferencesDataSource.resetPreferencesData()
             },
@@ -53,7 +43,7 @@ class DeleteAccountViewModel @Inject constructor(
             })
     }
 
-    private fun handleUnlinkSocialAccountResult(error: Throwable?) {
+    private fun handleDeleteAccountResult(error: Throwable?) {
         if (error == null) {
             _uiState.update {
                 it.copy(

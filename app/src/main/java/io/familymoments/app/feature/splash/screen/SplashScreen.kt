@@ -1,5 +1,6 @@
 package io.familymoments.app.feature.splash.screen
 
+import android.content.Context
 import android.content.Intent
 import android.content.Intent.FLAG_ACTIVITY_CLEAR_TASK
 import android.content.Intent.FLAG_ACTIVITY_NEW_TASK
@@ -9,10 +10,12 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.State
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,13 +33,46 @@ import com.airbnb.lottie.compose.rememberLottieComposition
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.feature.bottomnav.activity.MainActivity
-import kotlinx.coroutines.delay
+import io.familymoments.app.feature.login.activity.LoginActivity
+import io.familymoments.app.feature.splash.viewmodel.SplashViewModel
 
 @Composable
-fun SplashScreen() {
+fun SplashScreen(viewModel: SplashViewModel, onFinish:() -> Unit = {}) {
 
+    LaunchedEffect(Unit) {
+        viewModel.autoSignIn()
+    }
+
+    val nextRouteState = viewModel.currentRoute.observeAsState()
     val context = LocalContext.current
 
+    NextRouteLaunchedEffect(nextRouteState, context, onFinish)
+    SplashScreenUI()
+}
+
+@Composable
+private fun NextRouteLaunchedEffect(
+    nextRoute: State<SplashViewModel.NextRoute?>,
+    context: Context,
+    onFinish: () -> Unit
+) {
+    LaunchedEffect(nextRoute.value) {
+        if (nextRoute.value == SplashViewModel.NextRoute.LOGIN) {
+            val intent = Intent(context, LoginActivity::class.java)
+            intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
+            context.startActivity(intent)
+            onFinish()
+        } else if (nextRoute.value == SplashViewModel.NextRoute.MAIN) {
+            val intent = Intent(context, MainActivity::class.java)
+            intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
+            context.startActivity(intent)
+            onFinish()
+        }
+    }
+}
+
+@Composable
+fun SplashScreenUI() {
     val composition by rememberLottieComposition(
         LottieCompositionSpec.RawRes(R.raw.splash_lottie)
     )
@@ -49,12 +85,6 @@ fun SplashScreen() {
         )
     }
 
-    LaunchedEffect(Unit) {
-        delay(2000L)
-        val intent = Intent(context, MainActivity::class.java)
-        intent.flags = FLAG_ACTIVITY_NEW_TASK or FLAG_ACTIVITY_CLEAR_TASK
-        context.startActivity(intent)
-    }
 
     Column(
         modifier = Modifier
@@ -87,6 +117,6 @@ fun SplashScreen() {
 @Composable
 fun SplashPreview() {
     FamilyMomentsTheme {
-        SplashScreen()
+        SplashScreenUI()
     }
 }
