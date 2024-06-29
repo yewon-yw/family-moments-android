@@ -1,5 +1,6 @@
 package io.familymoments.app.feature.removemember.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -7,18 +8,19 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.FMButton
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.removemember.viewmodel.RemoveFamilyMemberConfirmViewModel
-import timber.log.Timber
-import kotlin.reflect.typeOf
 
 @Composable
 fun RemoveFamilyMemberConfirmScreen(
@@ -26,18 +28,28 @@ fun RemoveFamilyMemberConfirmScreen(
     viewModel: RemoveFamilyMemberConfirmViewModel,
     navigateBack: () -> Unit,
 ) {
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+    val context = LocalContext.current
+
+    LaunchedEffect(uiState.isSuccess) {
+        if (uiState.isSuccess) {
+            Toast.makeText(context, R.string.remove_family_member_complete, Toast.LENGTH_SHORT).show()
+            navigateBack(); navigateBack()
+        }
+    }
+
     RemoveFamilyMemberConfirmScreenUI(
         modifier = modifier,
-        userIds = viewModel.userIdsList,
-        navigateBack = navigateBack
+        navigateBack = navigateBack,
+        onDoneButtonClicked = viewModel::removeFamilyMember
     )
 }
 
 @Composable
 fun RemoveFamilyMemberConfirmScreenUI(
     modifier: Modifier = Modifier,
-    userIds: List<String> = emptyList(),
-    navigateBack: () -> Unit = {}
+    navigateBack: () -> Unit = {},
+    onDoneButtonClicked: () -> Unit = {}
 ) {
     val contents = listOf(
         R.string.remove_family_member_confirm_content_1,
@@ -80,7 +92,9 @@ fun RemoveFamilyMemberConfirmScreenUI(
                     text = stringResource(id = R.string.remove_family_member_confirm_content_5),
                     style = AppTypography.SH1_20,
                     color = AppColors.deepPurple1,
-                    modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 31.dp)
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 31.dp)
                 )
             }
         }
@@ -89,7 +103,7 @@ fun RemoveFamilyMemberConfirmScreenUI(
                 .fillMaxWidth()
                 .padding(bottom = 20.dp)
                 .height(59.dp),
-            onClick = { Timber.d("selected: $userIds") },
+            onClick = onDoneButtonClicked,
             text = stringResource(id = R.string.remove_family_member_confirm_continue_btn),
             containerColor = AppColors.pink1
         )

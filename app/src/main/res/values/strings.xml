@@ -260,4 +260,5 @@
     <string name="remove_family_member_confirm_content_3">또한, 가족 탈퇴 시, 해당 유저가 작성한</string>
     <string name="remove_family_member_confirm_content_4">게시글 및 댓글이 모두 삭제됩니다.</string>
     <string name="remove_family_member_confirm_content_5">정말 탈퇴시키겠습니까?</string>
+    <string name="remove_family_member_complete">가족에서 탈퇴되었습니다.</string>
 </resources>

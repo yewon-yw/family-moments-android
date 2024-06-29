@@ -182,4 +182,9 @@ class FamilyRepositoryImpl @Inject constructor(
         val response = familyService.checkFamilyPermission(familyId)
         return getResourceFlow(response)
     }
+
+    override suspend fun removeFamilyMember(familyId: Long, userIds: List<String>): Flow<Resource<ApiResponse<String>>> {
+        val response = familyService.removeFamilyMember(familyId, userIds)
+        return getResourceFlow(response)
+    }
 }

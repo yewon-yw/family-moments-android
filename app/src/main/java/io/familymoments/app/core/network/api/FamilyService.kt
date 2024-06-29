@@ -16,12 +16,14 @@ import io.familymoments.app.feature.modifyfamilyInfo.model.ModifyFamilyInfoReque
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.PATCH
 import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface FamilyService {
 
@@ -68,4 +70,10 @@ interface FamilyService {
 
     @GET("/families/{familyId}/authority")
     suspend fun checkFamilyPermission(@Path("familyId") familyId: Long): Response<ApiResponse<FamilyPermission>>
+
+    @DELETE("/families/{familyId}/users")
+    suspend fun removeFamilyMember(
+        @Path("familyId") familyId: Long,
+        @Query("userIds") userIds: List<String>
+    ): Response<ApiResponse<String>>
 }
