@@ -156,7 +156,10 @@ class CalendarDayViewModel @Inject constructor(
                     it.copy(
                         posts = it.posts.map { post ->
                             if (post.postId == postId) {
-                                post.copy(loved = false)
+                                post.copy(
+                                    loved = false,
+                                    countLove = post.countLove-1
+                                )
                             } else {
                                 post
                             }
@@ -185,7 +188,10 @@ class CalendarDayViewModel @Inject constructor(
                     it.copy(
                         posts = it.posts.map { post ->
                             if (post.postId == postId) {
-                                post.copy(loved = true)
+                                post.copy(
+                                    loved = true,
+                                    countLove = post.countLove+1
+                                )
                             } else {
                                 post
                             }

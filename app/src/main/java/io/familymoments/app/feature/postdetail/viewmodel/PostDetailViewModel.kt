@@ -184,7 +184,13 @@ class PostDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isSuccess = true,
-                        postCommentLovesSuccess = true
+                        comments = it.comments.map { comment ->
+                            if (comment.commentId == commentId) {
+                                comment.copy(heart = true)
+                            } else {
+                                comment
+                            }
+                        }
                     )
                 }
             },
@@ -192,8 +198,7 @@ class PostDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isSuccess = false,
-                        errorMessage = throwable.message,
-                        postCommentLovesSuccess = false
+                        errorMessage = throwable.message
                     )
                 }
             }
@@ -207,7 +212,13 @@ class PostDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isSuccess = true,
-                        deleteCommentLovesSuccess = true
+                        comments = it.comments.map { comment ->
+                            if (comment.commentId == commentId) {
+                                comment.copy(heart = false)
+                            } else {
+                                comment
+                            }
+                        }
                     )
                 }
             },
@@ -215,8 +226,7 @@ class PostDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isSuccess = false,
-                        errorMessage = throwable.message,
-                        deleteCommentLovesSuccess = false
+                        errorMessage = throwable.message
                     )
                 }
             }
@@ -230,7 +240,10 @@ class PostDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isSuccess = true,
-                        postPostLovesSuccess = true
+                        postDetail = it.postDetail.copy(
+                            countLove = it.postDetail.countLove + 1,
+                            loved = true
+                        )
                     )
                 }
             },
@@ -239,7 +252,6 @@ class PostDetailViewModel @Inject constructor(
                     it.copy(
                         isSuccess = false,
                         errorMessage = throwable.message,
-                        postPostLovesSuccess = false
                     )
                 }
             }
@@ -253,7 +265,10 @@ class PostDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isSuccess = true,
-                        deletePostLovesSuccess = true
+                        postDetail = it.postDetail.copy(
+                            countLove = it.postDetail.countLove - 1,
+                            loved = false
+                        )
                     )
                 }
             },
@@ -261,8 +276,7 @@ class PostDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isSuccess = false,
-                        errorMessage = throwable.message,
-                        deletePostLovesSuccess = false
+                        errorMessage = throwable.message
                     )
                 }
             }

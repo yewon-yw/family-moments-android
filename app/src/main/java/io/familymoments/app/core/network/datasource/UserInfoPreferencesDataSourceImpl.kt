@@ -112,7 +112,7 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
             ?: throw IllegalStateException(USER_INFO_KEY_NOT_EXIST_ERROR)
     }
 
-    override suspend fun resetPreferencesData() {
+    override fun resetPreferencesData() {
         sharedPreferences.edit().clear().apply()
     }
 

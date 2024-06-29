@@ -238,4 +238,16 @@
     <string name="forgot_id_go_to_forgot_pwd_btn">비밀번호 찾기</string>
     <string name="forgot_id_name_tf_title">이름</string>
     <string name="forgot_password_check_validation_warning">입력한 비밀번호와 일치하지 않습니다.</string>
+
+    <string name="transfer_permission_title">권한 넘기기</string>
+    <string name="transfer_permission_complete_popup_content">변경이 완료되었습니다.</string>
+    <string name="transfer_permission_complete_popup_btn">확인</string>
+
+    <string name="check_family_permission_popup_content">권한이 없습니다.</string>
+    <string name="check_family_permission_popup_btn">확인</string>
+    <string name="account_deletion_notice_text">계정 삭제를 계속하면 회원님의 프로필 및\n계정 상세 정보가 완전히 삭제됩니다.</string>
+    <string name="account_deletion_farewell_text">그동안 Family Moments를\n이용해주셔서 감사합니다.</string>
+    <string name="account_deletion_delete_btn">계정 탈퇴하기</string>
+    <string name="account_deletion_cancel_btn">취소</string>
+    <string name="account_delete_popup_label">탈퇴되었습니다.</string>
 </resources>
