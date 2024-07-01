@@ -14,11 +14,11 @@ interface UserInfoPreferencesDataSource {
     suspend fun loadUserProfile(): UserProfile
     suspend fun loadUserProfileImg(): String
 
-    suspend fun resetPreferencesData()
+    fun resetPreferencesData()
     suspend fun updateUserProfile(profileEditResult: ProfileEditResult)
     suspend fun saveRefreshToken(refreshToken: String)
     suspend fun loadRefreshToken(): String
 
-    fun saveSocialLoginType(socialLoginType: String)
-    fun loadSocialLoginType(): String
+    fun saveLoginType(loginType: String)
+    fun loadLoginType(): String
 }

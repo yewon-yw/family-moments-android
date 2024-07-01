@@ -112,7 +112,7 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
             ?: throw IllegalStateException(USER_INFO_KEY_NOT_EXIST_ERROR)
     }
 
-    override suspend fun resetPreferencesData() {
+    override fun resetPreferencesData() {
         sharedPreferences.edit().clear().apply()
     }
 
@@ -142,11 +142,11 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
         )
     }
 
-    override fun saveSocialLoginType(socialLoginType: String) {
-        sharedPreferences.edit().putString(SOCIAL_LOGIN_TYPE_KEY, socialLoginType).apply()
+    override fun saveLoginType(loginType: String) {
+        sharedPreferences.edit().putString(SOCIAL_LOGIN_TYPE_KEY, loginType).apply()
     }
 
-    override fun loadSocialLoginType(): String {
+    override fun loadLoginType(): String {
         return sharedPreferences.getString(
             SOCIAL_LOGIN_TYPE_KEY,
             ""

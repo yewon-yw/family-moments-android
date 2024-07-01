@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
+import io.familymoments.app.core.network.LoginType
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.dto.response.LoginResult
 import io.familymoments.app.core.network.repository.UserRepository
@@ -70,7 +71,7 @@ class LoginViewModel @Inject constructor(
                 async(
                     operation = {
                         val fcmToken = userInfoPreferencesDataSource.loadFCMToken()
-                        userRepository.executeSocialSignIn(NaverAuth.NAME, token, fcmToken)
+                        userRepository.executeSocialSignIn(LoginType.NAVER, token, fcmToken)
                     },
                     onSuccess = {
                         _loginUiState.value = _loginUiState.value.copy(
@@ -84,7 +85,7 @@ class LoginViewModel @Inject constructor(
                                 it.nickname ?: "",
                                 it.strBirthDate ?: ""
                             ),
-                            socialType = NaverAuth.NAME,
+                            socialType = LoginType.NAVER,
                             socialToken = token
                         )
                     },
@@ -106,7 +107,7 @@ class LoginViewModel @Inject constructor(
                 async(
                     operation = {
                         val fcmToken = userInfoPreferencesDataSource.loadFCMToken()
-                        userRepository.executeSocialSignIn(KakaoAuth.NAME, token, fcmToken)
+                        userRepository.executeSocialSignIn(LoginType.KAKAO, token, fcmToken)
                     },
                     onSuccess = {
                         _loginUiState.value = _loginUiState.value.copy(
@@ -118,7 +119,7 @@ class LoginViewModel @Inject constructor(
                                 it.email ?: "",
                                 strBirthDate = it.strBirthDate ?: ""
                             ),
-                            socialType = KakaoAuth.NAME,
+                            socialType = LoginType.KAKAO,
                             socialToken = token
                         )
                     },
@@ -152,10 +153,10 @@ class LoginViewModel @Inject constructor(
             operation = { userRepository.logoutUser() },
             onSuccess = {
 
-                val type = userInfoPreferencesDataSource.loadSocialLoginType()
+                val type = userInfoPreferencesDataSource.loadLoginType()
                 when (type) {
-                    KakaoAuth.NAME -> kakaoLogout()
-                    NaverAuth.NAME -> naverLogout()
+                    LoginType.KAKAO -> kakaoLogout()
+                    LoginType.NAVER -> naverLogout()
                 }
 
                 _loginUiState.value = LoginUiState()
