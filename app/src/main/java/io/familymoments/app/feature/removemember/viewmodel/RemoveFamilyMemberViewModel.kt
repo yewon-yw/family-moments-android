@@ -16,7 +16,6 @@ class RemoveFamilyMemberViewModel @Inject constructor(
 ) : BaseViewModel() {
     private val _uiState = MutableStateFlow(RemoveFamilyMemberUiState())
     val uiState = _uiState.asStateFlow()
-    // FIXME uistate에 selectedMembers 추가해야할수도
 
     init {
         checkFamilyPermission()
