@@ -5,7 +5,6 @@ import io.familymoments.app.core.network.dto.request.SearchFamilyByInviteLinkReq
 import io.familymoments.app.core.network.dto.request.TransferPermissionRequest
 import io.familymoments.app.core.network.dto.response.ApiResponse
 import io.familymoments.app.core.network.dto.response.CreateFamilyResponse
-import io.familymoments.app.core.network.dto.response.GetFamilyNameResponse
 import io.familymoments.app.core.network.dto.response.GetNicknameDdayResponse
 import io.familymoments.app.core.network.dto.response.JoinFamilyResponse
 import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse
@@ -57,7 +56,7 @@ interface FamilyService {
     ): Response<FamilyInfoResponse>
 
     @GET("/families/{familyId}/famillyName")
-    suspend fun getFamilyName(@Path("familyId") familyId: Long): Response<GetFamilyNameResponse>
+    suspend fun getFamilyName(@Path("familyId") familyId: Long): Response<ApiResponse<String>>
 
     @GET("/families/{familyId}/users")
     suspend fun getFamilyMember(@Path("familyId") familyId: Long): Response<ApiResponse<List<Member>>>
