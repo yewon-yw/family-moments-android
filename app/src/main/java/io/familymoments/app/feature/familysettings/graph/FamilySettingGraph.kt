@@ -49,6 +49,10 @@ fun NavGraphBuilder.familySettingGraph(navController: NavController) {
     composable(FamilySettingNavItem.LeaveFamily.route) {
         LeaveFamilyScreen(
             modifier = Modifier.scaffoldState(hasShadow = false, hasBackButton = true),
+            viewModel = hiltViewModel(),
+            navigateBack = {
+                navController.popBackStack()
+            }
         )
     }
     composable(FamilySettingNavItem.DeleteFamily.route) {
