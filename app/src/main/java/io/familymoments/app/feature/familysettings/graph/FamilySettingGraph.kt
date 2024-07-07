@@ -8,6 +8,7 @@ import androidx.navigation.compose.composable
 import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.familyinvitationlink.screen.FamilyInvitationLinkScreen
 import io.familymoments.app.feature.familysettings.FamilySettingNavItem
+import io.familymoments.app.feature.leavefamily.screen.LeaveFamilyScreen
 import io.familymoments.app.feature.modifyfamilyInfo.screen.ModifyFamilyInfoScreen
 import io.familymoments.app.feature.transferpermission.screen.TransferPermissionScreen
 
@@ -46,7 +47,9 @@ fun NavGraphBuilder.familySettingGraph(navController: NavController) {
         // 가족 강퇴시키기
     }
     composable(FamilySettingNavItem.LeaveFamily.route) {
-        // 가족 탈퇴하기
+        LeaveFamilyScreen(
+            modifier = Modifier.scaffoldState(hasShadow = false, hasBackButton = true),
+        )
     }
     composable(FamilySettingNavItem.DeleteFamily.route) {
         // 가족 삭제하기
