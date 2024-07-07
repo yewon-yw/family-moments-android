@@ -13,6 +13,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -51,13 +52,6 @@ fun RemoveFamilyMemberConfirmScreenUI(
     navigateBack: () -> Unit = {},
     onDoneButtonClicked: () -> Unit = {}
 ) {
-    val contents = listOf(
-        R.string.remove_family_member_confirm_content_1,
-        R.string.remove_family_member_confirm_content_2,
-        R.string.remove_family_member_confirm_content_3,
-        R.string.remove_family_member_confirm_content_4
-    )
-
     Column(modifier = modifier.padding(horizontal = 16.dp)) {
         Box(
             modifier = Modifier
@@ -80,16 +74,18 @@ fun RemoveFamilyMemberConfirmScreenUI(
             Column(
                 modifier = Modifier.align(Alignment.Center)
             ) {
-                contents.forEach { resId ->
-                    Text(
-                        text = stringResource(id = resId),
-                        style = AppTypography.B1_16,
-                        color = AppColors.deepPurple1,
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                }
                 Text(
-                    text = stringResource(id = R.string.remove_family_member_confirm_content_5),
+                    text = buildString {
+                        append(stringResource(id = R.string.remove_family_member_confirm_content_1))
+                        append(stringResource(id = R.string.remove_family_member_confirm_content_2))
+                    },
+                    style = AppTypography.B1_16,
+                    color = AppColors.deepPurple1,
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
+                    textAlign = TextAlign.Center
+                )
+                Text(
+                    text = stringResource(id = R.string.remove_family_member_confirm_content_3),
                     style = AppTypography.SH1_20,
                     color = AppColors.deepPurple1,
                     modifier = Modifier
