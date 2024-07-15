@@ -47,7 +47,7 @@ fun LeaveFamilyScreen(
     LaunchedEffect(uiState.isOwner) {
         showPermissionPopup = uiState.isOwner
     }
-    LaunchedEffectLeaveFamily(uiState, context)
+    LaunchedEffectLeaveFamily(uiState, context, viewModel::resetSuccess)
 
     LeaveFamilyScreenUI(
         modifier = modifier,
@@ -149,17 +149,21 @@ fun LeaveFamilyScreenUI(
 @Composable
 fun LaunchedEffectLeaveFamily(
     uiState: LeaveFamilyUiState,
-    context: Context
+    context: Context,
+    resetSuccess: () -> Unit = {}
 ) {
     LaunchedEffect(uiState.isSuccess) {
-        if(uiState.isSuccess) {
-            Toast.makeText(context, R.string.leave_family_complete, Toast.LENGTH_SHORT).show()
-            val intent = Intent(context, ChoosingFamilyActivity::class.java).apply {
-                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+        uiState.isSuccess?.let { isSuccess ->
+            if (isSuccess) {
+                Toast.makeText(context, R.string.leave_family_complete, Toast.LENGTH_SHORT).show()
+                val intent = Intent(context, ChoosingFamilyActivity::class.java).apply {
+                    flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                }
+                context.startActivity(intent)
+            } else {
+                Toast.makeText(context, uiState.errorMessage, Toast.LENGTH_SHORT).show()
+                resetSuccess()
             }
-            context.startActivity(intent)
-        } else {
-            Toast.makeText(context, uiState.errorMessage, Toast.LENGTH_SHORT).show()
         }
     }
 }

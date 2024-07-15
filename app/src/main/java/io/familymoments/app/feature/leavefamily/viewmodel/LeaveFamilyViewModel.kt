@@ -54,4 +54,8 @@ class LeaveFamilyViewModel @Inject constructor(
             }
         )
     }
+
+    fun resetSuccess() {
+        _uiState.value = _uiState.value.copy(isSuccess = null)
+    }
 }
