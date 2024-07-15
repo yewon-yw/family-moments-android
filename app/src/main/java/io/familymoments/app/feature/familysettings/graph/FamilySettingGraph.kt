@@ -5,11 +5,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
+import io.familymoments.app.core.graph.Route
 import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.familyinvitationlink.screen.FamilyInvitationLinkScreen
 import io.familymoments.app.feature.familysettings.FamilySettingNavItem
 import io.familymoments.app.feature.modifyfamilyInfo.screen.ModifyFamilyInfoScreen
 import io.familymoments.app.feature.transferpermission.screen.TransferPermissionScreen
+import io.familymoments.app.feature.removemember.screen.RemoveFamilyMemberScreen
 
 fun NavGraphBuilder.familySettingGraph(navController: NavController) {
     composable(FamilySettingNavItem.ModifyFamilyInfo.route) {
@@ -43,7 +45,16 @@ fun NavGraphBuilder.familySettingGraph(navController: NavController) {
         )
     }
     composable (FamilySettingNavItem.RemoveFamilyMember.route) {
-        // 가족 강퇴시키기
+        RemoveFamilyMemberScreen(
+            modifier = Modifier.scaffoldState(hasShadow = true, hasBackButton = true),
+            viewModel = hiltViewModel(),
+            navigateBack = {
+                navController.popBackStack()
+            },
+            navigateToConfirmScreen = { userIds ->
+                navController.navigate(Route.RemoveFamilyMember.getRoute(userIds))
+            }
+        )
     }
     composable(FamilySettingNavItem.LeaveFamily.route) {
         // 가족 탈퇴하기
