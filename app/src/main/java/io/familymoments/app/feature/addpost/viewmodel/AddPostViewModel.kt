@@ -50,7 +50,7 @@ class AddPostViewModel @Inject constructor(
         getFileList()
     }
 
-    fun initUiState() {
+    private fun initUiState() {
         _uiState.update {
             it.copy(
                 mode = when (mode) {
@@ -79,7 +79,7 @@ class AddPostViewModel @Inject constructor(
 
     private fun getEditImagesUrlList(editImages: Array<String>): List<String> {
         val regex = Regex("[\\[\\] ]")  // 문자열에서 공백, 대괄호 제거
-        return editImages.getOrNull(0)?.replace(regex, "")?.split(",") ?: listOf()
+        return editImages.getOrNull(0)?.replace(regex, "")?.replace("thumbnails", "fm-origin")?.split(",") ?: listOf()
     }
 
     suspend fun addPost(content: String) {
