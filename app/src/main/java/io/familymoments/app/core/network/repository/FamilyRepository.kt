@@ -49,4 +49,6 @@ interface FamilyRepository {
     suspend fun checkFamilyPermission(familyId: Long): Flow<Resource<ApiResponse<FamilyPermission>>>
 
     suspend fun removeFamilyMember(familyId: Long, userIds: List<String>): Flow<Resource<ApiResponse<String>>>
+
+    suspend fun leaveFamily(familyId: Long): Flow<Resource<ApiResponse<String>>>
 }

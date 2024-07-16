@@ -75,4 +75,7 @@ interface FamilyService {
         @Path("familyId") familyId: Long,
         @Query("userIds") userIds: List<String>
     ): Response<ApiResponse<String>>
+
+    @DELETE("/families/{familyId}/withdraw")
+    suspend fun leaveFamily(@Path("familyId") familyId: Long): Response<ApiResponse<String>>
 }
