@@ -25,16 +25,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import io.familymoments.app.R
 import io.familymoments.app.core.network.dto.request.FamilyProfile
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.theme.FamilyMomentsTheme
 import io.familymoments.app.core.util.FAMILY_NAME_MAX_LENGTH
 import io.familymoments.app.core.util.FileUtil.convertBitmapToCompressedFile
 import io.familymoments.app.feature.choosingfamily.component.ChoosingFamilyHeaderButtonLayout
 import io.familymoments.app.feature.creatingfamily.component.GalleryOrDefaultImageSelectButton
 import io.familymoments.app.feature.creatingfamily.viewmodel.CreatingFamilyViewModel
+import java.io.File
 
 @Composable
 fun SetProfileScreen(
@@ -48,6 +49,28 @@ fun SetProfileScreen(
     var familyImg: Bitmap? by remember {
         mutableStateOf(null)
     }
+    SetProfileScreenUI(
+        familyName = familyName,
+        familyImg = familyImg,
+        context = context,
+        navigate = navigate,
+        onFamilyNameChanged = { familyName = it },
+        onFamilyImgChanged = { familyImg = it }
+    ) { file ->
+        viewModel.saveFamilyProfile(FamilyProfile(familyName, file))
+    }
+}
+
+@Composable
+fun SetProfileScreenUI(
+    familyName: String,
+    familyImg: Bitmap?,
+    context: Context = LocalContext.current,
+    navigate: () -> Unit = {},
+    onFamilyNameChanged: (String) -> Unit = {},
+    onFamilyImgChanged: (Bitmap?) -> Unit = {},
+    saveFamilyProfile: (File) -> Unit = {},
+) {
     Column {
         ChoosingFamilyHeaderButtonLayout(
             headerBottomPadding = 29.dp,
@@ -65,12 +88,7 @@ fun SetProfileScreen(
                     )
                     convertBitmapToCompressedFile(familyProfileBitmap, context)
                 }.onSuccess { file ->
-                    viewModel.saveFamilyProfile(
-                        FamilyProfile(
-                            familyName,
-                            file
-                        )
-                    )
+                    saveFamilyProfile(file)
                     navigate()
                 }.onFailure {
                     Toast.makeText(context, it.message, Toast.LENGTH_SHORT).show()
@@ -82,11 +100,9 @@ fun SetProfileScreen(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                SetUpFamilyName {
-                    familyName = it.text
-                }
+                SetUpFamilyName { onFamilyNameChanged(it.text) }
                 Spacer(modifier = Modifier.height(20.dp))
-                SetUpFamilyPicture(context) { familyImg = it }
+                SetUpFamilyPicture(context) { onFamilyImgChanged(it) }
             }
         }
 
@@ -155,6 +171,8 @@ fun SetUpFamilyPicture(context: Context, onBitmapChanged: (Bitmap?) -> Unit) {
 
 @Preview(showBackground = true)
 @Composable
-fun PreviewSetProfileScreen() {
-    SetProfileScreen(hiltViewModel()) {}
+fun SetProfileScreenPreview() {
+    FamilyMomentsTheme {
+        SetProfileScreenUI(familyName = "sweety home", familyImg = null)
+    }
 }
