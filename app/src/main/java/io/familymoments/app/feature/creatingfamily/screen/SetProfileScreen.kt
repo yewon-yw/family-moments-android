@@ -128,10 +128,10 @@ fun SetUpFamilyName(
             .height(41.dp)
             .fillMaxWidth()
             .background(AppColors.grey5, shape = RoundedCornerShape(7.dp))
-            .padding(vertical = 12.dp, horizontal = 11.dp),
+            .padding(horizontal = 11.dp),
     ) {
         BasicTextField(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxWidth().align(Alignment.Center),
             value = familyName,
             onValueChange = {
                 if (it.text.length <= FAMILY_NAME_MAX_LENGTH) familyName = it
