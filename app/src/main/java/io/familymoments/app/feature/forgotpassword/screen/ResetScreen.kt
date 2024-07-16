@@ -138,6 +138,7 @@ fun ResetScreenUI(
             value = password,
             onValueChange = onPasswordChanged,
             hint = stringResource(id = R.string.forgot_password_tf_pw_hint),
+            showText = false,
             modifier = Modifier
                 .fillMaxWidth()
                 .background(color = AppColors.pink5)
@@ -150,6 +151,7 @@ fun ResetScreenUI(
             value = passwordConfirm,
             onValueChange = onPasswordConfirmChanged,
             hint = stringResource(id = R.string.forgot_password_tf_pw_confirm_hint),
+            showText = false,
         )
         Spacer(modifier = Modifier.height(9.dp))
         if (passwordConfirm.text.isNotEmpty() && !isValid) {
