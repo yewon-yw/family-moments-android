@@ -102,7 +102,7 @@ fun RemoveFamilyMemberScreenUI(
             modifier = Modifier.padding(top = 55.dp, bottom = 33.dp),
             text = stringResource(id = R.string.remove_family_member_title),
             style = AppTypography.SH2_18,
-            color = AppColors.deepPurple1
+            color = AppColors.grey8
         )
         LazyColumn(modifier = Modifier.weight(1f)) {
             items(items = members, key = { it.id }) {
@@ -122,7 +122,7 @@ fun RemoveFamilyMemberScreenUI(
             enabled = selectedMembers.isNotEmpty(),
             onClick = onDoneButtonClicked,
             text = stringResource(id = R.string.remove_family_member_btn),
-            containerColor = AppColors.deepPurple1
+            containerColor = AppColors.grey8
         )
     }
 }

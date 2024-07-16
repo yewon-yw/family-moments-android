@@ -59,7 +59,7 @@ fun RemoveFamilyMemberPopup(
                 Text(
                     text = stringResource(id = R.string.remove_family_member_popup_content_1),
                     style = AppTypography.BTN4_18,
-                    color = AppColors.deepPurple1,
+                    color = AppColors.grey8,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     textAlign = TextAlign.Center
                 )
@@ -72,7 +72,7 @@ fun RemoveFamilyMemberPopup(
                             append(stringResource(id = R.string.remove_family_member_popup_content_2))
                         }
                     },
-                    color = AppColors.deepPurple1,
+                    color = AppColors.grey8,
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(bottom = 21.dp),

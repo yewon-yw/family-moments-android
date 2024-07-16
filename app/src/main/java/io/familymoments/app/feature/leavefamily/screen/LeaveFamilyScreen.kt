@@ -103,14 +103,14 @@ fun LeaveFamilyScreenUI(
                 Text(
                     text = stringResource(id = R.string.leave_family_content_1),
                     style = AppTypography.B1_16,
-                    color = AppColors.deepPurple1,
+                    color = AppColors.grey8,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     textAlign = TextAlign.Center
                 )
                 Text(
                     text = stringResource(id = R.string.leave_family_content_2),
                     style = AppTypography.SH1_20,
-                    color = AppColors.deepPurple1,
+                    color = AppColors.grey8,
                     modifier = Modifier
                         .padding(top = 35.dp)
                         .align(Alignment.CenterHorizontally)
@@ -136,7 +136,7 @@ fun LeaveFamilyScreenUI(
                 .fillMaxWidth()
                 .padding(bottom = 95.dp)
                 .height(59.dp),
-            colors = ButtonDefaults.buttonColors(containerColor = AppColors.deepPurple1, contentColor = AppColors.grey6)
+            colors = ButtonDefaults.buttonColors(containerColor = AppColors.grey8, contentColor = AppColors.grey6)
         ) {
             Text(
                 text = stringResource(id = R.string.leave_family_cancel_btn),

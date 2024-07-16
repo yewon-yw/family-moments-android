@@ -80,14 +80,14 @@ fun RemoveFamilyMemberConfirmScreenUI(
                         append(stringResource(id = R.string.remove_family_member_confirm_content_2))
                     },
                     style = AppTypography.B1_16,
-                    color = AppColors.deepPurple1,
+                    color = AppColors.grey8,
                     modifier = Modifier.align(Alignment.CenterHorizontally),
                     textAlign = TextAlign.Center
                 )
                 Text(
                     text = stringResource(id = R.string.remove_family_member_confirm_content_3),
                     style = AppTypography.SH1_20,
-                    color = AppColors.deepPurple1,
+                    color = AppColors.grey8,
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
                         .padding(top = 31.dp)
@@ -110,7 +110,7 @@ fun RemoveFamilyMemberConfirmScreenUI(
                 .height(59.dp),
             onClick = navigateBack,
             text = stringResource(id = R.string.remove_family_member_confirm_cancel_btn),
-            containerColor = AppColors.deepPurple1
+            containerColor = AppColors.grey8
         )
     }
 }
