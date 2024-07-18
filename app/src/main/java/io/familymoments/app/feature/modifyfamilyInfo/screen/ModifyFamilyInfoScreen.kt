@@ -72,7 +72,7 @@ fun ModifyFamilyInfoScreen(
     val requester = remember { BringIntoViewRequester() }
 
     val defaultProfileImageUri =
-        Uri.parse("$URI_SCHEME_RESOURCE://${context.packageName}/${R.drawable.default_profile}")
+        Uri.parse("$URI_SCHEME_RESOURCE://${context.packageName}/${R.drawable.default_family_profile}")
     val launcher = generateVisualMediaRequestLauncher { uri ->
         viewModel.updateRepresentImg(context, uri)
     }
