@@ -51,7 +51,7 @@ fun ChoosingFamilyScreen(
         flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
     }
     val navigationIcon = @Composable {
-        if (currentRoute != ChoosingFamilyRoute.Start.route) {
+        if (currentRoute != ChoosingFamilyRoute.Start.route && currentRoute != ChoosingFamilyRoute.CopyInvitationLink.routeWithArgs) {
             Icon(
                 modifier = Modifier
                     .padding(start = 12.dp)
