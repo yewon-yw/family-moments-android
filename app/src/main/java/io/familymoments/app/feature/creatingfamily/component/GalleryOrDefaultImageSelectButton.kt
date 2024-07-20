@@ -43,7 +43,7 @@ fun GalleryOrDefaultImageSelectButton(
     val defaultImageBitmap =
         BitmapFactory.decodeResource(
             context.resources,
-            R.drawable.default_profile
+            R.drawable.default_family_profile
         )
     var bitmap: Bitmap? by remember {
         mutableStateOf(null)

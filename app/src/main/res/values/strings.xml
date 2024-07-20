@@ -99,7 +99,7 @@
     <string name="sign_up_identification_term_agree">(필수) 본인확인 서비스 관련 이용 약관</string>
     <string name="sign_up_marketing_alarm_term_agree">(선택) 마케팅 정보 알림 및 수신 동의</string>
     <string name="sign_up_btn">Family Moments 시작하기</string>
-    <string name="sign_up_select_profile_image_description">사용하실 프로필 이미지를 선택헤주세요.</string>
+    <string name="sign_up_select_profile_image_description">사용하실 프로필 이미지를 선택해주세요.</string>
     <string name="sign_up_select_profile_image_drop_down_menu_default_image">기본 이미지로 하기</string>
     <string name="sign_up_select_profile_image_drop_down_menu_gallery">갤러리에서 선택</string>
     <string name="sign_up_select_profile_image_title">프로필 사진 선택</string>
