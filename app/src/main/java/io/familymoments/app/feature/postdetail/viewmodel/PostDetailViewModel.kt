@@ -104,7 +104,7 @@ class PostDetailViewModel @Inject constructor(
                 _uiState.update {
                     it.copy(
                         isSuccess = true,
-                        postLoves = response.results
+                        postLoves = response.result
                     )
                 }
             },
@@ -401,5 +401,53 @@ class PostDetailViewModel @Inject constructor(
             durationSeconds < oneYear -> "${durationSeconds / oneMonth}달 전"
             else -> "${durationSeconds / oneYear}년 전"
         }
+    }
+
+    fun reportPost(postId: Long, reason: String, details: String) {
+        async(
+            operation = {
+                postRepository.reportPost(postId, reason, details)
+            },
+            onSuccess = {
+                _uiState.update {
+                    it.copy(
+                        isSuccess = true,
+                        popup = PostDetailPopupType.ReportPostSuccess
+                    )
+                }
+            },
+            onFailure = { e ->
+                _uiState.update {
+                    it.copy(
+                        isSuccess = false,
+                        popup = PostDetailPopupType.ReportPostFailed(e.message.toString())
+                    )
+                }
+            }
+        )
+    }
+
+    fun reportComment(commentId: Long, reason: String, details: String) {
+        async(
+            operation = {
+                commentRepository.reportComment(commentId, reason, details)
+            },
+            onSuccess = {
+                _uiState.update {
+                    it.copy(
+                        isSuccess = true,
+                        popup = PostDetailPopupType.ReportCommentSuccess
+                    )
+                }
+            },
+            onFailure = { e ->
+                _uiState.update {
+                    it.copy(
+                        isSuccess = false,
+                        popup = PostDetailPopupType.ReportCommentFailed(e.message.toString())
+                    )
+                }
+            }
+        )
     }
 }

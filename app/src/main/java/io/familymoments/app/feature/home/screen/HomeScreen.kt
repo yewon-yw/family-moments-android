@@ -40,6 +40,7 @@ import io.familymoments.app.core.component.PostItem
 import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.component.popup.DeletePopUp
 import io.familymoments.app.core.component.popup.ReportPopUp
+import io.familymoments.app.core.component.popup.WarningPopup
 import io.familymoments.app.core.network.dto.response.Post
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
@@ -69,7 +70,7 @@ fun HomeScreen(
     }
 
     LaunchedEffectSetupData(viewModel::getNicknameDday, viewModel::getPosts)
-    LaunchedEffectShowPopup(popup, viewModel::deletePost, viewModel::dismissPopup)
+    LaunchedEffectShowPopup(popup, viewModel::deletePost, viewModel::reportPost, viewModel::dismissPopup)
     LaunchedEffectLoadMorePostsIfScrolledToLast(isScrolledToLast, viewModel::loadMorePosts)
 
     HomeScreenUI(
@@ -98,6 +99,7 @@ private fun LaunchedEffectSetupData(getNicknameDday: () -> Unit, getPosts: () ->
 private fun LaunchedEffectShowPopup(
     popup: PostPopupType?,
     deletePost: (Long) -> Unit,
+    reportPost: (Long, String, String) -> Unit,
     dismissPopup: () -> Unit
 ) {
     val showPopup = remember { mutableStateOf(false) }
@@ -140,19 +142,16 @@ private fun LaunchedEffectShowPopup(
             is PostPopupType.ReportPost -> {
                 ReportPopUp(
                     onDismissRequest = dismissPopup,
-                    onReportRequest = {
-                        // TODO: 신고하기 기능 구현
-                        // viewModel.reportPost(popup.postId)
-                    }
+                    onReportRequest = { reason, details -> reportPost(popup.postId, reason, details) }
                 )
             }
 
             PostPopupType.ReportPostSuccess -> {
-                // TODO: 신고가 완료되었습니다 팝업
+                CompletePopUp(content = stringResource(R.string.complete_report_label), onDismissRequest = dismissPopup)
             }
 
-            PostPopupType.ReportPostFailure -> {
-
+            is PostPopupType.ReportPostFailure -> {
+                WarningPopup(content = popup.message, onDismissRequest = dismissPopup)
             }
 
             else -> {

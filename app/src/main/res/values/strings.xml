@@ -273,4 +273,5 @@
     <string name="leave_family_popup_content">생성자는 권한을 먼저 넘겨주어야\n탈퇴가 가능합니다.\n(마이페이지>가족설정>가족 권한 넘기기)</string>
     <string name="leave_family_popup_btn">확인</string>
     <string name="leave_family_complete">가족을 탈퇴했습니다.</string>
+    <string name="complete_report_label">신고가 완료되었습니다.</string>
 </resources>

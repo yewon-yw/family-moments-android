@@ -38,6 +38,7 @@ import io.familymoments.app.core.component.PostItem
 import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.component.popup.DeletePopUp
 import io.familymoments.app.core.component.popup.ReportPopUp
+import io.familymoments.app.core.component.popup.WarningPopup
 import io.familymoments.app.core.network.dto.response.Post
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
@@ -66,7 +67,7 @@ fun CalendarDayScreen(
             mutableStateOf(!lazyListState.canScrollForward)
         }
     }
-    LaunchedEffectShowPopup(popup, viewModel::deletePost, viewModel::dismissPopup)
+    LaunchedEffectShowPopup(popup, viewModel::deletePost, viewModel::dismissPopup, viewModel::reportPost)
     LaunchedEffectLoadMorePostsIfScrolledToLast(isScrolledToLast, viewModel::loadMorePostsByDay)
 
     CalendarDayUI(
@@ -97,7 +98,12 @@ private fun LaunchedEffectLoadMorePostsIfScrolledToLast(isScrolledToLast: Boolea
 }
 
 @Composable
-private fun LaunchedEffectShowPopup(popup: PostPopupType?, deletePost: (Long) -> Unit, dismissPopup: () -> Unit) {
+private fun LaunchedEffectShowPopup(
+    popup: PostPopupType?,
+    deletePost: (Long) -> Unit,
+    dismissPopup: () -> Unit,
+    reportPost: (Long, String, String) -> Unit
+) {
     val showPopup = remember { mutableStateOf(false) }
 
     LaunchedEffect(popup) {
@@ -136,19 +142,19 @@ private fun LaunchedEffectShowPopup(popup: PostPopupType?, deletePost: (Long) ->
             is PostPopupType.ReportPost -> {
                 ReportPopUp(
                     onDismissRequest = dismissPopup,
-                    onReportRequest = {
-                        // TODO: 신고하기 기능 구현
-                        // viewModel.reportPost(popup.postId)
-                    }
+                    onReportRequest = { reason, details -> reportPost(popup.postId, reason, details) }
                 )
             }
 
             PostPopupType.ReportPostSuccess -> {
-                // TODO: 신고가 완료되었습니다 팝업
+                CompletePopUp(
+                    content = stringResource(id = R.string.complete_report_label),
+                    onDismissRequest = dismissPopup
+                )
             }
 
-            PostPopupType.ReportPostFailure -> {
-
+            is PostPopupType.ReportPostFailure -> {
+                WarningPopup(content = popup.message, onDismissRequest = dismissPopup)
             }
 
             else -> {
@@ -162,7 +168,7 @@ private fun LaunchedEffectShowPopup(popup: PostPopupType?, deletePost: (Long) ->
 private fun CalendarDayUI(
     lazyListState: LazyListState,
     modifier: Modifier = Modifier,
-    userNickname:String,
+    userNickname: String,
     hasNoPost: Boolean,
     posts: List<Post>,
     initialDate: LocalDate,

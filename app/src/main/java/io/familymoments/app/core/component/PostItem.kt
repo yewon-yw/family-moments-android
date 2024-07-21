@@ -11,12 +11,12 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -33,6 +33,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -46,6 +47,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostItem(
     userNickname: String,
@@ -56,19 +58,25 @@ fun PostItem(
     showDeletePostPopup: () -> Unit,
     showReportPostPopup: () -> Unit
 ) {
+    val menuExpanded = remember { mutableStateOf(false) }
+    val isUserPost = userNickname == post.writer
+    val pagerState = rememberPagerState(pageCount = { post.imgs.size })
     Column {
         Spacer(modifier = Modifier.height(10.dp))
         PostItemHeader(post = post)
         Spacer(modifier = Modifier.height(10.dp))
         Box(modifier = Modifier.postItemContentShadow()) {
             PostItemContent(
-                userNickname = userNickname,
                 post = post,
                 navigateToPostDetail = navigateToPostDetail,
                 navigateToEditPost = navigateToEditPost,
                 onClickPostLoves = onClickPostLoves,
                 showDeletePostPopup = showDeletePostPopup,
-                showReportPostPopup = showReportPostPopup
+                showReportPostPopup = showReportPostPopup,
+                pagerState = pagerState,
+                menuExpanded = menuExpanded.value,
+                onMenuExpandedChanged = { menuExpanded.value = it },
+                isUserPost = isUserPost
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
@@ -106,80 +114,43 @@ private fun PostItemHeader(post: Post) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PostItemContent(
-    userNickname: String,
     post: Post,
     navigateToPostDetail: (Int) -> Unit,
     navigateToEditPost: (Post) -> Unit,
     onClickPostLoves: () -> Unit,
     showDeletePostPopup: () -> Unit,
-    showReportPostPopup: () -> Unit
+    showReportPostPopup: () -> Unit,
+    pagerState: PagerState,
+    menuExpanded: Boolean = false,
+    onMenuExpandedChanged: (Boolean) -> Unit,
+    isUserPost: Boolean = false
 ) {
-    val menuExpanded = remember { mutableStateOf(false) }
-
     Column(
         modifier = Modifier
             .padding(horizontal = 11.dp)
-            .heightIn(min = 282.dp)
+            .height(282.dp)
             .clip(shape = RoundedCornerShape(10.dp))
             .background(AppColors.grey6)
             .clickable {
                 navigateToPostDetail(post.postId.toInt())
             }
     ) {
-        Box(
-            modifier = Modifier
-                .height(168.dp)
-        ) {
-            val pagerState = rememberPagerState(pageCount = { post.imgs.size })
-            HorizontalPager(
-                state = pagerState,
-                modifier = Modifier.fillMaxSize()
-            ) { index ->
-                AsyncImage(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.Center),
-                    model = post.imgs[index],
-                    contentScale = ContentScale.Crop,
-                    contentDescription = null,
-                )
-            }
-            if (post.imgs.size > 1) {
-                Row(
-                    modifier = Modifier
-                        .wrapContentHeight()
-                        .fillMaxWidth()
-                        .align(Alignment.BottomCenter)
-                        .padding(bottom = 6.dp),
-                    horizontalArrangement = Arrangement.Center
-                ) {
-                    repeat(pagerState.pageCount) { iteration ->
-                        val color =
-                            if (pagerState.currentPage == iteration) AppColors.purple2 else AppColors.grey6
-                        Box(
-                            modifier = Modifier
-                                .padding(horizontal = (3.5).dp)
-                                .clip(CircleShape)
-                                .background(color)
-                                .size(7.dp)
-                        )
-                    }
-                }
-            }
-        }
+        PostPhotos(post = post, pagerState = pagerState)
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 18.dp, end = 6.dp),
+                .padding(start = 18.dp, end = 6.dp, top = 11.dp, bottom = 11.dp),
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
                 modifier = Modifier
-                    .padding(top = 11.dp, end = 10.dp)
+                    .height(114.dp)
+                    .padding(end = 10.dp)
                     .weight(1f),
                 text = post.content,
                 style = AppTypography.B2_14,
-                color = AppColors.black2
+                color = AppColors.black2,
+                overflow = TextOverflow.Ellipsis
             )
             Column(
                 modifier = Modifier.padding(top = 5.dp),
@@ -191,32 +162,30 @@ private fun PostItemContent(
                         tint = AppColors.grey8,
                         contentDescription = null,
                         modifier = Modifier.noRippleClickable {
-                            menuExpanded.value = true
+                            onMenuExpandedChanged(true)
                         }
                     )
-                    if (menuExpanded.value) {
-                        PostDropdownMenu2(
+                    if (menuExpanded) {
+                        PostDropdownMenu(
                             items =
-                            if (userNickname == post.writer) listOf(
+                            if (isUserPost) listOf(
                                 Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify)) {
                                     navigateToEditPost(post)
                                 },
-                                Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {
-                                    showReportPostPopup()
-                                    menuExpanded.value = false
-                                },
                                 Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_delete)) {
                                     showDeletePostPopup()
-                                    menuExpanded.value = false
+                                    onMenuExpandedChanged(false)
                                 },
                             ) else listOf(
                                 Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_report)) {
                                     showReportPostPopup()
-                                    menuExpanded.value = false
+                                    onMenuExpandedChanged(false)
                                 },
                             ),
-                            expanded = menuExpanded.value,
-                            onDismissRequest = { menuExpanded.value = false }
+                            expanded = true,
+                            onDismissRequest = {
+                                onMenuExpandedChanged(false)
+                            }
                         )
                     }
                 }
@@ -233,6 +202,54 @@ private fun PostItemContent(
                 )
                 Spacer(modifier = Modifier.height(3.dp))
                 Text(text = post.countLove.toString(), style = AppTypography.LB2_11, color = AppColors.black1)
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+fun PostPhotos(
+    post: Post,
+    pagerState: PagerState
+) {
+    Box(
+        modifier = Modifier
+            .height(168.dp)
+    ) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize()
+        ) { index ->
+            AsyncImage(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .align(Alignment.Center),
+                model = post.imgs[index],
+                contentScale = ContentScale.Crop,
+                contentDescription = null,
+            )
+        }
+        if (post.imgs.size > 1) {
+            Row(
+                modifier = Modifier
+                    .wrapContentHeight()
+                    .fillMaxWidth()
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 6.dp),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                repeat(pagerState.pageCount) { iteration ->
+                    val color =
+                        if (pagerState.currentPage == iteration) AppColors.purple2 else AppColors.grey6
+                    Box(
+                        modifier = Modifier
+                            .padding(horizontal = (3.5).dp)
+                            .clip(CircleShape)
+                            .background(color)
+                            .size(7.dp)
+                    )
+                }
             }
         }
     }
