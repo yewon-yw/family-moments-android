@@ -37,7 +37,7 @@ fun FMTextField(
     modifier: Modifier = Modifier,
     onValueChange: (TextFieldValue) -> Unit,
     value: TextFieldValue,
-    hint: String,
+    hint: String = "",
     showBorder: Boolean = true,
     borderColor: Color = AppColors.grey2,
     showDeleteButton: Boolean = true,
