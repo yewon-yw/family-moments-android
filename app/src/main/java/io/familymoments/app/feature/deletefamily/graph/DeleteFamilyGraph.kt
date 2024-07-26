@@ -34,7 +34,7 @@ fun NavGraphBuilder.deleteFamilyGraph(navController: NavController) {
     }
     composable(DeleteFamilyRoute.COMPLETE.name) {
         DeleteFamilyCompleteScreen(
-            modifier = Modifier.scaffoldState(hasShadow = false, hasBackButton = true)
+            modifier = Modifier.scaffoldState(hasShadow = false, hasBackButton = false, hasIcon = false)
         )
     }
 }
