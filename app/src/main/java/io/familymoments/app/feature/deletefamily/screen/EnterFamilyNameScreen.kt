@@ -1,6 +1,7 @@
 package io.familymoments.app.feature.deletefamily.screen
 
 import android.widget.Toast
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
@@ -18,9 +21,11 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -33,7 +38,10 @@ import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.deletefamily.viewmodel.EnterFamilyNameViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun EnterFamilyNameScreen(
     modifier: Modifier = Modifier,
@@ -44,16 +52,26 @@ fun EnterFamilyNameScreen(
 ) {
     val context = LocalContext.current
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
-
+    val requester = remember { BringIntoViewRequester() }
+    val scope = rememberCoroutineScope()
     var familyNameTextField by remember { mutableStateOf(TextFieldValue()) }
 
     EnterFamilyNameScreenUI(
         modifier = modifier,
+        buttonModifier = Modifier.bringIntoViewRequester(requester),
         navigateBack = navigateBack,
         onValueChanged = { familyNameTextField = it },
         familyNameTextField = familyNameTextField,
         familyName = familyName,
-        deleteFamily = viewModel::deleteFamily
+        deleteFamily = viewModel::deleteFamily,
+        onFocusChanged = { isFocused ->
+            if (isFocused) {
+                scope.launch {
+                    delay(300)
+                    requester.bringIntoView()
+                }
+            }
+        }
     )
 
     LaunchedEffect(uiState.isSuccess) {
@@ -68,11 +86,13 @@ fun EnterFamilyNameScreen(
 @Composable
 fun EnterFamilyNameScreenUI(
     modifier: Modifier = Modifier,
+    buttonModifier: Modifier = Modifier,
     navigateBack: () -> Unit = {},
     onValueChanged: (TextFieldValue) -> Unit = {},
     familyNameTextField: TextFieldValue = TextFieldValue(),
     familyName: String = "",
-    deleteFamily: () -> Unit = {}
+    deleteFamily: () -> Unit = {},
+    onFocusChanged: (Boolean) -> Unit = {},
 ) {
     Column(
         modifier = modifier
@@ -101,7 +121,10 @@ fun EnterFamilyNameScreenUI(
             modifier = Modifier
                 .padding(top = 40.dp, bottom = 9.dp)
                 .height(46.dp)
-                .background(AppColors.pink5),
+                .background(AppColors.pink5)
+                .onFocusChanged {
+                    onFocusChanged(it.isFocused)
+                },
             onValueChange = onValueChanged,
             value = familyNameTextField
         )
@@ -112,7 +135,7 @@ fun EnterFamilyNameScreenUI(
             modifier = Modifier.padding(bottom = 210.dp)
         )
         Row(
-            modifier = Modifier.padding(horizontal = 11.5.dp)
+            modifier = buttonModifier.padding(horizontal = 11.5.dp)
         ) {
             FMButton(
                 modifier = Modifier
