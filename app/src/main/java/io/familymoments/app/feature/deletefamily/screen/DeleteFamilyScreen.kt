@@ -32,7 +32,9 @@ fun DeleteFamilyScreen(
         modifier = modifier,
         navigateBack = navigateBack,
         navigateNext = {
-            navigateNext(uiState.familyName)
+            if (uiState.familyName.isNotEmpty()) {
+                navigateNext(uiState.familyName)
+            }
         },
         familyName = uiState.familyName
     )
