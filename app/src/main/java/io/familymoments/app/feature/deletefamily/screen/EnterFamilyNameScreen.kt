@@ -1,5 +1,6 @@
 package io.familymoments.app.feature.deletefamily.screen
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,46 +14,65 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.FMButton
 import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.feature.deletefamily.viewmodel.EnterFamilyNameViewModel
 
 @Composable
 fun EnterFamilyNameScreen(
     modifier: Modifier = Modifier,
     navigateBack: () -> Unit = {},
-    navigateNext: () -> Unit = {}
+    navigateNext: () -> Unit = {},
+    viewModel: EnterFamilyNameViewModel,
+    familyName: String = ""
 ) {
+    val context = LocalContext.current
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+
     var familyNameTextField by remember { mutableStateOf(TextFieldValue()) }
+
     EnterFamilyNameScreenUI(
         modifier = modifier,
         navigateBack = navigateBack,
-        navigateNext = navigateNext,
         onValueChanged = { familyNameTextField = it },
         familyNameTextField = familyNameTextField,
+        familyName = familyName,
+        deleteFamily = viewModel::deleteFamily
     )
+
+    LaunchedEffect(uiState.isSuccess) {
+        if (uiState.isSuccess == true) {
+            navigateNext()
+        } else if (uiState.isSuccess == false) {
+            Toast.makeText(context, uiState.errorMessage, Toast.LENGTH_SHORT).show()
+        }
+    }
 }
 
 @Composable
 fun EnterFamilyNameScreenUI(
     modifier: Modifier = Modifier,
     navigateBack: () -> Unit = {},
-    navigateNext: () -> Unit = {},
     onValueChanged: (TextFieldValue) -> Unit = {},
     familyNameTextField: TextFieldValue = TextFieldValue(),
-    familyName: String = "sweety home"
+    familyName: String = "",
+    deleteFamily: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -106,11 +126,8 @@ fun EnterFamilyNameScreenUI(
                 modifier = Modifier
                     .weight(1f)
                     .height(54.dp),
-                enabled = familyNameTextField.text == familyName,
-                onClick = {
-                    // TODO 가족 삭제 진행
-                    navigateNext()
-                },
+                enabled = familyNameTextField.text.trim() == familyName,
+                onClick = deleteFamily,
                 containerColor = AppColors.pink1,
                 text = stringResource(id = R.string.delete_family_enter_family_name_done_btn)
             )

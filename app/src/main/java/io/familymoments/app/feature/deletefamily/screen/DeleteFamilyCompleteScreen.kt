@@ -1,5 +1,6 @@
 package io.familymoments.app.feature.deletefamily.screen
 
+import android.content.Intent
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
@@ -18,18 +20,28 @@ import io.familymoments.app.R
 import io.familymoments.app.core.component.FMButton
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.feature.choosingfamily.activity.ChoosingFamilyActivity
 
 @Composable
 fun DeleteFamilyCompleteScreen(
     modifier: Modifier = Modifier
 ) {
-    BackHandler {  }
-    DeleteFamilyCompleteScreenUI(modifier = modifier)
+    val context = LocalContext.current
+    BackHandler { }
+    DeleteFamilyCompleteScreenUI(
+        modifier = modifier,
+        navigateToChoosingFamily = {
+            val intent = Intent(context, ChoosingFamilyActivity::class.java).apply {
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+            }
+            context.startActivity(intent)
+        })
 }
 
 @Composable
 fun DeleteFamilyCompleteScreenUI(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navigateToChoosingFamily: () -> Unit = {}
 ) {
     Column(modifier = modifier.padding(horizontal = 16.dp)) {
         Box(
@@ -75,7 +87,7 @@ fun DeleteFamilyCompleteScreenUI(
                 .fillMaxWidth()
                 .padding(bottom = 20.dp)
                 .height(59.dp),
-            onClick = { },
+            onClick = navigateToChoosingFamily,
             text = stringResource(id = R.string.delete_family_complete_done_btn),
             containerColor = AppColors.pink1
         )
@@ -84,7 +96,7 @@ fun DeleteFamilyCompleteScreenUI(
                 .fillMaxWidth()
                 .padding(bottom = 95.dp)
                 .height(59.dp),
-            onClick = { },
+            onClick = navigateToChoosingFamily,
             text = stringResource(id = R.string.delete_family_complete_cancel_btn),
         )
     }

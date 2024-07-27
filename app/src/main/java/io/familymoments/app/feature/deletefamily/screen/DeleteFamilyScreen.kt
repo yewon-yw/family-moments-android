@@ -13,21 +13,28 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.FMButton
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.feature.deletefamily.viewmodel.DeleteFamilyViewModel
 
 @Composable
 fun DeleteFamilyScreen(
     modifier: Modifier = Modifier,
     navigateBack: () -> Unit = {},
-    navigateNext: () -> Unit = {}
+    navigateNext: (String) -> Unit = {},
+    viewModel: DeleteFamilyViewModel
 ) {
+    val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
     DeleteFamilyScreenUI(
         modifier = modifier,
         navigateBack = navigateBack,
-        navigateNext = navigateNext
+        navigateNext = {
+            navigateNext(uiState.familyName)
+        },
+        familyName = uiState.familyName
     )
 }
 
@@ -35,7 +42,8 @@ fun DeleteFamilyScreen(
 fun DeleteFamilyScreenUI(
     modifier: Modifier = Modifier,
     navigateBack: () -> Unit = {},
-    navigateNext: () -> Unit = {}
+    navigateNext: () -> Unit = {},
+    familyName: String = ""
 ) {
     Column(modifier = modifier.padding(horizontal = 16.dp)) {
         Box(
@@ -59,7 +67,7 @@ fun DeleteFamilyScreenUI(
                 modifier = Modifier.align(Alignment.Center)
             ) {
                 Text(
-                    text = stringResource(id = R.string.delete_family_content_1, "family_name"),
+                    text = stringResource(id = R.string.delete_family_content_1, familyName),
                     style = AppTypography.B1_16,
                     color = AppColors.grey8,
                     textAlign = TextAlign.Center,
