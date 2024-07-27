@@ -5,8 +5,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -16,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.FMButton
+import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.deletefamily.viewmodel.DeleteFamilyViewModel
@@ -28,6 +35,12 @@ fun DeleteFamilyScreen(
     viewModel: DeleteFamilyViewModel
 ) {
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
+    var showPermissionPopup by remember { mutableStateOf(false) }
+
+    LaunchedEffect(uiState.isOwner) {
+        showPermissionPopup = !uiState.isOwner
+    }
+
     DeleteFamilyScreenUI(
         modifier = modifier,
         navigateBack = navigateBack,
@@ -38,6 +51,18 @@ fun DeleteFamilyScreen(
         },
         familyName = uiState.familyName
     )
+
+    if (showPermissionPopup) {
+        CompletePopUp(
+            content = stringResource(id = R.string.check_family_permission_popup_content),
+            dismissText = stringResource(id = R.string.check_family_permission_popup_btn),
+            buttonColors = ButtonDefaults.buttonColors(containerColor = AppColors.purple2),
+            onDismissRequest = {
+                showPermissionPopup = false
+                navigateBack()
+            }
+        )
+    }
 }
 
 @Composable
