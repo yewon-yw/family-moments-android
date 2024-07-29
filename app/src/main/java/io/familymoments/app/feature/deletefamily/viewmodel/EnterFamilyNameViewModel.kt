@@ -21,6 +21,7 @@ class EnterFamilyNameViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     fun deleteFamily() {
+        showLoading()
         async(
             operation = {
                 val familyId = userInfoPreferencesDataSource.loadFamilyId()
