@@ -11,7 +11,7 @@ import io.familymoments.app.core.network.util.createImageMultiPart
 import io.familymoments.app.core.util.EventManager
 import io.familymoments.app.core.util.FileUtil
 import io.familymoments.app.core.util.UserEvent
-import io.familymoments.app.feature.modifyfamilyInfo.model.ModifyFamilyInfoRequest
+import io.familymoments.app.core.network.dto.request.ModifyFamilyInfoRequest
 import io.familymoments.app.feature.modifyfamilyInfo.uistate.ModifyFamilyInfoUiState
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -11,7 +11,7 @@ import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkRe
 import io.familymoments.app.core.network.dto.response.FamilyInfoResponse
 import io.familymoments.app.core.network.dto.response.FamilyPermission
 import io.familymoments.app.core.network.dto.response.Member
-import io.familymoments.app.feature.modifyfamilyInfo.model.ModifyFamilyInfoRequest
+import io.familymoments.app.core.network.dto.request.ModifyFamilyInfoRequest
 import okhttp3.MultipartBody
 import retrofit2.Response
 import retrofit2.http.Body

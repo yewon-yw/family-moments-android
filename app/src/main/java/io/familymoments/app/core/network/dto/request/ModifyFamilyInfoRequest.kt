@@ -1,4 +1,4 @@
-package io.familymoments.app.feature.modifyfamilyInfo.model
+package io.familymoments.app.core.network.dto.request
 
 data class ModifyFamilyInfoRequest(
     val familyName: String = ""
