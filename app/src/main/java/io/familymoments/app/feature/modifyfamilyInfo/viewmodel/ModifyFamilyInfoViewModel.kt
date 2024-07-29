@@ -32,6 +32,11 @@ class ModifyFamilyInfoViewModel @Inject constructor(
     val uiState: StateFlow<ModifyFamilyInfoUiState> = _uiState.asStateFlow()
     private var index: Int = 0
 
+    init {
+        checkFamilyPermission()
+        getFamilyInfo()
+    }
+
     // 파일 index 업데이트
     private fun updateIndex() {
         index = 1 - index
@@ -45,11 +50,27 @@ class ModifyFamilyInfoViewModel @Inject constructor(
                 representImg = file
             )
         } catch (e: Exception) {
-            Timber.tag("yewon").e("image resize error ${e.message}")
+            Timber.e("image resize error ${e.message}")
         }
     }
 
-    fun getFamilyInfo() {
+    private fun checkFamilyPermission() {
+        async(
+            operation = {
+                val familyId = userInfoPreferencesDataSource.loadFamilyId()
+                familyRepository.checkFamilyPermission(familyId)
+            },
+            onSuccess = {
+                _uiState.value = _uiState.value.copy(
+                    isOwner = it.result.isOwner
+                )
+            },
+            onFailure = {}
+        )
+    }
+
+    private fun getFamilyInfo() {
+        showLoading()
         async(
             operation = {
                 val familyId = userInfoPreferencesDataSource.loadFamilyId()
@@ -61,8 +82,9 @@ class ModifyFamilyInfoViewModel @Inject constructor(
                     familyName = it.familyName
                 )
                 viewModelScope.launch(Dispatchers.IO) {
+                    val representImgFile = FileUtil.uriToFile(Uri.parse(it.representImg), 0)
                     _uiState.value = _uiState.value.copy(
-                        representImg = FileUtil.uriToFile(Uri.parse(it.representImg), 0)
+                        representImg = representImgFile
                     )
                 }
             },
