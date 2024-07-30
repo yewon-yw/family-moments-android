@@ -180,4 +180,9 @@ class FamilyRepositoryImpl @Inject constructor(
         val response = familyService.leaveFamily(familyId)
         return getResourceFlow(response)
     }
+
+    override suspend fun deleteFamily(familyId: Long): Flow<Resource<ApiResponse<String>>> {
+        val response = familyService.deleteFamily(familyId)
+        return getResourceFlow(response)
+    }
 }

@@ -3,6 +3,7 @@ package io.familymoments.app.feature.familysettings
 import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import io.familymoments.app.R
+import io.familymoments.app.feature.deletefamily.graph.DeleteFamilyRoute
 
 sealed class FamilySettingNavItem(
     val route: String,
@@ -52,7 +53,7 @@ sealed class FamilySettingNavItem(
     )
 
     data object DeleteFamily : FamilySettingNavItem(
-        FamilySettingRoute.DELETE_FAMILY.name,
+        DeleteFamilyRoute.DELETE_FAMILY.name,
         R.drawable.ic_family_setting_delete_family,
         R.string.family_setting_label_delete_family
     )

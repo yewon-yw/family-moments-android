@@ -2,6 +2,7 @@ package io.familymoments.app.core.graph
 
 import androidx.navigation.NavType
 import androidx.navigation.navArgument
+import io.familymoments.app.feature.deletefamily.graph.DeleteFamilyRoute
 import io.familymoments.app.feature.profile.graph.ProfileScreenRoute
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
@@ -81,5 +82,14 @@ sealed interface Route {
         val arguments = listOf(navArgument(userIdsArg) { type = NavType.StringArrayType })
 
         fun getRoute(userIds: List<String>): String = "$route/$userIds"
+    }
+
+    data object DeleteFamily : Route {
+        override val route: String = DeleteFamilyRoute.ENTER_FAMILY_NAME.name
+        const val familyNameArgs = "familyName"
+        val routeWithArgs = "$route/{$familyNameArgs}"
+        val arguments = listOf(navArgument(familyNameArgs) { type = NavType.StringType })
+
+        fun getRoute(familyName: String) = "$route/$familyName"
     }
 }

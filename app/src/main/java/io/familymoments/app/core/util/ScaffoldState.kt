@@ -21,12 +21,19 @@ class ScaffoldState {
     var hasBackButton by mutableStateOf(false)
         private set
 
+    var hasIcon by mutableStateOf(false)
+        private set
+
     fun updateShadow(hasShadow: Boolean) {
         this.hasShadow = hasShadow
     }
 
     fun updateBackButton(hasBackButton: Boolean) {
         this.hasBackButton = hasBackButton
+    }
+
+    fun updateIcon(hasIcon: Boolean) {
+        this.hasIcon = hasIcon
     }
 }
 
@@ -35,6 +42,7 @@ val LocalScaffoldState = compositionLocalOf { ScaffoldState() }
 private class ScaffoldNode(
     var hasShadow: Boolean,
     var hasBackButton: Boolean,
+    var hasIcon: Boolean,
 ) : Modifier.Node(), CompositionLocalConsumerModifierNode, ObserverModifierNode {
     private var observedValue: ScaffoldState? = null
     override fun onAttach() {
@@ -50,6 +58,7 @@ private class ScaffoldNode(
             observedValue = currentValueOf(LocalScaffoldState).let {
                 it.updateShadow(hasShadow)
                 it.updateBackButton(hasBackButton)
+                it.updateIcon(hasIcon)
                 it
             }
         }
@@ -58,24 +67,28 @@ private class ScaffoldNode(
 
 private data class ScaffoldElement(
     val hasShadow: Boolean,
-    val hasBackButton: Boolean
+    val hasBackButton: Boolean,
+    val hasIcon: Boolean,
 ) : ModifierNodeElement<ScaffoldNode>() {
     override fun InspectorInfo.inspectableProperties() {
         name = "topAppBar"
         properties["hasShadow"] = hasShadow
         properties["hasBackButton"] = hasBackButton
+        properties["hasIcon"] = hasIcon
     }
 
     override fun create() =
-        ScaffoldNode(hasShadow = hasShadow, hasBackButton = hasBackButton)
+        ScaffoldNode(hasShadow = hasShadow, hasBackButton = hasBackButton, hasIcon = hasIcon)
 
     override fun update(node: ScaffoldNode) {
         node.hasShadow = hasShadow
         node.hasBackButton = hasBackButton
+        node.hasIcon = hasIcon
     }
 }
 
 fun Modifier.scaffoldState(
     hasShadow: Boolean,
-    hasBackButton: Boolean
-) = this then ScaffoldElement(hasShadow, hasBackButton)
+    hasBackButton: Boolean,
+    hasIcon: Boolean = true,
+) = this then ScaffoldElement(hasShadow, hasBackButton, hasIcon)

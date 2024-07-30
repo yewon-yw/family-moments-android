@@ -3,6 +3,7 @@ package io.familymoments.app.feature.bottomnav.viewmodel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
+import io.familymoments.app.core.network.HttpResponseMessage
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.FamilyRepository
@@ -85,7 +86,13 @@ class MainViewModel @Inject constructor(
                     familyName = it.result
                 )
             },
-            onFailure = {}
+            onFailure = {
+                if (it.message == HttpResponseMessage.USER_NOT_IN_FAMILY_404 || it.message == HttpResponseMessage.FAMILY_NOT_EXIST_404) {
+                    _familyUiState.value = MainUiState(
+                        familyExist = false
+                    )
+                }
+            }
         )
     }
 

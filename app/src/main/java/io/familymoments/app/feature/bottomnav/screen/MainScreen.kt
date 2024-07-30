@@ -95,25 +95,27 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
     }
 
     val navigationIcon = @Composable {
-        if (scaffoldState.hasBackButton) {
-            Icon(
-                modifier = Modifier
-                    .padding(start = 12.dp)
-                    .clickable { navController.popBackStack() },
-                imageVector = ImageVector.vectorResource(id = R.drawable.ic_app_bar_back),
-                contentDescription = null,
-                tint = AppColors.grey3
-            )
-        } else {
-            AsyncImage(
-                modifier = Modifier
-                    .padding(start = 12.dp)
-                    .size(34.dp)
-                    .clip(shape = CircleShape),
-                model = appBarUiState.value.profileImgUrl,
-                contentScale = ContentScale.Crop,
-                contentDescription = null,
-            )
+        if (scaffoldState.hasIcon) {
+            if (scaffoldState.hasBackButton) {
+                Icon(
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                        .clickable { navController.popBackStack() },
+                    imageVector = ImageVector.vectorResource(id = R.drawable.ic_app_bar_back),
+                    contentDescription = null,
+                    tint = AppColors.grey3
+                )
+            } else {
+                AsyncImage(
+                    modifier = Modifier
+                        .padding(start = 12.dp)
+                        .size(34.dp)
+                        .clip(shape = CircleShape),
+                    model = appBarUiState.value.profileImgUrl,
+                    contentScale = ContentScale.Crop,
+                    contentDescription = null,
+                )
+            }
         }
     }
 
