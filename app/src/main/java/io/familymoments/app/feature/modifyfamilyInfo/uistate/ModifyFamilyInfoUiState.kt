@@ -7,5 +7,6 @@ data class ModifyFamilyInfoUiState(
     val postSuccess: Boolean? = null,
     val errorMessage: String? = null,
     val familyName: String = "",
-    val representImg: File? = null
+    val representImg: File? = null,
+    val isOwner: Boolean = true,
 )

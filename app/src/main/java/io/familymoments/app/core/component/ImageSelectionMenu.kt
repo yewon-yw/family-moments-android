@@ -28,9 +28,25 @@ import io.familymoments.app.core.util.noRippleClickable
 
 @Composable
 fun ImageSelectionMenu(
+    showImageSelectionMenu: Boolean = false,
     onDismissRequest: () -> Unit,
     onGallerySelected: () -> Unit,
     onDefaultImageSelected: () -> Unit
+) {
+    if (showImageSelectionMenu) {
+        ImageSelectionMenuUI(
+            onDismissRequest = onDismissRequest,
+            onGallerySelected = onGallerySelected,
+            onDefaultImageSelected = onDefaultImageSelected
+        )
+    }
+}
+
+@Composable
+fun ImageSelectionMenuUI(
+    onDismissRequest: () -> Unit = {},
+    onGallerySelected: () -> Unit = {},
+    onDefaultImageSelected: () -> Unit = {}
 ) {
     Dialog(
         onDismissRequest = onDismissRequest,
@@ -106,9 +122,5 @@ fun ImageSelectionMenu(
 @Preview(showBackground = true)
 @Composable
 fun ActionSheetPreview() {
-    ImageSelectionMenu(
-        onDismissRequest = {},
-        onGallerySelected = {},
-        onDefaultImageSelected = {}
-    )
+    ImageSelectionMenuUI()
 }

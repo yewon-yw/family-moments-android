@@ -44,6 +44,7 @@ import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -390,6 +391,7 @@ fun WriterInfo(
         Spacer(modifier = Modifier.width(11.dp))
         AsyncImage(
             model = profileImg,
+            contentScale = ContentScale.Crop,
             contentDescription = null,
             modifier = Modifier
                 .clip(CircleShape)
@@ -706,6 +708,7 @@ fun CommentItem(
             Row(modifier = Modifier.padding(start = 11.dp, top = 10.dp)) {
                 AsyncImage(
                     model = comment.profileImg,
+                    contentScale = ContentScale.Crop,
                     contentDescription = null,
                     modifier = Modifier
                         .padding(end = 11.dp)

@@ -285,7 +285,7 @@ private fun EditImageDialog(
             onImageChanged(context, it)
         }
     )
-    var showDialog by remember { mutableStateOf(false) }
+    var showImageSelectionMenu by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -295,22 +295,21 @@ private fun EditImageDialog(
             color = AppColors.purple2,
             modifier = Modifier
                 .align(Alignment.Center)
-                .noRippleClickable { showDialog = true }
+                .noRippleClickable { showImageSelectionMenu = true }
         )
     }
-    if (showDialog) {
-        ImageSelectionMenu(
-            onDismissRequest = { showDialog = false },
-            onGallerySelected = {
-                launcher.launch(
-                    PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
-                )
-            },
-            onDefaultImageSelected = {
-                onImageChanged(context, defaultProfileImageUri)
-            }
-        )
-    }
+    ImageSelectionMenu(
+        showImageSelectionMenu = showImageSelectionMenu,
+        onDismissRequest = { showImageSelectionMenu = false },
+        onGallerySelected = {
+            launcher.launch(
+                PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+            )
+        },
+        onDefaultImageSelected = {
+            onImageChanged(context, defaultProfileImageUri)
+        }
+    )
 }
 
 @Composable

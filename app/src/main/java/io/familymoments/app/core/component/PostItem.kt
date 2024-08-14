@@ -94,6 +94,7 @@ private fun PostItemHeader(post: Post) {
                 .size(39.dp)
                 .clip(shape = CircleShape),
             model = post.profileImg,
+            contentScale = ContentScale.Crop,
             contentDescription = "profileImg"
         )
         Spacer(modifier = Modifier.width(14.dp))
