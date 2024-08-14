@@ -92,7 +92,6 @@ fun PostDetailScreen(
     val popup = uiState.popup
     val postDetail = uiState.postDetail
     val pagerState = rememberPagerState(pageCount = { uiState.postDetail.imgs.size })
-    var commentMenuExpanded by remember { mutableStateOf(false) }
     var postMenuExpanded by remember { mutableStateOf(false) }
     var comment by remember { mutableStateOf(TextFieldValue()) }
     val focusRequester = remember { FocusRequester() }
@@ -145,8 +144,6 @@ fun PostDetailScreen(
             }
         },
         pagerState = pagerState,
-        commentMenuExpanded = commentMenuExpanded,
-        onCommentMenuExpandedChanged = { commentMenuExpanded = it },
         postMenuExpanded = postMenuExpanded,
         onPostMenuExpandedChanged = { postMenuExpanded = it },
         comment = comment,
@@ -174,8 +171,6 @@ fun PostDetailScreenUI(
     onClickPostLoves: (Long) -> Unit = {},
     onClickCommentLoves: (Boolean, Long) -> Unit = { _, _ -> },
     pagerState: PagerState,
-    commentMenuExpanded: Boolean = false,
-    onCommentMenuExpandedChanged: (Boolean) -> Unit = {},
     postMenuExpanded: Boolean = false,
     onPostMenuExpandedChanged: (Boolean) -> Unit = {},
     comment: TextFieldValue = TextFieldValue(),
@@ -233,8 +228,6 @@ fun PostDetailScreenUI(
                                 showReportCommentPopup,
                                 showDeleteCommentPopup,
                                 onClickCommentLoves,
-                                commentMenuExpanded,
-                                onCommentMenuExpandedChanged
                             )
                         }
 
@@ -661,8 +654,6 @@ fun CommentItems(
     showReportCommentPopup: (Long) -> Unit,
     showDeleteCommentPopup: (Long) -> Unit,
     onClickCommentLoves: (Boolean, Long) -> Unit,
-    menuExpanded: Boolean,
-    onMenuExpandedChanged: (Boolean) -> Unit
 ) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         comments.forEach {
@@ -673,8 +664,6 @@ fun CommentItems(
                 showReportCommentPopup,
                 showDeleteCommentPopup,
                 onClickCommentLoves,
-                menuExpanded,
-                onMenuExpandedChanged
             )
         }
     }
@@ -689,10 +678,8 @@ fun CommentItem(
     showReportCommentPopup: (Long) -> Unit,
     showDeleteCommentPopup: (Long) -> Unit,
     onClickCommentLoves: (Boolean, Long) -> Unit,
-    menuExpanded: Boolean,
-    onMenuExpandedChanged: (Boolean) -> Unit
 ) {
-
+    var commentMenuExpanded by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -738,7 +725,7 @@ fun CommentItem(
                 Icon(
                     imageVector = ImageVector.vectorResource(R.drawable.ic_three_dots_row),
                     contentDescription = null,
-                    modifier = Modifier.noRippleClickable { onMenuExpandedChanged(true) },
+                    modifier = Modifier.noRippleClickable { commentMenuExpanded = true },
                     tint = Color.Unspecified,
                 )
                 PostDropdownMenu(
@@ -752,8 +739,8 @@ fun CommentItem(
                             showReportCommentPopup(comment.commentId)
                         },
                     ),
-                    expanded = menuExpanded
-                ) { onMenuExpandedChanged(false) }
+                    expanded = commentMenuExpanded
+                ) { commentMenuExpanded = false }
             }
 
             Icon(
