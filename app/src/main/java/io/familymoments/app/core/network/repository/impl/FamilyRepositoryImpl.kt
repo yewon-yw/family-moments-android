@@ -18,7 +18,7 @@ import io.familymoments.app.core.network.dto.response.Member
 import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResponse
 import io.familymoments.app.core.network.dto.response.getResourceFlow
 import io.familymoments.app.core.network.repository.FamilyRepository
-import io.familymoments.app.feature.modifyfamilyInfo.model.ModifyFamilyInfoRequest
+import io.familymoments.app.core.network.dto.request.ModifyFamilyInfoRequest
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.flow

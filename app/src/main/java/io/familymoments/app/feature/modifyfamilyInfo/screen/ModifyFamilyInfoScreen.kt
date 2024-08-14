@@ -25,9 +25,11 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -45,6 +47,7 @@ import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.component.ImageSelectionMenu
+import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.FAMILY_NAME_MAX_LENGTH
@@ -63,7 +66,8 @@ fun ModifyFamilyInfoScreen(
     viewModel: ModifyFamilyInfoViewModel,
     navigateBack: () -> Unit
 ) {
-    val showDialog = remember { mutableStateOf(false) }
+    var showImageSelectionMenu by remember { mutableStateOf(false) }
+    var showPermissionPopup by remember { mutableStateOf(false) }
     val familyName = remember { mutableStateOf(TextFieldValue()) }
 
     val context = LocalContext.current
@@ -79,8 +83,8 @@ fun ModifyFamilyInfoScreen(
 
     val uiState = viewModel.uiState.collectAsStateWithLifecycle().value
 
-    LaunchedEffect(Unit) {
-        viewModel.getFamilyInfo()
+    LaunchedEffect(uiState.isOwner) {
+        showPermissionPopup = !uiState.isOwner
     }
     LaunchedEffectHandleSuccessOrFailure(
         uiState = uiState,
@@ -91,21 +95,24 @@ fun ModifyFamilyInfoScreen(
         resetPostFamilyInfoIsSuccess = viewModel::resetPostFamilyInfoIsSuccess
     )
 
-    if (showDialog.value) {
-        ImageSelectionMenu(
-            onDismissRequest = { showDialog.value = false },
-            onGallerySelected = {
-                launcher.launch(PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly))
-            },
-            onDefaultImageSelected = {
-                viewModel.updateRepresentImg(context, defaultProfileImageUri)
-            }
-        )
+    FamilyPermissionPopup(showPermissionPopup = showPermissionPopup) {
+        showPermissionPopup = false
+        navigateBack()
     }
+    ImageSelectionMenu(
+        showImageSelectionMenu = showImageSelectionMenu,
+        onDismissRequest = { showImageSelectionMenu = false },
+        onGallerySelected = {
+            launcher.launch(PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly))
+        },
+        onDefaultImageSelected = {
+            viewModel.updateRepresentImg(context, defaultProfileImageUri)
+        }
+    )
 
     ModifyFamilyInfoScreenUI(
         modifier = modifier.bringIntoViewRequester(requester),
-        onEditImageClicked = { showDialog.value = true },
+        onEditImageClicked = { showImageSelectionMenu = true },
         onFamilyNameChanged = {
             if (it.text.length <= FAMILY_NAME_MAX_LENGTH) {
                 familyName.value = it
@@ -257,6 +264,21 @@ private fun LaunchedEffectHandleSuccessOrFailure(
             },
             onFailure = { showToast(context, R.string.modify_family_info_fail) },
             onCommon = { resetPostFamilyInfoIsSuccess() }
+        )
+    }
+}
+
+@Composable
+fun FamilyPermissionPopup(
+    showPermissionPopup: Boolean = false,
+    onDismissRequest: () -> Unit = {}
+) {
+    if (showPermissionPopup) {
+        CompletePopUp(
+            content = stringResource(id = R.string.check_family_permission_popup_content),
+            dismissText = stringResource(id = R.string.check_family_permission_popup_btn),
+            buttonColors = ButtonDefaults.buttonColors(containerColor = AppColors.purple2),
+            onDismissRequest = onDismissRequest
         )
     }
 }

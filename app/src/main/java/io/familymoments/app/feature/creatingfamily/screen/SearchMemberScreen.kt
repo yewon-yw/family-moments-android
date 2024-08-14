@@ -25,6 +25,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
@@ -162,6 +163,7 @@ private fun MemberItem(
                 .clip(CircleShape)
                 .size(48.dp),
             model = profileImg,
+            contentScale = ContentScale.Crop,
             contentDescription = null
         )
         Text(text = id, style = AppTypography.B2_14, color = Color(0xFF1B1A57), modifier = Modifier.weight(1f))
