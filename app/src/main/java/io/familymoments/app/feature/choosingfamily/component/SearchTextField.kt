@@ -34,6 +34,10 @@ fun SearchTextField(
     var textFieldValue by remember {
         mutableStateOf(TextFieldValue(initialText))
     }
+
+    if (initialText.isNotEmpty()) {
+        onValueChange(textFieldValue)
+    }
     Box(
         modifier = Modifier
             .padding(bottom = 14.dp)
