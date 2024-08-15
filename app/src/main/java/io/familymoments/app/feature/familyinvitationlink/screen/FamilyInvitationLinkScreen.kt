@@ -25,7 +25,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -124,9 +123,8 @@ private fun FamilyInvitationLinkScreenUI(
                 val intent = Intent(Intent.ACTION_SEND)
                 intent.type = "text/plain"
                 intent.putExtra(Intent.EXTRA_TEXT, "FamilyMoments 가족에 당신을 초대합니다.\n" +
-                    "아래 링크를 통해 앱을 설치하거나 가족에 참여하세요!\n" +
-                    "초대코드: $invitationCode\n" +
-                    "https://familymoments.github.io/web-pages?code=$invitationCode" +
+                    "아래 링크를 통해 앱을 설치하거나 가족에 참여하세요!\n\n" +
+                    "참여링크: https://familymoments.github.io/web-pages?code=$invitationCode" +
                     "")
                 context.startActivity(Intent.createChooser(intent, "초대 링크 공유하기"))
             },
