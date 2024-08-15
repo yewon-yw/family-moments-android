@@ -25,6 +25,12 @@ class SplashActivity : BaseActivity<SplashViewModel>(SplashViewModel::class) {
 
         super.onCreate(savedInstanceState)
         actionBar?.hide()
+
+        val uri = intent.data
+        if (uri != null) {
+            viewModel.handleDeepLink(uri)
+        }
+
         setContent {
             FamilyMomentsTheme {
                 screen()

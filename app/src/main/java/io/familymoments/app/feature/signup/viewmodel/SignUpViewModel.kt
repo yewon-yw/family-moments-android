@@ -5,6 +5,7 @@ import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.SignInRepository
 import io.familymoments.app.core.network.repository.UserRepository
+import io.familymoments.app.core.util.GlobalTempValues
 import io.familymoments.app.feature.signup.UserInfoFormatChecker
 import io.familymoments.app.feature.signup.mapper.toRequest
 import io.familymoments.app.feature.signup.mapper.toUserJoinReq

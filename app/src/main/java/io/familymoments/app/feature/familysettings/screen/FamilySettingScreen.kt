@@ -109,7 +109,6 @@ private object FamilySetting {
     val items = listOf(
         FamilySettingNavItem.ModifyFamilyInfo,
         FamilySettingNavItem.FamilyInvitationLink,
-        FamilySettingNavItem.AddFamilyMember,
         FamilySettingNavItem.ChangeUploadCycle,
         FamilySettingNavItem.TransferFamilyPermission,
         FamilySettingNavItem.RemoveFamilyMember,

@@ -35,6 +35,7 @@ import io.familymoments.app.R
 import io.familymoments.app.core.network.dto.response.SearchFamilyByInviteLinkResult
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.util.GlobalTempValues
 import io.familymoments.app.feature.choosingfamily.component.ChoosingFamilyHeaderButtonLayout
 import io.familymoments.app.feature.choosingfamily.component.MemberCheckBox
 import io.familymoments.app.feature.choosingfamily.component.SearchTextField
@@ -66,7 +67,10 @@ fun JoinFamilyScreen(
         joinFamilyUiState = joinFamilyUiState,
         joinFamily = viewModel::joinFamily,
         updateSelectedFamilyId = viewModel::updateSelectedFamilyId
-    ) { inviteLink = it }
+    ) {
+        inviteLink = it
+        GlobalTempValues.invitationCode = ""
+    }
 }
 
 @Composable
@@ -115,6 +119,7 @@ fun JoinFamilyScreenUI(
         Column {
             SearchTextField(
                 singleLine = true,
+                initialText = GlobalTempValues.invitationCode,
                 hint = stringResource(R.string.family_invitation_link_text_field_hint),
                 onValueChange = onInviteLinkChange
             )

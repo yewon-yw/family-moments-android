@@ -27,11 +27,12 @@ import io.familymoments.app.core.theme.AppTypography
 @Composable
 fun SearchTextField(
     hint: String,
+    initialText: String = "",
     singleLine: Boolean = false,
     onValueChange: (TextFieldValue) -> Unit
 ) {
     var textFieldValue by remember {
-        mutableStateOf(TextFieldValue())
+        mutableStateOf(TextFieldValue(initialText))
     }
     Box(
         modifier = Modifier

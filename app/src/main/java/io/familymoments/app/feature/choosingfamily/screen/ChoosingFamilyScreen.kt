@@ -26,6 +26,7 @@ import io.familymoments.app.core.component.AppBarScreen
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.FamilyMomentsTheme
+import io.familymoments.app.core.util.GlobalTempValues
 import io.familymoments.app.feature.bottomnav.activity.MainActivity
 import io.familymoments.app.feature.choosingfamily.route.ChoosingFamilyRoute
 import io.familymoments.app.feature.creatingfamily.screen.CopyInvitationLinkScreen
@@ -72,7 +73,8 @@ fun ChoosingFamilyScreen(
         },
         navigationIcon = navigationIcon
     ) {
-        NavHost(navController = navController, startDestination = ChoosingFamilyRoute.Start.route) {
+
+        NavHost(navController = navController, startDestination = getStartDestination()) {
             composable(ChoosingFamilyRoute.Start.route) {
                 StartScreen(
                     { navController.navigate(ChoosingFamilyRoute.SearchMember.route) },
@@ -119,7 +121,11 @@ fun ChoosingFamilyScreen(
             }
         }
     }
+}
 
+
+private fun getStartDestination(): String {
+    return if (GlobalTempValues.invitationCode.isEmpty()) ChoosingFamilyRoute.Start.route else ChoosingFamilyRoute.Join.route
 }
 
 @Preview
