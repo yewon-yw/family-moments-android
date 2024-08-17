@@ -74,7 +74,7 @@ fun ChoosingFamilyScreen(
         navigationIcon = navigationIcon
     ) {
 
-        NavHost(navController = navController, startDestination = getStartDestination()) {
+        NavHost(navController = navController, startDestination = getStartDestination(currentRoute)) {
             composable(ChoosingFamilyRoute.Start.route) {
                 StartScreen(
                     { navController.navigate(ChoosingFamilyRoute.SearchMember.route) },
@@ -124,8 +124,8 @@ fun ChoosingFamilyScreen(
 }
 
 
-private fun getStartDestination(): String {
-    return if (GlobalTempValues.invitationCode.isEmpty()) ChoosingFamilyRoute.Start.route else ChoosingFamilyRoute.Join.route
+private fun getStartDestination(currentRoute: String?): String {
+    return if (GlobalTempValues.invitationCode.isEmpty() && currentRoute != ChoosingFamilyRoute.Join.route) ChoosingFamilyRoute.Start.route else ChoosingFamilyRoute.Join.route
 }
 
 @Preview

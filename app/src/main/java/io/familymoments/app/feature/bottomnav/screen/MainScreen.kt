@@ -48,7 +48,6 @@ import io.familymoments.app.core.network.AuthErrorManager
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.AppTypography.LB2_11
-import io.familymoments.app.core.util.GlobalTempValues
 import io.familymoments.app.core.util.LocalScaffoldState
 import io.familymoments.app.core.util.keyboardAsState
 import io.familymoments.app.feature.bottomnav.BottomNavItem
