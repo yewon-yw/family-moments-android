@@ -53,4 +53,6 @@ interface FamilyRepository {
     suspend fun leaveFamily(familyId: Long): Flow<Resource<ApiResponse<String>>>
 
     suspend fun deleteFamily(familyId: Long): Flow<Resource<ApiResponse<String>>>
+
+    suspend fun updateCycle(familyId: Long, uploadCycle: Int): Flow<Resource<ApiResponse<String>>>
 }

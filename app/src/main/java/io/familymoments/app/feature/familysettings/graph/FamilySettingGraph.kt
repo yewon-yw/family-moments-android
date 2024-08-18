@@ -38,6 +38,7 @@ fun NavGraphBuilder.familySettingGraph(navController: NavController) {
     composable (FamilySettingNavItem.ChangeUploadCycle.route) {
         UpdateCycleScreen(
             modifier = Modifier.scaffoldState(hasShadow = false, hasBackButton = true),
+            viewModel = hiltViewModel(),
             navigateBack = {
                 navController.popBackStack()
             }

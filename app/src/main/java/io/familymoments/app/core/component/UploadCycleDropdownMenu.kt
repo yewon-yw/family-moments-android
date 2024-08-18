@@ -26,7 +26,6 @@ import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import io.familymoments.app.R
@@ -38,10 +37,10 @@ import io.familymoments.app.feature.creatingfamily.UploadCycle
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun UploadCycleDropdownMenu(
-    onItemClicked: (UploadCycle) -> Unit = {},
+    uploadCycle: String = "",
+    onValueChanged: (UploadCycle) -> Unit = {},
 ) {
     var expanded by remember { mutableStateOf(false) }
-    var selectedValue by remember { mutableStateOf(TextFieldValue()) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
@@ -66,13 +65,13 @@ fun UploadCycleDropdownMenu(
                 .padding(vertical = 12.dp, horizontal = 11.dp),
         ) {
             BasicTextField(
-                value = selectedValue,
-                onValueChange = { selectedValue = it },
+                value = uploadCycle,
+                onValueChange = { },
                 textStyle = AppTypography.LB1_13.copy(AppColors.black1),
                 readOnly = true
             ) { innerTextField ->
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    if (selectedValue.text.isEmpty()) {
+                    if (uploadCycle.isEmpty()) {
                         Text(
                             text = stringResource(R.string.alarm_cycle_text_field_hint),
                             style = AppTypography.LB1_13,
@@ -110,8 +109,7 @@ fun UploadCycleDropdownMenu(
                     text = { Text(text = item.value, style = AppTypography.LB1_13, color = AppColors.black1) },
                     onClick = {
                         expanded = !expanded
-                        selectedValue = TextFieldValue(item.value)
-                        onItemClicked(item)
+                        onValueChanged(item)
                     }
                 )
                 if (index < UploadCycle.entries.size - 1) {
