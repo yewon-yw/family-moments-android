@@ -289,4 +289,9 @@
     <string name="delete_family_complete_done_btn">확인</string>
     <string name="delete_family_complete_cancel_btn">취소</string>
 
+    <string name="update_cycle_title">업로드 주기 변경</string>
+    <string name="update_cycle_btn">업로드 주기 변경 완료</string>
+    <string name="update_cycle_complete_popup_content">변경이 완료되었습니다.</string>
+    <string name="update_cycle_complete_popup_btn">확인</string>
+
 </resources>

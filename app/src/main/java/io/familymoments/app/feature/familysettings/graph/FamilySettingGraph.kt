@@ -14,6 +14,7 @@ import io.familymoments.app.feature.leavefamily.screen.LeaveFamilyScreen
 import io.familymoments.app.feature.modifyfamilyInfo.screen.ModifyFamilyInfoScreen
 import io.familymoments.app.feature.transferpermission.screen.TransferPermissionScreen
 import io.familymoments.app.feature.removemember.screen.RemoveFamilyMemberScreen
+import io.familymoments.app.feature.updatecycle.screen.UpdateCycleScreen
 
 fun NavGraphBuilder.familySettingGraph(navController: NavController) {
     composable(FamilySettingNavItem.ModifyFamilyInfo.route) {
@@ -35,7 +36,12 @@ fun NavGraphBuilder.familySettingGraph(navController: NavController) {
         // 가족 추가하기
     }
     composable (FamilySettingNavItem.ChangeUploadCycle.route) {
-        // 업로드 주기 변경
+        UpdateCycleScreen(
+            modifier = Modifier.scaffoldState(hasShadow = false, hasBackButton = true),
+            navigateBack = {
+                navController.popBackStack()
+            }
+        )
     }
     composable (FamilySettingNavItem.TransferFamilyPermission.route) {
         TransferPermissionScreen(
