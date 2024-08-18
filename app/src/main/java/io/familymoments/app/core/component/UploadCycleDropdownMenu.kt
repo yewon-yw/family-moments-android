@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import io.familymoments.app.R
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.util.removeDropdownPadding
 import io.familymoments.app.feature.creatingfamily.UploadCycle
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -100,6 +101,7 @@ fun UploadCycleDropdownMenu(
             onDismissRequest = { expanded = false },
             modifier = Modifier
                 .exposedDropdownSize()
+                .removeDropdownPadding()
                 .clip(RoundedCornerShape(8.dp))
                 .background(AppColors.grey6)
         ) {
