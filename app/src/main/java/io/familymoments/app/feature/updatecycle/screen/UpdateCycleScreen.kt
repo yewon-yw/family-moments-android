@@ -44,7 +44,7 @@ fun UpdateCycleScreen(
     LaunchedEffect(uiState.isOwner) { showPermissionPopup = !uiState.isOwner }
     LaunchedEffect(uiState.isSuccess) { showCompletePopup = uiState.isSuccess }
 
-    FamilyPermissionPopup(showPermissionPopup, navigateBack) { showCompletePopup = false }
+    FamilyPermissionPopup(showPermissionPopup, navigateBack) { showPermissionPopup = false }
     FamilySettingCompletePopup(showCompletePopup, navigateBack) { showCompletePopup = false }
 
     UpdateCycleScreenUI(
