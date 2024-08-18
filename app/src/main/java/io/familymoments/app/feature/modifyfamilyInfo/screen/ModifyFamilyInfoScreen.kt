@@ -47,7 +47,7 @@ import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.component.FMTextField
 import io.familymoments.app.core.component.ImageSelectionMenu
-import io.familymoments.app.core.component.popup.CompletePopUp
+import io.familymoments.app.core.component.popup.FamilyPermissionPopup
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.FAMILY_NAME_MAX_LENGTH
@@ -95,10 +95,7 @@ fun ModifyFamilyInfoScreen(
         resetPostFamilyInfoIsSuccess = viewModel::resetPostFamilyInfoIsSuccess
     )
 
-    FamilyPermissionPopup(showPermissionPopup = showPermissionPopup) {
-        showPermissionPopup = false
-        navigateBack()
-    }
+    FamilyPermissionPopup(showPermissionPopup, navigateBack) { showPermissionPopup = false }
     ImageSelectionMenu(
         showImageSelectionMenu = showImageSelectionMenu,
         onDismissRequest = { showImageSelectionMenu = false },
@@ -264,21 +261,6 @@ private fun LaunchedEffectHandleSuccessOrFailure(
             },
             onFailure = { showToast(context, R.string.modify_family_info_fail) },
             onCommon = { resetPostFamilyInfoIsSuccess() }
-        )
-    }
-}
-
-@Composable
-fun FamilyPermissionPopup(
-    showPermissionPopup: Boolean = false,
-    onDismissRequest: () -> Unit = {}
-) {
-    if (showPermissionPopup) {
-        CompletePopUp(
-            content = stringResource(id = R.string.check_family_permission_popup_content),
-            dismissText = stringResource(id = R.string.check_family_permission_popup_btn),
-            buttonColors = ButtonDefaults.buttonColors(containerColor = AppColors.purple2),
-            onDismissRequest = onDismissRequest
         )
     }
 }

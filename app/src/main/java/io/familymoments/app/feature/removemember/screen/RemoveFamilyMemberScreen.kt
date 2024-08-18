@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -33,12 +32,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.component.FMButton
-import io.familymoments.app.core.component.popup.CompletePopUp
+import io.familymoments.app.core.component.popup.FamilyPermissionPopup
+import io.familymoments.app.core.component.popup.RemoveFamilyMemberPopup
 import io.familymoments.app.core.network.dto.response.Member
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.noRippleClickable
-import io.familymoments.app.feature.removemember.RemoveFamilyMemberPopup
 import io.familymoments.app.feature.removemember.viewmodel.RemoveFamilyMemberViewModel
 
 @Composable
@@ -71,18 +70,12 @@ fun RemoveFamilyMemberScreen(
         onDoneButtonClicked = { showRemovePopup = true }
     )
 
-    RemoveFamilyMemberPopups(
-        showPermissionPopup = showPermissionPopup,
+    FamilyPermissionPopup(showPermissionPopup, navigateBack) { showPermissionPopup = false }
+    RemoveFamilyMemberPopup(
         showRemovePopup = showRemovePopup,
         nicknames = selectedMembers.map { it.nickname },
         userIds = selectedMembers.map { it.id },
-        permissionPopupDismissRequest = {
-            showPermissionPopup = false
-            navigateBack()
-        },
-        removePopupDismissRequest = {
-            showRemovePopup = false
-        },
+        removePopupDismissRequest = { showRemovePopup = false },
         navigateToConfirmScreen = navigateToConfirmScreen
     )
 }
@@ -164,36 +157,6 @@ fun FamilyMember(
                 tint = Color.Unspecified
             )
         }
-    }
-}
-
-@Composable
-private fun RemoveFamilyMemberPopups(
-    showPermissionPopup: Boolean,
-    showRemovePopup: Boolean,
-    nicknames: List<String> = emptyList(),
-    userIds: List<String> = emptyList(),
-    permissionPopupDismissRequest: () -> Unit = {},
-    removePopupDismissRequest: () -> Unit = {},
-    navigateToConfirmScreen: (List<String>) -> Unit = {},
-) {
-    if (showPermissionPopup) {
-        CompletePopUp(
-            content = stringResource(id = R.string.check_family_permission_popup_content),
-            dismissText = stringResource(id = R.string.check_family_permission_popup_btn),
-            buttonColors = ButtonDefaults.buttonColors(containerColor = AppColors.purple2),
-            onDismissRequest = permissionPopupDismissRequest
-        )
-    }
-    if (showRemovePopup) {
-        RemoveFamilyMemberPopup(
-            nicknames = nicknames,
-            onDismissRequest = removePopupDismissRequest,
-            onDoneButtonClicked = {
-                removePopupDismissRequest()
-                navigateToConfirmScreen(userIds)
-            }
-        )
     }
 }
 
