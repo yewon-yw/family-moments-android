@@ -1,11 +1,13 @@
 package io.familymoments.app.feature.splash.viewmodel
 
+import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.HttpResponseMessage.FAMILY_NOT_EXIST_404
 import io.familymoments.app.core.network.HttpResponseMessage.USER_NOT_IN_FAMILY_404
 import io.familymoments.app.core.network.repository.FamilyRepository
+import io.familymoments.app.core.util.GlobalTempValues
 import kotlinx.coroutines.delay
 import javax.inject.Inject
 
@@ -42,5 +44,11 @@ class SplashViewModel @Inject constructor(
                 }
             }
         )
+    }
+
+    fun handleDeepLink(uri: Uri) {
+        uri.getQueryParameter("code")?.let {
+            GlobalTempValues.invitationCode = it
+        }
     }
 }

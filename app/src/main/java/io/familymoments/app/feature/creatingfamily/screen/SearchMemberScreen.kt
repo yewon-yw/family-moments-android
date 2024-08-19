@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Divider
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -131,7 +132,7 @@ private fun MemberList(members: List<Member>) {
                         selectedMembers = selectedMembers - it
                     }
                 )
-                Divider(
+                HorizontalDivider(
                     color = AppColors.grey3,
                     modifier = Modifier
                         .fillMaxWidth()
