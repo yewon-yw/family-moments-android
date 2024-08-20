@@ -6,6 +6,7 @@ import io.familymoments.app.core.network.HttpResponseMessage.NO_POST_404
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.repository.PostRepository
+import io.familymoments.app.core.util.DateFormatter
 import io.familymoments.app.feature.home.uistate.HomeUiState
 import io.familymoments.app.feature.home.uistate.PostPopupType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,11 +33,12 @@ class HomeViewModel @Inject constructor(
                 familyRepository.getNicknameDday(familyId)
             },
             onSuccess = {
+                val dday = DateFormatter.formatDaysSince(it.result.createdAt)
                 _homeUiState.value = _homeUiState.value.copy(
                     isSuccess = true,
                     isLoading = isLoading.value,
                     userNickname = it.result.nickname,
-                    dday = it.result.dday
+                    dday = dday
                 )
             },
             onFailure = {
