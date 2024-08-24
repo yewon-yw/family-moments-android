@@ -93,7 +93,7 @@ fun RemoveFamilyMemberScreenUI(
     ) {
         Text(
             modifier = Modifier.padding(top = 55.dp, bottom = 33.dp),
-            text = stringResource(id = R.string.remove_family_member_title),
+            text = stringResource(id = R.string.remove_family_member_subtitle),
             style = AppTypography.SH2_18,
             color = AppColors.grey8
         )

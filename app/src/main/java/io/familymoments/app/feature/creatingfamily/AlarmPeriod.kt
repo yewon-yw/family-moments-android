@@ -11,7 +11,7 @@ enum class UploadCycle(val value: String, val number: Int?) {
 
     companion object {
         fun fromNumber(number: Int?): UploadCycle {
-            return values().find { it.number == number } ?: NONE
+            return entries.find { it.number == number } ?: NONE
         }
     }
 }
