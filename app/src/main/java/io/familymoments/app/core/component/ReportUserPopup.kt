@@ -155,17 +155,17 @@ fun Float.toDp(): Dp {
 
 private fun calculateHeight(items: Int, triangleHeight: Dp): Dp = 38.dp * items + 20.dp + triangleHeight
 
-@Preview(showBackground = true, widthDp = 400, heightDp = 400)
+@Preview(showBackground = true, widthDp = 300, heightDp = 400)
 @Composable
-fun Preview() {
+fun ReportUserPopupPreview() {
     ReportUserPopup(
         showPopup = true,
         offset = Offset(100f, 0f),
         members = listOf(
-            Member(nickname = "베리"),
-            Member(nickname = "코비"),
-            Member(nickname = "토미"),
-            Member(nickname = "토미"),
+            Member(id = "a", nickname = "베리"),
+            Member(id = "b", nickname = "코비"),
+            Member(id = "c", nickname = "토미"),
+            Member(id = "d", nickname = "토미"),
         )
     )
 }
