@@ -1,6 +1,5 @@
 package io.familymoments.app.core.util
 
-import timber.log.Timber
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -10,9 +9,7 @@ object DateFormatter {
         val utcDateTime =
             ZonedDateTime.parse(dateTime, DateTimeFormatter.ISO_DATE_TIME.withZone(ZoneId.of("UTC")))
         val localDateTime = utcDateTime.withZoneSameInstant(ZoneId.systemDefault()) // 사용자의 로컬 시간대로 변환
-        Timber.d("localDateTime: $localDateTime")
         val now = ZonedDateTime.now(ZoneId.systemDefault()) // 현재 시간
-        Timber.d("now: $now")
         val durationSeconds = now.toEpochSecond() - localDateTime.toEpochSecond() // 경과 시간 계산
         return durationSeconds
     }
