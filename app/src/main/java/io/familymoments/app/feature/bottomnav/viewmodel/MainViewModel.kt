@@ -38,6 +38,7 @@ class MainViewModel @Inject constructor(
     init {
         getProfileImg()
         getFamilyName()
+        getFamilyMember()
         checkFamilyExist()
 
         viewModelScope.launch {
@@ -93,6 +94,21 @@ class MainViewModel @Inject constructor(
                     )
                 }
             }
+        )
+    }
+
+    private fun getFamilyMember() {
+        async(
+            operation = {
+                val familyId = userInfoPreferencesDataSource.loadFamilyId()
+                familyRepository.getFamilyMember(familyId)
+            },
+            onSuccess = {
+                _appBarUiState.value = _appBarUiState.value.copy(
+                    familyMember = it.result
+                )
+            },
+            onFailure = {}
         )
     }
 

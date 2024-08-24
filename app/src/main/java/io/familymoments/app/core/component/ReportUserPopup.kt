@@ -1,16 +1,17 @@
 package io.familymoments.app.core.component
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
@@ -32,7 +33,9 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import coil.compose.AsyncImage
 import io.familymoments.app.R
+import io.familymoments.app.core.network.dto.response.Member
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import kotlin.math.roundToInt
@@ -41,10 +44,15 @@ import kotlin.math.roundToInt
 fun ReportUserPopup(
     showPopup: Boolean = false,
     onDismissRequest: () -> Unit = {},
+    members: List<Member> = emptyList(),
     offset: Offset = Offset.Zero
 ) {
     val popupOffsetPx = Offset(236.dp.toPx() * 0.12f, 7.dp.toPx())
-    if (showPopup) {
+    val triangleHeight = 30f
+    val triangleHeightDp = triangleHeight.toDp()
+    val maxHeight = calculateHeight(items = 5, triangleHeightDp) // 최대 5명까지 한 화면에
+
+    if (showPopup && members.isNotEmpty()) {
         Popup(
             onDismissRequest = onDismissRequest,
             offset = IntOffset(
@@ -52,14 +60,16 @@ fun ReportUserPopup(
                 (offset.y + popupOffsetPx.y).roundToInt()
             )
         ) {
-            Box(modifier = Modifier.size(236.dp, 145.dp)) {
+            Box(
+                modifier = Modifier
+                    .heightIn(max = maxHeight)
+                    .size(236.dp, calculateHeight(items = members.size, triangleHeightDp))
+            ) {
                 Canvas(
-                    modifier = Modifier
-                        .fillMaxSize()
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     val width = size.width
                     val height = size.height
-                    val triangleHeight = 30f
                     drawRoundRect(
                         color = AppColors.grey9,
                         size = Size(width, height - triangleHeight),
@@ -77,13 +87,17 @@ fun ReportUserPopup(
                 LazyColumn(
                     modifier = Modifier
                         .padding(10.dp)
+                        .padding(top = triangleHeightDp)
                         .clip(RoundedCornerShape(5.dp))
                         .background(AppColors.grey7)
                         .align(Alignment.BottomCenter)
                 ) {
-                    items(3) { index ->
-                        ReportUserItem()
-                        if (index < 2) {
+                    itemsIndexed(
+                        items = members,
+                        key = { _, member -> member.id }
+                    ) { index: Int, member: Member ->
+                        ReportUserItem(member.profileImg, member.nickname)
+                        if (index < members.size - 1) {
                             HorizontalDivider(color = AppColors.grey6, thickness = 0.5.dp)
                         }
                     }
@@ -94,15 +108,15 @@ fun ReportUserPopup(
 }
 
 @Composable
-fun ReportUserItem() {
+fun ReportUserItem(profileImg: String, nickname: String) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(38.dp)
             .padding(horizontal = 11.dp, vertical = 7.dp)
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.img_profile_test),
+        AsyncImage(
+            model = profileImg,
             contentDescription = null,
             modifier = Modifier
                 .padding(end = 11.dp)
@@ -116,7 +130,7 @@ fun ReportUserItem() {
                 .weight(1f)
                 .padding(end = 11.dp)
                 .align(Alignment.CenterVertically),
-            text = "민니",
+            text = nickname,
             style = AppTypography.LB2_11,
             color = AppColors.grey6
         )
@@ -134,8 +148,24 @@ fun Dp.toPx(): Float {
     return with(LocalDensity.current) { this@toPx.toPx() }
 }
 
-@Preview(showBackground = true)
+@Composable
+fun Float.toDp(): Dp {
+    return with(LocalDensity.current) { this@toDp.toDp() }
+}
+
+private fun calculateHeight(items: Int, triangleHeight: Dp): Dp = 38.dp * items + 20.dp + triangleHeight
+
+@Preview(showBackground = true, widthDp = 400, heightDp = 400)
 @Composable
 fun Preview() {
-    ReportUserPopup(showPopup = true, offset = Offset(0f, 0f))
+    ReportUserPopup(
+        showPopup = true,
+        offset = Offset(100f, 0f),
+        members = listOf(
+            Member(nickname = "베리"),
+            Member(nickname = "코비"),
+            Member(nickname = "토미"),
+            Member(nickname = "토미"),
+        )
+    )
 }

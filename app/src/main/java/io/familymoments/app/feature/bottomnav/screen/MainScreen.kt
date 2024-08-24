@@ -106,6 +106,7 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
     ReportUserPopup(
         showPopup = showReportUserPopup,
         onDismissRequest = { showReportUserPopup = false },
+        members = appBarUiState.value.familyMember,
         offset = reportPopupOffset
     )
 
