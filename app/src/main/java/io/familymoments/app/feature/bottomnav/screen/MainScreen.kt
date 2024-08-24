@@ -20,12 +20,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
@@ -43,6 +49,7 @@ import androidx.navigation.compose.rememberNavController
 import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.component.AppBarScreen
+import io.familymoments.app.core.component.ReportUserPopup
 import io.familymoments.app.core.graph.getMainGraph
 import io.familymoments.app.core.network.AuthErrorManager
 import io.familymoments.app.core.theme.AppColors
@@ -66,6 +73,8 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
     val familyUiState = viewModel.familyUiState.collectAsStateWithLifecycle().value
 
     val appBarUiState = viewModel.appBarUiState.collectAsStateWithLifecycle()
+    var showReportUserPopup by remember { mutableStateOf(false) }
+    var reportPopupOffset by remember { mutableStateOf(Offset.Zero) }
 
     LaunchedEffect(authErrorManager.needReissueToken) {
         authErrorManager.needReissueToken.collect { event ->
@@ -94,6 +103,12 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
         }
     }
 
+    ReportUserPopup(
+        showPopup = showReportUserPopup,
+        onDismissRequest = { showReportUserPopup = false },
+        offset = reportPopupOffset
+    )
+
     val navigationIcon = @Composable {
         if (scaffoldState.hasIcon) {
             if (scaffoldState.hasBackButton) {
@@ -110,7 +125,12 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
                     modifier = Modifier
                         .padding(start = 12.dp)
                         .size(34.dp)
-                        .clip(shape = CircleShape),
+                        .clip(shape = CircleShape)
+                        .clickable { showReportUserPopup = true }
+                        .onGloballyPositioned { layoutCoordinates ->
+                            val windowPosition = layoutCoordinates.boundsInRoot()
+                            reportPopupOffset = Offset(windowPosition.center.x, windowPosition.bottom)
+                        },
                     model = appBarUiState.value.profileImgUrl,
                     contentScale = ContentScale.Crop,
                     contentDescription = null,
