@@ -10,6 +10,7 @@ import io.familymoments.app.core.network.dto.response.GetPostDetailResult
 import io.familymoments.app.core.network.dto.response.GetPostLovesResult
 import io.familymoments.app.core.network.repository.CommentRepository
 import io.familymoments.app.core.network.repository.PostRepository
+import io.familymoments.app.core.util.DateFormatter
 import io.familymoments.app.feature.postdetail.uistate.PostDetailPopupType
 import io.familymoments.app.feature.postdetail.uistate.PostDetailUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,8 +20,6 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.DayOfWeek
 import java.time.LocalDate
-import java.time.ZoneId
-import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
@@ -375,13 +374,8 @@ class PostDetailViewModel @Inject constructor(
 
     fun formatCommentCreatedDate(createdAt: String): String {
         val createdAtWithoutMillie = createdAt.split(".")[0]
-        val utcDateTime =
-            ZonedDateTime.parse(createdAtWithoutMillie, DateTimeFormatter.ISO_DATE_TIME.withZone(ZoneId.of("UTC")))
-        val localDateTime = utcDateTime.withZoneSameInstant(ZoneId.systemDefault()) // 사용자의 로컬 시간대로 변환
-        val now = ZonedDateTime.now(ZoneId.systemDefault()) // 현재 시간
-        val durationSeconds = now.toEpochSecond() - localDateTime.toEpochSecond() // 경과 시간 계산
-
-        return formatDuration(durationSeconds)
+        val duration = DateFormatter.dateTimeToDuration(createdAtWithoutMillie)
+        return formatDuration(duration)
     }
 
     private fun formatDuration(durationSeconds: Long): String {
