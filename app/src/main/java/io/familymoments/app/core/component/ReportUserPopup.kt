@@ -2,6 +2,7 @@ package io.familymoments.app.core.component
 
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Popup
+import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.network.dto.response.Member
@@ -53,6 +55,12 @@ fun ReportUserPopup(
     val maxHeight = calculateHeight(items = 5, triangleHeightDp) // 최대 5명까지 한 화면에
 
     if (showPopup && members.isNotEmpty()) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(1f)
+                .clickable { onDismissRequest() }
+        )
         Popup(
             onDismissRequest = onDismissRequest,
             offset = IntOffset(
@@ -135,7 +143,9 @@ fun ReportUserItem(profileImg: String, nickname: String) {
             color = AppColors.grey6
         )
         Icon(
-            modifier = Modifier.align(Alignment.CenterVertically),
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+                .clickable { },
             painter = painterResource(id = R.drawable.ic_report_user),
             tint = AppColors.grey8,
             contentDescription = null
