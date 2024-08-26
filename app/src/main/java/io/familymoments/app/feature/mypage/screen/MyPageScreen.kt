@@ -177,8 +177,6 @@ private object MyPageGroups {
     val accountGroup = listOf(
         MyPageItem.Profile,
         MyPageItem.Password,
-        MyPageItem.Notification,
-        MyPageItem.FamilyInvitationList,
         MyPageItem.FamilySettings
     )
     val moreGroup = listOf(
