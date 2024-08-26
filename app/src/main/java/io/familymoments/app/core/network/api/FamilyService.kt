@@ -81,4 +81,10 @@ interface FamilyService {
 
     @DELETE("/families/{familyId}")
     suspend fun deleteFamily(@Path("familyId") familyId: Long): Response<ApiResponse<String>>
+
+    @PATCH("/families/{familyId}")
+    suspend fun updateCycle(
+        @Path("familyId") familyId: Long,
+        @Query("uploadCycle") uploadCycle: Int
+    ): Response<ApiResponse<String>>
 }

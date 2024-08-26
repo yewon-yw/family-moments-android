@@ -7,5 +7,11 @@ enum class UploadCycle(val value: String, val number: Int?) {
     ONE_WEEK("일주일", 7),
     TWO_WEEK("2주일", 14),
     ONE_MONTH("한달", 31),
-    NONE("주기 설정 하지 않음", null)
+    NONE("주기 설정 하지 않음", null);
+
+    companion object {
+        fun fromNumber(number: Int?): UploadCycle {
+            return entries.find { it.number == number } ?: NONE
+        }
+    }
 }

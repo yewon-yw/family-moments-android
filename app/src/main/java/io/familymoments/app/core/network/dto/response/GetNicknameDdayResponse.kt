@@ -12,5 +12,5 @@ data class GetNicknameDdayResponse(
 
 data class NicknameDdayResult(
     val nickname: String = "",
-    val dday: String = "0"
+    val createdAt: String = ""
 )

@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
@@ -33,7 +32,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.component.FMButton
-import io.familymoments.app.core.component.popup.CompletePopUp
+import io.familymoments.app.core.component.popup.FamilyPermissionPopup
+import io.familymoments.app.core.component.popup.FamilySettingCompletePopup
 import io.familymoments.app.core.network.dto.response.Member
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
@@ -66,18 +66,8 @@ fun TransferPermissionScreen(
         onDoneButtonClicked = viewModel::transferPermission
     )
 
-    TransferPermissionPopup(
-        showCompletePopup = showCompletePopup,
-        showPermissionPopup = showPermissionPopup,
-        completePopupDismissRequest = {
-            showCompletePopup = false
-            navigateBack()
-        },
-        permissionPopupDismissRequest = {
-            showPermissionPopup = false
-            navigateBack()
-        }
-    )
+    FamilyPermissionPopup(showPermissionPopup, navigateBack) { showPermissionPopup = false }
+    FamilySettingCompletePopup(showCompletePopup, navigateBack) { showCompletePopup = false }
 }
 
 @Composable
@@ -159,31 +149,6 @@ fun FamilyMember(
                 tint = Color.Unspecified
             )
         }
-    }
-}
-
-@Composable
-private fun TransferPermissionPopup(
-    showCompletePopup: Boolean,
-    showPermissionPopup: Boolean,
-    completePopupDismissRequest: () -> Unit = {},
-    permissionPopupDismissRequest: () -> Unit = {}
-) {
-    if (showCompletePopup) {
-        CompletePopUp(
-            content = stringResource(id = R.string.transfer_permission_complete_popup_content),
-            dismissText = stringResource(id = R.string.transfer_permission_complete_popup_btn),
-            buttonColors = ButtonDefaults.buttonColors(containerColor = AppColors.purple2),
-            onDismissRequest = completePopupDismissRequest
-        )
-    }
-    if (showPermissionPopup) {
-        CompletePopUp(
-            content = stringResource(id = R.string.check_family_permission_popup_content),
-            dismissText = stringResource(id = R.string.check_family_permission_popup_btn),
-            buttonColors = ButtonDefaults.buttonColors(containerColor = AppColors.purple2),
-            onDismissRequest = permissionPopupDismissRequest
-        )
     }
 }
 

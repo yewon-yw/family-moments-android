@@ -27,7 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
-import io.familymoments.app.core.component.popup.CompletePopUp
+import io.familymoments.app.core.component.popup.LeaveFamilyPopup
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.choosingfamily.activity.ChoosingFamilyActivity
@@ -55,18 +55,7 @@ fun LeaveFamilyScreen(
         navigateBack = navigateBack
     )
 
-    if (showPermissionPopup) {
-        CompletePopUp(
-            content = stringResource(id = R.string.leave_family_popup_content),
-            dismissText = stringResource(id = R.string.leave_family_popup_btn),
-            textStyle = AppTypography.BTN5_16,
-            buttonColors = ButtonDefaults.buttonColors(containerColor = AppColors.purple2),
-            onDismissRequest = {
-                showPermissionPopup = false
-                navigateBack()
-            }
-        )
-    }
+    LeaveFamilyPopup(showPermissionPopup, navigateBack) { showPermissionPopup = false }
 }
 
 @Composable

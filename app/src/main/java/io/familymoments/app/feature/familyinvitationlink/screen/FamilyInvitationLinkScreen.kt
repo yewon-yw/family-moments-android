@@ -76,14 +76,14 @@ private fun FamilyInvitationLinkScreenUI(
         ) {
             Text(
                 modifier = Modifier.align(Alignment.Center),
-                text = stringResource(id = R.string.family_setting_title),
+                text = stringResource(id = R.string.family_invitation_title),
                 style = AppTypography.B1_16,
                 color = AppColors.black1
             )
         }
         Text(
             modifier = Modifier.padding(top = 40.dp, bottom = 16.dp),
-            text = stringResource(id = R.string.family_invitation_code_title),
+            text = stringResource(id = R.string.family_invitation_code),
             style = AppTypography.SH2_18,
             color = AppColors.grey8
         )

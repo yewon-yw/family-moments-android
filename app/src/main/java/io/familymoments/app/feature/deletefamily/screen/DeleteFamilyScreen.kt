@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -22,7 +21,7 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import io.familymoments.app.R
 import io.familymoments.app.core.component.FMButton
-import io.familymoments.app.core.component.popup.CompletePopUp
+import io.familymoments.app.core.component.popup.FamilyPermissionPopup
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.deletefamily.viewmodel.DeleteFamilyViewModel
@@ -52,17 +51,7 @@ fun DeleteFamilyScreen(
         familyName = uiState.familyName
     )
 
-    if (showPermissionPopup) {
-        CompletePopUp(
-            content = stringResource(id = R.string.check_family_permission_popup_content),
-            dismissText = stringResource(id = R.string.check_family_permission_popup_btn),
-            buttonColors = ButtonDefaults.buttonColors(containerColor = AppColors.purple2),
-            onDismissRequest = {
-                showPermissionPopup = false
-                navigateBack()
-            }
-        )
-    }
+    FamilyPermissionPopup(showPermissionPopup, navigateBack) { showPermissionPopup = false }
 }
 
 @Composable
