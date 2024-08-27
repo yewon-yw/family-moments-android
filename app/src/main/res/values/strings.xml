@@ -294,4 +294,7 @@
     <string name="update_cycle_title">업로드 주기 변경</string>
     <string name="update_cycle_btn">업로드 주기 변경 완료</string>
 
+    <string name="report_user_success">신고가 완료되었습니다.</string>
+    <string name="report_user_fail">신고에 실패했습니다. 다시 시도해 주세요.</string>
+
 </resources>

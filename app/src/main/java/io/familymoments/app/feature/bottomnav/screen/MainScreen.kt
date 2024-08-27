@@ -1,6 +1,8 @@
 package io.familymoments.app.feature.bottomnav.screen
 
+import android.content.Context
 import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -50,8 +52,10 @@ import coil.compose.AsyncImage
 import io.familymoments.app.R
 import io.familymoments.app.core.component.AppBarScreen
 import io.familymoments.app.core.component.ReportUserPopup
+import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.graph.getMainGraph
 import io.familymoments.app.core.network.AuthErrorManager
+import io.familymoments.app.core.network.dto.response.Member
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.theme.AppTypography.LB2_11
@@ -75,6 +79,7 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
     val appBarUiState = viewModel.appBarUiState.collectAsStateWithLifecycle()
     var showReportUserPopup by remember { mutableStateOf(false) }
     var reportPopupOffset by remember { mutableStateOf(Offset.Zero) }
+    var showReportSuccessDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(authErrorManager.needReissueToken) {
         authErrorManager.needReissueToken.collect { event ->
@@ -103,9 +108,15 @@ fun MainScreen(viewModel: MainViewModel, authErrorManager: AuthErrorManager) {
         }
     }
 
-    ReportUserPopup(
+    ReportUserScreen(
+        isSuccess = appBarUiState.value.reportSuccess,
+        reportUser = viewModel::reportUser,
+        resetReportSuccess = viewModel::resetReportSuccess,
+        context = context,
         showPopup = showReportUserPopup,
-        onDismissRequest = { showReportUserPopup = false },
+        showDialog = showReportSuccessDialog,
+        updateDialogVisibility = { showReportSuccessDialog = it },
+        onPopupDismissRequest = { showReportUserPopup = false },
         members = appBarUiState.value.familyMember,
         offset = reportPopupOffset
     )
@@ -247,6 +258,46 @@ fun BottomNavigationBar(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun ReportUserScreen(
+    isSuccess: Boolean?,
+    reportUser: (String) -> Unit,
+    resetReportSuccess: () -> Unit,
+    context: Context,
+    showPopup: Boolean,
+    showDialog: Boolean,
+    updateDialogVisibility: (Boolean) -> Unit,
+    onPopupDismissRequest: () -> Unit,
+    members: List<Member>,
+    offset: Offset,
+) {
+    LaunchedEffect(isSuccess) {
+        isSuccess?.let { success ->
+            if (success) {
+                updateDialogVisibility(true)
+            } else {
+                Toast.makeText(context, R.string.report_user_fail, Toast.LENGTH_SHORT).show()
+            }
+            resetReportSuccess()
+        }
+    }
+
+    ReportUserPopup(
+        showPopup = showPopup,
+        onDismissRequest = onPopupDismissRequest,
+        members = members,
+        offset = offset,
+        reportUser = reportUser
+    )
+
+    if (showDialog) {
+        CompletePopUp(
+            content = stringResource(id = R.string.report_user_success),
+            onDismissRequest = { updateDialogVisibility(false) }
+        )
     }
 }
 

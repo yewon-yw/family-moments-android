@@ -123,4 +123,22 @@ class MainViewModel @Inject constructor(
             }
         }
     }
+
+    fun reportUser(userId: String) {
+        async(
+            operation = {
+                userRepository.reportUser(userId)
+            },
+            onSuccess = {
+                _appBarUiState.value = _appBarUiState.value.copy(reportSuccess = true)
+            },
+            onFailure = {
+                _appBarUiState.value = _appBarUiState.value.copy(reportSuccess = false)
+            }
+        )
+    }
+
+    fun resetReportSuccess() {
+        _appBarUiState.value = _appBarUiState.value.copy(reportSuccess = null)
+    }
 }

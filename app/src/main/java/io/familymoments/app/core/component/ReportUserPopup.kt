@@ -47,7 +47,8 @@ fun ReportUserPopup(
     showPopup: Boolean = false,
     onDismissRequest: () -> Unit = {},
     members: List<Member> = emptyList(),
-    offset: Offset = Offset.Zero
+    offset: Offset = Offset.Zero,
+    reportUser: (String) -> Unit = {}
 ) {
     val popupOffsetPx = Offset(236.dp.toPx() * 0.12f, 7.dp.toPx())
     val triangleHeight = 30f
@@ -104,7 +105,7 @@ fun ReportUserPopup(
                         items = members,
                         key = { _, member -> member.id }
                     ) { index: Int, member: Member ->
-                        ReportUserItem(member.profileImg, member.nickname)
+                        ReportUserItem(member, reportUser)
                         if (index < members.size - 1) {
                             HorizontalDivider(color = AppColors.grey6, thickness = 0.5.dp)
                         }
@@ -116,7 +117,7 @@ fun ReportUserPopup(
 }
 
 @Composable
-fun ReportUserItem(profileImg: String, nickname: String) {
+fun ReportUserItem(member: Member, reportUser: (String) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -124,7 +125,7 @@ fun ReportUserItem(profileImg: String, nickname: String) {
             .padding(horizontal = 11.dp, vertical = 7.dp)
     ) {
         AsyncImage(
-            model = profileImg,
+            model = member.profileImg,
             contentDescription = null,
             modifier = Modifier
                 .padding(end = 11.dp)
@@ -138,14 +139,14 @@ fun ReportUserItem(profileImg: String, nickname: String) {
                 .weight(1f)
                 .padding(end = 11.dp)
                 .align(Alignment.CenterVertically),
-            text = nickname,
+            text = member.nickname,
             style = AppTypography.LB2_11,
             color = AppColors.grey6
         )
         Icon(
             modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .clickable { },
+                .clickable { reportUser(member.id) },
             painter = painterResource(id = R.drawable.ic_report_user),
             tint = AppColors.grey8,
             contentDescription = null
