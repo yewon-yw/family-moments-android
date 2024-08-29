@@ -12,15 +12,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -50,12 +49,12 @@ import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.URI_SCHEME_RESOURCE
 import io.familymoments.app.core.util.noRippleClickable
-import io.familymoments.app.feature.profile.uistate.ProfileEditValidated
 import io.familymoments.app.feature.profile.viewmodel.ProfileEditViewModel
 import java.io.File
 
 @Composable
 fun ProfileEditScreen(
+    modifier: Modifier = Modifier,
     navigateBack: () -> Unit,
     viewModel: ProfileEditViewModel,
 ) {
@@ -63,9 +62,7 @@ fun ProfileEditScreen(
     val context = LocalContext.current
     val defaultProfileImageUri =
         Uri.parse("$URI_SCHEME_RESOURCE://${context.packageName}/${R.drawable.default_profile}")
-    var name by remember { mutableStateOf(TextFieldValue(uiState.value.profileEditInfoUiState.name)) }
-    var nickname by remember { mutableStateOf(TextFieldValue(uiState.value.profileEditInfoUiState.nickname)) }
-    var birthdate by remember { mutableStateOf(TextFieldValue(uiState.value.profileEditInfoUiState.birthdate)) }
+    var nickname by remember { mutableStateOf(TextFieldValue(uiState.value.nickname)) }
 
     LaunchedEffect(uiState.value.isSuccess) {
         if (uiState.value.isSuccess) {
@@ -74,34 +71,22 @@ fun ProfileEditScreen(
     }
 
     ProfileEditScreenUI(
-        modifier = Modifier,
+        modifier = modifier,
         context = context,
-        name = name,
         nickname = nickname,
-        birthdate = birthdate,
         defaultProfileImageUri = defaultProfileImageUri,
         profileImage = uiState.value.profileImage,
         onImageChanged = viewModel::imageChanged,
-        onNameChanged = {
-            name = it
-            viewModel.validateName(it.text)
-        },
         onNicknameChanged = {
             nickname = it
             viewModel.validateNickname(it.text)
         },
-        onBirthdateChanged = {
-            birthdate = it
-            viewModel.validateBirthdate(it.text)
-        },
-        profileEditValidated = uiState.value.profileEditValidated,
+        nicknameValidated = uiState.value.nicknameValidated,
         onEditButtonClicked = {
             onEditButtonClicked(
                 context = context,
                 profileImage = uiState.value.profileImage,
-                name = name.text,
                 nickname = nickname.text,
-                birthdate = birthdate.text,
                 editUserProfile = viewModel::editUserProfile
             )
         },
@@ -113,24 +98,19 @@ fun ProfileEditScreen(
 private fun ProfileEditScreenUI(
     modifier: Modifier = Modifier,
     context: Context = LocalContext.current,
-    name: TextFieldValue = TextFieldValue(),
     nickname: TextFieldValue = TextFieldValue(),
-    birthdate: TextFieldValue = TextFieldValue(),
+    nicknameValidated: Boolean = true,
     defaultProfileImageUri: Uri,
     profileImage: File?,
     onImageChanged: (Context, Uri) -> Unit = { _, _ -> },
-    onNameChanged: (TextFieldValue) -> Unit = {},
     onNicknameChanged: (TextFieldValue) -> Unit = {},
-    onBirthdateChanged: (TextFieldValue) -> Unit = {},
-    profileEditValidated: ProfileEditValidated,
     onEditButtonClicked: () -> Unit = {},
     navigateBack: () -> Unit = {}
 ) {
     Column(
         modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .verticalScroll(rememberScrollState()),
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -163,36 +143,23 @@ private fun ProfileEditScreenUI(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+                .weight(1f)
                 .padding(top = 34.dp),
             horizontalAlignment = Alignment.Start
         ) {
             ProfileTextField(
-                title = stringResource(id = R.string.profile_text_field_name),
-                hint = stringResource(id = R.string.profile_text_field_hint_name),
-                showWarning = !profileEditValidated.nameValidated,
-                value = name,
-                onValueChanged = onNameChanged
-            )
-            ProfileTextField(
                 title = stringResource(id = R.string.profile_text_field_nickname),
                 hint = stringResource(id = R.string.profile_text_field_hint_nickname),
                 warning = stringResource(id = R.string.profile_nickname_warning),
-                showWarning = !profileEditValidated.nicknameValidated,
+                showWarning = !nicknameValidated,
                 value = nickname,
                 onValueChanged = onNicknameChanged
-            )
-            ProfileTextField(
-                title = stringResource(id = R.string.profile_text_field_birth_date),
-                hint = stringResource(id = R.string.profile_text_field_hint_birth_date),
-                warning = stringResource(id = R.string.profile_birthdate_warning),
-                showWarning = !profileEditValidated.birthdateValidated,
-                value = birthdate,
-                onValueChanged = onBirthdateChanged
             )
         }
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .padding(bottom = 96.dp)
                 .padding(horizontal = 11.dp),
         ) {
             ProfileButton(
@@ -205,7 +172,7 @@ private fun ProfileEditScreenUI(
             ProfileButton(
                 modifier = Modifier.weight(1f),
                 onClick = onEditButtonClicked,
-                enabled = profileEditValidated.nameValidated && profileEditValidated.nicknameValidated && profileEditValidated.birthdateValidated,
+                enabled = nicknameValidated,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = AppColors.purple2,
                     contentColor = AppColors.grey6,
@@ -221,15 +188,13 @@ private fun ProfileEditScreenUI(
 private fun onEditButtonClicked(
     context: Context,
     profileImage: File?,
-    name: String,
     nickname: String,
-    birthdate: String,
-    editUserProfile: (File, String, String, String) -> Unit
+    editUserProfile: (File, String) -> Unit
 ) {
     if (profileImage == null) {
         Toast.makeText(context, R.string.profile_edit_image_error, Toast.LENGTH_SHORT).show()
     } else {
-        editUserProfile(profileImage, name, nickname, birthdate)
+        editUserProfile(profileImage, nickname)
     }
 }
 
@@ -342,10 +307,5 @@ private fun ProfileEditScreenPreview() {
     ProfileEditScreenUI(
         defaultProfileImageUri = Uri.parse(""),
         profileImage = null,
-        profileEditValidated = ProfileEditValidated(
-            nameValidated = true,
-            nicknameValidated = true,
-            birthdateValidated = true
-        ),
     )
 }
