@@ -72,11 +72,8 @@ fun ProfileEditScreen(
 
     ProfileEditScreenUI(
         modifier = modifier,
-        context = context,
         nickname = nickname,
-        defaultProfileImageUri = defaultProfileImageUri,
         profileImage = uiState.value.profileImage,
-        onImageChanged = viewModel::imageChanged,
         onNicknameChanged = {
             nickname = it
             viewModel.validateNickname(it.text)
@@ -91,21 +88,25 @@ fun ProfileEditScreen(
             )
         },
         navigateBack = navigateBack
-    )
+    ) {
+        EditImageDialog(
+            context = context,
+            defaultProfileImageUri = defaultProfileImageUri,
+            onImageChanged = viewModel::imageChanged
+        )
+    }
 }
 
 @Composable
 private fun ProfileEditScreenUI(
     modifier: Modifier = Modifier,
-    context: Context = LocalContext.current,
     nickname: TextFieldValue = TextFieldValue(),
     nicknameValidated: Boolean = true,
-    defaultProfileImageUri: Uri,
     profileImage: File?,
-    onImageChanged: (Context, Uri) -> Unit = { _, _ -> },
     onNicknameChanged: (TextFieldValue) -> Unit = {},
     onEditButtonClicked: () -> Unit = {},
-    navigateBack: () -> Unit = {}
+    navigateBack: () -> Unit = {},
+    editImageDialog: @Composable () -> Unit = {}
 ) {
     Column(
         modifier = modifier
@@ -135,11 +136,7 @@ private fun ProfileEditScreenUI(
                     .align(Alignment.Center)
             )
         }
-        EditImageDialog(
-            context = context,
-            defaultProfileImageUri = defaultProfileImageUri,
-            onImageChanged = onImageChanged,
-        )
+        editImageDialog()
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -305,7 +302,6 @@ private fun ProfileButton(
 @Composable
 private fun ProfileEditScreenPreview() {
     ProfileEditScreenUI(
-        defaultProfileImageUri = Uri.parse(""),
         profileImage = null,
     )
 }
