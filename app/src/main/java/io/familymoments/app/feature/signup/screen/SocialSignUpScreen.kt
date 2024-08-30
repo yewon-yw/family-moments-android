@@ -59,7 +59,6 @@ fun SocialSignUpScreen(
         onCheckIdFormat = viewModel::checkIdFormat,
         onCheckIdDuplication = viewModel::checkIdDuplication,
         onCheckNicknameFormat = viewModel::checkNicknameFormat,
-        onCheckBirthDayFormat = viewModel::checkBirthDayFormat,
         onExecuteSignUp = {
             viewModel.executeSignUp(it, socialType, socialToken)
         },
@@ -76,7 +75,6 @@ fun SocialSignUpScreenUI(
     onCheckIdFormat: (String) -> Unit = {},
     onCheckIdDuplication: (String) -> Unit = {},
     onCheckNicknameFormat: (String) -> Unit = {},
-    onCheckBirthDayFormat: (String) -> Unit = {},
     onExecuteSignUp: (SignUpInfoUiState) -> Unit = {},
     onRouteToMain: () -> Unit = {},
 ) {
@@ -91,7 +89,7 @@ fun SocialSignUpScreenUI(
 
     var signUpInfoUiState: SignUpInfoUiState by remember {
         mutableStateOf(
-            SignUpInfoUiState(email = loginResult.email, name = loginResult.name, nickname = loginResult.nickname, birthDay = loginResult.strBirthDate)
+            SignUpInfoUiState(email = loginResult.email, nickname = loginResult.nickname)
         )
     }
     LaunchedEffect(uiState.value.signUpValidatedUiState.userIdDuplicatedPass) {
@@ -208,8 +206,7 @@ private fun StartButtonField(
         mutableStateOf(false)
     }
     val signUpValidated = with(signUpValidatedUiState) {
-        birthDayFormValidated
-            && nicknameFormValidated
+        nicknameFormValidated
             && userIdFormValidated
             && userIdDuplicatedPass
     }
