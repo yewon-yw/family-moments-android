@@ -94,18 +94,18 @@ fun SocialSignUpScreenUI(
             SignUpInfoUiState(email = loginResult.email, name = loginResult.name, nickname = loginResult.nickname, birthDay = loginResult.strBirthDate)
         )
     }
-    LaunchedEffect(uiState.value.signUpValidatedUiState.userIdDuplicatedUiState) {
+    LaunchedEffect(uiState.value.signUpValidatedUiState.userIdDuplicatedPass) {
         showUserIdDuplicationCheckResult(
-            uiState.value.signUpValidatedUiState.userIdDuplicatedUiState.isSuccess,
+            uiState.value.signUpValidatedUiState.userIdDuplicatedPass,
             context
         )
     }
 
-    LaunchedEffect(uiState.value.signUpResultUiState.isSuccess) {
-        if (uiState.value.signUpResultUiState.isSuccess == true) {
+    LaunchedEffect(uiState.value.signUpSuccess) {
+        if (uiState.value.signUpSuccess == true) {
             onRouteToMain()
-        } else if (uiState.value.signUpResultUiState.isSuccess == false) {
-            val errorMessage = uiState.value.signUpResultUiState.message.ifEmpty {
+        } else if (uiState.value.signUpSuccess == false) {
+            val errorMessage = uiState.value.message.ifEmpty {
                 context.getString(R.string.sign_up_fail)
             }
             Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
@@ -145,7 +145,7 @@ fun SocialSignUpScreenUI(
                 checkIdFormat = onCheckIdFormat,
                 checkIdDuplication = onCheckIdDuplication,
                 resetUserIdDuplicatedPass = onResetUserIdDuplicatedPass,
-                userIdDuplicated = uiState.value.signUpValidatedUiState.userIdDuplicatedUiState.duplicatedPass
+                userIdDuplicated = uiState.value.signUpValidatedUiState.userIdDuplicatedPass
             ) {
                 signUpInfoUiState = signUpInfoUiState.copy(id = it)
             }
@@ -220,7 +220,7 @@ private fun StartButtonField(
         birthDayFormValidated
             && nicknameFormValidated
             && userIdFormValidated
-            && userIdDuplicatedUiState.duplicatedPass
+            && userIdDuplicatedPass
     }
     signUpEnable = allEssentialTermsAgree && signUpValidated && (signUpInfoUiState.imgFile != null || isDefaultProfileImage)
     FMButton(
