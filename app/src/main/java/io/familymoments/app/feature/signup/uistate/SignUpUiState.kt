@@ -21,9 +21,7 @@ data class SignUpUiState(
 data class SignUpInfoUiState(
     val id: String = "",
     val password: String = "",
-    val name: String = "",
     val email: String = "",
-    val birthDay: String = "",
     val nickname: String = "",
     val imgFile: File? = null,
 )
@@ -37,7 +35,6 @@ data class SignUpValidatedUiState(
     val emailFormValidated: Boolean = false,
     val emailVerified:Boolean = false,
     val nicknameFormValidated: Boolean = false,
-    val birthDayFormValidated: Boolean = false,
 )
 
 @Immutable

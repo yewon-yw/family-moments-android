@@ -149,16 +149,7 @@ fun SocialSignUpScreenUI(
             ) {
                 signUpInfoUiState = signUpInfoUiState.copy(id = it)
             }
-            NameField(default = loginResult.name) { signUpInfoUiState = signUpInfoUiState.copy(name = it) }
             EmailField(email = loginResult.email)
-
-            BirthDayField(
-                default = loginResult.strBirthDate,
-                checkBirthDayFormat = onCheckBirthDayFormat,
-                birthDayFormatValidated = uiState.value.signUpValidatedUiState.birthDayFormValidated
-            ) {
-                signUpInfoUiState = signUpInfoUiState.copy(birthDay = it)
-            }
             NicknameField(
                 default = loginResult.nickname,
                 nicknameFormatValidated = uiState.value.signUpValidatedUiState.nicknameFormValidated,

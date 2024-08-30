@@ -68,7 +68,6 @@ fun SignUpScreen(viewModel: SignUpViewModel) {
         checkEmailFormat = viewModel::checkEmailFormat,
         sendEmailVerificationCode = viewModel::sendEmailVerificationCode,
         checkNicknameFormat = viewModel::checkNicknameFormat,
-        checkBirthDayFormat = viewModel::checkBirthDayFormat,
         executeSignUp = viewModel::executeSignUp,
         verifyEmailVerificationCode = viewModel::verifyEmailVerificationCode,
         updateSignUpInfoUiState = viewModel::updateSignUpInfo,
@@ -91,12 +90,11 @@ fun SignUpScreenUI(
     checkEmailFormat: (String) -> Unit = {},
     sendEmailVerificationCode: (String) -> Unit = {},
     checkNicknameFormat: (String) -> Unit = {},
-    checkBirthDayFormat: (String) -> Unit = {},
     executeSignUp: (SignUpInfoUiState) -> Unit = {},
     verifyEmailVerificationCode: (String) -> Unit = {},
     updateSignUpInfoUiState: (SignUpInfoUiState) -> Unit = {},
     checkPasswordSame: (String) -> Unit = {},
-    resetVerifyCodeAvailable:()->Unit = {}
+    resetVerifyCodeAvailable: () -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -157,7 +155,6 @@ fun SignUpScreenUI(
                 checkPasswordSame = checkPasswordSame,
                 passwordSameCheck = uiState.value.signUpValidatedUiState.passwordSameCheck
             )
-            NameField { updateSignUpInfoUiState(uiState.value.signUpInfoUiState.copy(name = it)) }
             EmailField(
                 checkEmailFormat = checkEmailFormat,
                 sendEmailVerificationCode = sendEmailVerificationCode,
@@ -171,12 +168,6 @@ fun SignUpScreenUI(
                 verifyCodeAvailable = uiState.value.verificationCodeButtonUiState.verifyCodeAvailable
             ) {
                 updateSignUpInfoUiState(uiState.value.signUpInfoUiState.copy(email = it))
-            }
-            BirthDayField(
-                checkBirthDayFormat = checkBirthDayFormat,
-                birthDayFormatValidated = uiState.value.signUpValidatedUiState.birthDayFormValidated
-            ) {
-                updateSignUpInfoUiState(uiState.value.signUpInfoUiState.copy(birthDay = it))
             }
             NicknameField(
                 nicknameFormatValidated = uiState.value.signUpValidatedUiState.nicknameFormValidated,
@@ -314,8 +305,8 @@ private fun EmailField(
     isExpirationTimeVisible: Boolean,
     sendEmailVerificationCodeAvailable: Boolean,
     verifyEmailVerificationCode: (String) -> Unit,
-    resetVerifyCodeAvailable:()->Unit,
-    verifyCodeAvailable:Boolean,
+    resetVerifyCodeAvailable: () -> Unit,
+    verifyCodeAvailable: Boolean,
     onValueChange: (String) -> Unit,
 ) {
     Column {
@@ -387,7 +378,7 @@ private fun VerificationCodeTextField(
     verifyEmailVerificationCode: (String) -> Unit,
     expirationTime: Int,
     isExpirationTimeVisible: Boolean,
-    resetVerifyCodeAvailable:()->Unit = {},
+    resetVerifyCodeAvailable: () -> Unit = {},
     verifyCodeAvailable: Boolean
 ) {
     var verificationCode by remember {
@@ -445,8 +436,7 @@ private fun StartButtonField(
         mutableStateOf(false)
     }
     val signUpValidated = with(signUpValidatedUiState) {
-        birthDayFormValidated
-            && nicknameFormValidated
+        nicknameFormValidated
             && passwordFormValidated
             && passwordSameCheck
             && userIdDuplicatedPass
