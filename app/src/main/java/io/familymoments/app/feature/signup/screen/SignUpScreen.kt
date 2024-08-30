@@ -97,7 +97,11 @@ fun SignUpScreenUI(
     resetVerifyCodeAvailable: () -> Unit = {}
 ) {
     val context = LocalContext.current
-
+    val isDefaultProfileImage = remember { mutableStateOf(false) }
+    val defaultProfileImageBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.default_profile)
+    var allEssentialTermsAgree by remember {
+        mutableStateOf(false)
+    }
     AppBarScreen(
         title = {
             Text(
@@ -117,11 +121,6 @@ fun SignUpScreenUI(
             )
         }
     ) {
-        val isDefaultProfileImage = remember { mutableStateOf(false) }
-        val defaultProfileImageBitmap = BitmapFactory.decodeResource(context.resources, R.drawable.default_profile)
-        var allEssentialTermsAgree by remember {
-            mutableStateOf(false)
-        }
 
         LaunchedEffectWithUiState(
             uiState = uiState.value,
@@ -184,16 +183,14 @@ fun SignUpScreenUI(
                 uiState.value.signUpValidatedUiState,
                 isDefaultProfileImage.value,
             ) {
+                var signUpInfoUiState = uiState.value.signUpInfoUiState
                 if (isDefaultProfileImage.value) {
-                    updateSignUpInfoUiState(
-                        uiState.value.signUpInfoUiState.copy(
-                            imgFile = FileUtil.getDefaultProfileImage(
-                                context
-                            )
-                        )
+                    signUpInfoUiState = signUpInfoUiState.copy(
+                        imgFile = FileUtil.getDefaultProfileImage(context)
                     )
                 }
-                executeSignUp(uiState.value.signUpInfoUiState)
+
+                executeSignUp(signUpInfoUiState)
             }
             Spacer(modifier = Modifier.height(40.dp))
         }

@@ -126,7 +126,7 @@ class SignUpViewModel @Inject constructor(
                     it.copy(
                         isLoading = false,
                         postSuccess = true,
-                        message = result.result,
+                        message = "입력하신 이메일로 인증 번호가 발송되었습니다.",
                         verificationCodeButtonUiState = it.verificationCodeButtonUiState.copy(
                             sendEmailAvailable = true
                         )
