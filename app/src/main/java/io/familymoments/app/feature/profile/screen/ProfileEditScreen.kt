@@ -7,7 +7,7 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,8 +18,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
@@ -29,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -36,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -48,10 +55,14 @@ import io.familymoments.app.core.component.ImageSelectionMenu
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.URI_SCHEME_RESOURCE
+import io.familymoments.app.core.util.keyboardAsState
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.profile.viewmodel.ProfileEditViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProfileEditScreen(
     modifier: Modifier = Modifier,
@@ -63,6 +74,18 @@ fun ProfileEditScreen(
     val defaultProfileImageUri =
         Uri.parse("$URI_SCHEME_RESOURCE://${context.packageName}/${R.drawable.default_profile}")
     var nickname by remember { mutableStateOf(TextFieldValue(uiState.value.nickname)) }
+    val isKeyboardOpen by keyboardAsState()
+    val focusManager = LocalFocusManager.current
+    val requester = remember { BringIntoViewRequester() }
+    val scope = rememberCoroutineScope()
+    val onFocusChanged: (Boolean) -> Unit = { isFocused ->
+        scope.launch {
+            if (isFocused) {
+                delay(300)
+                requester.bringIntoView()
+            }
+        }
+    }
 
     LaunchedEffect(uiState.value.isSuccess) {
         if (uiState.value.isSuccess) {
@@ -72,6 +95,8 @@ fun ProfileEditScreen(
 
     ProfileEditScreenUI(
         modifier = modifier,
+        buttonModifier = Modifier.bringIntoViewRequester(requester),
+        isKeyboardOpen = isKeyboardOpen,
         nickname = nickname,
         profileImage = uiState.value.profileImage,
         onNicknameChanged = {
@@ -87,7 +112,9 @@ fun ProfileEditScreen(
                 editUserProfile = viewModel::editUserProfile
             )
         },
-        navigateBack = navigateBack
+        navigateBack = navigateBack,
+        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+        onFocusChanged = onFocusChanged
     ) {
         EditImageDialog(
             context = context,
@@ -100,20 +127,24 @@ fun ProfileEditScreen(
 @Composable
 private fun ProfileEditScreenUI(
     modifier: Modifier = Modifier,
+    buttonModifier: Modifier = Modifier,
+    isKeyboardOpen: Boolean = false,
     nickname: TextFieldValue = TextFieldValue(),
     nicknameValidated: Boolean = true,
     profileImage: File?,
     onNicknameChanged: (TextFieldValue) -> Unit = {},
     onEditButtonClicked: () -> Unit = {},
     navigateBack: () -> Unit = {},
+    keyboardActions: KeyboardActions = KeyboardActions(),
+    onFocusChanged: (Boolean) -> Unit = {},
     editImageDialog: @Composable () -> Unit = {}
 ) {
     Column(
         modifier = modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp)
+            .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = stringResource(id = R.string.edit_profile_title),
@@ -137,26 +168,21 @@ private fun ProfileEditScreenUI(
             )
         }
         editImageDialog()
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .padding(top = 34.dp),
-            horizontalAlignment = Alignment.Start
-        ) {
-            ProfileTextField(
-                title = stringResource(id = R.string.profile_text_field_nickname),
-                hint = stringResource(id = R.string.profile_text_field_hint_nickname),
-                warning = stringResource(id = R.string.profile_nickname_warning),
-                showWarning = !nicknameValidated,
-                value = nickname,
-                onValueChanged = onNicknameChanged
-            )
-        }
+        ProfileTextField(
+            title = stringResource(id = R.string.profile_text_field_nickname),
+            hint = stringResource(id = R.string.profile_text_field_hint_nickname),
+            warning = stringResource(id = R.string.profile_nickname_warning),
+            showWarning = !nicknameValidated,
+            value = nickname,
+            onValueChanged = onNicknameChanged,
+            keyboardActions = keyboardActions,
+            onFocusChanged = onFocusChanged
+        )
+        Spacer(modifier = Modifier.weight(1f))
         Row(
-            modifier = Modifier
+            modifier = buttonModifier
                 .fillMaxWidth()
-                .padding(bottom = 96.dp)
+                .padding(bottom = if (isKeyboardOpen) 10.dp else 96.dp)
                 .padding(horizontal = 11.dp),
         ) {
             ProfileButton(
@@ -203,8 +229,14 @@ private fun ProfileTextField(
     showWarning: Boolean = false,
     value: TextFieldValue = TextFieldValue(),
     onValueChanged: (TextFieldValue) -> Unit = {},
+    keyboardActions: KeyboardActions,
+    onFocusChanged: (Boolean) -> Unit = {}
 ) {
-    Column {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 34.dp)
+    ) {
         Text(
             text = title,
             style = AppTypography.B1_16,
@@ -217,7 +249,9 @@ private fun ProfileTextField(
             hint = hint,
             textColor = if (showWarning) AppColors.red2 else AppColors.black2,
             hintColor = if (showWarning) AppColors.red2 else AppColors.grey2,
-            borderColor = if (showWarning) AppColors.red2 else AppColors.grey2
+            borderColor = if (showWarning) AppColors.red2 else AppColors.grey2,
+            keyboardActions = keyboardActions,
+            onFocusChanged = onFocusChanged
         )
         if (showWarning) {
             Text(
