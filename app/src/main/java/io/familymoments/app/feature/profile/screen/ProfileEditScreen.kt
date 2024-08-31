@@ -86,6 +86,14 @@ fun ProfileEditScreen(
             }
         }
     }
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = {
+            if (it == null) return@rememberLauncherForActivityResult
+            viewModel.imageChanged(context, it)
+        }
+    )
+    var showImageSelectionMenu by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.value.isSuccess) {
         if (uiState.value.isSuccess) {
@@ -117,9 +125,14 @@ fun ProfileEditScreen(
         onFocusChanged = onFocusChanged
     ) {
         EditImageDialog(
-            context = context,
-            defaultProfileImageUri = defaultProfileImageUri,
-            onImageChanged = viewModel::imageChanged
+            showMenu = showImageSelectionMenu,
+            onMenuClicked = { showImageSelectionMenu = it },
+            onGallerySelected = {
+                launcher.launch(
+                    PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            },
+            onDefaultImageSelected = { viewModel.imageChanged(context, defaultProfileImageUri) }
         )
     }
 }
@@ -270,18 +283,11 @@ private fun ProfileTextField(
 
 @Composable
 private fun EditImageDialog(
-    context: Context = LocalContext.current,
-    defaultProfileImageUri: Uri,
-    onImageChanged: (Context, Uri) -> Unit,
+    showMenu: Boolean = false,
+    onMenuClicked: (Boolean) -> Unit = {},
+    onGallerySelected: () -> Unit = {},
+    onDefaultImageSelected: () -> Unit = {},
 ) {
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = {
-            if (it == null) return@rememberLauncherForActivityResult
-            onImageChanged(context, it)
-        }
-    )
-    var showImageSelectionMenu by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -291,20 +297,14 @@ private fun EditImageDialog(
             color = AppColors.purple2,
             modifier = Modifier
                 .align(Alignment.Center)
-                .noRippleClickable { showImageSelectionMenu = true }
+                .noRippleClickable { onMenuClicked(true) }
         )
     }
     ImageSelectionMenu(
-        showImageSelectionMenu = showImageSelectionMenu,
-        onDismissRequest = { showImageSelectionMenu = false },
-        onGallerySelected = {
-            launcher.launch(
-                PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
-            )
-        },
-        onDefaultImageSelected = {
-            onImageChanged(context, defaultProfileImageUri)
-        }
+        showImageSelectionMenu = showMenu,
+        onDismissRequest = { onMenuClicked(false) },
+        onGallerySelected = onGallerySelected,
+        onDefaultImageSelected = onDefaultImageSelected
     )
 }
 
