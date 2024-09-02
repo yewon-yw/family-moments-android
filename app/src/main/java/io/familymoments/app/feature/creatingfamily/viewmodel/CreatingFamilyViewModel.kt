@@ -7,9 +7,7 @@ import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourc
 import io.familymoments.app.core.network.dto.request.CreateFamilyRequest
 import io.familymoments.app.core.network.dto.request.FamilyProfile
 import io.familymoments.app.core.network.repository.FamilyRepository
-import io.familymoments.app.core.network.repository.UserRepository
 import io.familymoments.app.feature.creatingfamily.uistate.CreateFamilyResultUiState
-import io.familymoments.app.feature.creatingfamily.uistate.SearchMemberUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +19,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CreatingFamilyViewModel @Inject constructor(
-    private val userRepository: UserRepository,
     private val familyRepository: FamilyRepository,
     private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
 ) : BaseViewModel() {
@@ -33,11 +30,6 @@ class CreatingFamilyViewModel @Inject constructor(
     val familyProfile: StateFlow<FamilyProfile> =
         _familyProfile.asStateFlow()
 
-    private val _searchMemberUiState: MutableStateFlow<SearchMemberUiState> = MutableStateFlow(
-        SearchMemberUiState()
-    )
-    val searchMemberUiState: StateFlow<SearchMemberUiState> = _searchMemberUiState.asStateFlow()
-
     private val _createFamilyResultUiState: MutableStateFlow<CreateFamilyResultUiState> = MutableStateFlow(
         CreateFamilyResultUiState()
     )
@@ -45,24 +37,6 @@ class CreatingFamilyViewModel @Inject constructor(
 
     fun saveFamilyProfile(familyProfile: FamilyProfile) {
         _familyProfile.value = familyProfile
-    }
-
-    fun searchMember(keyword: String) {
-        async(
-            operation = { userRepository.searchMember(keyword, true) },
-            onSuccess = {
-                _searchMemberUiState.value =
-                    _searchMemberUiState.value.copy(isSuccess = true, members = it.result, isLoading = isLoading.value)
-            },
-            onFailure = {
-                _searchMemberUiState.value =
-                    _searchMemberUiState.value.copy(
-                        isSuccess = false,
-                        errorMessage = it.message,
-                        isLoading = isLoading.value
-                    )
-            }
-        )
     }
 
     fun createFamily(familyProfile: FamilyProfile) {
