@@ -157,7 +157,7 @@ fun SocialSignUpScreenUI(
                 signUpInfoUiState = signUpInfoUiState.copy(imgFile = it)
             }
             Spacer(modifier = Modifier.height(53.dp))
-            TermsField { allEssentialTermsAgree = it }
+            TermsField(onAllEssentialTermsAgree = { allEssentialTermsAgree = it })
             StartButtonField(
                 signUpInfoUiState,
                 allEssentialTermsAgree,
