@@ -19,6 +19,10 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -29,6 +33,7 @@ import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.IntOffset
@@ -37,6 +42,7 @@ import androidx.compose.ui.window.Popup
 import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
 import io.familymoments.app.R
+import io.familymoments.app.core.component.popup.DeletePopUp
 import io.familymoments.app.core.network.dto.response.Member
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
@@ -54,6 +60,8 @@ fun ReportUserPopup(
     val triangleHeight = 30f
     val triangleHeightDp = triangleHeight.toDp()
     val maxHeight = calculateHeight(items = 5, triangleHeightDp) // 최대 5명까지 한 화면에
+    var showConfirmPopup by remember { mutableStateOf(false) }
+    var reportUserId by remember { mutableStateOf("") }
 
     if (showPopup && members.isNotEmpty()) {
         Box(
@@ -105,7 +113,11 @@ fun ReportUserPopup(
                         items = members,
                         key = { _, member -> member.id }
                     ) { index: Int, member: Member ->
-                        ReportUserItem(member, reportUser)
+                        ReportUserItem(
+                            member = member,
+                            updateReportUserId = { reportUserId = it },
+                            updatePopupVisibility = { showConfirmPopup = it }
+                        )
                         if (index < members.size - 1) {
                             HorizontalDivider(color = AppColors.grey6, thickness = 0.5.dp)
                         }
@@ -114,10 +126,20 @@ fun ReportUserPopup(
             }
         }
     }
+    ReportUserConfirmPopup(
+        showConfirmPopup = showConfirmPopup && reportUserId.isNotEmpty(),
+        userId = reportUserId,
+        reportUser = reportUser,
+        onDismissRequest = { showConfirmPopup = false }
+    )
 }
 
 @Composable
-fun ReportUserItem(member: Member, reportUser: (String) -> Unit) {
+fun ReportUserItem(
+    member: Member,
+    updateReportUserId: (String) -> Unit,
+    updatePopupVisibility: (Boolean) -> Unit
+) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -146,10 +168,33 @@ fun ReportUserItem(member: Member, reportUser: (String) -> Unit) {
         Icon(
             modifier = Modifier
                 .align(Alignment.CenterVertically)
-                .clickable { reportUser(member.id) },
+                .clickable {
+                    updateReportUserId(member.id)
+                    updatePopupVisibility(true)
+                },
             painter = painterResource(id = R.drawable.ic_report_user),
             tint = AppColors.grey8,
             contentDescription = null
+        )
+    }
+}
+
+@Composable
+fun ReportUserConfirmPopup(
+    showConfirmPopup: Boolean = false,
+    userId: String,
+    reportUser: (String) -> Unit = {},
+    onDismissRequest: () -> Unit = {}
+) {
+    if (showConfirmPopup) {
+        DeletePopUp(
+            content = stringResource(id = R.string.report_user_popup_content),
+            deleteBtnLabel = stringResource(id = R.string.report_user_popup_btn),
+            delete = {
+                reportUser(userId)
+                onDismissRequest()
+            },
+            onDismissRequest = onDismissRequest
         )
     }
 }
