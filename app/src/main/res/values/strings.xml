@@ -300,4 +300,9 @@
     <string name="sign_up_verify_verification_code_label">인증확인</string>
     <string name="sign_up_expiration_tiem_label">남은 유효시간: %1$s</string>
 
+    <string name="report_user_success">신고가 완료되었습니다.</string>
+    <string name="report_user_fail">신고에 실패했습니다. 다시 시도해 주세요.</string>
+    <string name="report_user_popup_content">유저를 신고하시겠습니까?</string>
+    <string name="report_user_popup_btn">신고</string>
+
 </resources>

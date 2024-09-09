@@ -334,6 +334,11 @@ class UserRepositoryImpl @Inject constructor(
         return getResourceFlow(response)
     }
 
+    override suspend fun reportUser(userId: String): Flow<Resource<ApiResponse<String>>> {
+        val response = userService.reportUser(userId)
+        return getResourceFlow(response)
+    }
+
     override suspend fun logoutUser(): Flow<Resource<LogoutResponse>> {
         return flow {
             emit(Resource.Loading)

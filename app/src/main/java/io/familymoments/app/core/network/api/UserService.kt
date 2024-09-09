@@ -98,4 +98,7 @@ interface UserService {
 
    @DELETE("/users")
    suspend fun deleteAccount():Response<ApiResponse<String>>
+
+    @POST("/users/report")
+    suspend fun reportUser(@Body userId: String): Response<ApiResponse<String>>
 }
