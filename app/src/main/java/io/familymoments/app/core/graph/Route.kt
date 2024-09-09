@@ -29,7 +29,7 @@ sealed interface Route {
             navArgument(profileImgArg) { type = NavType.StringType }
         )
 
-        fun getRoute( nickname: String, profileImg: String): String {
+        fun getRoute(nickname: String, profileImg: String): String {
             val encodedProfileImgUrl = URLEncoder.encode(profileImg, StandardCharsets.UTF_8.toString())
             return "$route/$nickname/$encodedProfileImgUrl"
         }

@@ -7,19 +7,23 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.annotation.StringRes
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.relocation.BringIntoViewRequester
+import androidx.compose.foundation.relocation.bringIntoViewRequester
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonColors
@@ -30,6 +34,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -37,6 +42,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.tooling.preview.Preview
@@ -49,13 +55,17 @@ import io.familymoments.app.core.component.ImageSelectionMenu
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.URI_SCHEME_RESOURCE
+import io.familymoments.app.core.util.keyboardAsState
 import io.familymoments.app.core.util.noRippleClickable
-import io.familymoments.app.feature.profile.uistate.ProfileEditValidated
 import io.familymoments.app.feature.profile.viewmodel.ProfileEditViewModel
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.io.File
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun ProfileEditScreen(
+    modifier: Modifier = Modifier,
     navigateBack: () -> Unit,
     viewModel: ProfileEditViewModel,
 ) {
@@ -63,7 +73,27 @@ fun ProfileEditScreen(
     val context = LocalContext.current
     val defaultProfileImageUri =
         Uri.parse("$URI_SCHEME_RESOURCE://${context.packageName}/${R.drawable.default_profile}")
-    var nickname by remember { mutableStateOf(TextFieldValue(uiState.value.profileEditInfoUiState.nickname)) }
+    var nickname by remember { mutableStateOf(TextFieldValue(uiState.value.nickname)) }
+    val isKeyboardOpen by keyboardAsState()
+    val focusManager = LocalFocusManager.current
+    val requester = remember { BringIntoViewRequester() }
+    val scope = rememberCoroutineScope()
+    val onFocusChanged: (Boolean) -> Unit = { isFocused ->
+        scope.launch {
+            if (isFocused) {
+                delay(300)
+                requester.bringIntoView()
+            }
+        }
+    }
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = {
+            if (it == null) return@rememberLauncherForActivityResult
+            viewModel.imageChanged(context, it)
+        }
+    )
+    var showImageSelectionMenu by remember { mutableStateOf(false) }
 
     LaunchedEffect(uiState.value.isSuccess) {
         if (uiState.value.isSuccess) {
@@ -72,17 +102,16 @@ fun ProfileEditScreen(
     }
 
     ProfileEditScreenUI(
-        modifier = Modifier,
-        context = context,
+        modifier = modifier,
+        buttonModifier = Modifier.bringIntoViewRequester(requester),
+        isKeyboardOpen = isKeyboardOpen,
         nickname = nickname,
-        defaultProfileImageUri = defaultProfileImageUri,
         profileImage = uiState.value.profileImage,
-        onImageChanged = viewModel::imageChanged,
         onNicknameChanged = {
             nickname = it
             viewModel.validateNickname(it.text)
         },
-        profileEditValidated = uiState.value.profileEditValidated,
+        nicknameValidated = uiState.value.nicknameValidated,
         onEditButtonClicked = {
             onEditButtonClicked(
                 context = context,
@@ -91,30 +120,44 @@ fun ProfileEditScreen(
                 editUserProfile = viewModel::editUserProfile
             )
         },
-        navigateBack = navigateBack
-    )
+        navigateBack = navigateBack,
+        keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() }),
+        onFocusChanged = onFocusChanged
+    ) {
+        EditImageDialog(
+            showMenu = showImageSelectionMenu,
+            onMenuClicked = { showImageSelectionMenu = it },
+            onGallerySelected = {
+                launcher.launch(
+                    PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                )
+            },
+            onDefaultImageSelected = { viewModel.imageChanged(context, defaultProfileImageUri) }
+        )
+    }
 }
 
 @Composable
 private fun ProfileEditScreenUI(
     modifier: Modifier = Modifier,
-    context: Context = LocalContext.current,
+    buttonModifier: Modifier = Modifier,
+    isKeyboardOpen: Boolean = false,
     nickname: TextFieldValue = TextFieldValue(),
-    defaultProfileImageUri: Uri,
+    nicknameValidated: Boolean = true,
     profileImage: File?,
-    onImageChanged: (Context, Uri) -> Unit = { _, _ -> },
     onNicknameChanged: (TextFieldValue) -> Unit = {},
-    profileEditValidated: ProfileEditValidated,
     onEditButtonClicked: () -> Unit = {},
-    navigateBack: () -> Unit = {}
+    navigateBack: () -> Unit = {},
+    keyboardActions: KeyboardActions = KeyboardActions(),
+    onFocusChanged: (Boolean) -> Unit = {},
+    editImageDialog: @Composable () -> Unit = {}
 ) {
     Column(
         modifier = modifier
-            .fillMaxWidth()
+            .fillMaxSize()
             .padding(horizontal = 16.dp)
             .verticalScroll(rememberScrollState()),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
     ) {
         Text(
             text = stringResource(id = R.string.edit_profile_title),
@@ -137,29 +180,22 @@ private fun ProfileEditScreenUI(
                     .align(Alignment.Center)
             )
         }
-        EditImageDialog(
-            context = context,
-            defaultProfileImageUri = defaultProfileImageUri,
-            onImageChanged = onImageChanged,
+        editImageDialog()
+        ProfileTextField(
+            title = stringResource(id = R.string.profile_text_field_nickname),
+            hint = stringResource(id = R.string.profile_text_field_hint_nickname),
+            warning = stringResource(id = R.string.profile_nickname_warning),
+            showWarning = !nicknameValidated,
+            value = nickname,
+            onValueChanged = onNicknameChanged,
+            keyboardActions = keyboardActions,
+            onFocusChanged = onFocusChanged
         )
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(top = 34.dp),
-            horizontalAlignment = Alignment.Start
-        ) {
-            ProfileTextField(
-                title = stringResource(id = R.string.profile_text_field_nickname),
-                hint = stringResource(id = R.string.profile_text_field_hint_nickname),
-                warning = stringResource(id = R.string.profile_nickname_warning),
-                showWarning = !profileEditValidated.nicknameValidated,
-                value = nickname,
-                onValueChanged = onNicknameChanged
-            )
-        }
+        Spacer(modifier = Modifier.weight(1f))
         Row(
-            modifier = Modifier
+            modifier = buttonModifier
                 .fillMaxWidth()
+                .padding(bottom = if (isKeyboardOpen) 10.dp else 96.dp)
                 .padding(horizontal = 11.dp),
         ) {
             ProfileButton(
@@ -172,7 +208,7 @@ private fun ProfileEditScreenUI(
             ProfileButton(
                 modifier = Modifier.weight(1f),
                 onClick = onEditButtonClicked,
-                enabled = profileEditValidated.nicknameValidated,
+                enabled = nicknameValidated,
                 colors = ButtonDefaults.buttonColors(
                     containerColor = AppColors.purple2,
                     contentColor = AppColors.grey6,
@@ -194,7 +230,7 @@ private fun onEditButtonClicked(
     if (profileImage == null) {
         Toast.makeText(context, R.string.profile_edit_image_error, Toast.LENGTH_SHORT).show()
     } else {
-        editUserProfile(profileImage,nickname)
+        editUserProfile(profileImage, nickname)
     }
 }
 
@@ -206,8 +242,14 @@ private fun ProfileTextField(
     showWarning: Boolean = false,
     value: TextFieldValue = TextFieldValue(),
     onValueChanged: (TextFieldValue) -> Unit = {},
+    keyboardActions: KeyboardActions,
+    onFocusChanged: (Boolean) -> Unit = {}
 ) {
-    Column {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(top = 34.dp)
+    ) {
         Text(
             text = title,
             style = AppTypography.B1_16,
@@ -220,7 +262,9 @@ private fun ProfileTextField(
             hint = hint,
             textColor = if (showWarning) AppColors.red2 else AppColors.black2,
             hintColor = if (showWarning) AppColors.red2 else AppColors.grey2,
-            borderColor = if (showWarning) AppColors.red2 else AppColors.grey2
+            borderColor = if (showWarning) AppColors.red2 else AppColors.grey2,
+            keyboardActions = keyboardActions,
+            onFocusChanged = onFocusChanged
         )
         if (showWarning) {
             Text(
@@ -239,18 +283,11 @@ private fun ProfileTextField(
 
 @Composable
 private fun EditImageDialog(
-    context: Context = LocalContext.current,
-    defaultProfileImageUri: Uri,
-    onImageChanged: (Context, Uri) -> Unit,
+    showMenu: Boolean = false,
+    onMenuClicked: (Boolean) -> Unit = {},
+    onGallerySelected: () -> Unit = {},
+    onDefaultImageSelected: () -> Unit = {},
 ) {
-    val launcher = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.PickVisualMedia(),
-        onResult = {
-            if (it == null) return@rememberLauncherForActivityResult
-            onImageChanged(context, it)
-        }
-    )
-    var showImageSelectionMenu by remember { mutableStateOf(false) }
     Box(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -260,20 +297,14 @@ private fun EditImageDialog(
             color = AppColors.purple2,
             modifier = Modifier
                 .align(Alignment.Center)
-                .noRippleClickable { showImageSelectionMenu = true }
+                .noRippleClickable { onMenuClicked(true) }
         )
     }
     ImageSelectionMenu(
-        showImageSelectionMenu = showImageSelectionMenu,
-        onDismissRequest = { showImageSelectionMenu = false },
-        onGallerySelected = {
-            launcher.launch(
-                PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
-            )
-        },
-        onDefaultImageSelected = {
-            onImageChanged(context, defaultProfileImageUri)
-        }
+        showImageSelectionMenu = showMenu,
+        onDismissRequest = { onMenuClicked(false) },
+        onGallerySelected = onGallerySelected,
+        onDefaultImageSelected = onDefaultImageSelected
     )
 }
 
@@ -305,10 +336,6 @@ private fun ProfileButton(
 @Composable
 private fun ProfileEditScreenPreview() {
     ProfileEditScreenUI(
-        defaultProfileImageUri = Uri.parse(""),
         profileImage = null,
-        profileEditValidated = ProfileEditValidated(
-            nicknameValidated = true,
-        ),
     )
 }
