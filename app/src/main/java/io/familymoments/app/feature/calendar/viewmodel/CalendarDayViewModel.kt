@@ -7,6 +7,7 @@ import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.graph.Route
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.PostRepository
+import io.familymoments.app.core.util.DateFormatter.convertCreatedAtToLocalDate
 import io.familymoments.app.feature.calendar.uistate.CalendarDayUiState
 import io.familymoments.app.feature.home.uistate.PostPopupType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -55,10 +56,11 @@ class CalendarDayViewModel @Inject constructor(
                 postRepository.getPostsByDay(familyId, year, month, day)
             },
             onSuccess = {
+                val posts = it.result.convertCreatedAtToLocalDate()
                 _calendarDayUiState.value = _calendarDayUiState.value.copy(
                     isSuccess = true,
                     isLoading = isLoading.value,
-                    posts = it.result
+                    posts = posts
                 )
                 if (it.result.isNotEmpty()) {
                     minPostId = it.result.minOf { post -> post.postId }
@@ -86,10 +88,11 @@ class CalendarDayViewModel @Inject constructor(
                 postRepository.loadMorePostsByDay(familyId, year, month, day, minPostId)
             },
             onSuccess = {
+                val posts = it.result.convertCreatedAtToLocalDate()
                 _calendarDayUiState.value = _calendarDayUiState.value.copy(
                     isSuccess = true,
                     isLoading = isLoading.value,
-                    posts = _calendarDayUiState.value.posts + it.result
+                    posts = _calendarDayUiState.value.posts + posts
                 )
                 if (it.result.isNotEmpty()) {
                     minPostId = it.result.minOf { post -> post.postId }

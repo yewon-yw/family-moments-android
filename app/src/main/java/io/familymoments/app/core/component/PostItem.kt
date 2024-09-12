@@ -1,6 +1,5 @@
 package io.familymoments.app.core.component
 
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -41,13 +40,10 @@ import io.familymoments.app.R
 import io.familymoments.app.core.network.dto.response.Post
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.util.DateFormatter.formattedDate
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.home.component.postItemContentShadow
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostItem(
     userNickname: String,
@@ -112,7 +108,6 @@ private fun PostItemHeader(post: Post) {
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PostItemContent(
     post: Post,
@@ -208,7 +203,6 @@ private fun PostItemContent(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostPhotos(
     post: Post,
@@ -254,14 +248,6 @@ fun PostPhotos(
             }
         }
     }
-}
-
-private fun String.formattedDate(): String {
-    val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
-    val date = inputFormat.parse(this)
-
-    val outputFormat = SimpleDateFormat("yyyy.MM.dd(EEE)", Locale.KOREA)
-    return outputFormat.format(date ?: Date())
 }
 
 @Preview(showBackground = true)

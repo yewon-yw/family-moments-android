@@ -7,6 +7,7 @@ import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSourc
 import io.familymoments.app.core.network.repository.FamilyRepository
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.core.util.DateFormatter
+import io.familymoments.app.core.util.DateFormatter.convertCreatedAtToLocalDate
 import io.familymoments.app.feature.home.uistate.HomeUiState
 import io.familymoments.app.feature.home.uistate.PostPopupType
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -58,11 +59,12 @@ class HomeViewModel @Inject constructor(
                 postRepository.getPosts(familyId)
             },
             onSuccess = {
+                val posts = it.result.convertCreatedAtToLocalDate()
                 _homeUiState.value = _homeUiState.value.copy(
                     isSuccess = true,
                     isLoading = isLoading.value,
                     errorMessage = null,
-                    posts = it.result
+                    posts = posts
                 )
                 if (it.result.isNotEmpty()) {
                     minPostId = it.result.minOf { post -> post.postId }
@@ -86,10 +88,11 @@ class HomeViewModel @Inject constructor(
                 postRepository.loadMorePosts(familyId, minPostId)
             },
             onSuccess = {
+                val posts = it.result.convertCreatedAtToLocalDate()
                 _homeUiState.value = _homeUiState.value.copy(
                     isSuccess = true,
                     isLoading = isLoading.value,
-                    posts = _homeUiState.value.posts + it.result
+                    posts = _homeUiState.value.posts + posts
                 )
                 if (it.result.isNotEmpty()) {
                     minPostId = it.result.minOf { post -> post.postId }
