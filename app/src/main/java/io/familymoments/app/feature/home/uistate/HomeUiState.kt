@@ -2,7 +2,7 @@ package io.familymoments.app.feature.home.uistate
 
 import androidx.compose.runtime.Immutable
 import io.familymoments.app.core.network.HttpResponseMessage.NO_POST_404
-import io.familymoments.app.core.network.dto.response.Post
+import io.familymoments.app.core.network.dto.response.PostResult
 
 @Immutable
 data class HomeUiState(
@@ -11,7 +11,7 @@ data class HomeUiState(
     val errorMessage: String? = null,
     val userNickname: String = "",
     val dday: String = "",
-    val posts: List<Post> = emptyList(),
+    val posts: List<PostResult> = emptyList(),
     val popup: PostPopupType? = null
 ) {
     val hasNoPost = errorMessage == NO_POST_404

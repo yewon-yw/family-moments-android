@@ -6,8 +6,8 @@ import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.HttpResponseMessage.NO_COMMENTS_404
 import io.familymoments.app.core.network.HttpResponseMessage.NO_POST_LOVES_404
-import io.familymoments.app.core.network.dto.response.GetPostDetailResult
 import io.familymoments.app.core.network.dto.response.GetPostLovesResult
+import io.familymoments.app.core.network.dto.response.PostResult
 import io.familymoments.app.core.network.repository.CommentRepository
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.core.util.DateFormatter
@@ -347,7 +347,7 @@ class PostDetailViewModel @Inject constructor(
         }
     }
 
-    fun checkPostDetailExist(value: GetPostDetailResult) = value != GetPostDetailResult()
+    fun checkPostDetailExist(value: PostResult) = value != PostResult()
 
     fun makeCommentAvailable() {
         _uiState.update {

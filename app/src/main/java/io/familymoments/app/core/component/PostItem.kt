@@ -38,7 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import io.familymoments.app.R
-import io.familymoments.app.core.network.dto.response.Post
+import io.familymoments.app.core.network.dto.response.PostResult
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.noRippleClickable
@@ -47,19 +47,17 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostItem(
-    userNickname: String,
-    post: Post,
+    post: PostResult,
     navigateToPostDetail: (Int) -> Unit,
-    navigateToEditPost: (Post) -> Unit,
+    navigateToEditPost: (PostResult) -> Unit,
     onClickPostLoves: () -> Unit,
     showDeletePostPopup: () -> Unit,
     showReportPostPopup: () -> Unit
 ) {
     val menuExpanded = remember { mutableStateOf(false) }
-    val isUserPost = userNickname == post.writer
+    val isUserPost = post.written
     val pagerState = rememberPagerState(pageCount = { post.imgs.size })
     Column {
         Spacer(modifier = Modifier.height(10.dp))
@@ -84,7 +82,7 @@ fun PostItem(
 }
 
 @Composable
-private fun PostItemHeader(post: Post) {
+private fun PostItemHeader(post: PostResult) {
     Row(
         modifier = Modifier.padding(start = 20.dp, end = 17.dp),
         verticalAlignment = Alignment.CenterVertically
@@ -115,9 +113,9 @@ private fun PostItemHeader(post: Post) {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun PostItemContent(
-    post: Post,
+    post: PostResult,
     navigateToPostDetail: (Int) -> Unit,
-    navigateToEditPost: (Post) -> Unit,
+    navigateToEditPost: (PostResult) -> Unit,
     onClickPostLoves: () -> Unit,
     showDeletePostPopup: () -> Unit,
     showReportPostPopup: () -> Unit,
@@ -208,10 +206,9 @@ private fun PostItemContent(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostPhotos(
-    post: Post,
+    post: PostResult,
     pagerState: PagerState
 ) {
     Box(
@@ -268,8 +265,7 @@ private fun String.formattedDate(): String {
 @Composable
 fun PostItemPreview() {
     PostItem(
-        userNickname = "test",
-        post = Post(
+        post = PostResult(
             postId = 0,
             writer = "test",
             profileImg = "",
@@ -277,7 +273,8 @@ fun PostItemPreview() {
             content = "test",
             imgs = listOf(""),
             countLove = 0,
-            loved = false
+            loved = false,
+            written = true
         ),
         navigateToPostDetail = {},
         navigateToEditPost = {},

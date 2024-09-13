@@ -3,14 +3,6 @@ package io.familymoments.app.core.network.dto.response
 import androidx.compose.runtime.Immutable
 
 @Immutable
-data class AddPostResponse(
-    val isSuccess: Boolean = false,
-    val code: Int = 0,
-    val message: String = "",
-    val result: PostResult = PostResult()
-)
-
-@Immutable
 data class PostResult(
     val postId: Long = 0,
     val writer: String = "",
@@ -19,5 +11,6 @@ data class PostResult(
     val imgs: List<String> = emptyList(),
     val createdAt: String = "",
     val countLove: Int = 0,
-    val loved: Boolean = false
+    val loved: Boolean = false,
+    val written:Boolean = false
 )
