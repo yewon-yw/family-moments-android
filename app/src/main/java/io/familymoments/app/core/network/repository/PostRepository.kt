@@ -1,5 +1,6 @@
 package io.familymoments.app.core.network.repository
 
+import android.net.Uri
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.dto.response.AddPostResponse
 import io.familymoments.app.core.network.dto.response.ApiResponse
@@ -65,6 +66,7 @@ interface PostRepository {
     suspend fun editPost(
         index: Long,
         content: String,
+        uris:List<Uri>,
         multipartImgs: List<MultipartBody.Part>?
     ):Flow<Resource<AddPostResponse>>
     suspend fun reportPost(postId:Long, reason:String, details:String):Flow<Resource<ApiResponse<String>>>

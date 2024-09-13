@@ -33,10 +33,13 @@ class AddPostViewModel @Inject constructor(
     private val userInfoPreferencesDataSource: UserInfoPreferencesDataSource
 ) : BaseViewModel() {
 
-    private val resizedImages: MutableList<File> = mutableStateListOf()
+    private val resizedImageFiles: MutableList<File> = mutableStateListOf()
     private val mode: Int = savedStateHandle[Route.EditPost.modeArg] ?: AddPostMode.ADD.mode
     private val editPostId: Long = savedStateHandle[Route.EditPost.editPostIdArg] ?: 0
     private val editImages: Array<String> = savedStateHandle[Route.EditPost.editImagesArg] ?: arrayOf()
+
+    // 기존 이미지 uri 변경 사항 저장
+    private val existImagesUri: MutableList<Uri> = mutableListOf()
     private val editContent: String = savedStateHandle[Route.EditPost.editContentArg] ?: ""
 
     private val _uiState = MutableStateFlow(AddPostUiState())
@@ -46,8 +49,8 @@ class AddPostViewModel @Inject constructor(
 
     init {
         initUiState()
-        // 이미 업로드된 이미지 파일로 변환 (수정 화면 시)
-        getFileList()
+        // 기존 이미지 url 초기화
+        getUriList()
     }
 
     private fun initUiState() {
@@ -66,14 +69,11 @@ class AddPostViewModel @Inject constructor(
         }
     }
 
-    private fun getFileList() {
-        viewModelScope.launch(Dispatchers.IO) {
-            getEditImagesUrlList(editImages).forEachIndexed { i, it ->
-                val uri = Uri.parse(it)
-                val file = FileUtil.uriToFile(uri, i)
-                uriState.add(uri)
-                resizedImages.add(file)
-            }
+    private fun getUriList() {
+        _uiState.value.existPostUiState.editImages.forEach {
+            val uri = Uri.parse(it)
+            uriState.add(uri)
+            existImagesUri.add(uri)
         }
     }
 
@@ -84,20 +84,20 @@ class AddPostViewModel @Inject constructor(
 
     suspend fun addPost(content: String) {
         showLoading()
-        while (uriState.size != resizedImages.size) {
+        while (uriState.size != resizedImageFiles.size) {
             Timber.tag("Image").i("Image resizing...")
             delay(100)
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            for (file in resizedImages) {
+            for (file in resizedImageFiles) {
                 // 이미지 크기 Log 출력
                 val size = file.length() / 1024
                 Timber.tag("Image").i("Image Size: $size KB")
             }
         }
 
-        val imagesMultipart = resizedImages.map { file ->
+        val imagesMultipart = resizedImageFiles.map { file ->
             Timber.tag("Image").i("Image File: ${file.path}")
             createImageMultiPart(file, "imgs")
         }
@@ -124,15 +124,14 @@ class AddPostViewModel @Inject constructor(
         showLoading()
         async(
             operation = {
-                while (uriState.size != resizedImages.size) {
+                while (uriState.size - existImagesUri.size != resizedImageFiles.size) {
                     Timber.tag("Image").i("Image resizing...")
                     delay(200)
                 }
-
-                val imagesMultipart = resizedImages.map { file ->
+                val imagesMultipart = resizedImageFiles.map { file ->
                     createImageMultiPart(file, "imgs")
                 }
-                postRepository.editPost(index, content, imagesMultipart)
+                postRepository.editPost(index, content, existImagesUri, imagesMultipart)
             },
             onSuccess = {
                 _uiState.value = _uiState.value.copy(
@@ -158,7 +157,7 @@ class AddPostViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.IO) {
                 uris.forEachIndexed { index, it ->
                     val file: File = FileUtil.imageFileResize(context, it, index)
-                    resizedImages.add(file)
+                    resizedImageFiles.add(file)
                 }
             }
 
@@ -179,7 +178,7 @@ class AddPostViewModel @Inject constructor(
             viewModelScope.launch(Dispatchers.IO) {
                 uris.subList(0, availableCount).forEachIndexed { index, it ->
                     val file = FileUtil.imageFileResize(context, it, uriState.size + index)
-                    resizedImages.add(file)
+                    resizedImageFiles.add(file)
                 }
             }
         }
@@ -193,6 +192,10 @@ class AddPostViewModel @Inject constructor(
 
     fun removeImage(index: Int) {
         uriState.removeAt(index)
-        resizedImages.removeAt(index)
+        if (index < existImagesUri.size) {
+            existImagesUri.removeAt(index)
+        } else {
+            resizedImageFiles.removeAt(index - existImagesUri.size)
+        }
     }
 }

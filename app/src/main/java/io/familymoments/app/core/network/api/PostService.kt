@@ -1,6 +1,7 @@
 package io.familymoments.app.core.network.api
 
 import io.familymoments.app.core.network.dto.request.AddPostRequest
+import io.familymoments.app.core.network.dto.request.EditPostRequest
 import io.familymoments.app.core.network.dto.request.PostLovesRequest
 import io.familymoments.app.core.network.dto.request.ReportRequest
 import io.familymoments.app.core.network.dto.response.AddPostResponse
@@ -99,8 +100,8 @@ interface PostService {
     @POST("/posts/{index}/edit")
     suspend fun editPost(
         @Path("index") index:Long,
-        @Part("postInfo") postInfo: AddPostRequest,
-        @Part images: List<MultipartBody.Part>?
+        @Part("postInfo") postInfo: EditPostRequest,
+        @Part imgs: List<MultipartBody.Part>?
     ):Response<AddPostResponse>
 
     @POST("/posts/report/{postId}")

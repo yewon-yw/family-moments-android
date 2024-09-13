@@ -1,8 +1,10 @@
 package io.familymoments.app.core.network.repository.impl
 
+import android.net.Uri
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.PostService
 import io.familymoments.app.core.network.dto.request.AddPostRequest
+import io.familymoments.app.core.network.dto.request.EditPostRequest
 import io.familymoments.app.core.network.dto.request.ReportRequest
 import io.familymoments.app.core.network.dto.response.AddPostResponse
 import io.familymoments.app.core.network.dto.response.ApiResponse
@@ -300,11 +302,12 @@ class PostRepositoryImpl @Inject constructor(
     override suspend fun editPost(
         index: Long,
         content: String,
+        uris:List<Uri>,
         multipartImgs: List<MultipartBody.Part>?
         ): Flow<Resource<AddPostResponse>> {
         return flow {
             emit(Resource.Loading)
-            val response = postService.editPost(index, AddPostRequest(content), multipartImgs)
+            val response = postService.editPost(index, EditPostRequest(content, uris.map { it.toString() }), multipartImgs)
             val responseBody = response.body() ?: AddPostResponse()
 
             if (responseBody.isSuccess) {
