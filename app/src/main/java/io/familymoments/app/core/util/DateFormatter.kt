@@ -1,12 +1,8 @@
 package io.familymoments.app.core.util
 
-import io.familymoments.app.core.network.dto.response.Post
-import java.text.SimpleDateFormat
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
-import java.util.Date
-import java.util.Locale
 
 object DateFormatter {
     private fun utcToLocalDateTime(dateTime: String?): ZonedDateTime {
@@ -34,21 +30,5 @@ object DateFormatter {
         val localDateTime = utcToLocalDateTime(dateTime)
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd")
         return localDateTime.format(formatter)
-    }
-
-    // 게시글 날짜 출력 형식 지정
-    fun String.formattedDate(): String {
-        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.KOREA)
-        val date = inputFormat.parse(this)
-
-        val outputFormat = SimpleDateFormat("yyyy.MM.dd(EEE)", Locale.KOREA)
-        return outputFormat.format(date ?: Date())
-    }
-
-    // 게시글 날짜를 사용자의 로컬 시간대로 변환
-    fun List<Post>.convertCreatedAtToLocalDate(): List<Post> {
-        return this.map { post ->
-            post.copy(createdAt = dateTimeToLocalDate(post.createdAt))
-        }
     }
 }

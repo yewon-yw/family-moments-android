@@ -40,7 +40,7 @@ import io.familymoments.app.R
 import io.familymoments.app.core.network.dto.response.Post
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.core.util.DateFormatter.formattedDate
+import io.familymoments.app.core.util.formattedPostDate
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.feature.home.component.postItemContentShadow
 
@@ -101,7 +101,7 @@ private fun PostItemHeader(post: Post) {
             color = AppColors.black2
         )
         Text(
-            text = post.createdAt.formattedDate(),
+            text = post.createdAt.formattedPostDate(),
             style = AppTypography.LB2_11,
             color = AppColors.grey3
         )

@@ -64,7 +64,7 @@ import io.familymoments.app.core.network.dto.response.GetCommentsResult
 import io.familymoments.app.core.network.dto.response.GetPostDetailResult
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
-import io.familymoments.app.core.util.DateFormatter.formattedDate
+import io.familymoments.app.core.util.formattedPostDate
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.postdetail.component.postDetailContentShadow
@@ -185,7 +185,7 @@ fun PostDetailScreenUI(
                     WriterInfo(
                         writer = uiState.postDetail.writer,
                         profileImg = uiState.postDetail.profileImg,
-                        createdAt = uiState.postDetail.createdAt.formattedDate(),
+                        createdAt = uiState.postDetail.createdAt.formattedPostDate(),
                     )
                 }
                 Box(modifier = Modifier.postDetailContentShadow()) {

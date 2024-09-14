@@ -7,7 +7,7 @@ import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.graph.Route
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.repository.PostRepository
-import io.familymoments.app.core.util.DateFormatter.convertCreatedAtToLocalDate
+import io.familymoments.app.core.util.convertCreatedAtToLocalDate
 import io.familymoments.app.feature.calendar.uistate.CalendarDayUiState
 import io.familymoments.app.feature.home.uistate.PostPopupType
 import kotlinx.coroutines.flow.MutableStateFlow
