@@ -18,9 +18,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -46,10 +43,11 @@ class PostDetailViewModel @Inject constructor(
         async(
             operation = { postRepository.getPostDetail(index) },
             onSuccess = { response ->
+                val localDateTime = DateFormatter.dateTimeToLocalDate(response.result.createdAt)
                 _uiState.update {
                     it.copy(
                         isSuccess = true,
-                        postDetail = response.result
+                        postDetail = response.result.copy(createdAt = localDateTime)
                     )
                 }
             },
@@ -353,23 +351,6 @@ class PostDetailViewModel @Inject constructor(
         _uiState.update {
             it.copy(resetComment = false)
         }
-    }
-
-    @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
-    fun formatPostCreatedDate(createdAt: String): String {
-        val date = LocalDate.parse(createdAt, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        val formattedString = date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))
-        return "$formattedString (${
-            when (date.dayOfWeek) {
-                DayOfWeek.MONDAY -> "월"
-                DayOfWeek.TUESDAY -> "화"
-                DayOfWeek.WEDNESDAY -> "수"
-                DayOfWeek.THURSDAY -> "목"
-                DayOfWeek.FRIDAY -> "금"
-                DayOfWeek.SATURDAY -> "토"
-                DayOfWeek.SUNDAY -> "일"
-            }
-        })"
     }
 
     fun formatCommentCreatedDate(createdAt: String): String {
