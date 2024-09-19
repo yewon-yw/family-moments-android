@@ -129,7 +129,7 @@ class AddPostViewModel @Inject constructor(
                     delay(200)
                 }
                 val imagesMultipart = resizedImageFiles.map { file ->
-                    createImageMultiPart(file, "imgs")
+                    createImageMultiPart(file, "newImgs")
                 }
                 postRepository.editPost(index, content, existImagesUri, imagesMultipart)
             },

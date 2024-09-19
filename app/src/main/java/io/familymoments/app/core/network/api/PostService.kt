@@ -95,7 +95,7 @@ interface PostService {
     suspend fun editPost(
         @Path("index") index:Long,
         @Part("postInfo") postInfo: EditPostRequest,
-        @Part imgs: List<MultipartBody.Part>?
+        @Part newImgs: List<MultipartBody.Part>?
     ):Response<ApiResponse<PostResult>>
 
     @POST("/posts/report/{postId}")
