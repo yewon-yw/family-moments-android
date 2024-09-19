@@ -1,20 +1,18 @@
 package io.familymoments.app.core.network.repository.impl
 
+import android.net.Uri
+import io.familymoments.app.core.network.HttpResponse
 import io.familymoments.app.core.network.Resource
 import io.familymoments.app.core.network.api.PostService
 import io.familymoments.app.core.network.dto.request.AddPostRequest
+import io.familymoments.app.core.network.dto.request.EditPostRequest
+import io.familymoments.app.core.network.dto.request.PostLovesRequest
 import io.familymoments.app.core.network.dto.request.ReportRequest
-import io.familymoments.app.core.network.dto.response.AddPostResponse
+import io.familymoments.app.core.network.dto.response.AlbumResult
 import io.familymoments.app.core.network.dto.response.ApiResponse
-import io.familymoments.app.core.network.dto.response.DeletePostLovesResponse
 import io.familymoments.app.core.network.dto.response.DeletePostResponse
-import io.familymoments.app.core.network.dto.response.GetAlbumDetailResponse
-import io.familymoments.app.core.network.dto.response.GetAlbumResponse
-import io.familymoments.app.core.network.dto.response.GetPostDetailResponse
-import io.familymoments.app.core.network.dto.response.GetPostLovesResponse
-import io.familymoments.app.core.network.dto.response.GetPostsByMonthResponse
-import io.familymoments.app.core.network.dto.response.GetPostsResponse
-import io.familymoments.app.core.network.dto.response.PostPostLovesResponse
+import io.familymoments.app.core.network.dto.response.GetPostLovesResult
+import io.familymoments.app.core.network.dto.response.PostResult
 import io.familymoments.app.core.network.dto.response.getResourceFlow
 import io.familymoments.app.core.network.repository.PostRepository
 import kotlinx.coroutines.flow.Flow
@@ -26,120 +24,70 @@ import javax.inject.Inject
 class PostRepositoryImpl @Inject constructor(
     private val postService: PostService
 ) : PostRepository {
-    override suspend fun getPosts(familyId: Long): Flow<Resource<GetPostsResponse>> {
-        return flow {
-            emit(Resource.Loading)
-            val response = postService.getPosts(familyId)
-            val responseBody = response.body()
-
-            if (responseBody?.isSuccess == true) {
-                emit(Resource.Success(responseBody))
-            } else {
-                emit(Resource.Fail(Throwable(responseBody?.message)))
-            }
-        }.catch { e ->
-            emit(Resource.Fail(e))
-        }
+    override suspend fun getPosts(familyId: Long): Flow<Resource<ApiResponse<List<PostResult>>>> {
+        val response = postService.getPosts(familyId)
+        return getResourceFlow(response)
     }
 
     override suspend fun loadMorePosts(
         familyId: Long,
         postId: Long
-    ): Flow<Resource<GetPostsResponse>> {
+    ): Flow<Resource<ApiResponse<List<PostResult>>>> {
+        val response = postService.loadMorePosts(familyId, postId)
+        val responseBody = response.body()
         return flow {
-            emit(Resource.Loading)
-            val response = postService.loadMorePosts(familyId, postId)
-            val responseBody = response.body() ?: GetPostsResponse()
-
-            if (responseBody.isSuccess) {
-                emit(Resource.Success(responseBody))
-            } else {
-                // 새로운 Post가 없으면 404 : post가 존재하지 않습니다 에러 발생
-                // 새로운 Post가 없으면 더 이상 로드하지 않으면 되니까, 굳이 flow를 emit하여 UiState를 업데이트할 필요가 없음
-                if (responseBody.code != 404) {
-                    emit(Resource.Fail(Throwable(responseBody.message)))
+            if (response.code() == HttpResponse.SUCCESS) {
+                if (responseBody != null && responseBody.isSuccess) {
+                    emit(Resource.Success(responseBody))
+                } else if (responseBody?.code != 404) {
+                    // 새로운 Post가 없으면 404 : post가 존재하지 않습니다 에러 발생
+                    // 새로운 Post가 없으면 더 이상 로드하지 않으면 되니까, 굳이 flow를 emit하여 UiState를 업데이트할 필요가 없음
+                    emit(Resource.Fail(Throwable(responseBody?.message)))
                 }
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
             }
-        }.catch { e ->
-            emit(Resource.Fail(e))
         }
     }
 
-    override suspend fun getAlbum(familyId: Long): Flow<Resource<GetAlbumResponse>> {
-        return flow {
-            emit(Resource.Loading)
-            val response = postService.getAlbum(familyId)
-            val responseBody = response.body() ?: GetAlbumResponse()
-
-            if (responseBody.isSuccess) {
-                emit(Resource.Success(responseBody))
-            } else {
-                emit(Resource.Fail(Throwable(responseBody.message)))
-            }
-        }.catch { e ->
-            emit(Resource.Fail(e))
-        }
+    override suspend fun getAlbum(familyId: Long): Flow<Resource<ApiResponse<List<AlbumResult>>>> {
+        val response = postService.getAlbum(familyId)
+        return getResourceFlow(response)
     }
 
     override suspend fun loadMoreAlbum(
         familyId: Long,
         postId: Long
-    ): Flow<Resource<GetAlbumResponse>> {
+    ): Flow<Resource<ApiResponse<List<AlbumResult>>>> {
+        val response = postService.loadMoreAlbum(familyId, postId)
+        val responseBody = response.body()
         return flow {
-            emit(Resource.Loading)
-            val response = postService.loadMoreAlbum(familyId, postId)
-            val responseBody = response.body() ?: GetAlbumResponse()
-
-            if (responseBody.isSuccess) {
-                emit(Resource.Success(responseBody))
-            } else {
-                // 새로운 Post가 없으면 404 : post가 존재하지 않습니다 에러 발생
-                // 새로운 Post가 없으면 더 이상 로드하지 않으면 되니까, 굳이 flow를 emit하여 UiState를 업데이트할 필요가 없음
-                if (responseBody.code != 404) {
-                    emit(Resource.Fail(Throwable(responseBody.message)))
+            if (response.code() == HttpResponse.SUCCESS) {
+                if (responseBody != null && responseBody.isSuccess) {
+                    emit(Resource.Success(responseBody))
+                } else if (responseBody?.code != 404) {
+                    // 새로운 Post가 없으면 404 : post가 존재하지 않습니다 에러 발생
+                    // 새로운 Post가 없으면 더 이상 로드하지 않으면 되니까, 굳이 flow를 emit하여 UiState를 업데이트할 필요가 없음
+                    emit(Resource.Fail(Throwable(responseBody?.message)))
                 }
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
             }
-        }.catch { e ->
-            emit(Resource.Fail(e))
         }
     }
 
-    override suspend fun getAlbumDetail(postId: Long): Flow<Resource<GetAlbumDetailResponse>> {
-        return flow {
-            emit(Resource.Loading)
-            val response = postService.getAlbumDetail(postId)
-            val responseBody =
-                response.body() ?: GetAlbumDetailResponse()
-
-            if (responseBody.isSuccess) {
-                emit(Resource.Success(responseBody))
-            } else {
-                emit(Resource.Fail(Throwable(responseBody.message)))
-            }
-        }.catch { e ->
-            emit(Resource.Fail(e))
-        }
+    override suspend fun getAlbumDetail(postId: Long): Flow<Resource<ApiResponse<List<String>>>> {
+        val response = postService.getAlbumDetail(postId)
+        return getResourceFlow(response)
     }
 
     override suspend fun getPostsByMonth(
         familyId: Long,
         year: Int,
         month: Int
-    ): Flow<Resource<GetPostsByMonthResponse>> {
-        return flow {
-            emit(Resource.Loading)
-            val response = postService.getPostsByMonth(familyId, year, month)
-            val responseBody =
-                response.body() ?: GetPostsByMonthResponse()
-
-            if (responseBody.isSuccess) {
-                emit(Resource.Success(responseBody))
-            } else {
-                emit(Resource.Fail(Throwable(responseBody.message)))
-            }
-        }.catch { e ->
-            emit(Resource.Fail(e))
-        }
+    ): Flow<Resource<ApiResponse<List<String>>>> {
+        val response = postService.getPostsByMonth(familyId, year, month)
+        return getResourceFlow(response)
     }
 
     override suspend fun getPostsByDay(
@@ -147,20 +95,9 @@ class PostRepositoryImpl @Inject constructor(
         year: Int,
         month: Int,
         day: Int
-    ): Flow<Resource<GetPostsResponse>> {
-        return flow {
-            emit(Resource.Loading)
-            val response = postService.getPostsByDay(familyId, year, month, day)
-            val responseBody = response.body() ?: GetPostsResponse()
-
-            if (responseBody.isSuccess) {
-                emit(Resource.Success(responseBody))
-            } else {
-                emit(Resource.Fail(Throwable(responseBody.message)))
-            }
-        }.catch { e ->
-            emit(Resource.Fail(e))
-        }
+    ): Flow<Resource<ApiResponse<List<PostResult>>>> {
+        val response = postService.getPostsByDay(familyId, year, month, day)
+        return getResourceFlow(response)
     }
 
     override suspend fun loadMorePostsByDay(
@@ -169,23 +106,21 @@ class PostRepositoryImpl @Inject constructor(
         month: Int,
         day: Int,
         postId: Long
-    ): Flow<Resource<GetPostsResponse>> {
+    ): Flow<Resource<ApiResponse<List<PostResult>>>> {
+        val response = postService.loadMorePostsByDay(familyId, year, month, day, postId)
+        val responseBody = response.body()
         return flow {
-            emit(Resource.Loading)
-            val response = postService.loadMorePostsByDay(familyId, year, month, day, postId)
-            val responseBody = response.body() ?: GetPostsResponse()
-
-            if (responseBody.isSuccess) {
-                emit(Resource.Success(responseBody))
-            } else {
-                // 새로운 Post가 없으면 404 : post가 존재하지 않습니다 에러 발생
-                // 새로운 Post가 없으면 더 이상 로드하지 않으면 되니까, 굳이 flow를 emit하여 UiState를 업데이트할 필요가 없음
-                if (responseBody.code != 404) {
-                    emit(Resource.Fail(Throwable(responseBody.message)))
+            if (response.code() == HttpResponse.SUCCESS) {
+                if (responseBody != null && responseBody.isSuccess) {
+                    emit(Resource.Success(responseBody))
+                } else if (responseBody?.code != 404) {
+                    // 새로운 Post가 없으면 404 : post가 존재하지 않습니다 에러 발생
+                    // 새로운 Post가 없으면 더 이상 로드하지 않으면 되니까, 굳이 flow를 emit하여 UiState를 업데이트할 필요가 없음
+                    emit(Resource.Fail(Throwable(responseBody?.message)))
                 }
+            } else {
+                emit(Resource.Fail(Throwable(response.message())))
             }
-        }.catch { e ->
-            emit(Resource.Fail(e))
         }
     }
 
@@ -193,92 +128,29 @@ class PostRepositoryImpl @Inject constructor(
         familyId: Long,
         content: String,
         multipartImgs: List<MultipartBody.Part>?
-    ): Flow<Resource<AddPostResponse>> {
-        return flow {
-            emit(Resource.Loading)
-            val response = postService.addPost(familyId, AddPostRequest(content), multipartImgs)
-            val responseBody = response.body() ?: AddPostResponse()
-
-            if (responseBody.isSuccess) {
-                emit(Resource.Success(responseBody))
-            } else {
-                emit(Resource.Fail(Throwable(responseBody.message)))
-            }
-        }.catch { e ->
-            emit(Resource.Fail(e))
-        }
+    ): Flow<Resource<ApiResponse<PostResult>>> {
+        val response = postService.addPost(familyId, AddPostRequest(content), multipartImgs)
+        return getResourceFlow(response)
     }
 
-    override suspend fun getPostDetail(index: Long): Flow<Resource<GetPostDetailResponse>> {
-        return flow {
-            emit(Resource.Loading)
-            val response = postService.getPostDetail(index)
-            val responseBody = response.body() ?: GetPostDetailResponse()
-
-            if (responseBody.isSuccess) {
-                emit(Resource.Success(responseBody))
-            } else {
-                emit(Resource.Fail(Throwable(responseBody.message)))
-            }
-        }.catch { e ->
-            emit(Resource.Fail(e))
-        }
+    override suspend fun getPostDetail(index: Long): Flow<Resource<ApiResponse<PostResult>>> {
+        val response = postService.getPostDetail(index)
+        return getResourceFlow(response)
     }
 
-    override suspend fun getPostLoves(index: Long): Flow<Resource<GetPostLovesResponse>> {
-        return flow {
-            emit(Resource.Loading)
-            val response = postService.getPostLoves(index)
-            val responseBody = response.body() ?: GetPostLovesResponse()
-            if (responseBody.isSuccess) {
-                emit(Resource.Success(responseBody))
-            } else {
-                emit(Resource.Fail(Throwable(responseBody.message)))
-            }
-        }.catch { e ->
-            emit(Resource.Fail(e))
-        }
+    override suspend fun getPostLoves(index: Long): Flow<Resource<ApiResponse<List<GetPostLovesResult>>>> {
+        val response = postService.getPostLoves(index)
+        return getResourceFlow(response)
     }
 
-    override suspend fun postPostLoves(postId: Long): Flow<Resource<PostPostLovesResponse>> {
-        return flow {
-            emit(Resource.Loading)
-            val response = postService.postPostloves(
-                io.familymoments.app.core.network.dto.request.PostLovesRequest(
-                    postId
-                )
-            )
-            val responseBody = response.body() ?: PostPostLovesResponse()
-
-            if (responseBody.isSuccess) {
-                emit(Resource.Success(responseBody))
-            } else {
-                emit(Resource.Fail(Throwable(responseBody.message)))
-            }
-        }.catch { e ->
-            emit(Resource.Fail(e))
-        }
+    override suspend fun postPostLoves(postId: Long): Flow<Resource<ApiResponse<String>>> {
+        val response = postService.postPostloves(PostLovesRequest(postId))
+        return getResourceFlow(response)
     }
 
-    override suspend fun deletePostLoves(postId: Long): Flow<Resource<DeletePostLovesResponse>> {
-        return flow {
-            emit(Resource.Loading)
-            val response = postService.deletePostloves(
-                io.familymoments.app.core.network.dto.request.PostLovesRequest(
-                    postId
-                )
-            )
-            val responseBody =
-                response.body() ?: DeletePostLovesResponse()
-
-            if (responseBody.isSuccess) {
-                emit(Resource.Success(responseBody))
-            } else {
-                emit(Resource.Fail(Throwable(responseBody.message)))
-            }
-        }.catch { e ->
-            emit(Resource.Fail(e))
-        }
+    override suspend fun deletePostLoves(postId: Long): Flow<Resource<ApiResponse<String>>> {
+        val response = postService.deletePostloves(PostLovesRequest(postId))
+        return getResourceFlow(response)
     }
 
     override suspend fun deletePost(index: Long): Flow<Resource<DeletePostResponse>> {
@@ -300,24 +172,18 @@ class PostRepositoryImpl @Inject constructor(
     override suspend fun editPost(
         index: Long,
         content: String,
+        uris: List<Uri>,
         multipartImgs: List<MultipartBody.Part>?
-        ): Flow<Resource<AddPostResponse>> {
-        return flow {
-            emit(Resource.Loading)
-            val response = postService.editPost(index, AddPostRequest(content), multipartImgs)
-            val responseBody = response.body() ?: AddPostResponse()
-
-            if (responseBody.isSuccess) {
-                emit(Resource.Success(responseBody))
-            } else {
-                emit(Resource.Fail(Throwable(responseBody.message)))
-            }
-        }.catch { e ->
-            emit(Resource.Fail(e))
-        }
+    ): Flow<Resource<ApiResponse<PostResult>>> {
+        val response = postService.editPost(index, EditPostRequest(content, uris.map { it.toString() }), multipartImgs)
+        return getResourceFlow(response)
     }
 
-    override suspend fun reportPost(postId: Long, reason: String, details: String): Flow<Resource<ApiResponse<String>>> {
+    override suspend fun reportPost(
+        postId: Long,
+        reason: String,
+        details: String
+    ): Flow<Resource<ApiResponse<String>>> {
         val response = postService.reportPost(postId, ReportRequest(reason, details))
         return getResourceFlow(response)
     }

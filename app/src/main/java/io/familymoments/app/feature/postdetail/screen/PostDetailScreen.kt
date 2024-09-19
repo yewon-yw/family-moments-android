@@ -61,7 +61,7 @@ import io.familymoments.app.core.component.popup.LoveListPopUp
 import io.familymoments.app.core.component.popup.ReportPopUp
 import io.familymoments.app.core.component.popup.WarningPopup
 import io.familymoments.app.core.network.dto.response.GetCommentsResult
-import io.familymoments.app.core.network.dto.response.GetPostDetailResult
+import io.familymoments.app.core.network.dto.response.PostResult
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.core.util.formattedPostDate
@@ -77,7 +77,7 @@ fun PostDetailScreen(
     viewModel: PostDetailViewModel,
     index: Long,
     navigateToBack: () -> Unit,
-    navigateToModify: (GetPostDetailResult) -> Unit,
+    navigateToModify: (PostResult) -> Unit,
 ) {
     LaunchedEffect(Unit) {
         viewModel.getNickname()
@@ -157,7 +157,7 @@ fun PostDetailScreenUI(
     isPostDetailExist: Boolean = true,
     showDeletePostPopup: (Long) -> Unit = {},
     showReportPostPopup: (Long) -> Unit = {},
-    navigateToPostModify: (GetPostDetailResult) -> Unit = {},
+    navigateToPostModify: (PostResult) -> Unit = {},
     postComment: (Long, String) -> Unit = { _, _ -> },
     showLoveListPopup: () -> Unit = {},
     makeCommentAvailable: () -> Unit = {},
@@ -196,7 +196,7 @@ fun PostDetailScreenUI(
                     ) {
                         PostPhotos(uiState.postDetail.imgs, pagerState)
                         PostContent(
-                            uiState.userNickname,
+                            uiState.postDetail.written,
                             uiState.postDetail,
                             showDeletePostPopup,
                             showReportPostPopup,
@@ -446,8 +446,8 @@ fun PostPhotos(imgs: List<String>, pagerState: PagerState) {
 
 @Composable
 fun PostContent(
-    userNickname: String,
-    postInfo: GetPostDetailResult,
+    isUserPost:Boolean,
+    postInfo: PostResult,
     showDeletePostPopup: (Long) -> Unit,
     showReportPostPopup: (Long) -> Unit,
     onClickPostLoves: (Long) -> Unit,
@@ -487,7 +487,7 @@ fun PostContent(
                     )
                     PostDropdownMenu(
                         items =
-                        if (userNickname == postInfo.writer) listOf(
+                        if (isUserPost) listOf(
                             Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify)) {
                                 navigateToModify()
                             },
@@ -768,7 +768,7 @@ fun PostDetailScreenUIPreview() {
     val pagerState = rememberPagerState(pageCount = { 0 })
     PostDetailScreenUI(
         uiState = PostDetailUiState(
-            postDetail = GetPostDetailResult(
+            postDetail = PostResult(
                 writer = "nickname",
                 content = "content"
             ),

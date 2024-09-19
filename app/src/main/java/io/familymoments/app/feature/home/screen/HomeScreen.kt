@@ -41,7 +41,7 @@ import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.component.popup.DeletePopUp
 import io.familymoments.app.core.component.popup.ReportPopUp
 import io.familymoments.app.core.component.popup.WarningPopup
-import io.familymoments.app.core.network.dto.response.Post
+import io.familymoments.app.core.network.dto.response.PostResult
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.home.uistate.HomeUiState
@@ -54,7 +54,7 @@ fun HomeScreen(
     modifier: Modifier,
     viewModel: HomeViewModel,
     navigateToPostDetail: (Int) -> Unit,
-    navigateToPostEdit: (Post) -> Unit
+    navigateToPostEdit: (PostResult) -> Unit
 ) {
     val homeUiState = viewModel.homeUiState.collectAsStateWithLifecycle().value
     val posts = homeUiState.posts
@@ -176,7 +176,7 @@ fun HomeScreenUI(
     modifier: Modifier = Modifier,
     homeUiState: HomeUiState,
     navigateToPostDetail: (Int) -> Unit = {},
-    navigateToPostEdit: (Post) -> Unit = {},
+    navigateToPostEdit: (PostResult) -> Unit = {},
     deletePostLoves: (Long) -> Unit = {},
     postPostLoves: (Long) -> Unit = {},
     showDeletePostPopup: (Long) -> Unit = {},
@@ -232,7 +232,6 @@ fun HomeScreenUI(
                     key = { it.postId }
                 ) { post ->
                     PostItem(
-                        userNickname = homeUiState.userNickname,
                         post = post,
                         navigateToPostDetail = navigateToPostDetail,
                         navigateToEditPost = navigateToPostEdit,
@@ -312,7 +311,7 @@ fun HomeScreenPreview() {
         userNickname = "test",
         dday = "1",
         posts = List(10) {
-            Post(
+            PostResult(
                 postId = it.toLong(),
                 writer = "test$it",
                 profileImg = "",
