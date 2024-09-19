@@ -39,7 +39,7 @@ import io.familymoments.app.core.component.popup.CompletePopUp
 import io.familymoments.app.core.component.popup.DeletePopUp
 import io.familymoments.app.core.component.popup.ReportPopUp
 import io.familymoments.app.core.component.popup.WarningPopup
-import io.familymoments.app.core.network.dto.response.Post
+import io.familymoments.app.core.network.dto.response.PostResult
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
 import io.familymoments.app.feature.calendar.viewmodel.CalendarDayViewModel
@@ -51,7 +51,7 @@ fun CalendarDayScreen(
     modifier: Modifier,
     viewModel: CalendarDayViewModel,
     navigateToPostDetail: (Int) -> Unit,
-    navigateToPostEdit: (Post) -> Unit
+    navigateToPostEdit: (PostResult) -> Unit
 ) {
     val calendarDayUiState = viewModel.calendarDayUiState.collectAsStateWithLifecycle().value
     val initialDate = calendarDayUiState.selectedDate
@@ -73,7 +73,6 @@ fun CalendarDayScreen(
     CalendarDayUI(
         lazyListState = lazyListState,
         modifier = modifier,
-        userNickname = calendarDayUiState.userNickname,
         hasNoPost = hasNoPost,
         posts = posts,
         initialDate = initialDate,
@@ -168,14 +167,13 @@ private fun LaunchedEffectShowPopup(
 private fun CalendarDayUI(
     lazyListState: LazyListState,
     modifier: Modifier = Modifier,
-    userNickname: String,
     hasNoPost: Boolean,
-    posts: List<Post>,
+    posts: List<PostResult>,
     initialDate: LocalDate,
     getPostsByPrevDay: () -> Unit = {},
     getPostsByNextDay: () -> Unit = {},
     navigateToPostDetail: (Int) -> Unit = {},
-    navigateToPostEdit: (Post) -> Unit = {},
+    navigateToPostEdit: (PostResult) -> Unit = {},
     deletePostLoves: (Long) -> Unit = {},
     postPostLoves: (Long) -> Unit = {},
     showDeletePostPopup: (Long) -> Unit = {},
@@ -218,7 +216,6 @@ private fun CalendarDayUI(
                 )
                 { post ->
                     PostItem(
-                        userNickname = userNickname,
                         post = post,
                         navigateToPostDetail = navigateToPostDetail,
                         navigateToEditPost = {
@@ -287,11 +284,10 @@ private fun CalendarHeader(
 fun CalendarDayScreenPreview() {
     val lazyListState = rememberLazyListState()
     CalendarDayUI(
-        userNickname = "test0",
         lazyListState = lazyListState,
         hasNoPost = false,
         posts = List(10) {
-            Post(
+            PostResult(
                 postId = it.toLong(),
                 writer = "test$it",
                 profileImg = "",

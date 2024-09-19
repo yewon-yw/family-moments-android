@@ -33,9 +33,12 @@ import io.familymoments.app.core.util.noRippleClickable
 @Composable
 fun DeletePopUp(
     content: String,
+    deleteBtnLabel: String = "",
     delete: () -> Unit = {},
     onDismissRequest: () -> Unit = {},
 ) {
+    val deleteBtnText =
+        deleteBtnLabel.ifEmpty { stringResource(R.string.post_delete_pop_up_btn_delete) }
     Dialog(onDismissRequest = onDismissRequest) {
         Box(
             modifier = Modifier
@@ -79,7 +82,7 @@ fun DeletePopUp(
                         contentPadding = PaddingValues(top = 17.dp, bottom = 16.dp)
                     ) {
                         Text(
-                            text = stringResource(R.string.post_delete_pop_up_btn_delete),
+                            text = deleteBtnText,
                             style = AppTypography.BTN4_18,
                             color = AppColors.grey6
                         )

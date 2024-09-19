@@ -2,7 +2,6 @@ package io.familymoments.app.feature.postdetail.screen
 
 import android.content.Context
 import android.widget.Toast
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -62,9 +61,10 @@ import io.familymoments.app.core.component.popup.LoveListPopUp
 import io.familymoments.app.core.component.popup.ReportPopUp
 import io.familymoments.app.core.component.popup.WarningPopup
 import io.familymoments.app.core.network.dto.response.GetCommentsResult
-import io.familymoments.app.core.network.dto.response.GetPostDetailResult
+import io.familymoments.app.core.network.dto.response.PostResult
 import io.familymoments.app.core.theme.AppColors
 import io.familymoments.app.core.theme.AppTypography
+import io.familymoments.app.core.util.formattedPostDate
 import io.familymoments.app.core.util.noRippleClickable
 import io.familymoments.app.core.util.scaffoldState
 import io.familymoments.app.feature.postdetail.component.postDetailContentShadow
@@ -72,13 +72,12 @@ import io.familymoments.app.feature.postdetail.uistate.PostDetailPopupType
 import io.familymoments.app.feature.postdetail.uistate.PostDetailUiState
 import io.familymoments.app.feature.postdetail.viewmodel.PostDetailViewModel
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostDetailScreen(
     viewModel: PostDetailViewModel,
     index: Long,
     navigateToBack: () -> Unit,
-    navigateToModify: (GetPostDetailResult) -> Unit,
+    navigateToModify: (PostResult) -> Unit,
 ) {
     LaunchedEffect(Unit) {
         viewModel.getNickname()
@@ -119,7 +118,6 @@ fun PostDetailScreen(
         modifier = Modifier.scaffoldState(hasShadow = true, hasBackButton = true),
         uiState = uiState,
         isPostDetailExist = viewModel.checkPostDetailExist(postDetail),
-        formatPostCreatedDate = viewModel::formatPostCreatedDate,
         showDeletePostPopup = viewModel::showDeletePostPopup,
         showReportPostPopup = viewModel::showReportPostPopup,
         navigateToPostModify = navigateToModify,
@@ -152,16 +150,14 @@ fun PostDetailScreen(
     )
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostDetailScreenUI(
     modifier: Modifier = Modifier,
     uiState: PostDetailUiState,
     isPostDetailExist: Boolean = true,
-    formatPostCreatedDate: (String) -> String,
     showDeletePostPopup: (Long) -> Unit = {},
     showReportPostPopup: (Long) -> Unit = {},
-    navigateToPostModify: (GetPostDetailResult) -> Unit = {},
+    navigateToPostModify: (PostResult) -> Unit = {},
     postComment: (Long, String) -> Unit = { _, _ -> },
     showLoveListPopup: () -> Unit = {},
     makeCommentAvailable: () -> Unit = {},
@@ -189,7 +185,7 @@ fun PostDetailScreenUI(
                     WriterInfo(
                         writer = uiState.postDetail.writer,
                         profileImg = uiState.postDetail.profileImg,
-                        createdAt = formatPostCreatedDate(uiState.postDetail.createdAt),
+                        createdAt = uiState.postDetail.createdAt.formattedPostDate(),
                     )
                 }
                 Box(modifier = Modifier.postDetailContentShadow()) {
@@ -200,7 +196,7 @@ fun PostDetailScreenUI(
                     ) {
                         PostPhotos(uiState.postDetail.imgs, pagerState)
                         PostContent(
-                            uiState.userNickname,
+                            uiState.postDetail.written,
                             uiState.postDetail,
                             showDeletePostPopup,
                             showReportPostPopup,
@@ -408,7 +404,6 @@ fun WriterInfo(
     Spacer(modifier = Modifier.height(19.dp))
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun PostPhotos(imgs: List<String>, pagerState: PagerState) {
     Box {
@@ -451,8 +446,8 @@ fun PostPhotos(imgs: List<String>, pagerState: PagerState) {
 
 @Composable
 fun PostContent(
-    userNickname: String,
-    postInfo: GetPostDetailResult,
+    isUserPost:Boolean,
+    postInfo: PostResult,
     showDeletePostPopup: (Long) -> Unit,
     showReportPostPopup: (Long) -> Unit,
     onClickPostLoves: (Long) -> Unit,
@@ -492,7 +487,7 @@ fun PostContent(
                     )
                     PostDropdownMenu(
                         items =
-                        if (userNickname == postInfo.writer) listOf(
+                        if (isUserPost) listOf(
                             Pair(stringResource(id = R.string.post_detail_screen_drop_down_menu_modify)) {
                                 navigateToModify()
                             },
@@ -767,14 +762,13 @@ fun CommentItem(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Preview(showBackground = true)
 @Composable
 fun PostDetailScreenUIPreview() {
     val pagerState = rememberPagerState(pageCount = { 0 })
     PostDetailScreenUI(
         uiState = PostDetailUiState(
-            postDetail = GetPostDetailResult(
+            postDetail = PostResult(
                 writer = "nickname",
                 content = "content"
             ),
@@ -786,7 +780,6 @@ fun PostDetailScreenUIPreview() {
                 )
             }
         ),
-        formatPostCreatedDate = { "2024-04-29" },
         formatCommentCreatedDate = { "방금" },
         pagerState = pagerState
     )

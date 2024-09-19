@@ -1,13 +1,13 @@
 package io.familymoments.app.feature.postdetail.uistate
 
 import io.familymoments.app.core.network.dto.response.GetCommentsResult
-import io.familymoments.app.core.network.dto.response.GetPostDetailResult
 import io.familymoments.app.core.network.dto.response.GetPostLovesResult
+import io.familymoments.app.core.network.dto.response.PostResult
 
 data class PostDetailUiState(
     val isSuccess: Boolean? = null,
     val errorMessage: String? = null,
-    val postDetail:GetPostDetailResult = GetPostDetailResult(),
+    val postDetail: PostResult = PostResult(),
     val comments:List<GetCommentsResult> = listOf(),
     val postLoves: List<GetPostLovesResult> = listOf(),
     val resetComment:Boolean = false,

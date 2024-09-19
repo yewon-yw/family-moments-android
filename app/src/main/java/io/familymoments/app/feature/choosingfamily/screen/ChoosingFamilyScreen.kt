@@ -30,7 +30,6 @@ import io.familymoments.app.core.util.GlobalTempValues
 import io.familymoments.app.feature.bottomnav.activity.MainActivity
 import io.familymoments.app.feature.choosingfamily.route.ChoosingFamilyRoute
 import io.familymoments.app.feature.creatingfamily.screen.CopyInvitationLinkScreen
-import io.familymoments.app.feature.creatingfamily.screen.SearchMemberScreen
 import io.familymoments.app.feature.creatingfamily.screen.SetAlarmScreen
 import io.familymoments.app.feature.creatingfamily.screen.SetProfileScreen
 import io.familymoments.app.feature.creatingfamily.viewmodel.CreatingFamilyViewModel
@@ -77,14 +76,8 @@ fun ChoosingFamilyScreen(
         NavHost(navController = navController, startDestination = getStartDestination(currentRoute)) {
             composable(ChoosingFamilyRoute.Start.route) {
                 StartScreen(
-                    { navController.navigate(ChoosingFamilyRoute.SearchMember.route) },
+                    { navController.navigate(ChoosingFamilyRoute.SetProfile.route) },
                     { navController.navigate(ChoosingFamilyRoute.Join.route) },
-                )
-            }
-            composable(ChoosingFamilyRoute.SearchMember.route) {
-                SearchMemberScreen(
-                    navigate = { navController.navigate(ChoosingFamilyRoute.SetProfile.route) },
-                    viewModel = creatingFamilyViewModel
                 )
             }
             composable(ChoosingFamilyRoute.SetProfile.route) {

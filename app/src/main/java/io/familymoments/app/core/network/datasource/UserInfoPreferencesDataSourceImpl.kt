@@ -59,8 +59,6 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
 
     override suspend fun saveUserProfile(userProfile: UserProfile) {
         with(sharedPreferences.edit()) {
-            putString(USER_NAME_KEY, userProfile.name)
-            putString(USER_BIRTH_DATE_KEY, userProfile.birthDate)
             putString(USER_PROFILE_IMG_KEY, userProfile.profileImg)
             putString(USER_NICKNAME_KEY, userProfile.nickName)
             putString(USER_EMAIL_KEY, userProfile.email)
@@ -71,14 +69,6 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
     }
 
     override suspend fun loadUserProfile(): UserProfile {
-        val userName =
-            sharedPreferences.getString(USER_NAME_KEY, DEFAULT_STRING_USER_INFO_VALUE) ?: throw IllegalStateException(
-                USER_INFO_KEY_NOT_EXIST_ERROR
-            )
-        val userBirthDate = sharedPreferences.getString(USER_BIRTH_DATE_KEY, DEFAULT_STRING_USER_INFO_VALUE)
-            ?: throw IllegalStateException(
-                USER_INFO_KEY_NOT_EXIST_ERROR
-            )
         val userProfileImg = sharedPreferences.getString(USER_PROFILE_IMG_KEY, DEFAULT_STRING_USER_INFO_VALUE)
             ?: throw IllegalStateException(
                 USER_INFO_KEY_NOT_EXIST_ERROR
@@ -97,8 +87,6 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
             USER_INFO_KEY_NOT_EXIST_ERROR
         )
         return UserProfile(
-            userName,
-            userBirthDate,
             userProfileImg,
             userNickname,
             userEmail,
@@ -122,9 +110,7 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
 
     override suspend fun updateUserProfile(profileEditResult: ProfileEditResult) {
         with(sharedPreferences.edit()) {
-            putString(USER_NAME_KEY, profileEditResult.name)
             putString(USER_NICKNAME_KEY, profileEditResult.nickname)
-            putString(USER_BIRTH_DATE_KEY, profileEditResult.birthdate)
             putString(USER_PROFILE_IMG_KEY, profileEditResult.profileImg)
             apply()
         }
@@ -169,8 +155,6 @@ class UserInfoPreferencesDataSourceImpl @Inject constructor(
         private const val REFRESH_TOKEN_KEY = "refresh_token"
         private const val SOCIAL_LOGIN_TYPE_KEY = "social_login_type"
 
-        private const val USER_NAME_KEY = "name"
-        private const val USER_BIRTH_DATE_KEY = "birthDate"
         private const val USER_PROFILE_IMG_KEY = "profileImg"
         private const val USER_NICKNAME_KEY = "nickName"
         private const val USER_EMAIL_KEY = "email"

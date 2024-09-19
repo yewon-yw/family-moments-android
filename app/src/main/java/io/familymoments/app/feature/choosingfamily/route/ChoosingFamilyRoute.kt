@@ -7,10 +7,6 @@ sealed interface ChoosingFamilyRoute {
         override val route = "Start"
     }
 
-    data object SearchMember : ChoosingFamilyRoute {
-        override val route = "SearchMember"
-    }
-
     data object SetProfile : ChoosingFamilyRoute {
         override val route = "SetProfile"
     }

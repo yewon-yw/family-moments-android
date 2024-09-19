@@ -39,6 +39,7 @@ import io.familymoments.app.feature.profile.viewmodel.ProfileViewViewModel
 
 @Composable
 fun ProfileViewScreen(
+    modifier: Modifier = Modifier,
     navigateToProfileEdit: (UserProfile) -> Unit,
     viewModel: ProfileViewViewModel
 ) {
@@ -48,7 +49,7 @@ fun ProfileViewScreen(
     }
 
     Column(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -234,7 +235,6 @@ fun ProfileViewScreenPreview() {
         UserProfileInfo(
             userProfile = UserProfile(
                 profileImg = "",
-                name = "홍길동",
                 nickName = "아부지",
                 email = "familyMoments@gmail.com"
             ),

@@ -6,8 +6,8 @@ import io.familymoments.app.core.base.BaseViewModel
 import io.familymoments.app.core.network.datasource.UserInfoPreferencesDataSource
 import io.familymoments.app.core.network.HttpResponseMessage.NO_COMMENTS_404
 import io.familymoments.app.core.network.HttpResponseMessage.NO_POST_LOVES_404
-import io.familymoments.app.core.network.dto.response.GetPostDetailResult
 import io.familymoments.app.core.network.dto.response.GetPostLovesResult
+import io.familymoments.app.core.network.dto.response.PostResult
 import io.familymoments.app.core.network.repository.CommentRepository
 import io.familymoments.app.core.network.repository.PostRepository
 import io.familymoments.app.core.util.DateFormatter
@@ -18,9 +18,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.time.DayOfWeek
-import java.time.LocalDate
-import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -46,10 +43,11 @@ class PostDetailViewModel @Inject constructor(
         async(
             operation = { postRepository.getPostDetail(index) },
             onSuccess = { response ->
+                val localDateTime = DateFormatter.dateTimeToLocalDate(response.result.createdAt)
                 _uiState.update {
                     it.copy(
                         isSuccess = true,
-                        postDetail = response.result
+                        postDetail = response.result.copy(createdAt = localDateTime)
                     )
                 }
             },
@@ -347,29 +345,12 @@ class PostDetailViewModel @Inject constructor(
         }
     }
 
-    fun checkPostDetailExist(value: GetPostDetailResult) = value != GetPostDetailResult()
+    fun checkPostDetailExist(value: PostResult) = value != PostResult()
 
     fun makeCommentAvailable() {
         _uiState.update {
             it.copy(resetComment = false)
         }
-    }
-
-    @Suppress("WHEN_ENUM_CAN_BE_NULL_IN_JAVA")
-    fun formatPostCreatedDate(createdAt: String): String {
-        val date = LocalDate.parse(createdAt, DateTimeFormatter.ofPattern("yyyy-MM-dd"))
-        val formattedString = date.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))
-        return "$formattedString (${
-            when (date.dayOfWeek) {
-                DayOfWeek.MONDAY -> "월"
-                DayOfWeek.TUESDAY -> "화"
-                DayOfWeek.WEDNESDAY -> "수"
-                DayOfWeek.THURSDAY -> "목"
-                DayOfWeek.FRIDAY -> "금"
-                DayOfWeek.SATURDAY -> "토"
-                DayOfWeek.SUNDAY -> "일"
-            }
-        })"
     }
 
     fun formatCommentCreatedDate(createdAt: String): String {

@@ -1,8 +1,7 @@
 package io.familymoments.app.feature.calendar.uistate
 
 import androidx.compose.runtime.Immutable
-import io.familymoments.app.core.network.HttpResponseMessage.NO_POST_404
-import io.familymoments.app.core.network.dto.response.Post
+import io.familymoments.app.core.network.dto.response.PostResult
 import io.familymoments.app.feature.home.uistate.PostPopupType
 import java.time.LocalDate
 
@@ -12,7 +11,7 @@ data class CalendarDayUiState(
     val isLoading: Boolean? = null,
     val errorMessage: String? = null,
     val selectedDate: LocalDate = LocalDate.now(),
-    val posts: List<Post> = emptyList(),
+    val posts: List<PostResult> = emptyList(),
     val popup:PostPopupType? = null,
     val userNickname:String = ""
 ) {
