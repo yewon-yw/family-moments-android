@@ -1,6 +1,6 @@
 package io.familymoments.app.core.util
 
-import io.familymoments.app.core.network.dto.response.Post
+import io.familymoments.app.core.network.dto.response.PostResult
 import io.familymoments.app.core.util.DateFormatter.dateTimeToLocalDate
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -16,7 +16,7 @@ fun String.formattedPostDate(): String {
 }
 
 // 게시글 날짜를 사용자의 로컬 시간대로 변환
-fun List<Post>.convertCreatedAtToLocalDate(): List<Post> {
+fun List<PostResult>.convertCreatedAtToLocalDate(): List<PostResult> {
     return this.map { post ->
         post.copy(createdAt = dateTimeToLocalDate(post.createdAt))
     }
