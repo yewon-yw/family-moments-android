@@ -1,5 +1,10 @@
 ## 🧑‍🧑‍🧒‍🧒 FamilyMoments
 
+<img src="https://github.com/user-attachments/assets/0f62c641-5493-4967-bf4f-b44b5e9ca390" width=200 />
+<img src="https://github.com/user-attachments/assets/588cf1a9-9e81-4beb-8284-208c4e0c28d2" width=200 />
+<img src="https://github.com/user-attachments/assets/5bcea1fb-c64f-4dd1-8c11-798b9d9feb9d" width=200 />
+<img src="https://github.com/user-attachments/assets/9e26da0a-3740-4794-a4be-a6271bd47072" width=200 />
+
 ### 가족의 소중한 순간을 사진으로 공유하고 소통하는 커뮤니티 서비스입니다.
 
 이 프로젝트는 가족 구성원들이 서로의 일상을 나누는 시간이 줄어들고, 거리와 시간의 제약으로 인해 직접적인 소통이 어려워지는 문제를 해결하고자 기획되었습니다.
@@ -8,6 +13,11 @@
 
 <br>
 
+## 📱 앱 다운로드
+
+https://play.google.com/store/apps/details?id=io.familymoments.app
+
+<br>
 
 ## 💻 팀원 소개
 | 담당    | 팀원                                             |
@@ -18,7 +28,6 @@
 | PM    | `엘리/김수진`                                       |
 
 <br>
-
 
 ## 🎥 시연 영상
 |   기능    |                                                            영상                                                            | 설명                                             |
