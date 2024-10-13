@@ -65,9 +65,7 @@ sealed interface Route {
         fun getRoute(mode: Int, editPostId: Long, editImages: List<String>, editContent: String): String {
             val encodedImageUrls: List<String> =
                 editImages.map { URLEncoder.encode(it, StandardCharsets.UTF_8.toString()) }
-            val encodedContent = URLEncoder.encode(editContent, StandardCharsets.UTF_8.toString())
-
-            return "$route?$modeArg=$mode&$editPostIdArg=$editPostId&$editImagesArg=$encodedImageUrls&$editContentArg=$encodedContent"
+            return "$route?$modeArg=$mode&$editPostIdArg=$editPostId&$editImagesArg=$encodedImageUrls&$editContentArg=$editContent"
         }
     }
 
